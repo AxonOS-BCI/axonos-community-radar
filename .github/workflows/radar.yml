@@ -19,10 +19,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Check GitHub CLI
+      - name: Check tools
         run: |
           gh --version
-          jq --version
+          python3 --version
 
-      - name: Run radar
-        run: bash scripts/radar.sh
+      - name: Run AxonOS radar
+        run: python3 scripts/radar.py

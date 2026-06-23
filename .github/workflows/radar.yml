@@ -14,9 +14,15 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
+      GITHUB_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+
+      - name: Check GitHub CLI
+        run: |
+          gh --version
+          jq --version
 
       - name: Run radar
         run: bash scripts/radar.sh

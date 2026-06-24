@@ -2,19 +2,34 @@ name: AxonOS Community Radar
 
 on:
   schedule:
-    - cron: "17 3 * * *"
+    # Auto-run every 6 hours, UTC. Minute 17 avoids top-of-hour GitHub Actions congestion.
+    - cron: "17 */6 * * *"
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/radar.yml"
+      - "scripts/**"
+      - "README.md"
 
 permissions:
   contents: read
   issues: write
 
+concurrency:
+  group: axonos-community-radar
+  cancel-in-progress: false
+
 jobs:
   radar:
+    name: Run AxonOS Community Radar
     runs-on: ubuntu-latest
+
     env:
       GH_TOKEN: ${{ github.token }}
       GITHUB_TOKEN: ${{ github.token }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v5

@@ -1,21 +1,18 @@
-name: AxonOS Community Radar
+name: Open BCI Ecosystem Radar
 
 on:
   schedule:
-    # Auto-run every 6 hours, UTC. Minute 17 avoids top-of-hour GitHub Actions congestion.
     - cron: "17 */6 * * *"
   workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
       - ".github/workflows/radar.yml"
       - "scripts/**"
-      - "README.md"
+      - "data/seeds.json"
 
 permissions:
-  contents: read
-  issues: write
+  contents: write
 
 concurrency:
   group: axonos-community-radar
@@ -23,21 +20,26 @@ concurrency:
 
 jobs:
   radar:
-    name: Run AxonOS Community Radar
+    name: Refresh ecosystem radar
     runs-on: ubuntu-latest
-
     env:
       GH_TOKEN: ${{ github.token }}
       GITHUB_TOKEN: ${{ github.token }}
-
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
-      - name: Check tools
-        run: |
-          gh --version
-          python3 --version
-
-      - name: Run AxonOS radar
+      - name: Refresh radar data
         run: python3 scripts/radar.py
+
+      - name: Commit updated radar data
+        run: |
+          if [ -n "$(git status --porcelain data/radar.json)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/radar.json
+            git commit -m "radar: refresh ecosystem data [skip ci]"
+            git push
+          else
+            echo "No change in data/radar.json"
+          fi

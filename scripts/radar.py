@@ -1,216 +1,163 @@
 #!/usr/bin/env python3
+"""
+Open BCI Ecosystem Radar — data refresher.
+
+Scans public GitHub topic search for active open BCI / neurotech / real-time /
+privacy / signal-processing projects, categorises them heuristically, and writes
+a public data/radar.json that the published radar page renders.
+
+Honest by construction: only public search data, deduplicated and capped, with a
+generated_at timestamp and the exact criteria recorded in the output. No
+auto-comments, no reactions, no follows. Optionally (RADAR_ISSUE=1) posts a
+maintainer-only review digest as an issue.
+"""
 import json
 import os
-import subprocess
 import sys
 import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SEEDS = os.path.join(ROOT, "data", "seeds.json")
+OUT = os.path.join(ROOT, "data", "radar.json")
+
 TOKEN = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
-REPO = os.environ.get("GITHUB_REPOSITORY", "AxonOS-BCI/axonos-community-radar")
-
-if not TOKEN:
-    print("FAIL: GH_TOKEN/GITHUB_TOKEN is empty", file=sys.stderr)
-    sys.exit(1)
-
-TOPICS = [
-    "bci",
-    "brain-computer-interface",
-    "neurotechnology",
-    "neurotech",
-    "neural-interface",
-    "neural-signal-processing",
-    "eeg",
-    "emg",
-    "neuroscience",
-    "signal-processing",
-    "embedded-rust",
-    "no-std",
-    "real-time",
-    "microkernel",
-    "formal-verification",
-    "privacy",
-    "cryptography",
-    "zero-copy",
-    "rust",
-    "cortex-m",
-]
+SELF_REPO = os.environ.get("GITHUB_REPOSITORY", "AxonOS-BCI/axonos-community-radar").lower()
 
 HEADERS = {
-    "Authorization": f"Bearer {TOKEN}",
     "Accept": "application/vnd.github+json",
     "User-Agent": "AxonOS-Community-Radar",
 }
+if TOKEN:
+    HEADERS["Authorization"] = f"Bearer {TOKEN}"
 
-def gh_json(url: str):
+
+def gh_json(url):
     req = urllib.request.Request(url, headers=HEADERS)
     with urllib.request.urlopen(req, timeout=30) as resp:
         return json.loads(resp.read().decode("utf-8"))
 
-repos = {}
 
-for topic in TOPICS:
-    query = f"topic:{topic} archived:false fork:false"
-    url = "https://api.github.com/search/repositories?" + urllib.parse.urlencode({
-        "q": query,
-        "sort": "updated",
-        "order": "desc",
-        "per_page": "20",
-    })
+def load_seeds():
+    with open(SEEDS, encoding="utf-8") as fh:
+        return json.load(fh)
 
-    print(f"Scanning topic:{topic}")
 
-    try:
-        data = gh_json(url)
-    except Exception as exc:
-        print(f"WARN: search failed for topic:{topic}: {exc}")
-        continue
+def categorise(repo, categories):
+    hay = " ".join([
+        " ".join(repo.get("topics") or []),
+        (repo.get("language") or ""),
+        (repo.get("full_name") or ""),
+        (repo.get("description") or ""),
+    ]).lower()
+    best, best_score = "Other", 0
+    for cat, kws in categories.items():
+        score = sum(1 for kw in kws if kw.lower() in hay)
+        if score > best_score:
+            best, best_score = cat, score
+    return best
 
-    for item in data.get("items", []):
-        full_name = item.get("full_name")
-        if not full_name:
+
+def main():
+    seeds = load_seeds()
+    topics = seeds.get("topics", [])
+    categories = seeds.get("categories", {})
+    max_per_topic = int(seeds.get("max_per_topic", 25))
+    max_projects = int(seeds.get("max_projects", 120))
+    min_stars = int(seeds.get("min_stars", 0))
+
+    repos = {}
+    for topic in topics:
+        q = f"topic:{topic} archived:false fork:false"
+        url = "https://api.github.com/search/repositories?" + urllib.parse.urlencode({
+            "q": q, "sort": "updated", "order": "desc", "per_page": str(max_per_topic),
+        })
+        print(f"Scanning topic:{topic}")
+        try:
+            data = gh_json(url)
+        except Exception as exc:  # noqa: BLE001
+            print(f"WARN: search failed for topic:{topic}: {exc}")
             continue
+        for item in data.get("items", []):
+            fn = item.get("full_name")
+            if not fn or fn.lower() == SELF_REPO:
+                continue
+            if int(item.get("stargazers_count") or 0) < min_stars:
+                continue
+            repos[fn] = {
+                "full_name": fn,
+                "html_url": item.get("html_url"),
+                "description": (item.get("description") or "").strip(),
+                "stars": int(item.get("stargazers_count") or 0),
+                "forks": int(item.get("forks_count") or 0),
+                "language": item.get("language") or "",
+                "pushed_at": item.get("pushed_at") or "",
+                "topics": item.get("topics") or [],
+            }
 
-        repos[full_name] = {
-            "full_name": full_name,
-            "stars": int(item.get("stargazers_count") or 0),
-            "forks": int(item.get("forks_count") or 0),
-            "language": item.get("language") or "",
-            "pushed_at": item.get("pushed_at") or "",
-            "url": item.get("html_url") or "",
-            "description": (item.get("description") or "").replace("\n", " ").replace("|", "\\|"),
-        }
+    now = datetime.now(timezone.utc)
+    out = []
+    for r in repos.values():
+        try:
+            pushed = datetime.fromisoformat(r["pushed_at"].replace("Z", "+00:00"))
+            days = (now - pushed).days
+        except Exception:  # noqa: BLE001
+            days = 9999
+        import math
+        score = math.log10(r["stars"] + 1) * 10 + max(0, 60 - days) * 0.5
+        r["days_since_push"] = days
+        r["active"] = days <= 30
+        r["category"] = categorise(r, categories)
+        r["_score"] = round(score, 3)
+        out.append(r)
 
-items = sorted(repos.values(), key=lambda r: r["stars"], reverse=True)
+    out.sort(key=lambda x: x["_score"], reverse=True)
+    out = out[:max_projects]
 
-now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    payload = {
+        "version": 1,
+        "generated_at": now.replace(microsecond=0).isoformat(),
+        "source": "GitHub topic search (public)",
+        "criteria": (
+            "Public, non-archived, non-fork repositories matching curated BCI / "
+            "neurotech / real-time / privacy topics, ranked by recent activity and "
+            "stars. Categorisation is heuristic and opinionated."
+        ),
+        "refresh": "every 6 hours via GitHub Actions",
+        "topics": topics,
+        "counts": {
+            "total": len(out),
+            "active_30d": sum(1 for r in out if r["active"]),
+        },
+        "projects": out,
+    }
+    with open(OUT, "w", encoding="utf-8") as fh:
+        json.dump(payload, fh, ensure_ascii=False, indent=2)
+        fh.write("\n")
+    print(f"Wrote {OUT}: {len(out)} projects ({payload['counts']['active_30d']} active in 30d)")
 
-body = []
-body.append("# AxonOS Community Radar")
-body.append("")
-body.append(f"Updated: `{now}`")
-body.append("")
-body.append("This is a review queue, not an auto-spam bot.")
-body.append("")
-body.append("## Daily action rule")
-body.append("")
-body.append("- Star: max 3–5 relevant repositories.")
-body.append("- Follow: max 1–2 real maintainers.")
-body.append("- PR/Issue: only if there is concrete technical value.")
-body.append("- Rocket reaction: only after manual review of a real release.")
-body.append("- No generic comments.")
-body.append("")
-body.append("## Repository candidates")
-body.append("")
-body.append("| # | Repo | Stars | Forks | Language | Pushed | Notes |")
-body.append("|---:|---|---:|---:|---|---|---|")
+    # Optional maintainer-only review digest (ethical: no auto-engagement)
+    if os.environ.get("RADAR_ISSUE") == "1" and TOKEN:
+        top = out[:25]
+        lines = ["# Open BCI Ecosystem — review digest", "",
+                 f"Generated {payload['generated_at']} · {len(out)} projects.", "",
+                 "Engagement policy: star only relevant repos; react only to genuinely "
+                 "relevant releases; open PRs only when they add technical value; prefer "
+                 "tests, docs, reproducibility, benchmarks and protocol notes; no low-signal comments.", ""]
+        for r in top:
+            lines.append(f"- [{r['full_name']}]({r['html_url']}) — ⭐{r['stars']} · {r['language'] or 'n/a'} · {r['category']} · pushed {r['days_since_push']}d ago")
+        body = "\n".join(lines)
+        try:
+            req = urllib.request.Request(
+                f"https://api.github.com/repos/{SELF_REPO}/issues",
+                data=json.dumps({"title": f"Radar review digest — {now.date()}", "body": body}).encode("utf-8"),
+                headers={**HEADERS, "Content-Type": "application/json"}, method="POST")
+            urllib.request.urlopen(req, timeout=30)
+            print("Posted review digest issue.")
+        except Exception as exc:  # noqa: BLE001
+            print(f"WARN: could not post digest issue: {exc}")
 
-for index, item in enumerate(items[:120], start=1):
-    body.append(
-        f"| {index} | [{item['full_name']}]({item['url']}) | "
-        f"{item['stars']} | {item['forks']} | {item['language']} | "
-        f"{item['pushed_at']} | {item['description']} |"
-    )
 
-body.append("")
-body.append("## Recent release candidates")
-body.append("")
-
-checked = 0
-for item in items:
-    if checked >= 40:
-        break
-    checked += 1
-
-    full = item["full_name"]
-
-    try:
-        release = gh_json(f"https://api.github.com/repos/{full}/releases/latest")
-    except Exception:
-        continue
-
-    rel_url = release.get("html_url")
-    rel_name = release.get("name") or release.get("tag_name")
-    rel_date = release.get("published_at")
-
-    if rel_url and rel_name:
-        body.append(f"- [{full} — {rel_name}]({rel_url}) — {rel_date}")
-
-body.append("")
-body.append("## High-signal AxonOS contribution angles")
-body.append("")
-body.append("- deterministic test vectors")
-body.append("- README scope corrections")
-body.append("- Rust `no_std` compatibility notes")
-body.append("- CI hardening")
-body.append("- reproducibility checks")
-body.append("- privacy/security boundary documentation")
-body.append("- protocol conformance examples")
-body.append("- benchmark fixtures")
-body.append("- issue triage with concrete reproduction steps")
-body.append("")
-body.append("## Low-signal actions to avoid")
-body.append("")
-body.append("- generic comments")
-body.append("- mass reactions")
-body.append("- mass following maintainers")
-body.append("- opening issues just to advertise AxonOS")
-
-body_path = "/tmp/axonos-community-radar.md"
-
-with open(body_path, "w", encoding="utf-8") as f:
-    f.write("\n".join(body) + "\n")
-
-def run(cmd):
-    return subprocess.run(
-        cmd,
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-
-subprocess.run(
-    [
-        "gh", "label", "create", "radar",
-        "--repo", REPO,
-        "--description", "AxonOS community radar",
-        "--color", "8A6F35",
-    ],
-    stdout=subprocess.DEVNULL,
-    stderr=subprocess.DEVNULL,
-)
-
-existing = run([
-    "gh", "issue", "list",
-    "--repo", REPO,
-    "--state", "open",
-    "--json", "number,title",
-    "--jq", '.[] | select(.title=="AxonOS Community Radar") | .number',
-])
-
-issue_number = existing.stdout.strip().splitlines()[0] if existing.stdout.strip() else ""
-
-if issue_number:
-    cmd = [
-        "gh", "issue", "edit", issue_number,
-        "--repo", REPO,
-        "--body-file", body_path,
-    ]
-else:
-    cmd = [
-        "gh", "issue", "create",
-        "--repo", REPO,
-        "--title", "AxonOS Community Radar",
-        "--body-file", body_path,
-        "--label", "radar",
-    ]
-
-result = run(cmd)
-
-if result.returncode != 0:
-    print(result.stdout)
-    print(result.stderr, file=sys.stderr)
-    sys.exit(result.returncode)
-
-print("OK: AxonOS Community Radar issue updated")
+if __name__ == "__main__":
+    main()

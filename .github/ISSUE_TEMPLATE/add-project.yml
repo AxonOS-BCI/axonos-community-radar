@@ -1,0 +1,40 @@
+name: ➕ Suggest a project for the radar
+description: Put an open BCI / neurotech / real-time / privacy project on the radar.
+title: "[radar] <owner>/<repo>"
+labels: ["radar", "project-suggestion"]
+body:
+  - type: input
+    id: repo
+    attributes:
+      label: GitHub repository URL
+      placeholder: https://github.com/owner/repo
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Best-fit category
+      options:
+        - Hardware & Acquisition
+        - Signal Processing
+        - Decoding & ML
+        - Privacy & Security
+        - Real-time & Embedded
+        - Protocols & OS
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why is it relevant to the open BCI ecosystem?
+      placeholder: One or two sentences.
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: This is a public, open-source project related to BCI / neurotech / real-time / privacy / signal processing.
+          required: true

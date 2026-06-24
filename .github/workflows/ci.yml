@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate radar
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: JSON is valid
+        run: |
+          python3 -c "import json;json.load(open('data/seeds.json'));print('seeds.json ok')"
+          python3 -c "import json;json.load(open('data/radar.json'));print('radar.json ok')"
+
+      - name: Python syntax
+        run: python3 -m py_compile scripts/radar.py
+
+      - name: HTML integrity
+        run: |
+          grep -qi '<!doctype html>' index.html
+          grep -q '<canvas id="radar"' index.html
+          grep -q "fetch('./data/radar.json'" index.html
+
+      - name: Inline JS syntax
+        run: |
+          awk '/<script>/{f=1;next} /<\/script>/{f=0} f' index.html > inline.js
+          node --check inline.js
+
+      - name: Required files
+        run: |
+          for f in README.md LICENSE VERSION index.html CONTRIBUTING.md CODE_OF_CONDUCT.md data/seeds.json scripts/radar.py; do
+            test -f "$f" || { echo "missing $f"; exit 1; }
+          done
+
+      - name: Secret scan
+        run: |
+          if grep -rEn 'ghp_[A-Za-z0-9]{20,}|-----BEGIN [A-Z ]*PRIVATE KEY-----' --include='*.py' --include='*.html' --include='*.md' --include='*.json' .; then
+            echo "potential secret found"; exit 1
+          fi
+          echo "no secrets"
+
+      - name: Line endings (no CRLF)
+        run: |
+          if grep -rlP '\r$' --include='*.py' --include='*.html' --include='*.md' --include='*.json' --include='*.yml' .; then
+            echo "CRLF found"; exit 1
+          fi
+          echo "LF ok"

@@ -1,5 +1,18 @@
 # AxonOS Community Radar
 
+<p align="center">
+  <a href="https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/radar.yml">
+    <img src="https://img.shields.io/badge/Run-AxonOS%20Community%20Radar-00f0c8?style=for-the-badge&logo=githubactions&logoColor=0a0f16" alt="Run AxonOS Community Radar">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/radar.yml">
+    Open GitHub Actions → Run workflow
+  </a>
+</p>
+
+
 This repository tracks public BCI, neurotechnology, real-time Rust, privacy, signal-processing and cognitive infrastructure projects relevant to AxonOS.
 
 It does not auto-comment, auto-react or mass-follow.

@@ -37,6 +37,19 @@ def test_password_manager_is_dropped():
     assert radar.is_relevant(repo, CORE, CONTEXT, KEYWORDS) is False
 
 
+def test_short_keyword_is_word_anchored():
+    # regression: short keywords like 'erp' must not substring-match unrelated words
+    # ('cleverpad', 'interpreter'); matching is anchored at a word start.
+    kw = KEYWORDS + ["erp", "lfp"]
+    midi = {"topics": ["no-std"], "description": "firmware for cleverpad midi controller", "full_name": "d/open-cleverpad", "language": "Rust"}
+    lang = {"topics": ["no-std"], "description": "a language interpreter with z3", "full_name": "o/mimi", "language": "Rust"}
+    assert radar.is_relevant(midi, CORE, CONTEXT, kw) is False
+    assert radar.is_relevant(lang, CORE, CONTEXT, kw) is False
+    # a genuine standalone 'erp' (event-related potential) still matches
+    erp = {"topics": ["signal-processing"], "description": "a P300 erp classifier", "full_name": "a/erp", "language": "Python"}
+    assert radar.is_relevant(erp, CORE, {"signal-processing"}, kw) is True
+
+
 def test_categorise_ml():
     repo = {"topics": ["eeg", "deep-learning"], "description": "deep learning for EEG", "full_name": "t/braindecode", "language": "Python"}
     assert radar.categorise(repo, CATS) == "Decoding & ML"

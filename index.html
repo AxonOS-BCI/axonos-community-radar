@@ -112,6 +112,10 @@
   .pc .ac{margin-left:auto;display:inline-flex;align-items:center;gap:6px}.ac .ad{width:7px;height:7px;border-radius:50%;background:#3a4256}.ac .ad.on{background:var(--emerald);box-shadow:0 0 7px var(--emerald)}
   .empty{text-align:center;padding:54px 16px;color:var(--dim);grid-column:1/-1}.empty .big{font-size:21px;color:var(--ink);font-weight:600;margin-bottom:8px;letter-spacing:-0.02em}
   .hidden{display:none}
+  .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:1px}
+  .tag{font-size:10.5px;color:var(--faint);background:rgba(255,255,255,.045);border:1px solid var(--line2);border-radius:6px;padding:2px 7px;font-weight:500;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tg.clr{color:var(--dim);font-weight:600}
+  .lnkbtn{background:none;border:0;color:var(--accent);font:inherit;font-weight:600;cursor:pointer;padding:0;text-decoration:underline}
 
   section.block{margin-top:56px}
   h2{font-size:clamp(22px,3.4vw,30px);font-weight:600;letter-spacing:-0.025em;margin:0 0 8px;text-align:center}
@@ -169,11 +173,13 @@
       <select class="sel" id="langSel" aria-label="Filter by language"><option value="">All languages</option></select>
       <div class="tg act" id="tAct" role="button" tabindex="0" aria-pressed="false">● Active 30d</div>
       <div class="tg new" id="tNew" role="button" tabindex="0" aria-pressed="false">✦ New</div>
+      <button class="tg clr hidden" id="clearBtn" type="button" aria-label="Clear all filters">✕ Clear</button>
     </div>
   </div>
 
   <section class="panel radar-wrap hidden" id="radarSec">
     <canvas id="radar" width="800" height="800" role="img" aria-label="Open BCI ecosystem radar" aria-describedby="radar-alt"></canvas>
+    <div id="tip" aria-hidden="true"></div>
     <p id="radar-alt" class="visually-hidden" aria-live="polite"></p>
     <div class="legend" id="legend"></div>
   </section>
@@ -286,31 +292,41 @@
     var alt='Radar showing '+arr.length+' projects across '+Object.keys(cats).length+' categories'+(nw?', '+nw+' new':'')+'.';
     var ra=$('radar-alt');if(ra)ra.textContent=alt;cv.setAttribute('aria-label',alt);
   }
-  function showTip(pt,mx,my){var t=$('tip'),p=pt.p;t.innerHTML='<b>'+esc(p.full_name)+'</b>'+(p.is_new?' ✦':'')+'<br><span class="m">⭐ '+(p.stars||0)+' · '+esc(p.language||'n/a')+' · '+esc(p.category)+' · '+fmtAge(p.days_since_push)+'</span>';t.style.left=Math.min(mx+12,cv.clientWidth-220)+'px';t.style.top=Math.max(0,my-10)+'px';t.style.opacity=1;}
-  cv.addEventListener('pointermove',function(e){var r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top,best=null,bd=1e9;for(var i=0;i<points.length;i++){var dx=mx-points[i].x,dy=my-points[i].y,d=dx*dx+dy*dy;if(d<points[i].r*points[i].r&&d<bd){bd=d;best=points[i];}}if(best){showTip(best,mx,my);cv.style.cursor='pointer';}else{$('tip').style.opacity=0;cv.style.cursor='default';}});
-  cv.addEventListener('pointerleave',function(){$('tip').style.opacity=0;});
+  function showTip(pt,mx,my){var t=$('tip');if(!t)return;var p=pt.p;t.innerHTML='<b>'+esc(p.full_name)+'</b>'+(p.is_new?' ✦':'')+'<br><span class="m">⭐ '+(p.stars||0)+' · '+esc(p.language||'n/a')+' · '+esc(p.category)+' · '+fmtAge(p.days_since_push)+'</span>';t.style.left=Math.min(mx+12,cv.clientWidth-220)+'px';t.style.top=Math.max(0,my-10)+'px';t.style.opacity=1;}
+  cv.addEventListener('pointermove',function(e){var r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top,best=null,bd=1e9;for(var i=0;i<points.length;i++){var dx=mx-points[i].x,dy=my-points[i].y,d=dx*dx+dy*dy;if(d<points[i].r*points[i].r&&d<bd){bd=d;best=points[i];}}if(best){showTip(best,mx,my);cv.style.cursor='pointer';}else{var tp=$('tip');if(tp)tp.style.opacity=0;cv.style.cursor='default';}});
+  cv.addEventListener('pointerleave',function(){var tp=$('tip');if(tp)tp.style.opacity=0;});
   cv.addEventListener('click',function(e){var r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;for(var i=0;i<points.length;i++){var dx=mx-points[i].x,dy=my-points[i].y;if(dx*dx+dy*dy<points[i].r*points[i].r){var u=safeUrl(points[i].p.html_url);if(u!=='#')window.open(u,'_blank','noopener');return;}}});
 
+  var GENERIC={rust:1,python:1,c:1,'c-plus-plus':1,cpp:1,javascript:1,typescript:1,go:1,'no-std':1};
+  function tagRow(p){var t=(p.topics||[]).filter(function(x){return !GENERIC[String(x).toLowerCase()];}).slice(0,3);
+    return t.length?'<div class="tags">'+t.map(function(x){return '<span class="tag">'+esc(x)+'</span>';}).join('')+'</div>':'';}
   function renderCards(arr){
     var l=$('cards');
-    if(!arr.length){l.innerHTML='<div class="empty"><div class="big">'+(DATA.generated_at?'No matches':'Radar warming up')+'</div>'+(DATA.generated_at?'Try clearing filters or search.':'The first scan runs on publish and refreshes every 6 hours. Real projects appear here shortly.')+'</div>';return;}
+    if(!arr.length){l.innerHTML='<div class="empty"><div class="big">'+(DATA.generated_at?'No matches':'Radar warming up')+'</div>'+(DATA.generated_at?(anyFilter()?'Nothing matches these filters — <button class="lnkbtn" id="emptyCl" type="button">clear all</button>.':'No projects yet.'):'The first scan runs on publish and refreshes every 6 hours. Real projects appear here shortly.')+'</div>';var ec=$('emptyCl');if(ec)ec.addEventListener('click',clearFilters);return;}
     var html='';
     for(var i=0;i<arr.length;i++){var p=arr[i],col=catColor(p.category);
       html+='<a class="pc" style="--cc:'+col+';animation-delay:'+Math.min(i*18,360)+'ms" href="'+esc(safeUrl(p.html_url))+'" target="_blank" rel="noopener">'
         +'<div class="top"><span class="pill" style="color:'+col+';background:'+col+'1f">'+esc(p.category)+'</span>'
         +(p.is_new?'<span class="nb">NEW</span>':'')+'<span class="st">★ '+(p.stars||0)+'</span></div>'
         +'<h3>'+esc(p.full_name)+'</h3><p class="desc">'+esc(p.description||'—')+'</p>'
+        +tagRow(p)
         +'<div class="foot"><span class="lng"><span class="ld"></span>'+esc(p.language||'n/a')+'</span>'
         +'<span class="ac"><span class="ad'+(p.active?' on':'')+'"></span>'+fmtAge(p.days_since_push)+'</span></div></a>';}
     l.innerHTML=html;
   }
 
+  function anyFilter(){return !!(state.q||state.lang||state.activeOnly||state.newOnly||Object.keys(state.cats).some(function(k){return state.cats[k];}));}
+  function clearFilters(){state.q='';state.lang='';state.activeOnly=false;state.newOnly=false;state.cats={};
+    var se=$('search');if(se)se.value='';var ls=$('langSel');if(ls)ls.value='';
+    ['tAct','tNew'].forEach(function(id){var t=$(id);if(t){t.classList.remove('on');t.setAttribute('aria-pressed','false');}});
+    buildChips();render();}
   function render(){
     var arr=filtered();
     $('radarSec').classList.toggle('hidden',state.view!=='radar');
     $('cards').classList.toggle('hidden',false);
     drawRadar(arr);renderCards(arr);
     $('gcount').textContent='Showing '+arr.length+' of '+DATA.projects.length+' projects';
+    var cb=$('clearBtn');if(cb)cb.classList.toggle('hidden',!anyFilter());
   }
 
   // ── Apple-style segmented controls (built in JS → testable + reliable) ──
@@ -355,11 +371,15 @@
     $('search').addEventListener('input',function(e){state.q=e.target.value;render();});
     $('langSel').addEventListener('change',function(e){state.lang=e.target.value;render();});
     bindToggle('tAct','activeOnly');bindToggle('tNew','newOnly');
+    var cb=$('clearBtn');if(cb)cb.addEventListener('click',clearFilters);
     $('shareBtn').addEventListener('click',function(){var url='https://axonos-bci.github.io/axonos-community-radar/';
       if(navigator.share){navigator.share({title:'Open BCI Ecosystem Radar',url:url}).catch(function(){});}
       else if(navigator.clipboard){navigator.clipboard.writeText(url).then(function(){toast('Link copied');}).catch(function(){toast(url);});}
       else toast(url);});
-    document.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&e.target&&e.target.getAttribute&&e.target.getAttribute('role')==='button'){e.preventDefault();e.target.click();}});
+    document.addEventListener('keydown',function(e){
+      var tag=e.target&&e.target.tagName;
+      if(e.key==='/'&&['INPUT','SELECT','TEXTAREA'].indexOf(tag)<0){e.preventDefault();var s2=$('search');if(s2&&s2.focus)s2.focus();return;}
+      if((e.key==='Enter'||e.key===' ')&&e.target&&e.target.getAttribute&&e.target.getAttribute('role')==='button'){e.preventDefault();e.target.click();}});
     window.addEventListener('resize',function(){drawRadar(filtered());});
     render();
     fetch('./data/radar.json',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){DATA=j||DATA;if(!DATA.projects)DATA.projects=[];buildLangs();setStats();render();}).catch(function(err){console.log('radar data not loaded:',err);setStats();render();});

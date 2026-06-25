@@ -18,7 +18,8 @@ Honest, hardened data pipeline:
 import base64  # noqa: F401  (kept for parity; not required at runtime)
 import json
 import os
-import re  # noqa: F401
+import re
+import functools
 import sys
 import time
 import math
@@ -145,11 +146,18 @@ def repo_text(repo):
     ]).lower()
 
 
+@functools.lru_cache(maxsize=8)
+def _kw_pattern(keywords):
+    """Word-start-anchored keyword regex (prefix match). Prevents short keywords like
+    'erp'/'lfp' from matching inside unrelated words ('interpreter', 'cleverpad')."""
+    return re.compile(r"\b(?:" + "|".join(re.escape(k) for k in keywords) + r")", re.IGNORECASE)
+
+
 def is_relevant(repo, core, context, keywords):
     topics = {t.lower() for t in (repo.get("topics") or [])}
     if topics & core:
         return True
-    if topics & context and any(kw in repo_text(repo) for kw in keywords):
+    if topics & context and _kw_pattern(tuple(keywords)).search(repo_text(repo)):
         return True
     return False
 

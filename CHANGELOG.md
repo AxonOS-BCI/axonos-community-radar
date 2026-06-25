@@ -3,6 +3,24 @@
 All notable changes to the Open BCI Ecosystem Radar are documented here.
 This project adheres to [Semantic Versioning](https://semver.org).
 
+## [2.1.0] — 2026-06-25
+
+### Fixed
+- **Radar tooltip crash** — the `#tip` element was dropped during the 2.0 redesign, which
+  threw "Cannot read properties of null" on radar hover. The element is restored and the
+  hover handlers are hardened against a missing node.
+- **Relevance false positives** — short keywords (e.g. "erp", event-related potential) were
+  substring-matched inside unrelated words ("cl**erp**ad", "int**erp**reter"), letting
+  non-BCI repos onto the radar (a MIDI-controller firmware, a systems language, a web
+  proxy). Keyword matching is now anchored at word starts; locked with a regression test.
+
+### Added
+- **Clear filters** — a pill that appears whenever a filter is active and resets all of them
+  in one tap (search, category, language, Active, New).
+- **Topic tags on cards** — each project now shows up to three of its real GitHub topics.
+- **Keyboard** — press "/" to jump straight to search.
+- **Empty state** — when nothing matches, a one-tap "clear all" link.
+
 ## [2.0.0] — 2026-06-25
 
 ### Changed — major premium redesign

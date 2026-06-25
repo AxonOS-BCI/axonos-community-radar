@@ -25,7 +25,7 @@ jobs:
         run: python3 -c "import xml.dom.minidom as m;m.parse('feed.xml');print('feed.xml ok')"
 
       - name: Python syntax
-        run: python3 -m py_compile scripts/radar.py
+        run: python3 -m py_compile scripts/radar.py scripts/publish_data.py
 
       - name: Unit tests
         run: |
@@ -47,7 +47,7 @@ jobs:
 
       - name: Required files
         run: |
-          for f in README.md LICENSE VERSION index.html feed.xml CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md data/seeds.json scripts/radar.py tests/test_radar.py; do
+          for f in README.md LICENSE VERSION index.html feed.xml CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md data/seeds.json scripts/radar.py scripts/publish_data.py tests/test_radar.py; do
             test -f "$f" || { echo "missing $f"; exit 1; }
           done
 

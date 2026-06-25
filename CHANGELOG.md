@@ -3,6 +3,15 @@
 All notable changes to the Open BCI Ecosystem Radar are documented here.
 This project adheres to [Semantic Versioning](https://semver.org).
 
+## [1.1.1] — 2026-06-24
+
+### Fixed
+- **Verified commits**: the data-refresh workflow now commits `data/radar.json` and
+  `feed.xml` through the GitHub Contents API (`scripts/publish_data.py`), so the
+  auto-update commits are GitHub-signed (**Verified**) instead of unsigned runner
+  commits. It only commits when project content actually changes (timestamp-only
+  diffs are ignored), keeping history clean and green.
+
 ## [1.1.0] — 2026-06-24
 
 ### Added

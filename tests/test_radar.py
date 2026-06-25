@@ -81,3 +81,15 @@ def test_feed_is_wellformed_xml():
     xml = radar.build_feed(projects, datetime(2026, 6, 24, 12, 0, 0, tzinfo=timezone.utc))
     minidom.parseString(xml)  # raises if malformed (escaping works)
     assert "<rss" in xml and "a/x" in xml
+
+
+def test_publish_normalizers():
+    import publish_data as pd
+    a = '{"generated_at":"t1","projects":[{"full_name":"a/x"}],"counts":{"total":1}}'
+    b = '{"generated_at":"t2","projects":[{"full_name":"a/x"}],"counts":{"total":1}}'
+    c = '{"generated_at":"t2","projects":[{"full_name":"a/x"},{"full_name":"b/y"}],"counts":{"total":2}}'
+    assert pd.norm_radar(a) == pd.norm_radar(b)   # timestamp-only diff ignored
+    assert pd.norm_radar(a) != pd.norm_radar(c)   # project change detected
+    f1 = "<rss><lastBuildDate>x</lastBuildDate><item>a</item></rss>"
+    f2 = "<rss><lastBuildDate>y</lastBuildDate><item>a</item></rss>"
+    assert pd.norm_feed(f1) == pd.norm_feed(f2)

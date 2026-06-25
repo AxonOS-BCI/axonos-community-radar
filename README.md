@@ -44,7 +44,7 @@ New to the project? Grab a [good first issue](https://github.com/AxonOS-BCI/axon
 
 ## How it works
 
-The radar is generated from **public GitHub topic search** — public, non-archived, non-fork repositories matching a curated set of BCI / neurotech / real-time / privacy topics, ranked by recent activity and stars. Rings show recency; sectors group projects by category. **Categorisation is heuristic and opinionated**, the data refreshes automatically every 6 hours, and the result is a discovery map — **not an endorsement or a quality ranking**.
+The radar is generated from **public GitHub topic search**. A repository is kept only if it carries a core BCI/neuro topic, or a context topic (signal processing, embedded, privacy…) **plus** a neuro keyword — so generic projects don't leak in. Recency is measured from a fixed 6-hour snapshot, so unchanged projects keep a stable position (no "jumping"). Newly discovered projects are flagged **NEW** and published to an [RSS feed](https://axonos-bci.github.io/axonos-community-radar/feed.xml). Rings show recency; coloured sectors group projects by category. **Categorisation is heuristic and opinionated**, the data refreshes every 6 hours, and the result is a discovery map — **not an endorsement or a quality ranking**. Security and data-integrity notes: [SECURITY.md](SECURITY.md).
 
 Our engagement is deliberate and low-noise: star only genuinely relevant repos, react only to genuinely relevant releases, open PRs only when they add technical value, and prefer tests, docs, reproducibility, benchmarks and protocol notes. No mass-follows, no auto-comments.
 
@@ -60,7 +60,7 @@ Open `http://127.0.0.1:8080`. To refresh the data locally with a GitHub token: `
 
 ## Community
 
-[Discussions](https://github.com/AxonOS-BCI/axonos-community-radar/discussions) &nbsp;·&nbsp; [Medium](https://medium.com/@AxonOS) &nbsp;·&nbsp; [axonos.org](https://axonos.org) &nbsp;·&nbsp; [AxonOS on GitHub](https://github.com/AxonOS-org)
+[Discussions](https://github.com/AxonOS-BCI/axonos-community-radar/discussions) &nbsp;·&nbsp; [RSS feed](https://axonos-bci.github.io/axonos-community-radar/feed.xml) &nbsp;·&nbsp; [Medium](https://medium.com/@AxonOS) &nbsp;·&nbsp; [axonos.org](https://axonos.org) &nbsp;·&nbsp; [AxonOS on GitHub](https://github.com/AxonOS-org)
 
 ## Contributors
 

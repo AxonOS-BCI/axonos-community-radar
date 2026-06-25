@@ -1,21 +1,31 @@
 {
-  "_comment": "Community-editable seed for the Open BCI Ecosystem Radar. Add topics or category keywords via PR. Projects themselves are discovered live from the GitHub topic search (so links are always real); this file only steers the search and categorisation.",
-  "topics": [
-    "bci", "brain-computer-interface", "neurotechnology", "neurotech",
-    "neural-interface", "neural-signal-processing", "eeg", "emg",
-    "neuroscience", "signal-processing", "embedded-rust", "no-std",
-    "real-time", "microkernel", "formal-verification", "privacy",
-    "cryptography", "zero-copy", "cortex-m", "neuroprosthetics"
+  "core_topics": [
+    "bci", "brain-computer-interface", "brain-machine-interface", "neurotechnology",
+    "neurotech", "neural-interface", "neural-signal-processing", "eeg", "emg", "ecog",
+    "neuroprosthetics", "neurofeedback", "neuroscience", "electrophysiology"
+  ],
+  "context_topics": [
+    "signal-processing", "embedded-rust", "no-std", "real-time", "microkernel",
+    "formal-verification", "privacy", "cryptography", "zero-copy", "cortex-m",
+    "machine-learning", "deep-learning", "rust"
+  ],
+  "neuro_keywords": [
+    "eeg", "emg", "ecog", "bci", "brain-computer", "brain machine", "neural",
+    "neuro", "cortical", "neurofeedback", "electrophysiolog", "prosthe",
+    "neuromorphic", "spike sorting", "lfp", "motor imagery", "p300", "ssvep", "erp"
   ],
   "categories": {
-    "Hardware & Acquisition": ["openbci", "electrode", "adc", "ads1299", "cortex-m", "hardware", "eeg", "emg", "ecog", "amplifier", "wearable"],
-    "Signal Processing": ["signal-processing", "neural-signal-processing", "dsp", "filtering", "artifact", "ica", "wavelet"],
-    "Decoding & ML": ["machine-learning", "deep-learning", "classification", "decoding", "braindecode", "neuroscience", "pytorch", "riemannian", "csp"],
-    "Privacy & Security": ["privacy", "cryptography", "security", "differential-privacy", "encryption", "zero-knowledge"],
-    "Real-time & Embedded": ["real-time", "embedded-rust", "no-std", "rtos", "microkernel", "zero-copy", "cortex-m", "firmware"],
-    "Protocols & OS": ["protocol", "operating-system", "microkernel", "formal-verification", "middleware", "streaming", "lsl", "interoperability"]
+    "Hardware & Acquisition": ["eeg", "emg", "ecog", "hardware", "openbci", "acquisition", "amplifier", "electrode", "adc", "ads1299", "firmware", "pcb"],
+    "Signal Processing": ["signal-processing", "dsp", "filter", "fft", "wavelet", "preprocessing", "artifact", "csp", "spectral"],
+    "Decoding & ML": ["machine-learning", "deep-learning", "decoding", "classifier", "neural-network", "pytorch", "tensorflow", "riemannian", "transfer-learning"],
+    "Privacy & Security": ["privacy", "cryptography", "security", "encryption", "differential-privacy", "federated", "zero-knowledge"],
+    "Real-time & Embedded": ["no-std", "embedded-rust", "real-time", "rtos", "microkernel", "cortex-m", "firmware", "zero-copy", "bare-metal"],
+    "Protocols & OS": ["protocol", "operating-system", "middleware", "lab-streaming-layer", "lsl", "openbci", "stack", "interoperability"]
   },
   "max_per_topic": 25,
   "max_projects": 120,
-  "min_stars": 0
+  "min_stars": 3,
+  "new_window_days": 7,
+  "exclude_owners": [],
+  "exclude_repos": []
 }

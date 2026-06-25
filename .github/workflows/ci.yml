@@ -21,14 +21,24 @@ jobs:
           python3 -c "import json;json.load(open('data/seeds.json'));print('seeds.json ok')"
           python3 -c "import json;json.load(open('data/radar.json'));print('radar.json ok')"
 
+      - name: Feed is well-formed
+        run: python3 -c "import xml.dom.minidom as m;m.parse('feed.xml');print('feed.xml ok')"
+
       - name: Python syntax
         run: python3 -m py_compile scripts/radar.py
 
-      - name: HTML integrity
+      - name: Unit tests
+        run: |
+          pip install pytest --quiet
+          python3 -m pytest tests/ -q
+
+      - name: HTML integrity + security
         run: |
           grep -qi '<!doctype html>' index.html
           grep -q '<canvas id="radar"' index.html
           grep -q "fetch('./data/radar.json'" index.html
+          grep -q 'Content-Security-Policy' index.html
+          grep -q 'function safeUrl' index.html
 
       - name: Inline JS syntax
         run: |
@@ -37,7 +47,7 @@ jobs:
 
       - name: Required files
         run: |
-          for f in README.md LICENSE VERSION index.html CONTRIBUTING.md CODE_OF_CONDUCT.md data/seeds.json scripts/radar.py; do
+          for f in README.md LICENSE VERSION index.html feed.xml CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md data/seeds.json scripts/radar.py tests/test_radar.py; do
             test -f "$f" || { echo "missing $f"; exit 1; }
           done
 

@@ -26,20 +26,24 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       GITHUB_TOKEN: ${{ github.token }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Refresh radar data
+      - name: Refresh radar data (self-validating)
         run: python3 scripts/radar.py
 
-      - name: Commit updated radar data
+      - name: Sanity-check output
         run: |
-          if [ -n "$(git status --porcelain data/radar.json)" ]; then
+          python3 -c "import json;d=json.load(open('data/radar.json'));assert len(d['projects'])<=120;assert all(p['html_url'].startswith('https://github.com/') for p in d['projects']);print('radar.json ok:',d['counts'])"
+          python3 -c "import xml.dom.minidom as m;m.parse('feed.xml');print('feed.xml ok')"
+
+      - name: Commit updated data
+        run: |
+          if [ -n "$(git status --porcelain data/radar.json feed.xml)" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add data/radar.json
+            git add data/radar.json feed.xml
             git commit -m "radar: refresh ecosystem data [skip ci]"
             git push
           else
-            echo "No change in data/radar.json"
+            echo "No change in radar data"
           fi

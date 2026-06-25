@@ -1,6 +1,6 @@
 # Security Policy
 
-The Open BCI Ecosystem Radar renders data derived automatically from public GitHub
+The AxonOS Radar renders data derived automatically from public GitHub
 search. We take the integrity of that pipeline seriously.
 
 ## Reporting a vulnerability

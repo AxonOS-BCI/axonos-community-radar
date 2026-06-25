@@ -1,7 +1,21 @@
 # Changelog
 
-All notable changes to the Open BCI Ecosystem Radar are documented here.
+All notable changes to AxonOS Radar are documented here.
 This project adheres to [Semantic Versioning](https://semver.org).
+
+## [2.2.0] — 2026-06-25
+
+### Changed
+- **Renamed to "AxonOS Radar"** (from "Open BCI Radar") across the page, social cards,
+  README and release metadata, to avoid confusion with the **OpenBCI** brand.
+- **README rebuilt** to the AxonOS Foundation Grande Standard — centred header, true-only
+  badges, and full sections (how it works, features, architecture, data & privacy).
+
+### Added
+- **Shareable, persistent state** — every filter, sort and view is reflected in the URL
+  (`#sort=…&lang=…&cat=…`), so a filtered radar is a link you can send and reload.
+- **Live project counts** on each category chip.
+- Regenerated social share card under the new name.
 
 ## [2.1.0] — 2026-06-25
 

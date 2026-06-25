@@ -1,4 +1,4 @@
-# Contributing to the Open BCI Ecosystem Radar
+# Contributing to the AxonOS Radar
 
 Thank you for helping map and grow the open BCI ecosystem! Every contribution — a project, a keyword, a docs fix, a UI tweak — makes the radar more useful.
 

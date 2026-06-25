@@ -5,22 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
 <meta name="theme-color" content="#06070b">
-<meta name="description" content="Open BCI Ecosystem Radar — a living, curated map of the open brain-computer-interface field. An AxonOS community project.">
+<meta name="description" content="AxonOS Radar — a living, curated map of the open brain–computer-interface field. An AxonOS community project.">
 <link rel="alternate" type="application/rss+xml" title="New BCI projects" href="./feed.xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="AxonOS">
 <meta property="og:url" content="https://axonos-bci.github.io/axonos-community-radar/">
-<meta property="og:title" content="Open BCI Ecosystem Radar">
+<meta property="og:title" content="AxonOS Radar">
 <meta property="og:description" content="A living, curated map of the open brain–computer-interface field. Auto-refreshed every 6 hours, relevance-filtered, free of noise.">
 <meta property="og:image" content="https://axonos-bci.github.io/axonos-community-radar/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Open BCI Ecosystem Radar">
+<meta name="twitter:title" content="AxonOS Radar">
 <meta name="twitter:description" content="A living, curated map of the open brain–computer-interface field — an AxonOS community project.">
 <meta name="twitter:image" content="https://axonos-bci.github.io/axonos-community-radar/og-image.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Open BCI Ecosystem Radar","url":"https://axonos-bci.github.io/axonos-community-radar/","description":"A living, curated map of the open brain-computer-interface field.","publisher":{"@type":"Organization","name":"The AxonOS Project","url":"https://axonos.org"}}</script>
-<title>Open BCI Ecosystem Radar — AxonOS</title>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"AxonOS Radar","url":"https://axonos-bci.github.io/axonos-community-radar/","description":"A living, curated map of the open brain-computer-interface field.","publisher":{"@type":"Organization","name":"The AxonOS Project","url":"https://axonos.org"}}</script>
+<title>AxonOS Radar — a living map of open neurotech</title>
 <style>
   :root{--bg:#06070b;--ink:#f2f5fb;--dim:#9aa3b8;--faint:#6b7488;--line:rgba(255,255,255,.09);--line2:rgba(255,255,255,.06);
     --card:rgba(255,255,255,.035);--card2:rgba(255,255,255,.05);--accent:#2dd4ff;--violet:#a78bfa;--emerald:#34d399;--amber:#fbbf24;--rose:#fb7185;
@@ -82,6 +82,7 @@
   .chips{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
   .chip{cursor:pointer;font-size:12.5px;border:1px solid var(--line2);background:rgba(255,255,255,.04);color:var(--dim);border-radius:999px;padding:7px 13px;display:inline-flex;align-items:center;gap:7px;transition:.15s;font-weight:500}
   .chip:hover{color:var(--ink)}.chip.on{color:#fff;background:rgba(255,255,255,.09)}.chip .dot{width:8px;height:8px;border-radius:50%}
+  .chip .cnt{font-size:10px;font-weight:700;color:var(--faint);background:rgba(255,255,255,.07);border-radius:5px;padding:1px 5px;margin-left:1px}
   .tg{cursor:pointer;font-size:12.5px;color:var(--dim);border:1px solid var(--line2);border-radius:999px;padding:7px 13px;background:rgba(255,255,255,.04);transition:.15s;font-weight:600}
   .tg.on{color:#04121a;border-color:transparent}.tg.act.on{background:var(--emerald)}.tg.new.on{background:var(--amber)}
 
@@ -136,7 +137,7 @@
 <body>
 <nav>
   <div class="nav-in">
-    <a class="brand" href="#top"><span class="m"></span><b>Open BCI Radar</b><span class="d nav-hide">· AxonOS</span></a>
+    <a class="brand" href="#top"><span class="m"></span><b>AxonOS Radar</b></a>
     <div class="nav-sp"></div>
     <a class="nav-link nav-hide" href="https://axonos.org">AxonOS</a>
     <a class="nav-link nav-hide" href="https://medium.com/@AxonOS">Medium</a>
@@ -178,7 +179,7 @@
   </div>
 
   <section class="panel radar-wrap hidden" id="radarSec">
-    <canvas id="radar" width="800" height="800" role="img" aria-label="Open BCI ecosystem radar" aria-describedby="radar-alt"></canvas>
+    <canvas id="radar" width="800" height="800" role="img" aria-label="AxonOS Radar" aria-describedby="radar-alt"></canvas>
     <div id="tip" aria-hidden="true"></div>
     <p id="radar-alt" class="visually-hidden" aria-live="polite"></p>
     <div class="legend" id="legend"></div>
@@ -320,6 +321,23 @@
     var se=$('search');if(se)se.value='';var ls=$('langSel');if(ls)ls.value='';
     ['tAct','tNew'].forEach(function(id){var t=$(id);if(t){t.classList.remove('on');t.setAttribute('aria-pressed','false');}});
     buildChips();render();}
+  function readHash(){try{var h=(location.hash||'').replace(/^#/,'');if(!h)return;var p={};h.split('&').forEach(function(kv){var i=kv.indexOf('=');if(i>0)p[kv.slice(0,i)]=decodeURIComponent(kv.slice(i+1).replace(/\+/g,' '));});
+    if(p.view==='radar'||p.view==='grid')state.view=p.view;
+    if(['activity','stars','new','name'].indexOf(p.sort)>=0)state.sort=p.sort;
+    if(p.lang)state.lang=p.lang; if(p.q)state.q=p.q;
+    state.activeOnly=p.active==='1'; state.newOnly=p.new==='1';
+    if(p.cat)p.cat.split(',').forEach(function(c){if(c)state.cats[c]=true;});}catch(e){}}
+  function writeHash(){try{var p=[];
+    if(state.view!=='grid')p.push('view='+state.view);
+    if(state.sort!=='activity')p.push('sort='+state.sort);
+    if(state.lang)p.push('lang='+encodeURIComponent(state.lang));
+    if(state.q)p.push('q='+encodeURIComponent(state.q));
+    if(state.activeOnly)p.push('active=1'); if(state.newOnly)p.push('new=1');
+    var on=Object.keys(state.cats).filter(function(k){return state.cats[k];});
+    if(on.length)p.push('cat='+on.map(encodeURIComponent).join(','));
+    if(window.history&&history.replaceState)history.replaceState(null,'',p.length?'#'+p.join('&'):location.pathname+location.search);}catch(e){}}
+  function reflect(){var se=$('search');if(se)se.value=state.q;var ls=$('langSel');if(ls)ls.value=state.lang;
+    [['tAct',state.activeOnly],['tNew',state.newOnly]].forEach(function(x){var t=$(x[0]);if(t){t.classList.toggle('on',x[1]);t.setAttribute('aria-pressed',String(x[1]));}});}
   function render(){
     var arr=filtered();
     $('radarSec').classList.toggle('hidden',state.view!=='radar');
@@ -327,6 +345,7 @@
     drawRadar(arr);renderCards(arr);
     $('gcount').textContent='Showing '+arr.length+' of '+DATA.projects.length+' projects';
     var cb=$('clearBtn');if(cb)cb.classList.toggle('hidden',!anyFilter());
+    writeHash();
   }
 
   // ── Apple-style segmented controls (built in JS → testable + reliable) ──
@@ -336,9 +355,11 @@
       b.addEventListener('click',function(){set(o.v);btns.forEach(function(x){x.classList.remove('on');x.setAttribute('aria-selected','false');});b.classList.add('on');b.setAttribute('aria-selected','true');render();});
       btns.push(b);c.appendChild(b);});}
 
-  function buildChips(){var c=$('chips');if(!c)return;c.innerHTML='';CATS.forEach(function(cat){if(cat.n==='Other')return;
-    var el=document.createElement('div');el.className='chip';el.setAttribute('role','button');el.setAttribute('tabindex','0');el.setAttribute('aria-pressed','false');
-    el.innerHTML='<span class="dot" style="background:'+cat.c+'"></span>'+esc(cat.n);
+  function buildChips(){var c=$('chips');if(!c)return;c.innerHTML='';
+    var counts={};DATA.projects.forEach(function(p){counts[p.category]=(counts[p.category]||0)+1;});
+    CATS.forEach(function(cat){if(cat.n==='Other')return;var on=!!state.cats[cat.n],nn=counts[cat.n]||0;
+    var el=document.createElement('div');el.className='chip'+(on?' on':'');el.setAttribute('role','button');el.setAttribute('tabindex','0');el.setAttribute('aria-pressed',String(on));
+    el.innerHTML='<span class="dot" style="background:'+cat.c+'"></span>'+esc(cat.n)+(nn?' <span class="cnt">'+nn+'</span>':'');
     el.addEventListener('click',function(){state.cats[cat.n]=!state.cats[cat.n];el.classList.toggle('on',state.cats[cat.n]);el.setAttribute('aria-pressed',String(!!state.cats[cat.n]));render();});
     c.appendChild(el);});}
   function buildLegend(){var l=$('legend');if(!l)return;l.innerHTML='';CATS.forEach(function(cat){if(cat.n==='Other')return;l.innerHTML+='<span><span class="dot" style="background:'+cat.c+'"></span>'+esc(cat.n)+'</span>';});l.innerHTML+='<span style="color:#5a6680">· inner = recent · size = stars · ✦ new</span>';}
@@ -365,15 +386,16 @@
   function bindToggle(id,key){$(id).addEventListener('click',function(){state[key]=!state[key];this.classList.toggle('on',state[key]);this.setAttribute('aria-pressed',String(state[key]));render();});}
 
   function boot(){
+    readHash();
     buildSeg('segView',[{v:'grid',l:'☰ Grid'},{v:'radar',l:'◎ Radar'}],function(){return state.view;},function(v){state.view=v;});
     buildSeg('segSort',[{v:'activity',l:'Activity'},{v:'stars',l:'Stars'},{v:'new',l:'Newest'},{v:'name',l:'A–Z'}],function(){return state.sort;},function(v){state.sort=v;});
-    buildChips();buildLegend();buildLangs();setStats();
+    buildChips();buildLegend();buildLangs();setStats();reflect();
     $('search').addEventListener('input',function(e){state.q=e.target.value;render();});
     $('langSel').addEventListener('change',function(e){state.lang=e.target.value;render();});
     bindToggle('tAct','activeOnly');bindToggle('tNew','newOnly');
     var cb=$('clearBtn');if(cb)cb.addEventListener('click',clearFilters);
     $('shareBtn').addEventListener('click',function(){var url='https://axonos-bci.github.io/axonos-community-radar/';
-      if(navigator.share){navigator.share({title:'Open BCI Ecosystem Radar',url:url}).catch(function(){});}
+      if(navigator.share){navigator.share({title:'AxonOS Radar',url:location.href}).catch(function(){});}
       else if(navigator.clipboard){navigator.clipboard.writeText(url).then(function(){toast('Link copied');}).catch(function(){toast(url);});}
       else toast(url);});
     document.addEventListener('keydown',function(e){
@@ -382,7 +404,7 @@
       if((e.key==='Enter'||e.key===' ')&&e.target&&e.target.getAttribute&&e.target.getAttribute('role')==='button'){e.preventDefault();e.target.click();}});
     window.addEventListener('resize',function(){drawRadar(filtered());});
     render();
-    fetch('./data/radar.json',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){DATA=j||DATA;if(!DATA.projects)DATA.projects=[];buildLangs();setStats();render();}).catch(function(err){console.log('radar data not loaded:',err);setStats();render();});
+    fetch('./data/radar.json',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){DATA=j||DATA;if(!DATA.projects)DATA.projects=[];buildChips();buildLangs();setStats();render();}).catch(function(err){console.log('radar data not loaded:',err);setStats();render();});
   }
   boot();
 })();

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Open BCI Ecosystem Radar — data refresher (v3).
+AxonOS Radar — data refresher (v3).
 
 Honest, hardened data pipeline:
   * Relevance filtering — keep a repo only if it carries a core BCI/neuro topic, or a
@@ -192,7 +192,7 @@ def build_feed(projects, generated):
     items = sorted([p for p in projects if p.get("first_seen")],
                    key=lambda p: p["first_seen"], reverse=True)[:25]
     parts = ['<?xml version="1.0" encoding="UTF-8"?>', '<rss version="2.0"><channel>',
-             "<title>Open BCI Ecosystem Radar — new projects</title>",
+             "<title>AxonOS Radar — new projects</title>",
              f"<link>{xesc(SITE)}</link>",
              "<description>Newly discovered open brain-computer-interface projects.</description>",
              f"<lastBuildDate>{xesc(format_datetime(generated))}</lastBuildDate>"]
@@ -325,7 +325,7 @@ def main():
           f"{payload['counts']['new']} new). first_seen + feed updated.")
 
     if os.environ.get("RADAR_ISSUE") == "1" and TOKEN:
-        lines = ["# Open BCI Ecosystem — review digest", "",
+        lines = ["# AxonOS Radar — review digest", "",
                  f"Generated {payload['generated_at']} · {len(out)} projects.", "",
                  "Engagement policy: star only relevant repos; react only to genuinely relevant "
                  "releases; open PRs only when they add technical value; no low-signal noise.", ""]

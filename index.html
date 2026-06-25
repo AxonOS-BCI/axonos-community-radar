@@ -3,9 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https://img.shields.io https://contrib.rocks https://avatars.githubusercontent.com data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
-<meta name="theme-color" content="#05060a">
-<meta name="description" content="Open BCI Ecosystem Radar — a living, auto-updated, curated map of the open brain-computer-interface field. An AxonOS community project.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<meta name="theme-color" content="#06070b">
+<meta name="description" content="Open BCI Ecosystem Radar — a living, curated map of the open brain-computer-interface field. An AxonOS community project.">
+<link rel="alternate" type="application/rss+xml" title="New BCI projects" href="./feed.xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="AxonOS">
 <meta property="og:url" content="https://axonos-bci.github.io/axonos-community-radar/">
@@ -19,158 +20,200 @@
 <meta name="twitter:description" content="A living, curated map of the open brain–computer-interface field — an AxonOS community project.">
 <meta name="twitter:image" content="https://axonos-bci.github.io/axonos-community-radar/og-image.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Open BCI Ecosystem Radar","url":"https://axonos-bci.github.io/axonos-community-radar/","description":"A living, curated map of the open brain-computer-interface field.","publisher":{"@type":"Organization","name":"The AxonOS Project","url":"https://axonos.org"}}</script>
-<link rel="alternate" type="application/rss+xml" title="New BCI projects" href="./feed.xml">
 <title>Open BCI Ecosystem Radar — AxonOS</title>
 <style>
-  :root{--bg0:#05060a;--ink:#eaf2ff;--dim:#8a95b2;--line:rgba(150,170,210,.13);--glass:rgba(16,20,32,.62);--glass2:rgba(22,27,43,.82);
-    --cyan:#22d3ee;--violet:#a78bfa;--emerald:#34d399;--amber:#fbbf24;--rose:#fb7185;--shadow:0 24px 70px -26px rgba(0,0,0,.86)}
+  :root{--bg:#06070b;--ink:#f2f5fb;--dim:#9aa3b8;--faint:#6b7488;--line:rgba(255,255,255,.09);--line2:rgba(255,255,255,.06);
+    --card:rgba(255,255,255,.035);--card2:rgba(255,255,255,.05);--accent:#2dd4ff;--violet:#a78bfa;--emerald:#34d399;--amber:#fbbf24;--rose:#fb7185;
+    --nav:rgba(8,10,15,.72);--r:16px;--shadow:0 20px 60px -28px rgba(0,0,0,.8)}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{margin:0;background:var(--bg0);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.55}
-  body{background:radial-gradient(120% 70% at 50% -10%,#10203a 0,transparent 55%),radial-gradient(90% 60% at 92% 112%,#1a1230 0,transparent 60%),var(--bg0);min-height:100vh}
-  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
-  .wrap{max-width:1120px;margin:0 auto;padding:28px 18px 64px}
-  a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5;letter-spacing:-0.011em}
+  body{background:radial-gradient(130% 80% at 50% -20%,#0e1a30 0,transparent 50%),radial-gradient(100% 60% at 100% 110%,#160f28 0,transparent 55%),var(--bg)}
+  a{color:inherit;text-decoration:none}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,monospace}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 20px}
 
-  header.hero{text-align:center;padding:22px 0 6px}
-  .kicker{font-size:11px;letter-spacing:.42em;color:var(--cyan);text-transform:uppercase}
-  h1{font-size:clamp(30px,6vw,52px);line-height:1.04;letter-spacing:.01em;margin:10px 0 8px;font-weight:800;
-    background:linear-gradient(120deg,#fff,var(--cyan) 42%,var(--violet) 80%,#fff);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 26px rgba(34,211,238,.28))}
-  .lede{color:var(--dim);font-size:15px;max-width:62ch;margin:0 auto}
-  .badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:15px 0 4px}.badges img{height:22px}
-  .cta-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:16px 0 4px}
-  .btn{cursor:pointer;border:0;border-radius:13px;padding:11px 19px;font:inherit;font-weight:700;color:#04111a;background:linear-gradient(120deg,var(--cyan),#67e8f9);box-shadow:0 10px 30px -12px rgba(34,211,238,.5);transition:transform .12s,filter .2s}
-  .btn:hover{transform:translateY(-2px);filter:brightness(1.06);text-decoration:none}
-  .btn.violet{background:linear-gradient(120deg,var(--violet),#c4b5fd);color:#fff}
-  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none}
+  /* Apple-style frosted nav */
+  nav{position:sticky;top:0;z-index:50;background:var(--nav);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--line2)}
+  .nav-in{max-width:1140px;margin:0 auto;padding:0 20px;height:52px;display:flex;align-items:center;gap:18px}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:600;font-size:15px;letter-spacing:-0.01em}
+  .brand .m{width:20px;height:20px;border-radius:6px;background:conic-gradient(from 210deg,var(--accent),var(--violet),var(--emerald),var(--accent));box-shadow:0 0 16px rgba(45,212,255,.5)}
+  .brand b{font-weight:600}.brand .d{color:var(--faint);font-weight:400}
+  .nav-sp{flex:1}
+  .nav-link{font-size:13.5px;color:var(--dim);padding:7px 11px;border-radius:9px;transition:.15s;font-weight:500}
+  .nav-link:hover{color:var(--ink);background:rgba(255,255,255,.06)}
+  .nav-cta{font-size:13.5px;font-weight:600;color:#04121a;background:var(--ink);padding:7px 14px;border-radius:10px;transition:.15s}
+  .nav-cta:hover{transform:translateY(-1px);filter:brightness(.95)}
+  @media(max-width:620px){.nav-hide{display:none}}
 
-  .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:26px 0 8px}
-  @media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}.stats .s5{grid-column:span 2}}
-  .stat{background:linear-gradient(180deg,var(--glass2),var(--glass));border:1px solid var(--line);border-radius:16px;padding:15px 14px;text-align:center;box-shadow:var(--shadow)}
-  .stat b{display:block;font-size:26px;font-weight:800;line-height:1;background:linear-gradient(120deg,#fff,var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .stat span{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;margin-top:6px;display:block}
-  .stat.hot b{background:linear-gradient(120deg,#fff,var(--emerald));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .updated{text-align:center;font-size:11px;color:var(--dim);margin-top:4px}
-  .updated a{color:var(--dim)}
+  header.hero{text-align:center;padding:64px 0 28px}
+  .eyebrow{font-size:12px;letter-spacing:.04em;color:var(--accent);font-weight:600;margin-bottom:16px}
+  h1{font-size:clamp(36px,7vw,68px);line-height:1.03;font-weight:600;letter-spacing:-0.03em;margin:0 0 18px}
+  h1 .grad{background:linear-gradient(110deg,#fff,var(--accent) 55%,var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--dim);font-size:clamp(16px,2.4vw,20px);max-width:60ch;margin:0 auto;font-weight:400;letter-spacing:-0.01em}
+  .hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:30px}
+  .btn{cursor:pointer;border:0;font:inherit;font-weight:600;font-size:15px;padding:13px 24px;border-radius:13px;transition:.16s;letter-spacing:-0.01em}
+  .btn.primary{color:#04121a;background:linear-gradient(120deg,var(--accent),#7fe7ff)}
+  .btn.primary:hover{transform:translateY(-2px);box-shadow:0 14px 36px -12px rgba(45,212,255,.6)}
+  .btn.sec{color:var(--ink);background:rgba(255,255,255,.07);border:1px solid var(--line)}
+  .btn.sec:hover{background:rgba(255,255,255,.11)}
 
-  .panel{background:linear-gradient(180deg,var(--glass2),var(--glass));border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:18px}
-  .radar-section{margin-top:22px}
+  /* stats */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line2);border:1px solid var(--line2);border-radius:18px;overflow:hidden;margin:30px 0 8px}
+  @media(max-width:560px){.stats{grid-template-columns:repeat(2,1fr)}}
+  .stat{background:var(--bg);padding:22px 16px;text-align:center}
+  .stat b{display:block;font-size:30px;font-weight:600;letter-spacing:-0.03em;line-height:1}
+  .stat.a b{color:#fff}.stat.n b{color:var(--emerald)}.stat.s b{color:var(--amber)}.stat.c b{color:var(--violet)}
+  .stat span{display:block;font-size:12px;color:var(--faint);margin-top:8px;font-weight:500;letter-spacing:.01em}
+  .updated{text-align:center;font-size:12px;color:var(--faint);margin:14px 0 0}.updated a{color:var(--dim);border-bottom:1px solid var(--line)}
+
+  /* controls — Apple segmented + clean */
+  .controls{position:sticky;top:52px;z-index:30;background:var(--nav);backdrop-filter:saturate(180%) blur(18px);-webkit-backdrop-filter:saturate(180%) blur(18px);border:1px solid var(--line2);border-radius:18px;padding:14px;margin:34px 0 18px;display:flex;flex-direction:column;gap:12px}
+  .ctl-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .search{flex:1;min-width:180px;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:12px;padding:11px 15px;color:var(--ink);font:inherit;font-size:14.5px;outline:none;transition:.15s}
+  .search:focus{border-color:rgba(45,212,255,.5);background:rgba(255,255,255,.07)}
+  .lbl{font-size:11px;color:var(--faint);font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-right:2px}
+  .seg{display:inline-flex;background:rgba(255,255,255,.05);border:1px solid var(--line2);border-radius:11px;padding:3px;gap:2px}
+  .seg-opt{border:0;background:transparent;color:var(--dim);font:inherit;font-size:13px;font-weight:600;padding:7px 13px;border-radius:8px;cursor:pointer;transition:.16s;white-space:nowrap;letter-spacing:-0.01em}
+  .seg-opt:hover{color:var(--ink)}
+  .seg-opt.on{background:rgba(255,255,255,.13);color:#fff;box-shadow:0 1px 2px rgba(0,0,0,.35)}
+  select.sel{background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:11px;color:var(--ink);font:inherit;font-size:13.5px;padding:8px 12px;outline:none;cursor:pointer;font-weight:500}
+  select.sel:focus{border-color:rgba(45,212,255,.5)}
+  .chips{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+  .chip{cursor:pointer;font-size:12.5px;border:1px solid var(--line2);background:rgba(255,255,255,.04);color:var(--dim);border-radius:999px;padding:7px 13px;display:inline-flex;align-items:center;gap:7px;transition:.15s;font-weight:500}
+  .chip:hover{color:var(--ink)}.chip.on{color:#fff;background:rgba(255,255,255,.09)}.chip .dot{width:8px;height:8px;border-radius:50%}
+  .tg{cursor:pointer;font-size:12.5px;color:var(--dim);border:1px solid var(--line2);border-radius:999px;padding:7px 13px;background:rgba(255,255,255,.04);transition:.15s;font-weight:600}
+  .tg.on{color:#04121a;border-color:transparent}.tg.act.on{background:var(--emerald)}.tg.new.on{background:var(--amber)}
+
+  /* radar */
+  .panel{background:var(--card);border:1px solid var(--line2);border-radius:22px;box-shadow:var(--shadow);padding:22px}
   .radar-wrap{position:relative;display:flex;flex-direction:column;align-items:center;width:100%}
-  canvas#radar{display:block;width:100%;max-width:440px;aspect-ratio:1/1;margin:0 auto;touch-action:none}
-  #tip{position:absolute;pointer-events:none;background:var(--glass2);border:1px solid var(--line);border-radius:10px;padding:8px 11px;font-size:12px;opacity:0;transition:opacity .12s;max-width:230px;box-shadow:var(--shadow);z-index:5}
+  canvas#radar{display:block;width:100%;max-width:460px;aspect-ratio:1/1;margin:0 auto;touch-action:none}
+  #tip{position:absolute;pointer-events:none;background:rgba(14,17,24,.96);border:1px solid var(--line);border-radius:11px;padding:9px 12px;font-size:12px;opacity:0;transition:.12s;max-width:240px;box-shadow:var(--shadow);z-index:5;backdrop-filter:blur(8px)}
   #tip b{color:#fff}#tip .m{color:var(--dim);font-size:11px}
-  .legend{display:flex;flex-wrap:wrap;gap:8px 14px;justify-content:center;margin-top:14px;font-size:11.5px;color:var(--dim)}
-  .legend span{display:inline-flex;align-items:center;gap:6px}.legend .dot{width:9px;height:9px;border-radius:50%}
+  .legend{display:flex;flex-wrap:wrap;gap:9px 16px;justify-content:center;margin-top:16px;font-size:11.5px;color:var(--faint)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}.legend .dot{width:8px;height:8px;border-radius:50%}
 
-  .controls{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:24px 0 14px;justify-content:center}
-  .search{flex:1;min-width:190px;max-width:330px;background:var(--glass);border:1px solid var(--line);border-radius:12px;padding:10px 14px;color:var(--ink);font:inherit;outline:none}
-  .search:focus{border-color:rgba(34,211,238,.5)}
-  .chips{display:flex;gap:7px;flex-wrap:wrap;justify-content:center}
-  .chip{cursor:pointer;font-size:12px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--dim);border-radius:999px;padding:7px 12px;display:inline-flex;align-items:center;gap:6px;transition:all .15s}
-  .chip:hover{color:var(--ink)}.chip.on{color:#fff}.chip .dot{width:9px;height:9px;border-radius:50%}
-  .toggle{font-size:12px;color:var(--dim);cursor:pointer;border:1px solid var(--line);border-radius:999px;padding:7px 12px;background:rgba(255,255,255,.03);transition:all .15s}
-  .toggle.on{color:#04111a;font-weight:700;border-color:transparent}
-  .toggle.act.on{background:var(--emerald)}.toggle.new.on{background:var(--amber)}.toggle.sort.on{background:var(--cyan)}
+  /* grid */
+  .ghead{display:flex;justify-content:space-between;align-items:baseline;margin:0 2px 14px;font-size:13px;color:var(--faint)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+  .pc{position:relative;background:var(--card);border:1px solid var(--line2);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:11px;transition:transform .18s cubic-bezier(.2,.7,.3,1),border-color .18s,box-shadow .18s;color:var(--ink);overflow:hidden;animation:fade .4s both}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .pc::after{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--cc,#94a3b8);opacity:.9}
+  .pc:hover{transform:translateY(-4px);border-color:rgba(45,212,255,.35);box-shadow:0 22px 50px -26px rgba(45,212,255,.5)}
+  .pc .top{display:flex;align-items:center;gap:8px}
+  .pill{font-size:11px;font-weight:600;padding:4px 10px;border-radius:999px;white-space:nowrap;letter-spacing:-0.01em}
+  .nb{font-size:10px;font-weight:700;letter-spacing:.05em;padding:4px 9px;border-radius:999px;background:linear-gradient(120deg,var(--amber),#fde68a);color:#3a2c05}
+  .st{margin-left:auto;color:var(--amber);font-weight:600;font-size:13.5px;white-space:nowrap}
+  .pc h3{margin:0;font-size:16px;font-weight:600;letter-spacing:-0.02em;word-break:break-word}
+  .pc .desc{margin:0;color:var(--dim);font-size:13px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.45}
+  .pc .foot{margin-top:auto;display:flex;align-items:center;gap:12px;font-size:12px;color:var(--faint);padding-top:4px}
+  .pc .lng{display:inline-flex;align-items:center;gap:6px}.lng .ld{width:8px;height:8px;border-radius:50%;background:#5a6680}
+  .pc .ac{margin-left:auto;display:inline-flex;align-items:center;gap:6px}.ac .ad{width:7px;height:7px;border-radius:50%;background:#3a4256}.ac .ad.on{background:var(--emerald);box-shadow:0 0 7px var(--emerald)}
+  .empty{text-align:center;padding:54px 16px;color:var(--dim);grid-column:1/-1}.empty .big{font-size:21px;color:var(--ink);font-weight:600;margin-bottom:8px;letter-spacing:-0.02em}
+  .hidden{display:none}
 
-  .grid-head{display:flex;justify-content:space-between;align-items:baseline;margin:6px 2px 12px;font-size:12px;color:var(--dim)}
-  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:13px}
-  .pcard{position:relative;background:linear-gradient(180deg,rgba(22,27,43,.7),rgba(14,18,28,.5));border:1px solid var(--line);border-radius:16px;padding:15px;display:flex;flex-direction:column;gap:9px;transition:transform .14s,border-color .14s,box-shadow .14s;text-decoration:none;color:var(--ink);overflow:hidden}
-  .pcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--cc,#94a3b8);opacity:.85}
-  .pcard:hover{transform:translateY(-3px);border-color:rgba(34,211,238,.4);box-shadow:0 18px 40px -22px rgba(34,211,238,.5);text-decoration:none}
-  .pcard .top{display:flex;align-items:center;gap:7px}
-  .pill{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap}
-  .nb{font-size:10px;font-weight:800;letter-spacing:.06em;padding:3px 8px;border-radius:999px;background:linear-gradient(120deg,var(--amber),#fde68a);color:#3a2c05}
-  .st{margin-left:auto;color:var(--amber);font-weight:700;font-size:13px;white-space:nowrap}
-  .pcard h3{margin:0;font-size:15px;font-weight:700;word-break:break-word}
-  .pcard .desc{margin:0;color:var(--dim);font-size:12.5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .pcard .foot{margin-top:auto;display:flex;align-items:center;gap:12px;font-size:11.5px;color:var(--dim);padding-top:4px}
-  .pcard .foot .lng{display:inline-flex;align-items:center;gap:5px}.foot .ld{width:8px;height:8px;border-radius:50%;background:#5a6680}
-  .pcard .foot .act{margin-left:auto;display:inline-flex;align-items:center;gap:5px}
-  .pcard .foot .ad{width:7px;height:7px;border-radius:50%;background:#3a4256}.foot .ad.on{background:var(--emerald);box-shadow:0 0 7px var(--emerald)}
-
-  .empty{text-align:center;padding:46px 16px;color:var(--dim)}.empty .big{font-size:20px;color:var(--ink);font-weight:700;margin-bottom:8px}
-
-  section.block{margin-top:36px}
-  h2{font-size:20px;font-weight:800;margin:0 0 12px;letter-spacing:.01em}
+  section.block{margin-top:56px}
+  h2{font-size:clamp(22px,3.4vw,30px);font-weight:600;letter-spacing:-0.025em;margin:0 0 8px;text-align:center}
+  .blk-sub{text-align:center;color:var(--dim);font-size:15px;max-width:56ch;margin:0 auto 26px}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:680px){.grid2{grid-template-columns:1fr}}
-  .card{background:var(--glass);border:1px solid var(--line);border-radius:16px;padding:16px}
-  .card h3{margin:0 0 6px;font-size:15px}.card p{margin:0;color:var(--dim);font-size:13px}
-  ol.policy{margin:8px 0 0;padding-left:20px;color:var(--dim);font-size:13px}ol.policy li{margin:3px 0}
+  .card{background:var(--card);border:1px solid var(--line2);border-radius:18px;padding:20px;transition:.16s}
+  .card:hover{border-color:var(--line);background:var(--card2)}
+  .card h3{margin:0 0 7px;font-size:16px;font-weight:600;letter-spacing:-0.01em}.card p{margin:0;color:var(--dim);font-size:13.5px;line-height:1.5}
+  .card a{color:var(--accent)}
+  ol.policy{margin:10px 0 0;padding-left:20px;color:var(--dim);font-size:13.5px}ol.policy li{margin:4px 0}
   .visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-  .foot-c{margin-top:42px;text-align:center;font-size:11px;color:var(--dim);opacity:.82;line-height:1.7}
+  footer{margin-top:64px;padding:36px 0;border-top:1px solid var(--line2);text-align:center;font-size:12px;color:var(--faint);line-height:1.8}
+  footer a{color:var(--dim)}
+  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:rgba(20,24,32,.96);border:1px solid var(--line);color:#fff;padding:11px 20px;border-radius:12px;font-size:14px;font-weight:500;opacity:0;transition:.25s;z-index:100;box-shadow:var(--shadow);backdrop-filter:blur(10px);pointer-events:none}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
-<div class="wrap">
+<nav>
+  <div class="nav-in">
+    <a class="brand" href="#top"><span class="m"></span><b>Open BCI Radar</b><span class="d nav-hide">· AxonOS</span></a>
+    <div class="nav-sp"></div>
+    <a class="nav-link nav-hide" href="https://axonos.org">AxonOS</a>
+    <a class="nav-link nav-hide" href="https://medium.com/@AxonOS">Medium</a>
+    <a class="nav-link" href="./feed.xml">RSS</a>
+    <a class="nav-link" href="https://github.com/AxonOS-BCI/axonos-community-radar">GitHub</a>
+    <a class="nav-cta" href="https://github.com/AxonOS-BCI/axonos-community-radar/issues/new?template=add-project.yml">Add project</a>
+  </div>
+</nav>
+
+<div class="wrap" id="top">
   <header class="hero">
-    <div class="kicker">AxonOS · Community</div>
-    <h1>Open BCI Ecosystem Radar</h1>
-    <p class="lede">A living, curated map of the open brain–computer-interface field — the projects, tools and people building neurotech in the open. Auto-refreshed every 6 hours from public data, relevance-filtered, and free of noise.</p>
-    <div class="badges">
-      <a href="https://github.com/AxonOS-BCI/axonos-community-radar/stargazers"><img loading="lazy" alt="Stars" src="https://img.shields.io/github/stars/AxonOS-BCI/axonos-community-radar?style=flat&color=fbbf24&label=stars"></a>
-      <a href="https://github.com/AxonOS-BCI/axonos-community-radar/graphs/contributors"><img loading="lazy" alt="Contributors" src="https://img.shields.io/github/contributors/AxonOS-BCI/axonos-community-radar?style=flat&color=22d3ee"></a>
-      <a href="https://github.com/AxonOS-BCI/axonos-community-radar/commits/main"><img loading="lazy" alt="Last commit" src="https://img.shields.io/github/last-commit/AxonOS-BCI/axonos-community-radar?style=flat&color=a78bfa"></a>
-      <a href="https://github.com/AxonOS-BCI/axonos-community-radar/blob/main/LICENSE"><img loading="lazy" alt="License" src="https://img.shields.io/badge/license-MIT-3fb950"></a>
-    </div>
-    <div class="cta-row">
-      <a class="btn" href="https://github.com/AxonOS-BCI/axonos-community-radar/issues/new?template=add-project.yml">＋ Add a project</a>
-      <a class="btn violet" href="https://github.com/AxonOS-BCI/axonos-community-radar/discussions">Join the discussion</a>
-      <a class="btn ghost" href="./feed.xml">⤵ Subscribe (RSS)</a>
+    <div class="eyebrow">AXONOS · COMMUNITY</div>
+    <h1>The open BCI field,<br><span class="grad">on one living map.</span></h1>
+    <p class="sub">Every project, tool and team building neurotech in the open — discovered automatically, refreshed every 6 hours, relevance-filtered, and free of noise.</p>
+    <div class="hero-cta">
+      <a class="btn primary" href="https://github.com/AxonOS-BCI/axonos-community-radar/issues/new?template=add-project.yml">Add your project</a>
+      <a class="btn sec" href="https://github.com/AxonOS-BCI/axonos-community-radar/discussions">Join the community</a>
     </div>
   </header>
 
   <div class="stats" id="stats"></div>
   <div class="updated" id="updated"></div>
 
-  <section class="radar-section">
-    <div class="panel radar-wrap">
-      <canvas id="radar" width="800" height="800" role="img" aria-label="Open BCI ecosystem radar" aria-describedby="radar-alt"></canvas>
-      <p id="radar-alt" class="visually-hidden" aria-live="polite"></p>
-      <div id="tip"></div>
-      <div class="legend" id="legend"></div>
-    </div>
-  </section>
-
   <div class="controls">
-    <input class="search" id="search" placeholder="Search projects…" autocomplete="off" aria-label="Search projects">
-    <div class="chips" id="chips"></div>
-    <div class="toggle act" id="tAct" role="button" tabindex="0" aria-pressed="false">● Active 30d</div>
-    <div class="toggle new" id="tNew" role="button" tabindex="0" aria-pressed="false">✦ New</div>
-    <div class="toggle sort" id="tSort" role="button" tabindex="0" aria-pressed="false">↕ Activity</div>
+    <div class="ctl-row">
+      <input class="search" id="search" placeholder="Search projects, languages, topics…" autocomplete="off" aria-label="Search projects">
+      <span class="lbl nav-hide">View</span>
+      <div class="seg" id="segView" role="tablist" aria-label="View"></div>
+      <span class="lbl nav-hide">Sort</span>
+      <div class="seg" id="segSort" role="tablist" aria-label="Sort"></div>
+    </div>
+    <div class="ctl-row">
+      <div class="chips" id="chips"></div>
+      <select class="sel" id="langSel" aria-label="Filter by language"><option value="">All languages</option></select>
+      <div class="tg act" id="tAct" role="button" tabindex="0" aria-pressed="false">● Active 30d</div>
+      <div class="tg new" id="tNew" role="button" tabindex="0" aria-pressed="false">✦ New</div>
+    </div>
   </div>
 
-  <div class="grid-head"><span id="gcount" aria-live="polite"></span><span>tap a card to open on GitHub</span></div>
+  <section class="panel radar-wrap hidden" id="radarSec">
+    <canvas id="radar" width="800" height="800" role="img" aria-label="Open BCI ecosystem radar" aria-describedby="radar-alt"></canvas>
+    <p id="radar-alt" class="visually-hidden" aria-live="polite"></p>
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <div class="ghead"><span id="gcount" aria-live="polite"></span><button class="seg-opt" id="shareBtn" style="border:1px solid var(--line2)">⤴ Share</button></div>
   <div class="cards" id="cards"></div>
 
   <section class="block">
     <h2>Help the ecosystem grow</h2>
+    <p class="blk-sub">A discovery map is only as alive as its community. Here's how to plug in.</p>
     <div class="grid2">
-      <div class="card"><h3>＋ Put a project on the radar</h3><p>Building or using something open in BCI / neurotech? <a href="https://github.com/AxonOS-BCI/axonos-community-radar/issues/new?template=add-project.yml">Open a one-field issue</a> or add a topic via PR to <span class="mono">data/seeds.json</span>. Projects are discovered live, so every link stays real.</p></div>
-      <div class="card"><h3>🛰 Follow what's new</h3><p>The <b>New</b> filter and the <a href="./feed.xml">RSS feed</a> surface freshly discovered projects so you never miss a launch in the field.</p></div>
-      <div class="card"><h3>💬 Talk neurotech</h3><p>Share work, papers and questions in <a href="https://github.com/AxonOS-BCI/axonos-community-radar/discussions">Discussions</a>, and follow build notes on <a href="https://medium.com/@AxonOS">Medium</a>.</p></div>
-      <div class="card"><h3>⟁ Build the OS</h3><p>AxonOS is an open, real-time neural OS for BCIs. Explore the engineering at <a href="https://axonos.org">axonos.org</a> and the code on <a href="https://github.com/AxonOS-org">GitHub</a>.</p></div>
+      <div class="card"><h3>Put a project on the radar</h3><p>Building or using something open in BCI / neurotech? <a href="https://github.com/AxonOS-BCI/axonos-community-radar/issues/new?template=add-project.yml">Open a one-field issue</a> or add a topic via PR to <span class="mono">data/seeds.json</span>. Projects are discovered live, so every link stays real.</p></div>
+      <div class="card"><h3>Follow what's new</h3><p>The <b>New</b> filter and the <a href="./feed.xml">RSS feed</a> surface freshly discovered projects, so you never miss a launch in the field.</p></div>
+      <div class="card"><h3>Talk neurotech</h3><p>Share work, papers and questions in <a href="https://github.com/AxonOS-BCI/axonos-community-radar/discussions">Discussions</a>, and follow build notes on <a href="https://medium.com/@AxonOS">Medium</a>.</p></div>
+      <div class="card"><h3>Build the OS</h3><p>AxonOS is an open, real-time neural OS for BCIs. Explore the engineering at <a href="https://axonos.org">axonos.org</a> and the code on <a href="https://github.com/AxonOS-org">GitHub</a>.</p></div>
     </div>
   </section>
 
   <section class="block">
     <h2>How this radar works</h2>
-    <div class="card">
-      <p>The radar is generated from <b>public GitHub topic search</b>. A repository is kept only if it carries a core BCI/neuro topic, or a context topic (signal processing, embedded, privacy…) <b>plus</b> a neuro keyword — so generic projects don't leak in. Recency is measured from a fixed 6-hour snapshot, so unchanged projects keep a stable position. Rings show recency (inner = most recent); coloured sectors group projects by category. Categorisation is <b>heuristic and opinionated</b>, and this is a discovery map — <b>not an endorsement or a ranking of quality</b>.</p>
-      <p style="margin-top:10px">Engagement is deliberate and low-noise:</p>
+    <div class="card" style="max-width:820px;margin:0 auto">
+      <p>The radar is generated from <b>public GitHub topic search</b>. A repository is kept only if it carries a core BCI/neuro topic, or a context topic (signal processing, embedded, privacy…) <b>plus</b> a neuro keyword — so generic projects don't leak in. Recency is measured from a fixed 6-hour snapshot, so unchanged projects keep a stable position. Coloured sectors group projects by category. It's a discovery map — <b>not an endorsement or a ranking of quality</b>.</p>
+      <p style="margin-top:12px">Engagement is deliberate and low-noise:</p>
       <ol class="policy">
         <li>Star only genuinely relevant repositories.</li>
         <li>React only to releases that are genuinely relevant.</li>
         <li>Open PRs only when they add real technical value.</li>
-        <li>Prefer tests, docs, reproducibility, benchmarks and protocol notes.</li>
         <li>No mass-follows, no auto-comments, no low-signal noise.</li>
       </ol>
     </div>
   </section>
+</div>
 
-  <div class="foot-c">
+<footer>
+  <div class="wrap">
     © The AxonOS Project / Denis Yermakou &nbsp;·&nbsp; <a href="https://axonos.org">axonos.org</a> &nbsp;·&nbsp; <a href="https://medium.com/@AxonOS">medium.com/@AxonOS</a> &nbsp;·&nbsp; connect@axonos.org &nbsp;·&nbsp; security@axonos.org<br>
     Data: public GitHub search · auto-refreshed every 6h · relevance-filtered · categorisation is opinionated · not an endorsement.
   </div>
-</div>
+</footer>
+<div class="toast" id="toast"></div>
 
 <script>
 (function(){
@@ -179,11 +222,8 @@
   window.addEventListener('error',function(e){__showErr((e.message||'')+'  @'+(e.lineno||0)+':'+(e.colno||0));});
   window.addEventListener('unhandledrejection',function(e){__showErr('promise: '+((e.reason&&e.reason.message)||e.reason));});
 
-  var CATS=[
-    {n:'Hardware & Acquisition',c:'#22d3ee'},{n:'Signal Processing',c:'#38bdf8'},
-    {n:'Decoding & ML',c:'#a78bfa'},{n:'Privacy & Security',c:'#fb7185'},
-    {n:'Real-time & Embedded',c:'#34d399'},{n:'Protocols & OS',c:'#fbbf24'},{n:'Other',c:'#94a3b8'}
-  ];
+  var CATS=[{n:'Hardware & Acquisition',c:'#2dd4ff'},{n:'Signal Processing',c:'#38bdf8'},{n:'Decoding & ML',c:'#a78bfa'},
+    {n:'Privacy & Security',c:'#fb7185'},{n:'Real-time & Embedded',c:'#34d399'},{n:'Protocols & OS',c:'#fbbf24'},{n:'Other',c:'#94a3b8'}];
   var NS=6;
   function catColor(n){for(var i=0;i<CATS.length;i++)if(CATS[i].n===n)return CATS[i].c;return '#94a3b8';}
   function catIndex(n){for(var i=0;i<CATS.length;i++)if(CATS[i].n===n)return i;return CATS.length-1;}
@@ -194,7 +234,7 @@
   function fmtAge(d){if(d==null||d>=9000)return '—';if(d<=0)return 'today';if(d<7)return d+'d';if(d<60)return Math.round(d/7)+'w';if(d<730)return Math.round(d/30)+'mo';return Math.round(d/365)+'y';}
 
   var DATA={projects:[],generated_at:null,counts:{total:0,active_30d:0,new:0}};
-  var state={q:'',cats:{},activeOnly:false,newOnly:false,sort:'activity'};
+  var state={q:'',cats:{},lang:'',activeOnly:false,newOnly:false,sort:'activity',view:'grid'};
   var points=[];
 
   function filtered(){
@@ -203,29 +243,32 @@
       if(state.activeOnly&&!p.active)return false;
       if(state.newOnly&&!p.is_new)return false;
       if(anyCat&&!state.cats[p.category])return false;
+      if(state.lang&&(p.language||'')!==state.lang)return false;
       if(q){var hay=(p.full_name+' '+(p.description||'')+' '+(p.language||'')+' '+(p.topics||[]).join(' ')).toLowerCase();if(hay.indexOf(q)<0)return false;}
       return true;
     });
-    arr.sort(state.sort==='stars'?function(a,b){return b.stars-a.stars;}
+    arr.sort(state.sort==='stars'?function(a,b){return (b.stars||0)-(a.stars||0);}
       :state.sort==='new'?function(a,b){return String(b.first_seen||'').localeCompare(String(a.first_seen||''));}
+      :state.sort==='name'?function(a,b){return a.full_name.toLowerCase().localeCompare(b.full_name.toLowerCase());}
       :function(a,b){return (a.days_since_push||9999)-(b.days_since_push||9999);});
     return arr;
   }
 
   // ── radar ──
-  var cv=$('radar'),ctx=cv.getContext('2d'),DPR=1,S=420;
-  function layout(){var rect=cv.getBoundingClientRect();S=Math.round(rect.width)||((cv.parentNode.clientWidth||356)-36);if(!S||S<200)S=Math.max(200,((cv.parentNode.clientWidth||356)-36));DPR=Math.min(2,window.devicePixelRatio||1);cv.width=Math.round(S*DPR);cv.height=Math.round(S*DPR);ctx.setTransform(DPR,0,0,DPR,0,0);}
+  var cv=$('radar'),ctx=cv.getContext('2d'),DPR=1,S=460;
+  function layout(){var rect=cv.getBoundingClientRect();S=Math.round(rect.width)||((cv.parentNode.clientWidth||356)-44);if(!S||S<200)S=Math.max(200,((cv.parentNode.clientWidth||356)-44));DPR=Math.min(2,window.devicePixelRatio||1);cv.width=Math.round(S*DPR);cv.height=Math.round(S*DPR);ctx.setTransform(DPR,0,0,DPR,0,0);}
   function tierFrac(d){if(d==null||d>=9000)return .88;if(d<=7)return .22;if(d<=30)return .46;if(d<=90)return .68;return .85;}
   function drawRadar(arr){
+    if(state.view!=='radar')return;
     layout();var cx=S/2,cy=S/2,R=S/2-12;ctx.clearRect(0,0,S,S);
     for(var s=0;s<NS;s++){var a0=(s/NS)*6.283-Math.PI/2,a1=((s+1)/NS)*6.283-Math.PI/2;
-      ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,R,a0,a1);ctx.closePath();ctx.fillStyle=CATS[s].c;ctx.globalAlpha=.085;ctx.fill();ctx.globalAlpha=1;
-      ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a0)*R,cy+Math.sin(a0)*R);ctx.strokeStyle='rgba(160,180,220,.12)';ctx.lineWidth=1;ctx.stroke();}
-    ctx.beginPath();ctx.arc(cx,cy,R,0,6.283);ctx.strokeStyle='rgba(170,190,230,.22)';ctx.lineWidth=1.5;ctx.stroke();
+      ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,R,a0,a1);ctx.closePath();ctx.fillStyle=CATS[s].c;ctx.globalAlpha=.08;ctx.fill();ctx.globalAlpha=1;
+      ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a0)*R,cy+Math.sin(a0)*R);ctx.strokeStyle='rgba(160,180,220,.1)';ctx.lineWidth=1;ctx.stroke();}
+    ctx.beginPath();ctx.arc(cx,cy,R,0,6.283);ctx.strokeStyle='rgba(170,190,230,.2)';ctx.lineWidth=1.5;ctx.stroke();
     var rings=[{f:.22,l:'7d'},{f:.46,l:'30d'},{f:.68,l:'90d'}];
-    for(var r=0;r<rings.length;r++){var rr=R*rings[r].f;ctx.beginPath();ctx.arc(cx,cy,rr,0,6.283);ctx.strokeStyle='rgba(170,190,230,'+(.20-r*.03)+')';ctx.lineWidth=1;ctx.stroke();
-      var ly=cy-rr;ctx.fillStyle='rgba(7,9,15,.82)';ctx.fillRect(cx-15,ly-7.5,30,15);ctx.fillStyle='rgba(214,223,242,.9)';ctx.font='700 10px ui-monospace,monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(rings[r].l,cx,ly);}
-    ctx.beginPath();ctx.arc(cx,cy,4.5,0,6.283);ctx.fillStyle='#fff';ctx.shadowColor='#22d3ee';ctx.shadowBlur=14;ctx.fill();ctx.shadowBlur=0;
+    for(var r=0;r<rings.length;r++){var rr=R*rings[r].f;ctx.beginPath();ctx.arc(cx,cy,rr,0,6.283);ctx.strokeStyle='rgba(170,190,230,'+(.18-r*.03)+')';ctx.lineWidth=1;ctx.stroke();
+      var ly=cy-rr;ctx.fillStyle='rgba(6,7,11,.82)';ctx.fillRect(cx-15,ly-7.5,30,15);ctx.fillStyle='rgba(214,223,242,.9)';ctx.font='600 10px ui-monospace,monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(rings[r].l,cx,ly);}
+    ctx.beginPath();ctx.arc(cx,cy,4.5,0,6.283);ctx.fillStyle='#fff';ctx.shadowColor='#2dd4ff';ctx.shadowBlur=14;ctx.fill();ctx.shadowBlur=0;
     points=[];
     for(var i=0;i<arr.length;i++){var p=arr[i];var si=catIndex(p.category);if(si>=NS)si=hash(p.full_name)%NS;
       var h=hash(p.full_name);
@@ -239,73 +282,87 @@
       if(p.is_new){ctx.beginPath();ctx.arc(x,y,rad+4,0,6.283);ctx.strokeStyle='#fde68a';ctx.globalAlpha=.9;ctx.lineWidth=1.5;ctx.stroke();ctx.globalAlpha=1;}
       points.push({x:x,y:y,r:rad+6,p:p});
     }
+    var cats={};arr.forEach(function(p){cats[p.category]=1;});var nw=arr.filter(function(p){return p.is_new;}).length;
+    var alt='Radar showing '+arr.length+' projects across '+Object.keys(cats).length+' categories'+(nw?', '+nw+' new':'')+'.';
+    var ra=$('radar-alt');if(ra)ra.textContent=alt;cv.setAttribute('aria-label',alt);
   }
-  function showTip(pt,mx,my){var t=$('tip'),p=pt.p;
-    t.innerHTML='<b>'+esc(p.full_name)+'</b>'+(p.is_new?' ✦':'')+'<br><span class="m">⭐ '+(p.stars||0)+' · '+esc(p.language||'n/a')+' · '+esc(p.category)+' · '+fmtAge(p.days_since_push)+'</span>';
-    t.style.left=Math.min(mx+12,cv.clientWidth-220)+'px';t.style.top=Math.max(0,my-10)+'px';t.style.opacity=1;}
-  cv.addEventListener('pointermove',function(e){var r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top,best=null,bd=1e9;
-    for(var i=0;i<points.length;i++){var dx=mx-points[i].x,dy=my-points[i].y,d=dx*dx+dy*dy;if(d<points[i].r*points[i].r&&d<bd){bd=d;best=points[i];}}
-    if(best){showTip(best,mx,my);cv.style.cursor='pointer';}else{$('tip').style.opacity=0;cv.style.cursor='default';}});
+  function showTip(pt,mx,my){var t=$('tip'),p=pt.p;t.innerHTML='<b>'+esc(p.full_name)+'</b>'+(p.is_new?' ✦':'')+'<br><span class="m">⭐ '+(p.stars||0)+' · '+esc(p.language||'n/a')+' · '+esc(p.category)+' · '+fmtAge(p.days_since_push)+'</span>';t.style.left=Math.min(mx+12,cv.clientWidth-220)+'px';t.style.top=Math.max(0,my-10)+'px';t.style.opacity=1;}
+  cv.addEventListener('pointermove',function(e){var r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top,best=null,bd=1e9;for(var i=0;i<points.length;i++){var dx=mx-points[i].x,dy=my-points[i].y,d=dx*dx+dy*dy;if(d<points[i].r*points[i].r&&d<bd){bd=d;best=points[i];}}if(best){showTip(best,mx,my);cv.style.cursor='pointer';}else{$('tip').style.opacity=0;cv.style.cursor='default';}});
   cv.addEventListener('pointerleave',function(){$('tip').style.opacity=0;});
-  cv.addEventListener('click',function(e){var r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
-    for(var i=0;i<points.length;i++){var dx=mx-points[i].x,dy=my-points[i].y;if(dx*dx+dy*dy<points[i].r*points[i].r){var u=safeUrl(points[i].p.html_url);if(u!=='#')window.open(u,'_blank','noopener');return;}}});
+  cv.addEventListener('click',function(e){var r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;for(var i=0;i<points.length;i++){var dx=mx-points[i].x,dy=my-points[i].y;if(dx*dx+dy*dy<points[i].r*points[i].r){var u=safeUrl(points[i].p.html_url);if(u!=='#')window.open(u,'_blank','noopener');return;}}});
 
   function renderCards(arr){
     var l=$('cards');
-    if(!arr.length){l.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="big">'+(DATA.generated_at?'No matches':'Radar warming up')+'</div>'+(DATA.generated_at?'Try clearing filters or search.':'The first scan runs on publish and refreshes every 6 hours. Real projects will appear here shortly.')+'</div>';return;}
+    if(!arr.length){l.innerHTML='<div class="empty"><div class="big">'+(DATA.generated_at?'No matches':'Radar warming up')+'</div>'+(DATA.generated_at?'Try clearing filters or search.':'The first scan runs on publish and refreshes every 6 hours. Real projects appear here shortly.')+'</div>';return;}
     var html='';
     for(var i=0;i<arr.length;i++){var p=arr[i],col=catColor(p.category);
-      html+='<a class="pcard" style="--cc:'+col+'" href="'+esc(safeUrl(p.html_url))+'" target="_blank" rel="noopener">'
+      html+='<a class="pc" style="--cc:'+col+';animation-delay:'+Math.min(i*18,360)+'ms" href="'+esc(safeUrl(p.html_url))+'" target="_blank" rel="noopener">'
         +'<div class="top"><span class="pill" style="color:'+col+';background:'+col+'1f">'+esc(p.category)+'</span>'
-        +(p.is_new?'<span class="nb">NEW</span>':'')
-        +'<span class="st">★ '+(p.stars||0)+'</span></div>'
-        +'<h3>'+esc(p.full_name)+'</h3>'
-        +'<p class="desc">'+esc(p.description||'—')+'</p>'
+        +(p.is_new?'<span class="nb">NEW</span>':'')+'<span class="st">★ '+(p.stars||0)+'</span></div>'
+        +'<h3>'+esc(p.full_name)+'</h3><p class="desc">'+esc(p.description||'—')+'</p>'
         +'<div class="foot"><span class="lng"><span class="ld"></span>'+esc(p.language||'n/a')+'</span>'
-        +'<span class="act"><span class="ad'+(p.active?' on':'')+'"></span>'+fmtAge(p.days_since_push)+'</span></div></a>';}
+        +'<span class="ac"><span class="ad'+(p.active?' on':'')+'"></span>'+fmtAge(p.days_since_push)+'</span></div></a>';}
     l.innerHTML=html;
   }
 
-  function render(){var arr=filtered();drawRadar(arr);renderCards(arr);
+  function render(){
+    var arr=filtered();
+    $('radarSec').classList.toggle('hidden',state.view!=='radar');
+    $('cards').classList.toggle('hidden',false);
+    drawRadar(arr);renderCards(arr);
     $('gcount').textContent='Showing '+arr.length+' of '+DATA.projects.length+' projects';
-    var cats={};arr.forEach(function(p){cats[p.category]=1;});var nw=arr.filter(function(p){return p.is_new;}).length;
-    var alt='Radar showing '+arr.length+' projects across '+Object.keys(cats).length+' categories'+(nw?', '+nw+' new this week':'')+'. Use the project list below to browse.';
-    var ra=$('radar-alt');if(ra)ra.textContent=alt;cv.setAttribute('aria-label',alt);}
+  }
 
-  function buildChips(){var c=$('chips');c.innerHTML='';CATS.forEach(function(cat){if(cat.n==='Other')return;
-    var el=document.createElement('div');el.className='chip';el.setAttribute('role','button');el.setAttribute('tabindex','0');el.setAttribute('aria-pressed','false');el.innerHTML='<span class="dot" style="background:'+cat.c+'"></span>'+esc(cat.n);
-    el.addEventListener('click',function(){state.cats[cat.n]=!state.cats[cat.n];el.classList.toggle('on',state.cats[cat.n]);el.setAttribute('aria-pressed',String(!!state.cats[cat.n]));el.style.borderColor=state.cats[cat.n]?cat.c:'';el.style.background=state.cats[cat.n]?'rgba(255,255,255,.06)':'';render();});
+  // ── Apple-style segmented controls (built in JS → testable + reliable) ──
+  function buildSeg(id,opts,get,set){var c=$(id);if(!c)return;c.innerHTML='';var btns=[];
+    opts.forEach(function(o){var b=document.createElement('button');b.className='seg-opt'+(o.v===get()?' on':'');b.textContent=o.l;
+      b.setAttribute('role','tab');b.setAttribute('tabindex','0');b.setAttribute('aria-selected',String(o.v===get()));
+      b.addEventListener('click',function(){set(o.v);btns.forEach(function(x){x.classList.remove('on');x.setAttribute('aria-selected','false');});b.classList.add('on');b.setAttribute('aria-selected','true');render();});
+      btns.push(b);c.appendChild(b);});}
+
+  function buildChips(){var c=$('chips');if(!c)return;c.innerHTML='';CATS.forEach(function(cat){if(cat.n==='Other')return;
+    var el=document.createElement('div');el.className='chip';el.setAttribute('role','button');el.setAttribute('tabindex','0');el.setAttribute('aria-pressed','false');
+    el.innerHTML='<span class="dot" style="background:'+cat.c+'"></span>'+esc(cat.n);
+    el.addEventListener('click',function(){state.cats[cat.n]=!state.cats[cat.n];el.classList.toggle('on',state.cats[cat.n]);el.setAttribute('aria-pressed',String(!!state.cats[cat.n]));render();});
     c.appendChild(el);});}
-  function buildLegend(){var l=$('legend');l.innerHTML='';CATS.forEach(function(cat){if(cat.n==='Other')return;l.innerHTML+='<span><span class="dot" style="background:'+cat.c+'"></span>'+esc(cat.n)+'</span>';});l.innerHTML+='<span style="color:#5a6680">· inner ring = recent · size = stars · ✦ = new</span>';}
+  function buildLegend(){var l=$('legend');if(!l)return;l.innerHTML='';CATS.forEach(function(cat){if(cat.n==='Other')return;l.innerHTML+='<span><span class="dot" style="background:'+cat.c+'"></span>'+esc(cat.n)+'</span>';});l.innerHTML+='<span style="color:#5a6680">· inner = recent · size = stars · ✦ new</span>';}
+  function buildLangs(){var sel=$('langSel');if(!sel)return;var langs={};DATA.projects.forEach(function(p){if(p.language)langs[p.language]=(langs[p.language]||0)+1;});
+    var arr=Object.keys(langs).sort(function(a,b){return langs[b]-langs[a];});
+    sel.innerHTML='<option value="">All languages</option>'+arr.map(function(L){return '<option value="'+esc(L)+'">'+esc(L)+' ('+langs[L]+')</option>';}).join('');
+    sel.value=state.lang;}
 
   function setStats(){
     var c=DATA.counts||{},tot=c.total||DATA.projects.length,act=c.active_30d||0,nw=c.new||0;
-    var stars=DATA.projects.reduce(function(s,p){return s+(p.stars||0);},0);
-    var cats={};DATA.projects.forEach(function(p){cats[p.category]=1;});
+    var stars=DATA.projects.reduce(function(s,p){return s+(p.stars||0);},0),cats={};DATA.projects.forEach(function(p){cats[p.category]=1;});
     function k(n){return n>=1000?(n/1000).toFixed(n>=10000?0:1)+'k':String(n);}
-    $('stats').innerHTML=
-      '<div class="stat"><b>'+tot+'</b><span>projects</span></div>'
-      +'<div class="stat hot"><b>'+nw+'</b><span>new this week</span></div>'
-      +'<div class="stat"><b>'+act+'</b><span>active 30d</span></div>'
-      +'<div class="stat"><b>'+k(stars)+'</b><span>total stars</span></div>'
-      +'<div class="stat s5"><b>'+Object.keys(cats).length+'</b><span>categories</span></div>';
+    $('stats').innerHTML='<div class="stat a"><b>'+tot+'</b><span>PROJECTS</span></div>'
+      +'<div class="stat n"><b>'+nw+'</b><span>NEW THIS WEEK</span></div>'
+      +'<div class="stat s"><b>'+k(stars)+'</b><span>TOTAL STARS</span></div>'
+      +'<div class="stat c"><b>'+act+'</b><span>ACTIVE 30D</span></div>';
     var u=$('updated');
-    if(DATA.generated_at){var d=new Date(DATA.generated_at);u.innerHTML='Data updated '+d.toUTCString().replace('GMT','UTC')+' · refreshes every 6h · <a href="./feed.xml">RSS</a>';}
+    if(DATA.generated_at){var d=new Date(DATA.generated_at);u.innerHTML='Updated '+d.toUTCString().replace('GMT','UTC')+' · refreshes every 6h · <a href="./feed.xml">RSS</a>';}
     else u.textContent='Warming up — first scan runs on publish · refreshes every 6h';
   }
 
-  $('search').addEventListener('input',function(e){state.q=e.target.value;render();});
-  $('tAct').addEventListener('click',function(){state.activeOnly=!state.activeOnly;this.classList.toggle('on',state.activeOnly);this.setAttribute('aria-pressed',String(state.activeOnly));render();});
-  $('tNew').addEventListener('click',function(){state.newOnly=!state.newOnly;this.classList.toggle('on',state.newOnly);this.setAttribute('aria-pressed',String(state.newOnly));render();});
-  $('tSort').addEventListener('click',function(){state.sort=state.sort==='activity'?'stars':state.sort==='stars'?'new':'activity';this.textContent=state.sort==='stars'?'↕ Stars':state.sort==='new'?'↕ Newest':'↕ Activity';this.classList.toggle('on',state.sort!=='activity');this.setAttribute('aria-pressed',String(state.sort!=='activity'));render();});
-  window.addEventListener('resize',function(){drawRadar(filtered());});
-  document.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&e.target&&e.target.getAttribute&&e.target.getAttribute('role')==='button'){e.preventDefault();e.target.click();}});
+  function toast(msg){var t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},1800);}
+
+  function bindToggle(id,key){$(id).addEventListener('click',function(){state[key]=!state[key];this.classList.toggle('on',state[key]);this.setAttribute('aria-pressed',String(state[key]));render();});}
 
   function boot(){
-    buildChips();buildLegend();setStats();render();
-    fetch('./data/radar.json',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
-      DATA=j||DATA;if(!DATA.projects)DATA.projects=[];setStats();render();
-    }).catch(function(err){console.log('radar data not loaded:',err);setStats();render();});
+    buildSeg('segView',[{v:'grid',l:'☰ Grid'},{v:'radar',l:'◎ Radar'}],function(){return state.view;},function(v){state.view=v;});
+    buildSeg('segSort',[{v:'activity',l:'Activity'},{v:'stars',l:'Stars'},{v:'new',l:'Newest'},{v:'name',l:'A–Z'}],function(){return state.sort;},function(v){state.sort=v;});
+    buildChips();buildLegend();buildLangs();setStats();
+    $('search').addEventListener('input',function(e){state.q=e.target.value;render();});
+    $('langSel').addEventListener('change',function(e){state.lang=e.target.value;render();});
+    bindToggle('tAct','activeOnly');bindToggle('tNew','newOnly');
+    $('shareBtn').addEventListener('click',function(){var url='https://axonos-bci.github.io/axonos-community-radar/';
+      if(navigator.share){navigator.share({title:'Open BCI Ecosystem Radar',url:url}).catch(function(){});}
+      else if(navigator.clipboard){navigator.clipboard.writeText(url).then(function(){toast('Link copied');}).catch(function(){toast(url);});}
+      else toast(url);});
+    document.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&e.target&&e.target.getAttribute&&e.target.getAttribute('role')==='button'){e.preventDefault();e.target.click();}});
+    window.addEventListener('resize',function(){drawRadar(filtered());});
+    render();
+    fetch('./data/radar.json',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){DATA=j||DATA;if(!DATA.projects)DATA.projects=[];buildLangs();setStats();render();}).catch(function(err){console.log('radar data not loaded:',err);setStats();render();});
   }
   boot();
 })();

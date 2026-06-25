@@ -3,6 +3,24 @@
 All notable changes to the Open BCI Ecosystem Radar are documented here.
 This project adheres to [Semantic Versioning](https://semver.org).
 
+## [2.0.0] — 2026-06-25
+
+### Changed — major premium redesign
+- Complete rebuild to an Apple-tier interface: frosted sticky navigation, refined
+  typography and spacing, segmented controls, tasteful motion, fully self-contained.
+- **Sort is now an explicit segmented control** (Activity / Stars / Newest / A–Z)
+  instead of a cycling toggle — selecting a sort visibly reorders the results, fixing
+  the previous UX where the control was unclear.
+
+### Added
+- **View switch** — Radar or Grid (segmented), defaulting to the readable card grid.
+- **Language filter** — a dropdown populated from the live data.
+- **Share** — native share sheet with copy-link fallback.
+
+### Security
+- The page no longer loads any external images; the Content-Security-Policy is tightened
+  to `img-src 'self' data:` only, making the page fully self-contained.
+
 ## [1.1.2] — 2026-06-25
 
 ### Added

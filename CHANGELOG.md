@@ -3,6 +3,24 @@
 All notable changes to the Open BCI Ecosystem Radar are documented here.
 This project adheres to [Semantic Versioning](https://semver.org).
 
+## [1.1.2] — 2026-06-25
+
+### Added
+- **Open Graph / Twitter / JSON-LD** metadata and a branded `og-image.png` for rich
+  social-share previews.
+- **Accessibility**: ARIA labels, keyboard-activatable filter buttons (`role=button`),
+  and a live text alternative describing the radar for screen readers.
+- A documented **takedown** path (seeds exclude-list) and a **privacy** note in SECURITY.md.
+
+### Hardened (from external audit, accepted items)
+- **Partial-failure safety**: if more than 25% of topic queries fail, the run aborts
+  WITHOUT writing, preserving the last-good committed data (no half-empty radar).
+- **Durable identity**: `first_seen` now lives in `data/first_seen.json` (bootstrapped
+  from radar.json on migration); a corrupt data read aborts instead of flagging the
+  whole ecosystem as NEW. Committed via the API alongside the data.
+- **XML-correct** feed escaping (`xml.sax.saxutils`), an **8 MB response cap**, an
+  API-shape guard, and a **timezone-naive fallback** in recency math.
+
 ## [1.1.1] — 2026-06-24
 
 ### Fixed

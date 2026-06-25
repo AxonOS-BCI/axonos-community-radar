@@ -93,3 +93,10 @@ def test_publish_normalizers():
     f1 = "<rss><lastBuildDate>x</lastBuildDate><item>a</item></rss>"
     f2 = "<rss><lastBuildDate>y</lastBuildDate><item>a</item></rss>"
     assert pd.norm_feed(f1) == pd.norm_feed(f2)
+
+
+def test_days_since_naive_timestamp_assumes_utc():
+    from datetime import datetime, timezone
+    snap = datetime(2026, 6, 24, 12, 0, 0, tzinfo=timezone.utc)
+    # a naive timestamp (no Z/offset) must be treated as UTC, not crash
+    assert radar.days_since("2026-06-10T00:00:00", snap) == 14

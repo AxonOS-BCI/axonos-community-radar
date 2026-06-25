@@ -39,6 +39,7 @@ jobs:
           grep -q "fetch('./data/radar.json'" index.html
           grep -q 'Content-Security-Policy' index.html
           grep -q 'function safeUrl' index.html
+          grep -q 'og:image' index.html
 
       - name: Inline JS syntax
         run: |
@@ -47,7 +48,7 @@ jobs:
 
       - name: Required files
         run: |
-          for f in README.md LICENSE VERSION index.html feed.xml CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md data/seeds.json scripts/radar.py scripts/publish_data.py tests/test_radar.py; do
+          for f in README.md LICENSE VERSION index.html feed.xml og-image.png CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md data/seeds.json scripts/radar.py scripts/publish_data.py tests/test_radar.py; do
             test -f "$f" || { echo "missing $f"; exit 1; }
           done
 

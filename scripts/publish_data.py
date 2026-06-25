@@ -90,8 +90,9 @@ def main():
         print("Missing GITHUB_TOKEN / GITHUB_REPOSITORY")
         sys.exit(1)
     changed = put("data/radar.json", "radar: refresh ecosystem data [skip ci]")
+    fs_changed = put("data/first_seen.json", "radar: update first_seen log [skip ci]")
     feed_changed = put("feed.xml", "radar: refresh feed [skip ci]")
-    if not (changed or feed_changed):
+    if not (changed or fs_changed or feed_changed):
         print("No meaningful change — nothing committed.")
 
 

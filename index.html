@@ -6,6 +6,19 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https://img.shields.io https://contrib.rocks https://avatars.githubusercontent.com data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
 <meta name="theme-color" content="#05060a">
 <meta name="description" content="Open BCI Ecosystem Radar — a living, auto-updated, curated map of the open brain-computer-interface field. An AxonOS community project.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AxonOS">
+<meta property="og:url" content="https://axonos-bci.github.io/axonos-community-radar/">
+<meta property="og:title" content="Open BCI Ecosystem Radar">
+<meta property="og:description" content="A living, curated map of the open brain–computer-interface field. Auto-refreshed every 6 hours, relevance-filtered, free of noise.">
+<meta property="og:image" content="https://axonos-bci.github.io/axonos-community-radar/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Open BCI Ecosystem Radar">
+<meta name="twitter:description" content="A living, curated map of the open brain–computer-interface field — an AxonOS community project.">
+<meta name="twitter:image" content="https://axonos-bci.github.io/axonos-community-radar/og-image.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Open BCI Ecosystem Radar","url":"https://axonos-bci.github.io/axonos-community-radar/","description":"A living, curated map of the open brain-computer-interface field.","publisher":{"@type":"Organization","name":"The AxonOS Project","url":"https://axonos.org"}}</script>
 <link rel="alternate" type="application/rss+xml" title="New BCI projects" href="./feed.xml">
 <title>Open BCI Ecosystem Radar — AxonOS</title>
 <style>
@@ -82,6 +95,7 @@
   .card{background:var(--glass);border:1px solid var(--line);border-radius:16px;padding:16px}
   .card h3{margin:0 0 6px;font-size:15px}.card p{margin:0;color:var(--dim);font-size:13px}
   ol.policy{margin:8px 0 0;padding-left:20px;color:var(--dim);font-size:13px}ol.policy li{margin:3px 0}
+  .visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
   .foot-c{margin-top:42px;text-align:center;font-size:11px;color:var(--dim);opacity:.82;line-height:1.7}
 </style>
 </head>
@@ -109,21 +123,22 @@
 
   <section class="radar-section">
     <div class="panel radar-wrap">
-      <canvas id="radar" width="800" height="800"></canvas>
+      <canvas id="radar" width="800" height="800" role="img" aria-label="Open BCI ecosystem radar" aria-describedby="radar-alt"></canvas>
+      <p id="radar-alt" class="visually-hidden" aria-live="polite"></p>
       <div id="tip"></div>
       <div class="legend" id="legend"></div>
     </div>
   </section>
 
   <div class="controls">
-    <input class="search" id="search" placeholder="Search projects…" autocomplete="off">
+    <input class="search" id="search" placeholder="Search projects…" autocomplete="off" aria-label="Search projects">
     <div class="chips" id="chips"></div>
-    <div class="toggle act" id="tAct">● Active 30d</div>
-    <div class="toggle new" id="tNew">✦ New</div>
-    <div class="toggle sort" id="tSort">↕ Activity</div>
+    <div class="toggle act" id="tAct" role="button" tabindex="0" aria-pressed="false">● Active 30d</div>
+    <div class="toggle new" id="tNew" role="button" tabindex="0" aria-pressed="false">✦ New</div>
+    <div class="toggle sort" id="tSort" role="button" tabindex="0" aria-pressed="false">↕ Activity</div>
   </div>
 
-  <div class="grid-head"><span id="gcount"></span><span>tap a card to open on GitHub</span></div>
+  <div class="grid-head"><span id="gcount" aria-live="polite"></span><span>tap a card to open on GitHub</span></div>
   <div class="cards" id="cards"></div>
 
   <section class="block">
@@ -252,11 +267,14 @@
   }
 
   function render(){var arr=filtered();drawRadar(arr);renderCards(arr);
-    $('gcount').textContent='Showing '+arr.length+' of '+DATA.projects.length+' projects';}
+    $('gcount').textContent='Showing '+arr.length+' of '+DATA.projects.length+' projects';
+    var cats={};arr.forEach(function(p){cats[p.category]=1;});var nw=arr.filter(function(p){return p.is_new;}).length;
+    var alt='Radar showing '+arr.length+' projects across '+Object.keys(cats).length+' categories'+(nw?', '+nw+' new this week':'')+'. Use the project list below to browse.';
+    var ra=$('radar-alt');if(ra)ra.textContent=alt;cv.setAttribute('aria-label',alt);}
 
   function buildChips(){var c=$('chips');c.innerHTML='';CATS.forEach(function(cat){if(cat.n==='Other')return;
-    var el=document.createElement('div');el.className='chip';el.innerHTML='<span class="dot" style="background:'+cat.c+'"></span>'+esc(cat.n);
-    el.addEventListener('click',function(){state.cats[cat.n]=!state.cats[cat.n];el.classList.toggle('on',state.cats[cat.n]);el.style.borderColor=state.cats[cat.n]?cat.c:'';el.style.background=state.cats[cat.n]?'rgba(255,255,255,.06)':'';render();});
+    var el=document.createElement('div');el.className='chip';el.setAttribute('role','button');el.setAttribute('tabindex','0');el.setAttribute('aria-pressed','false');el.innerHTML='<span class="dot" style="background:'+cat.c+'"></span>'+esc(cat.n);
+    el.addEventListener('click',function(){state.cats[cat.n]=!state.cats[cat.n];el.classList.toggle('on',state.cats[cat.n]);el.setAttribute('aria-pressed',String(!!state.cats[cat.n]));el.style.borderColor=state.cats[cat.n]?cat.c:'';el.style.background=state.cats[cat.n]?'rgba(255,255,255,.06)':'';render();});
     c.appendChild(el);});}
   function buildLegend(){var l=$('legend');l.innerHTML='';CATS.forEach(function(cat){if(cat.n==='Other')return;l.innerHTML+='<span><span class="dot" style="background:'+cat.c+'"></span>'+esc(cat.n)+'</span>';});l.innerHTML+='<span style="color:#5a6680">· inner ring = recent · size = stars · ✦ = new</span>';}
 
@@ -277,10 +295,11 @@
   }
 
   $('search').addEventListener('input',function(e){state.q=e.target.value;render();});
-  $('tAct').addEventListener('click',function(){state.activeOnly=!state.activeOnly;this.classList.toggle('on',state.activeOnly);render();});
-  $('tNew').addEventListener('click',function(){state.newOnly=!state.newOnly;this.classList.toggle('on',state.newOnly);render();});
-  $('tSort').addEventListener('click',function(){state.sort=state.sort==='activity'?'stars':state.sort==='stars'?'new':'activity';this.textContent=state.sort==='stars'?'↕ Stars':state.sort==='new'?'↕ Newest':'↕ Activity';this.classList.toggle('on',state.sort!=='activity');render();});
+  $('tAct').addEventListener('click',function(){state.activeOnly=!state.activeOnly;this.classList.toggle('on',state.activeOnly);this.setAttribute('aria-pressed',String(state.activeOnly));render();});
+  $('tNew').addEventListener('click',function(){state.newOnly=!state.newOnly;this.classList.toggle('on',state.newOnly);this.setAttribute('aria-pressed',String(state.newOnly));render();});
+  $('tSort').addEventListener('click',function(){state.sort=state.sort==='activity'?'stars':state.sort==='stars'?'new':'activity';this.textContent=state.sort==='stars'?'↕ Stars':state.sort==='new'?'↕ Newest':'↕ Activity';this.classList.toggle('on',state.sort!=='activity');this.setAttribute('aria-pressed',String(state.sort!=='activity'));render();});
   window.addEventListener('resize',function(){drawRadar(filtered());});
+  document.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&e.target&&e.target.getAttribute&&e.target.getAttribute('role')==='button'){e.preventDefault();e.target.click();}});
 
   function boot(){
     buildChips();buildLegend();setStats();render();

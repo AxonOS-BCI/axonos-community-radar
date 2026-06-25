@@ -28,3 +28,18 @@ and to coordinate disclosure within 90 days.
 ## Supported versions
 
 The latest `main` is supported. This project is an ecosystem map, not a medical device.
+
+## Removing a project (takedown)
+
+The radar lists public repositories discovered by topic. To remove one, add its
+`owner/name` to `exclude_repos` (or the owner to `exclude_owners`) in
+`data/seeds.json` via a pull request, or open an issue — it drops on the next
+6-hour refresh. This is the project's lightweight moderation/takedown valve; there
+is no manual approval gate, by design, so the map stays live.
+
+## Privacy
+
+The page collects no personal data, sets no cookies, and runs no analytics or
+tracking. It renders only public GitHub repository metadata. Badge and contributor
+images are loaded from shields.io and contrib.rocks (their own privacy terms apply);
+the Content-Security-Policy restricts image sources to those hosts.

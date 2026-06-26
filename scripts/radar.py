@@ -340,8 +340,15 @@ def _stars_delta(history, full_name, current_stars, snap, days):
 def update_history(history, projects, snap, snap_iso):
     top = sorted(projects, key=lambda p: int(p.get("stars") or 0), reverse=True)[:HISTORY_MAX_REPOS]
     stars_map = {p["full_name"]: int(p.get("stars") or 0) for p in top}
+    meta = {
+        "total": len(projects),
+        "active_30d": sum(1 for p in projects if p.get("active")),
+        "new": sum(1 for p in projects if p.get("is_new")),
+        "rising": sum(1 for p in projects if p.get("rising")),
+        "total_stars": sum(int(p.get("stars") or 0) for p in projects),
+    }
     snaps = [s for s in history.get("snapshots", []) if s.get("snapshot_at") != snap_iso]
-    snaps.append({"snapshot_at": snap_iso, "stars": stars_map})
+    snaps.append({"snapshot_at": snap_iso, "meta": meta, "stars": stars_map})
     cutoff = snap.timestamp() - HISTORY_RETENTION_DAYS * 86400
 
     def keep(s):

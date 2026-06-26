@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.0-alpha.3] - 2026-06-26
+
+### Added
+- **Live statistics dashboard** (`stats.html`): ecosystem growth over time (from `history.json`), category and evidence-tier distributions, a top-builders leaderboard, language breakdown, and rising projects — a self-contained, zero-dependency page that refreshes with the data every 6 hours. Linked from the map as **Stats**.
+- Each `history.json` snapshot now carries aggregate `meta` (total, active, new, rising, total stars), so the growth curve is multi-metric and accumulates every scheduled run.
+- CI validates `history.json` and the new `stats.html` (integrity + inline-JS syntax).
+
 ## [3.0.0-alpha.2] - 2026-06-26
 
 ### Fixed

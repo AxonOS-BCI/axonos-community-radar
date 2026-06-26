@@ -21,8 +21,30 @@ jobs:
           python3 -c "import json;json.load(open('data/seeds.json'));print('seeds.json ok')"
           python3 -c "import json;json.load(open('data/radar.json'));print('radar.json ok')"
 
+      - name: stats.html integrity + inline JS
+        run: |
+          for s in 'Content-Security-Policy' 'function safeUrl' "'./data/radar.json'" 'id="growth"'; do
+            grep -q "$s" stats.html || { echo "stats.html missing: $s"; exit 1; }
+          done
+          awk '/<script>/{f=1;next} /<\/script>/{f=0} f' stats.html > /tmp/stats.js
+          node --check /tmp/stats.js && echo "stats.html inline JS ok"
+
       - name: Validate published radar.json
         run: python3 scripts/validate_payload.py data/radar.json
+
+      - name: Validate history.json
+        run: |
+          python3 - <<'PY'
+          import json
+          h = json.load(open("data/history.json", encoding="utf-8"))
+          assert h.get("version") == 1, "history version"
+          assert isinstance(h.get("snapshots"), list), "snapshots list"
+          for s in h["snapshots"]:
+              assert isinstance(s.get("snapshot_at"), str)
+              assert isinstance(s.get("stars"), dict) and len(s["stars"]) <= 200
+              assert all(isinstance(v, int) and v >= 0 for v in s["stars"].values())
+          print("history.json ok")
+          PY
 
       - name: Schema validation
         run: |
@@ -44,7 +66,7 @@ jobs:
         run: |
           grep -qi '<!doctype html>' index.html
           grep -q '<canvas id="radar"' index.html
-          grep -q "fetch('./data/radar.json'" index.html
+          grep -q "'./data/radar.json'" index.html
           grep -q 'Content-Security-Policy' index.html
           grep -q 'function safeUrl' index.html
           grep -q 'og:image' index.html
@@ -56,7 +78,7 @@ jobs:
 
       - name: Required files
         run: |
-          for f in README.md LICENSE VERSION index.html feed.xml og-image.png CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md data/seeds.json data/radar.schema.json scripts/radar.py scripts/publish_data.py scripts/validate_payload.py tests/test_radar.py; do
+          for f in README.md LICENSE VERSION index.html stats.html feed.xml og-image.png CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md data/seeds.json data/radar.schema.json scripts/radar.py scripts/publish_data.py scripts/validate_payload.py tests/test_radar.py; do
             test -f "$f" || { echo "missing $f"; exit 1; }
           done
 

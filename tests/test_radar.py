@@ -113,3 +113,41 @@ def test_days_since_naive_timestamp_assumes_utc():
     snap = datetime(2026, 6, 24, 12, 0, 0, tzinfo=timezone.utc)
     # a naive timestamp (no Z/offset) must be treated as UTC, not crash
     assert radar.days_since("2026-06-10T00:00:00", snap) == 14
+
+
+def test_validator_rejects_malicious_fixture():
+    import json
+    import validate_payload as vp
+    fx = os.path.join(os.path.dirname(__file__), "fixtures", "malicious-radar.json")
+    with open(fx, encoding="utf-8") as fh:
+        payload = json.load(fh)
+    errors = vp.validate_payload(payload)
+    assert errors, "validator must reject the malicious payload"
+    assert any("github.com" in e for e in errors), "must flag the non-github URL"
+
+
+def test_validator_accepts_clean_payload():
+    import validate_payload as vp
+    payload = {"version": 3, "counts": {"total": 1}, "projects": [{
+        "full_name": "owner/repo", "html_url": "https://github.com/owner/repo",
+        "description": "clean", "stars": 5, "forks": 1, "language": "Rust",
+        "category": "Signal Processing", "evidence_tier": "L3_EXPLICIT_BCI",
+        "inclusion_reason": "Explicit BCI topic."}]}
+    assert vp.validate_payload(payload) == []
+
+
+def test_validator_rejects_lookalike_host():
+    import validate_payload as vp
+    payload = {"version": 2, "counts": {"total": 1}, "projects": [{
+        "full_name": "a/b", "html_url": "https://github.com.evil.com/a/b",
+        "category": "Other"}]}
+    assert any("github.com" in e for e in vp.validate_payload(payload))
+
+
+def test_validator_flags_impossible_star_jump():
+    import validate_payload as vp
+    payload = {"version": 3, "counts": {"total": 1}, "projects": [{
+        "full_name": "a/b", "html_url": "https://github.com/a/b", "category": "Other",
+        "stars": 10, "stars_delta_7d": 999,
+        "evidence_tier": "L0_WEAK_ADJACENT", "inclusion_reason": "x"}]}
+    assert any("impossible jump" in e for e in vp.validate_payload(payload))

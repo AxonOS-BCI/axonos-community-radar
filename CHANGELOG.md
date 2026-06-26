@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.2.1] - 2026-06-26
+
+### Added
+- `scripts/validate_payload.py` — strict, zero-dependency validator for the published `data/radar.json` (rejects non-`github.com` URLs, over-long descriptions, malformed numerics, duplicate names; v3-forward).
+- `docs/DATA_MODEL.md` and `docs/METHODOLOGY.md` — the public data contract and the transparency surface (inclusion is not endorsement; AxonOS is not boosted).
+- `tests/fixtures/malicious-radar.json` plus regression tests proving the validator rejects HTML/URL injection payloads and impossible star jumps.
+- `assets/on-axonos-radar.svg` — static badge listed projects can display.
+
+### Changed
+- CI now validates the published `radar.json`, fails on any GitHub Action not pinned to a 40-char commit SHA, and `actions/checkout` is now SHA-pinned in both workflows.
+
 All notable changes to AxonOS Radar are documented here.
 This project adheres to [Semantic Versioning](https://semver.org).
 

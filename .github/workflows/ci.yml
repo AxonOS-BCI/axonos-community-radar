@@ -14,18 +14,21 @@ jobs:
     name: Validate radar
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744  # v4
 
       - name: JSON is valid
         run: |
           python3 -c "import json;json.load(open('data/seeds.json'));print('seeds.json ok')"
           python3 -c "import json;json.load(open('data/radar.json'));print('radar.json ok')"
 
+      - name: Validate published radar.json
+        run: python3 scripts/validate_payload.py data/radar.json
+
       - name: Feed is well-formed
         run: python3 -c "import xml.dom.minidom as m;m.parse('feed.xml');print('feed.xml ok')"
 
       - name: Python syntax
-        run: python3 -m py_compile scripts/radar.py scripts/publish_data.py
+        run: python3 -m py_compile scripts/radar.py scripts/publish_data.py scripts/validate_payload.py
 
       - name: Unit tests
         run: |
@@ -48,7 +51,7 @@ jobs:
 
       - name: Required files
         run: |
-          for f in README.md LICENSE VERSION index.html feed.xml og-image.png CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md data/seeds.json scripts/radar.py scripts/publish_data.py tests/test_radar.py; do
+          for f in README.md LICENSE VERSION index.html feed.xml og-image.png CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md data/seeds.json scripts/radar.py scripts/publish_data.py scripts/validate_payload.py tests/test_radar.py; do
             test -f "$f" || { echo "missing $f"; exit 1; }
           done
 
@@ -65,3 +68,9 @@ jobs:
             echo "CRLF found"; exit 1
           fi
           echo "LF ok"
+
+      - name: Actions are pinned to a commit SHA
+        run: |
+          bad="$(grep -RhoE 'uses: [^ ]+@[A-Za-z0-9._/-]+' .github/workflows | sed -E 's/[[:space:]]+#.*//' | grep -vE '@[0-9a-f]{40}$' || true)"
+          if [ -n "$bad" ]; then echo "Unpinned actions:"; echo "$bad"; exit 1; fi
+          echo "all actions SHA-pinned"

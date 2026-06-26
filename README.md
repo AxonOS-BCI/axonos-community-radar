@@ -23,6 +23,14 @@
 
 ---
 
+> The code is MIT licensed. Generated data is derived from public GitHub repository metadata. **Inclusion does not transfer ownership or imply endorsement** of upstream projects. Categories are heuristic; scores are discovery signals, not quality, safety, or clinical ratings. See the [methodology](docs/METHODOLOGY.md) and the [data model](docs/DATA_MODEL.md).
+
+**Listed projects can show this badge** &nbsp; [![On AxonOS Radar](https://axonos-bci.github.io/axonos-community-radar/assets/on-axonos-radar.svg)](https://axonos-bci.github.io/axonos-community-radar/)
+
+```md
+[![On AxonOS Radar](https://axonos-bci.github.io/axonos-community-radar/assets/on-axonos-radar.svg)](https://axonos-bci.github.io/axonos-community-radar/)
+```
+
 ## What this is
 
 **AxonOS Radar** is a continuously-updated, public map of the open brain–computer-interface world. It scans public GitHub data every six hours and renders an interactive radar and card grid — projects grouped by category, with the most recently active work nearest the centre, freshly-discovered work flagged as **new**, and the whole field searchable and filterable.

@@ -1,5 +1,23 @@
 # Changelog
 
+## [3.0.0-alpha.2] - 2026-06-26
+
+### Fixed
+- **Rising now persists:** `publish_data.py` commits `data/history.json` (previously generated but never published, so 7-day star velocity could not accumulate across scheduled runs).
+- **UI:** the filter bar no longer sticks under the nav, so project cards are never hidden behind it while scrolling; the nav is more opaque and anchor scrolling accounts for its height.
+- Removed the `has_release` field (the GitHub Search API does not return it, so it was misleadingly always false).
+- Case-insensitive de-duplication of repositories in the scan loop.
+- `docs/METHODOLOGY.md` inclusion rule corrected to match the code (core topic **or** context topic **plus** keyword).
+- README no longer claims a "strict" CSP while inline styles/scripts remain (claim made accurate pending the asset split).
+
+### Added
+- Project cards now surface the v3 signal: an **evidence-tier** chip (L3/L2/L1/L0, with the inclusion reason on hover) and a **Rising** badge.
+- `scripts/validate_payload.py` additionally checks v3 consistency: `counts` match the data, builder `project_count` matches its project list, builder owners are unique and GitHub-hosted.
+- Pinned CI dependencies (`requirements-ci.txt`).
+
+### Notes
+- This is a pre-release. The full three-view UI (Projects / Builders / Methodology), the asset split, and the strict CSP without `unsafe-inline` land in v3.0.0-beta.
+
 ## [3.0.0-alpha.1] - 2026-06-26
 
 ### Added (data model v3 — ecosystem intelligence, additive)

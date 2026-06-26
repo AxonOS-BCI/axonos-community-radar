@@ -26,7 +26,7 @@ jobs:
 
       - name: Schema validation
         run: |
-          pip install jsonschema --quiet
+          pip install -r requirements-ci.txt --quiet
           python3 -c "import json,jsonschema; jsonschema.validate(json.load(open('data/radar.json')), json.load(open('data/radar.schema.json'))); print('schema ok')"
 
       - name: Feed is well-formed
@@ -37,7 +37,7 @@ jobs:
 
       - name: Unit tests
         run: |
-          pip install pytest --quiet
+          pip install -r requirements-ci.txt --quiet
           python3 -m pytest tests/ -q
 
       - name: HTML integrity + security

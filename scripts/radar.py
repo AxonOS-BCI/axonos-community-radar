@@ -396,7 +396,6 @@ def enrich_v3(projects, seeds, snap, history):
         if "has_license" not in p:
             p["has_license"] = bool(p.get("license"))
         p.setdefault("license", p.get("license"))
-        p.setdefault("has_release", bool(p.get("has_release")))
         tier, reason, mt, mk = evidence_for(p, core, context, keywords)
         p["evidence_tier"], p["inclusion_reason"] = tier, reason
         p["matched_topics"], p["matched_keywords"] = mt, mk
@@ -435,7 +434,7 @@ def main():
     snap_iso = snap.isoformat()
     fseen = load_first_seen(snap_iso)
 
-    repos, scanned, dropped, failed = {}, 0, 0, []
+    repos, seen_lc, scanned, dropped, failed = {}, set(), 0, 0, []
     for topic in topics:
         q = f"topic:{topic} archived:false fork:false"
         url = "https://api.github.com/search/repositories?" + urllib.parse.urlencode(
@@ -450,8 +449,10 @@ def main():
         for item in data.get("items", []):
             scanned += 1
             fn = item.get("full_name")
-            if not fn or fn.lower() == SELF_REPO or fn in repos:
+            key = (fn or "").lower()
+            if not fn or key == SELF_REPO or key in seen_lc:
                 continue
+            seen_lc.add(key)
             if fn.split("/")[0].lower() in excl_owners or fn.lower() in excl_repos:
                 continue
             if int(item.get("stargazers_count") or 0) < min_stars:

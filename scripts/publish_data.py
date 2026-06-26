@@ -61,7 +61,14 @@ def norm_feed(txt):
     return re.sub(r"<lastBuildDate>.*?</lastBuildDate>", "", txt)
 
 
-NORMALIZERS = {"data/radar.json": norm_radar, "feed.xml": norm_feed}
+def norm_json(txt):
+    try:
+        return json.dumps(json.loads(txt), sort_keys=True)
+    except Exception:  # noqa: BLE001
+        return txt
+
+
+NORMALIZERS = {"data/radar.json": norm_radar, "data/history.json": norm_json, "feed.xml": norm_feed}
 
 
 def put(path, message):
@@ -90,9 +97,10 @@ def main():
         print("Missing GITHUB_TOKEN / GITHUB_REPOSITORY")
         sys.exit(1)
     changed = put("data/radar.json", "radar: refresh ecosystem data [skip ci]")
+    hist_changed = put("data/history.json", "radar: update star history [skip ci]")
     fs_changed = put("data/first_seen.json", "radar: update first_seen log [skip ci]")
     feed_changed = put("feed.xml", "radar: refresh feed [skip ci]")
-    if not (changed or fs_changed or feed_changed):
+    if not (changed or hist_changed or fs_changed or feed_changed):
         print("No meaningful change — nothing committed.")
 
 

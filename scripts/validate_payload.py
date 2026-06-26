@@ -122,6 +122,34 @@ def validate_payload(payload, cap: int = DEFAULT_CAP):
             if not r.get("inclusion_reason"):
                 errors.append(f"{tag} missing inclusion_reason (required at version 3)")
 
+    # v3 consistency: counts and builders must agree with the data
+    builders = payload.get("builders")
+    if is_v3:
+        n = len(projects)
+        if isinstance(counts, dict):
+            if counts.get("total") is not None and counts["total"] != n:
+                errors.append(f"counts.total ({counts['total']}) != number of projects ({n})")
+            rising_n = sum(1 for r in projects if isinstance(r, dict) and r.get("rising"))
+            if counts.get("rising") is not None and counts["rising"] != rising_n:
+                errors.append(f"counts.rising ({counts['rising']}) != projects with rising=true ({rising_n})")
+            if isinstance(builders, list) and counts.get("builders") is not None and counts["builders"] != len(builders):
+                errors.append(f"counts.builders ({counts['builders']}) != len(builders) ({len(builders)})")
+        if isinstance(builders, list):
+            seen_owner = set()
+            for j, b in enumerate(builders):
+                if not isinstance(b, dict):
+                    errors.append(f"builders[{j}] is not an object"); continue
+                ow = (b.get("owner") or "").lower()
+                if ow in seen_owner:
+                    errors.append(f"builders[{j}] duplicate owner {b.get('owner')!r}")
+                seen_owner.add(ow)
+                bp = b.get("projects")
+                if isinstance(bp, list) and isinstance(b.get("project_count"), int) and b["project_count"] != len(bp):
+                    errors.append(f"builders[{j}] project_count ({b['project_count']}) != len(projects) ({len(bp)})")
+                bu = b.get("html_url") or ""
+                if not (isinstance(bu, str) and bu.startswith(GITHUB_PREFIX)):
+                    errors.append(f"builders[{j}] html_url is not a github.com URL: {bu!r}")
+
     return errors
 
 

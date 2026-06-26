@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.0.0-alpha.1] - 2026-06-26
+
+### Added (data model v3 — ecosystem intelligence, additive)
+- `radar.json` is now **version 3**: every project carries `evidence_tier` (L3_EXPLICIT_BCI / L2_NEURAL_SIGNAL / L1_CONTEXT_PLUS_NEURO / L0_WEAK_ADJACENT), a human-readable `inclusion_reason`, `matched_topics`, `matched_keywords`, `quality_flags`, `owner`/`repo`, license metadata, `stars_delta_7d` / `stars_delta_30d`, `rising`, and an `axon_relevance` map.
+- **Builders** aggregation (`builders[]`): owners with two or more listed projects, with totals, activity, and top categories/languages.
+- **Rising** via 7-day star velocity, backed by a new `data/history.json` (45-day retention, ≤200 repos/snapshot, corrupt-safe).
+- `data/radar.schema.json` — the formal, published v3 data contract; validated in CI.
+
+### Notes
+- Fully additive: all v2 fields are preserved, so the current UI keeps working. The three-view UI (Projects / Builders / Methodology) and strict-CSP frontend land in the v3.0.0-beta milestone.
+- AxonOS projects are ranked by the same formula as everyone else and the radar excludes its own repository.
+
 ## [2.2.1] - 2026-06-26
 
 ### Added

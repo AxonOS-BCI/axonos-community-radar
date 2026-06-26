@@ -24,6 +24,11 @@ jobs:
       - name: Validate published radar.json
         run: python3 scripts/validate_payload.py data/radar.json
 
+      - name: Schema validation
+        run: |
+          pip install jsonschema --quiet
+          python3 -c "import json,jsonschema; jsonschema.validate(json.load(open('data/radar.json')), json.load(open('data/radar.schema.json'))); print('schema ok')"
+
       - name: Feed is well-formed
         run: python3 -c "import xml.dom.minidom as m;m.parse('feed.xml');print('feed.xml ok')"
 
@@ -51,7 +56,7 @@ jobs:
 
       - name: Required files
         run: |
-          for f in README.md LICENSE VERSION index.html feed.xml og-image.png CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md data/seeds.json scripts/radar.py scripts/publish_data.py scripts/validate_payload.py tests/test_radar.py; do
+          for f in README.md LICENSE VERSION index.html feed.xml og-image.png CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md data/seeds.json data/radar.schema.json scripts/radar.py scripts/publish_data.py scripts/validate_payload.py tests/test_radar.py; do
             test -f "$f" || { echo "missing $f"; exit 1; }
           done
 

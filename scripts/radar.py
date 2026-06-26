@@ -225,6 +225,198 @@ def validate(payload, cap):
         assert r.get("category"), "project missing category"
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# v3 enrichment: evidence tiers, matched signals, quality flags, builders,
+# star-velocity (rising), and AxonOS relevance. All additive — every v2 field is
+# preserved so older consumers keep working. Inclusion is not endorsement.
+# ─────────────────────────────────────────────────────────────────────────────
+
+HISTORY = os.path.join(ROOT, "data", "history.json")
+HISTORY_RETENTION_DAYS = 45
+HISTORY_MAX_REPOS = 200
+
+EXPLICIT_BCI_TOPICS = {
+    "bci", "bmi", "brain-computer-interface", "brain-machine-interface",
+    "brain-computer-interfaces", "brain-machine-interfaces", "brain-computer",
+    "neurotechnology", "neurotech",
+}
+NEURAL_SIGNAL_TOPICS = {
+    "eeg", "ecog", "meg", "emg", "eog", "neural-signal", "neural-signals",
+    "neurofeedback", "electroencephalography", "lfp", "spikes", "spike-sorting",
+}
+STRONG_NEURAL_KW = {
+    "eeg", "ecog", "meg", "bci", "brain-computer", "neural", "cortical", "neuro",
+    "electroenceph", "motor-imagery", "p300", "ssvep", "neuron", "spike",
+}
+AXON_DIMS = {
+    "acquisition": {"ads1299", "openbci", "electrode", "amplifier", "acquisition", "adc", "daq", "8-channel"},
+    "signal_pipeline": {"filter", "fir", "iir", "notch", "band-pass", "feature", "dsp", "preprocessing", "csp", "artifact"},
+    "protocol": {"lsl", "lab-streaming", "stream", "protocol", "websocket", "mqtt", "osc", "wire"},
+    "privacy": {"privacy", "consent", "encryption", "gdpr", "secure", "differential-privacy"},
+    "runtime": {"real-time", "rtos", "no-std", "embedded", "deterministic", "firmware", "cortex"},
+    "sdk": {"sdk", "api", "library", "framework", "bindings"},
+}
+
+
+def _matched_signals(repo, core, context, keywords):
+    tset = {t.lower() for t in (repo.get("topics") or [])}
+    relevant = core | context | EXPLICIT_BCI_TOPICS | NEURAL_SIGNAL_TOPICS
+    matched_topics = sorted(tset & relevant)
+    txt = repo_text(repo)
+    matched_keywords = sorted({k for k in keywords if re.search(r"\b" + re.escape(k), txt)})
+    return matched_topics, matched_keywords, tset
+
+
+def evidence_for(repo, core, context, keywords):
+    """Return (evidence_tier, inclusion_reason, matched_topics, matched_keywords)."""
+    matched_topics, matched_keywords, tset = _matched_signals(repo, core, context, keywords)
+    explicit = sorted(tset & EXPLICIT_BCI_TOPICS)
+    neural = sorted(tset & NEURAL_SIGNAL_TOPICS)
+    strong = [k for k in matched_keywords if k in STRONG_NEURAL_KW]
+    if explicit:
+        tier = "L3_EXPLICIT_BCI"
+        reason = f"Explicit BCI topic ({', '.join(explicit[:3])})."
+    elif neural or strong:
+        tier = "L2_NEURAL_SIGNAL"
+        sig = ", ".join((neural or strong)[:2])
+        reason = f"Neural-signal topic or keyword ({sig})."
+    elif (tset & context) and matched_keywords:
+        tier = "L1_CONTEXT_PLUS_NEURO"
+        ctx = ", ".join(sorted(tset & context)[:2])
+        reason = f"Context topic {ctx} plus neuro keyword ({', '.join(matched_keywords[:2])})."
+    else:
+        tier = "L0_WEAK_ADJACENT"
+        reason = "Weak adjacent signal; flagged for review."
+    return tier, reason, matched_topics, matched_keywords
+
+
+def quality_flags_for(repo, tier):
+    return {
+        "possible_false_positive": tier == "L0_WEAK_ADJACENT",
+        "low_metadata": not (repo.get("description") or "").strip() or not (repo.get("topics") or []),
+        "missing_license": not bool(repo.get("has_license")),
+        "no_recent_activity": int(repo.get("days_since_push") or 9999) > 180,
+    }
+
+
+def axon_relevance_for(repo):
+    txt = repo_text(repo)
+    return {dim: round(min(1.0, sum(1 for k in kws if k in txt) * 0.34), 2)
+            for dim, kws in AXON_DIMS.items()}
+
+
+def load_history():
+    if os.path.exists(HISTORY):
+        try:
+            with open(HISTORY, encoding="utf-8") as fh:
+                h = json.load(fh)
+            if isinstance(h, dict) and isinstance(h.get("snapshots"), list):
+                return h
+            raise ValueError("unexpected shape")
+        except Exception as exc:  # noqa: BLE001
+            if os.environ.get("RADAR_REBUILD_HISTORY") == "1":
+                print(f"WARN: history.json corrupt; rebuilding ({exc}).")
+                return {"version": 1, "snapshots": []}
+            print(f"CRITICAL: history.json corrupt ({exc}); aborting "
+                  "(set RADAR_REBUILD_HISTORY=1 to reset).")
+            sys.exit(1)
+    return {"version": 1, "snapshots": []}
+
+
+def _stars_delta(history, full_name, current_stars, snap, days):
+    cutoff = snap.timestamp() - days * 86400
+    best = None
+    for snp in history.get("snapshots", []):
+        try:
+            t = datetime.fromisoformat(snp["snapshot_at"]).timestamp()
+        except Exception:  # noqa: BLE001
+            continue
+        if t <= cutoff and full_name in (snp.get("stars") or {}):
+            if best is None or t > best[0]:
+                best = (t, snp["stars"][full_name])
+    return 0 if best is None else current_stars - int(best[1])
+
+
+def update_history(history, projects, snap, snap_iso):
+    top = sorted(projects, key=lambda p: int(p.get("stars") or 0), reverse=True)[:HISTORY_MAX_REPOS]
+    stars_map = {p["full_name"]: int(p.get("stars") or 0) for p in top}
+    snaps = [s for s in history.get("snapshots", []) if s.get("snapshot_at") != snap_iso]
+    snaps.append({"snapshot_at": snap_iso, "stars": stars_map})
+    cutoff = snap.timestamp() - HISTORY_RETENTION_DAYS * 86400
+
+    def keep(s):
+        try:
+            return datetime.fromisoformat(s["snapshot_at"]).timestamp() >= cutoff
+        except Exception:  # noqa: BLE001
+            return False
+
+    snaps = [s for s in snaps if keep(s)]
+    snaps.sort(key=lambda s: s["snapshot_at"])
+    return {"version": 1, "snapshots": snaps}
+
+
+def build_builders(projects, min_projects=2):
+    by = {}
+    for p in projects:
+        owner = (p.get("full_name") or "/").split("/")[0]
+        b = by.setdefault(owner, {
+            "owner": owner, "html_url": f"https://github.com/{owner}",
+            "project_count": 0, "total_stars": 0, "active_projects_30d": 0,
+            "_cats": {}, "_langs": {}, "projects": [],
+        })
+        b["project_count"] += 1
+        b["total_stars"] += int(p.get("stars") or 0)
+        if p.get("active"):
+            b["active_projects_30d"] += 1
+        if p.get("category"):
+            b["_cats"][p["category"]] = b["_cats"].get(p["category"], 0) + 1
+        if p.get("language"):
+            b["_langs"][p["language"]] = b["_langs"].get(p["language"], 0) + 1
+        b["projects"].append(p["full_name"])
+    builders = []
+    for b in by.values():
+        if b["project_count"] < min_projects:
+            continue
+        b["top_categories"] = [c for c, _ in sorted(b["_cats"].items(), key=lambda x: -x[1])[:3]]
+        b["top_languages"] = [lng for lng, _ in sorted(b["_langs"].items(), key=lambda x: -x[1])[:3]]
+        del b["_cats"], b["_langs"]
+        builders.append(b)
+    builders.sort(key=lambda x: (x["total_stars"], x["project_count"]), reverse=True)
+    return builders
+
+
+def enrich_v3(projects, seeds, snap, history):
+    """Add v3 fields to each project in place; return (builders, counts)."""
+    core = {t.lower() for t in seeds.get("core_topics", [])}
+    context = {t.lower() for t in seeds.get("context_topics", [])}
+    keywords = [k.lower() for k in seeds.get("neuro_keywords", [])]
+    for p in projects:
+        owner, _, repo = (p.get("full_name") or "/").partition("/")
+        p["owner"], p["repo"] = owner, repo
+        if "has_license" not in p:
+            p["has_license"] = bool(p.get("license"))
+        p.setdefault("license", p.get("license"))
+        p.setdefault("has_release", bool(p.get("has_release")))
+        tier, reason, mt, mk = evidence_for(p, core, context, keywords)
+        p["evidence_tier"], p["inclusion_reason"] = tier, reason
+        p["matched_topics"], p["matched_keywords"] = mt, mk
+        p["quality_flags"] = quality_flags_for(p, tier)
+        stars = int(p.get("stars") or 0)
+        p["stars_delta_7d"] = _stars_delta(history, p["full_name"], stars, snap, 7)
+        p["stars_delta_30d"] = _stars_delta(history, p["full_name"], stars, snap, 30)
+        p["rising"] = p["stars_delta_7d"] >= max(2, math.ceil(stars * 0.05))
+        p["axon_relevance"] = axon_relevance_for(p)
+    builders = build_builders(projects)
+    counts = {
+        "total": len(projects),
+        "active_30d": sum(1 for p in projects if p.get("active")),
+        "new": sum(1 for p in projects if p.get("is_new")),
+        "rising": sum(1 for p in projects if p.get("rising")),
+        "builders": len(builders),
+    }
+    return builders, counts
+
+
 def main():
     seeds = load_seeds()
     core = {t.lower() for t in seeds.get("core_topics", [])}
@@ -275,6 +467,9 @@ def main():
                 "language": item.get("language") or "",
                 "pushed_at": item.get("pushed_at") or "",
                 "topics": (item.get("topics") or [])[:12],
+                "license": (item.get("license") or {}).get("spdx_id"),
+                "has_license": bool((item.get("license") or {}).get("spdx_id")
+                                    and (item.get("license") or {}).get("spdx_id") != "NOASSERTION"),
             }
 
     # Partial-failure safeguard: preserve last-good data rather than publishing a half-empty radar.
@@ -301,28 +496,38 @@ def main():
     out.sort(key=lambda x: x["_score"], reverse=True)
     out = out[:max_projects]
 
+    history = load_history()
+    builders, counts = enrich_v3(out, seeds, snap, history)
+
     payload = {
-        "version": 2, "generated_at": now.replace(microsecond=0).isoformat(),
+        "version": 3, "generated_at": now.replace(microsecond=0).isoformat(),
         "snapshot_at": snap_iso, "source": "GitHub topic search (public)",
         "criteria": ("Public, non-archived, non-fork repositories that carry a core BCI/neuro "
                      "topic, or a context topic plus a neuro keyword. Ranked by recency (from the "
-                     "6-hour snapshot slot) and stars. Categorisation is heuristic and opinionated."),
+                     "6-hour snapshot slot) and stars. Categorisation and evidence tiers are heuristic."),
         "refresh": "every 6 hours via GitHub Actions", "min_stars": min_stars,
         "topics_failed": len(failed), "topics": topics,
-        "counts": {"total": len(out), "active_30d": sum(1 for r in out if r["active"]),
-                   "new": sum(1 for r in out if r["is_new"])},
+        "methodology": {"scoring_version": "3.0", "category_version": "3.0",
+                        "evidence_version": "3.0", "docs": "docs/METHODOLOGY.md",
+                        "note": "Inclusion is not endorsement; AxonOS is not boosted."},
+        "counts": counts,
         "projects": out,
+        "builders": builders,
     }
     validate(payload, max_projects)
     with open(OUT, "w", encoding="utf-8") as fh:
         json.dump(payload, fh, ensure_ascii=False, indent=2)
         fh.write("\n")
+    history = update_history(history, out, snap, snap_iso)
+    with open(HISTORY, "w", encoding="utf-8") as fh:
+        json.dump(history, fh, ensure_ascii=False, indent=2)
+        fh.write("\n")
     save_first_seen(fseen, set(repos.keys()), snap)
     with open(FEED, "w", encoding="utf-8") as fh:
         fh.write(build_feed(out, now))
-    print(f"Wrote {len(out)} projects (scanned {scanned}, dropped {dropped} off-topic, "
-          f"{len(failed)} topics failed, {payload['counts']['active_30d']} active, "
-          f"{payload['counts']['new']} new). first_seen + feed updated.")
+    print(f"Wrote {len(out)} v3 projects + {len(builders)} builders (scanned {scanned}, "
+          f"dropped {dropped} off-topic, {len(failed)} topics failed, {counts['active_30d']} active, "
+          f"{counts['new']} new, {counts['rising']} rising). history + first_seen + feed updated.")
 
     if os.environ.get("RADAR_ISSUE") == "1" and TOKEN:
         lines = ["# AxonOS Radar — review digest", "",

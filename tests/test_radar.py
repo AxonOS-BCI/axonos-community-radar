@@ -151,3 +151,64 @@ def test_validator_flags_impossible_star_jump():
         "stars": 10, "stars_delta_7d": 999,
         "evidence_tier": "L0_WEAK_ADJACENT", "inclusion_reason": "x"}]}
     assert any("impossible jump" in e for e in vp.validate_payload(payload))
+
+
+# ── v3 data-model tests ──────────────────────────────────────────────────────
+
+def test_evidence_tier_explicit_bci():
+    repo = {"full_name": "o/r", "topics": ["bci", "eeg"], "description": "a bci toolkit"}
+    tier, reason, mt, mk = radar.evidence_for(repo, {"bci"}, set(), ["eeg", "bci"])
+    assert tier == "L3_EXPLICIT_BCI"
+    assert "bci" in mt and "BCI" in reason
+
+
+def test_evidence_tier_neural_signal():
+    repo = {"full_name": "o/r", "topics": ["eeg"], "description": "eeg signal lib"}
+    tier, *_ = radar.evidence_for(repo, set(), set(), ["eeg"])
+    assert tier == "L2_NEURAL_SIGNAL"
+
+
+def test_evidence_tier_context_plus_keyword():
+    repo = {"full_name": "o/r", "topics": ["real-time"], "description": "prosthetic control"}
+    tier, *_ = radar.evidence_for(repo, set(), {"real-time"}, ["prosthe"])
+    assert tier == "L1_CONTEXT_PLUS_NEURO"
+
+
+def test_evidence_tier_weak_adjacent():
+    repo = {"full_name": "o/r", "topics": ["electrophysiology"], "description": "sim"}
+    tier, *_ = radar.evidence_for(repo, set(), {"signal-processing"}, ["electrophysiolog"])
+    assert tier == "L0_WEAK_ADJACENT"
+
+
+def test_builders_need_two_projects():
+    projects = [
+        {"full_name": "acme/a", "stars": 10, "active": True, "category": "X", "language": "Rust"},
+        {"full_name": "acme/b", "stars": 5, "active": False, "category": "X", "language": "Python"},
+        {"full_name": "solo/c", "stars": 99, "active": True, "category": "Y", "language": "C"},
+    ]
+    builders = radar.build_builders(projects)
+    assert len(builders) == 1 and builders[0]["owner"] == "acme"
+    assert builders[0]["project_count"] == 2 and builders[0]["total_stars"] == 15
+
+
+def test_enrich_preserves_existing_fields_and_first_run_not_rising():
+    from datetime import datetime, timezone
+    p = {"full_name": "o/r", "category": "Keep", "stars": 100, "active": True, "is_new": True, "_score": 1.2}
+    seeds = {"core_topics": ["bci"], "context_topics": [], "neuro_keywords": ["eeg"]}
+    snap = datetime(2026, 6, 26, tzinfo=timezone.utc)
+    radar.enrich_v3([p], seeds, snap, {"version": 1, "snapshots": []})
+    assert p["category"] == "Keep" and p["_score"] == 1.2 and p["is_new"] is True
+    assert "evidence_tier" in p and p["owner"] == "o"
+    assert p["rising"] is False and p["stars_delta_7d"] == 0  # first run never rising
+
+
+def test_rising_detects_star_velocity():
+    from datetime import datetime, timezone, timedelta
+    snap = datetime(2026, 6, 26, 0, 0, 0, tzinfo=timezone.utc)
+    old = (snap - timedelta(days=8)).isoformat()
+    history = {"version": 1, "snapshots": [{"snapshot_at": old, "stars": {"o/r": 100}}]}
+    projects = [{"full_name": "o/r", "stars": 120, "active": True}]
+    seeds = {"core_topics": ["bci"], "context_topics": [], "neuro_keywords": ["eeg"]}
+    radar.enrich_v3(projects, seeds, snap, history)
+    assert projects[0]["stars_delta_7d"] == 20
+    assert projects[0]["rising"] is True  # 20 >= max(2, ceil(120*0.05)=6)

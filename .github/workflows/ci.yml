@@ -55,7 +55,7 @@ jobs:
         run: python3 -c "import xml.dom.minidom as m;m.parse('feed.xml');print('feed.xml ok')"
 
       - name: Python syntax
-        run: python3 -m py_compile scripts/radar.py scripts/publish_data.py scripts/validate_payload.py
+        run: python3 -m py_compile scripts/radar.py scripts/publish_data.py scripts/validate_payload.py scripts/publish_stats_issue.py
 
       - name: Unit tests
         run: |
@@ -78,7 +78,7 @@ jobs:
 
       - name: Required files
         run: |
-          for f in README.md LICENSE VERSION index.html stats.html feed.xml og-image.png CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md data/seeds.json data/radar.schema.json scripts/radar.py scripts/publish_data.py scripts/validate_payload.py tests/test_radar.py; do
+          for f in README.md LICENSE VERSION index.html stats.html feed.xml og-image.png CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md data/seeds.json data/radar.schema.json scripts/radar.py scripts/publish_data.py scripts/validate_payload.py scripts/publish_stats_issue.py scripts/publish_stats_issue.py tests/test_radar.py; do
             test -f "$f" || { echo "missing $f"; exit 1; }
           done
 

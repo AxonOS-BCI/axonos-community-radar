@@ -537,24 +537,5 @@ def main():
           f"dropped {dropped} off-topic, {len(failed)} topics failed, {counts['active_30d']} active, "
           f"{counts['new']} new, {counts['rising']} rising). history + first_seen + feed updated.")
 
-    if os.environ.get("RADAR_ISSUE") == "1" and TOKEN:
-        lines = ["# AxonOS Radar — review digest", "",
-                 f"Generated {payload['generated_at']} · {len(out)} projects.", "",
-                 "Engagement policy: star only relevant repos; react only to genuinely relevant "
-                 "releases; open PRs only when they add technical value; no low-signal noise.", ""]
-        for r in out[:25]:
-            lines.append(f"- [{r['full_name']}]({r['html_url']}) — ⭐{r['stars']} · "
-                         f"{r['language'] or 'n/a'} · {r['category']}{' · NEW' if r['is_new'] else ''}")
-        body = json.dumps({"title": f"Radar review digest — {now.date()}", "body": "\n".join(lines)})
-        try:
-            req = urllib.request.Request(f"https://api.github.com/repos/{SELF_REPO}/issues",
-                                         data=body.encode("utf-8"),
-                                         headers={**HEADERS, "Content-Type": "application/json"}, method="POST")
-            urllib.request.urlopen(req, timeout=30)
-            print("Posted review digest issue.")
-        except Exception as exc:  # noqa: BLE001
-            print(f"WARN: could not post digest issue: {exc}")
-
-
 if __name__ == "__main__":
     main()

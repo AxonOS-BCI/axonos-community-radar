@@ -1,5 +1,14 @@
 # Changelog
 
+## [3.0.0-alpha.4] - 2026-06-26
+
+### Added
+- **Live stats issue:** the scheduled workflow now publishes the ecosystem statistics into **one living GitHub issue** (`scripts/publish_stats_issue.py`) — at-a-glance metrics, delta since the last refresh, biggest 7-day movers, new-this-week, a top-builders leaderboard, and category/evidence breakdowns. It edits a single marker-tagged issue in place every 6 hours instead of opening new issues, in the spirit of a momentum-first industry tracker.
+- `radar.yml` gains `issues: write` and a publish step.
+
+### Changed
+- Removed the old one-off "review digest" issue path from `radar.py` (superseded by the living stats issue).
+
 ## [3.0.0-alpha.3] - 2026-06-26
 
 ### Added

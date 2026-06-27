@@ -1,0 +1,40 @@
+name: Live stats issue
+
+# Publishes/updates the ONE living "dashboard" issue, decoupled from the
+# discovery pipeline so a transient GitHub-search hiccup in radar.py can never
+# block the issue from refreshing. Runs:
+#   - on demand (workflow_dispatch) — the "Run workflow" button updates the
+#     issue immediately from the data already committed in the repo;
+#   - whenever the digest code itself changes (push to publish_stats_issue.py).
+# The 6-hourly refresh after a successful discovery is still handled inside
+# radar.yml (its publish step runs with `if: always()`).
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/publish_stats_issue.py"
+      - ".github/workflows/stats-issue.yml"
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: axonos-stats-issue
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish living stats issue
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744  # v4
+
+      - name: Publish/update the living stats issue from committed data
+        run: python3 scripts/publish_stats_issue.py

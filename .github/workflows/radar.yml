@@ -9,6 +9,7 @@ on:
     paths:
       - ".github/workflows/radar.yml"
       - "scripts/**"
+      - "!scripts/publish_stats_issue.py"  # digest-only edits are handled by stats-issue.yml
       - "data/seeds.json"
 
 permissions:
@@ -42,4 +43,5 @@ jobs:
         run: python3 scripts/publish_data.py
 
       - name: Publish live stats issue
+        if: always()  # refresh the issue even if discovery hiccuped (uses committed data)
         run: python3 scripts/publish_stats_issue.py

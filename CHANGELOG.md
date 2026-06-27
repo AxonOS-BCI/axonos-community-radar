@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.6.1] - 2026-06-28
+
+### Fixed
+- **The living stats issue now actually refreshes.** Its publish step was the last action in the discovery job and ran only if `radar.py` succeeded — so a transient GitHub-search hiccup (which exits the pipeline) silently skipped the issue update. The step now runs with `if: always()`, refreshing the issue from committed data regardless of discovery health.
+
+### Added
+- **`stats-issue.yml`** — a dedicated, manually-dispatchable workflow that updates the living issue on demand (the **Run workflow** button) and whenever the digest code changes, fully decoupled from the discovery pipeline.
+
+### Changed
+- Digest-only edits no longer trigger a full discovery run; they are handled by the new workflow instead.
+
 ## [3.6.0] - 2026-06-27
 
 ### Added

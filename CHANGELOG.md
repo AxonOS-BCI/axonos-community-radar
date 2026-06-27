@@ -1,5 +1,14 @@
 # Changelog
 
+## [3.5.0] - 2026-06-26
+
+### Added
+- **Roadmap momentum** in the AxonOS view: a stage-segmented progress bar with a live "X shipped · Y in build · Z planned — and climbing" summary, and the workstreams now ordered shipped → building → planned so the roadmap reads as forward motion (counts are computed from the cards, so they stay accurate).
+- **Download data** (↓ Data) in the project grid header — exports the current dataset as JSON, client-side, with no inline handlers (strict CSP preserved).
+
+### Changed
+- Removed the redundant "Add project" button from the top-right of the nav; the hero already carries a prominent "Add your project" call to action.
+
 ## [3.4.0] - 2026-06-26
 
 ### Added

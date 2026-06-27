@@ -33,7 +33,6 @@
     <a class="nav-link nav-hide" href="https://medium.com/@AxonOS">Medium</a>
     <a class="nav-link" href="./feed.xml">RSS</a>
     <a class="nav-link" href="https://github.com/AxonOS-BCI/axonos-community-radar">GitHub</a>
-    <a class="nav-cta" href="https://github.com/AxonOS-BCI/axonos-community-radar/issues/new?template=add-project.yml">Add project</a>
   </div>
 </nav>
 
@@ -82,7 +81,7 @@
     <div class="legend" id="legend"></div>
   </section>
 
-  <div class="ghead"><span id="gcount" aria-live="polite"></span><button class="seg-opt bordered" id="shareBtn">⤴ Share</button></div>
+  <div class="ghead"><span id="gcount" aria-live="polite"></span><button class="seg-opt bordered" id="dlBtn" title="Download the dataset as JSON">↓ Data</button><button class="seg-opt bordered" id="shareBtn">⤴ Share</button></div>
   <div class="cards" id="cards"></div>
 
   </div><!-- /view-projects -->
@@ -122,6 +121,7 @@
   <div id="view-axonos" hidden>
     <div class="ph"><h2>What we're building</h2><span class="note">the AxonOS engineering roadmap</span></div>
     <p class="ax-intro">AxonOS is an open, real-time <b>neural operating system</b> for brain–computer interfaces — a <span class="mono">no_std</span> Rust kernel, a wire-level consent protocol, a deterministic signal pipeline, and the standard that ties them together. This is what's shipped, in progress, and planned.</p>
+    <div class="ax-progress" id="axProgress"></div>
     <div class="ax-grid">
         <a class="ax-card" href="https://github.com/AxonOS-org/axonos-kernel" target="_blank" rel="noopener"><div class="ax-top"><span class="ax-stage st-beta">Beta</span><span class="ax-area">Kernel</span></div><h3>axonos-kernel</h3><p>Real-time no_std kernel: deterministic scheduler, SPSC queues, monotonic time, capability model.</p></a>
         <a class="ax-card" href="https://github.com/AxonOS-org/axonos-consent" target="_blank" rel="noopener"><div class="ax-top"><span class="ax-stage st-shipped">Shipped</span><span class="ax-area">Consent & Protocol</span></div><h3>axonos-consent</h3><p>Kernel-level consent FSM with formally-bounded withdrawal latency. Live MMP interop test PASS.</p></a>

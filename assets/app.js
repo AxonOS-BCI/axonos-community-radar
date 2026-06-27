@@ -205,10 +205,15 @@
     if(v==='builders')renderBuilders();
     try{location.hash=v==='projects'?'':('#'+v);}catch(e){}
   }
+  function stageRank(c){var s=c.querySelector('.ax-stage');var o=['shipped','beta','alpha','design','planned'];for(var i=0;i<o.length;i++){if(s&&s.classList.contains('st-'+o[i]))return i;}return 9;}
+  function orderAxCards(){var g=document.querySelector('#view-axonos .ax-grid');if(!g)return;var cs=Array.prototype.slice.call(g.querySelectorAll('.ax-card'));cs.sort(function(a,b){return stageRank(a)-stageRank(b);});cs.forEach(function(c){g.appendChild(c);});}
+  function renderAxProgress(){var el=$('axProgress');if(!el)return;var cards=document.querySelectorAll('#view-axonos .ax-card');if(!cards.length)return;var o=['shipped','beta','alpha','design','planned'],cnt={};o.forEach(function(k){cnt[k]=0;});for(var i=0;i<cards.length;i++){var s=cards[i].querySelector('.ax-stage');if(s)for(var j=0;j<o.length;j++){if(s.classList.contains('st-'+o[j])){cnt[o[j]]++;break;}}}var total=cards.length,build=cnt.beta+cnt.alpha+cnt.design;var bar='';o.forEach(function(k){if(cnt[k])bar+='<span class="ax-seg seg-'+k+'" data-w="'+(cnt[k]/total*100).toFixed(2)+'"></span>';});el.innerHTML='<div class="ax-bar">'+bar+'</div><div class="ax-prog-txt"><b>'+cnt.shipped+'</b> shipped \u00b7 <b>'+build+'</b> in build \u00b7 <b>'+cnt.planned+'</b> planned <span class="ax-climb">\u2014 and climbing \u2197</span></div>';var segs=el.querySelectorAll('.ax-seg');for(var m=0;m<segs.length;m++){segs[m].style.width=segs[m].getAttribute('data-w')+'%';}}
+  function downloadData(){try{var blob=new Blob([JSON.stringify(DATA,null,2)],{type:'application/json'});var u=URL.createObjectURL(blob);var a=document.createElement('a');a.href=u;a.download='axonos-radar.json';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u);},1000);}catch(e){}}
   (function(){var tabs=document.querySelectorAll('#tabs .tab');
     for(var i=0;i<tabs.length;i++){tabs[i].addEventListener('click',function(){switchView(this.getAttribute('data-view'));});}
     var h=(location.hash||'').replace('#','');
-    if(h==='builders'||h==='methodology')switchView(h);
+    if(h==='builders'||h==='methodology'||h==='axonos')switchView(h);
+    orderAxCards();renderAxProgress();var dl=document.getElementById('dlBtn');if(dl)dl.addEventListener('click',downloadData);
   })();
 
 })();

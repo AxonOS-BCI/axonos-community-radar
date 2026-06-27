@@ -162,13 +162,42 @@ def is_relevant(repo, core, context, keywords):
     return False
 
 
+CATEGORY_PRIORITY = ["Protocols & OS", "Privacy & Security", "Decoding & ML",
+                     "Signal Processing", "Hardware & Acquisition", "Real-time & Embedded"]
+
+
 def categorise(repo, categories):
-    hay = repo_text(repo)
-    best, best_score = "Other", 0
+    """Weighted categorisation: a keyword in the repo NAME is the strongest
+    signal, an exact topic match is strong, a description hit is weak. Ties are
+    broken toward the more specific category (CATEGORY_PRIORITY order) so that,
+    e.g., a repo literally named '*-protocol' lands in Protocols & OS rather than
+    a generic bucket it merely brushes against."""
+    name = (repo.get("full_name") or "").split("/")[-1].lower()
+    topics = set(t.lower() for t in (repo.get("topics") or []))
+    topic_tokens = set()
+    for t in topics:
+        topic_tokens.add(t)
+        topic_tokens.update(t.split("-"))
+    desc = (repo.get("description") or "").lower()
+    scores = {}
     for cat, kws in categories.items():
-        score = sum(1 for kw in kws if kw.lower() in hay)
-        if score > best_score:
-            best, best_score = cat, score
+        s = 0
+        for kw in kws:
+            kwl = kw.lower()
+            if re.search(r"(^|[-_/])" + re.escape(kwl) + r"($|[-_/])", name):
+                s += 4
+            if kwl in topics or kwl in topic_tokens:
+                s += 3
+            elif kwl in desc:
+                s += 1
+        scores[cat] = s
+    best, best_s = "Other", 0
+    for cat in CATEGORY_PRIORITY:
+        if scores.get(cat, 0) > best_s:
+            best, best_s = cat, scores[cat]
+    for cat, s in scores.items():
+        if cat not in CATEGORY_PRIORITY and s > best_s:
+            best, best_s = cat, s
     return best
 
 

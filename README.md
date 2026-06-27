@@ -60,7 +60,7 @@ The result is committed back to the repository through the GitHub API, which sig
 - 🔎 **Keyboard** — press <kbd>/</kbd> to jump straight to search.
 - 📰 **RSS feed** — follow freshly-discovered projects from any reader.
 - ♿ **Accessible** — ARIA roles, keyboard-operable controls, and a live text alternative for the radar.
-- 🔒 **Self-contained** — vanilla JS, a self-contained Content-Security-Policy (no external network requests), no external requests, no trackers.
+- 🔒 **Self-contained** — vanilla JS, a a Content-Security-Policy with externalised scripts (no inline script execution; no external network requests), no external requests, no trackers.
 
 ## Contributing
 

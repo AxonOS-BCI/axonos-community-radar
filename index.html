@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
 <meta name="theme-color" content="#06070b">
 <meta name="description" content="AxonOS Radar — a living, curated map of the open brain–computer-interface field. An AxonOS community project.">
 <link rel="alternate" type="application/rss+xml" title="New BCI projects" href="./feed.xml">
@@ -21,120 +21,7 @@
 <meta name="twitter:image" content="https://axonos-bci.github.io/axonos-community-radar/og-image.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"AxonOS Radar","url":"https://axonos-bci.github.io/axonos-community-radar/","description":"A living, curated map of the open brain-computer-interface field.","publisher":{"@type":"Organization","name":"The AxonOS Project","url":"https://axonos.org"}}</script>
 <title>AxonOS Radar — a living map of open neurotech</title>
-<style>
-  :root{--bg:#06070b;--ink:#f2f5fb;--dim:#9aa3b8;--faint:#6b7488;--line:rgba(255,255,255,.09);--line2:rgba(255,255,255,.06);
-    --card:rgba(255,255,255,.035);--card2:rgba(255,255,255,.05);--accent:#2dd4ff;--violet:#a78bfa;--emerald:#34d399;--amber:#fbbf24;--rose:#fb7185;
-    --nav:rgba(8,10,15,.9);--r:16px;--shadow:0 20px 60px -28px rgba(0,0,0,.8)}
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html{scroll-behavior:smooth;scroll-padding-top:64px}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5;letter-spacing:-0.011em}
-  body{background:radial-gradient(130% 80% at 50% -20%,#0e1a30 0,transparent 50%),radial-gradient(100% 60% at 100% 110%,#160f28 0,transparent 55%),var(--bg)}
-  a{color:inherit;text-decoration:none}
-  .mono{font-family:ui-monospace,"SF Mono",Menlo,monospace}
-  .wrap{max-width:1140px;margin:0 auto;padding:0 20px}
-
-  /* Apple-style frosted nav */
-  nav{position:sticky;top:0;z-index:50;background:var(--nav);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--line2)}
-  .nav-in{max-width:1140px;margin:0 auto;padding:0 20px;height:52px;display:flex;align-items:center;gap:18px}
-  .brand{display:flex;align-items:center;gap:9px;font-weight:600;font-size:15px;letter-spacing:-0.01em}
-  .brand .m{width:20px;height:20px;border-radius:6px;background:conic-gradient(from 210deg,var(--accent),var(--violet),var(--emerald),var(--accent));box-shadow:0 0 16px rgba(45,212,255,.5)}
-  .brand b{font-weight:600}.brand .d{color:var(--faint);font-weight:400}
-  .nav-sp{flex:1}
-  .nav-link{font-size:13.5px;color:var(--dim);padding:7px 11px;border-radius:9px;transition:.15s;font-weight:500}
-  .nav-link:hover{color:var(--ink);background:rgba(255,255,255,.06)}
-  .nav-cta{font-size:13.5px;font-weight:600;color:#04121a;background:var(--ink);padding:7px 14px;border-radius:10px;transition:.15s}
-  .nav-cta:hover{transform:translateY(-1px);filter:brightness(.95)}
-  @media(max-width:620px){.nav-hide{display:none}}
-
-  header.hero{text-align:center;padding:64px 0 28px}
-  .eyebrow{font-size:12px;letter-spacing:.04em;color:var(--accent);font-weight:600;margin-bottom:16px}
-  h1{font-size:clamp(36px,7vw,68px);line-height:1.03;font-weight:600;letter-spacing:-0.03em;margin:0 0 18px}
-  h1 .grad{background:linear-gradient(110deg,#fff,var(--accent) 55%,var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .sub{color:var(--dim);font-size:clamp(16px,2.4vw,20px);max-width:60ch;margin:0 auto;font-weight:400;letter-spacing:-0.01em}
-  .hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:30px}
-  .btn{cursor:pointer;border:0;font:inherit;font-weight:600;font-size:15px;padding:13px 24px;border-radius:13px;transition:.16s;letter-spacing:-0.01em}
-  .btn.primary{color:#04121a;background:linear-gradient(120deg,var(--accent),#7fe7ff)}
-  .btn.primary:hover{transform:translateY(-2px);box-shadow:0 14px 36px -12px rgba(45,212,255,.6)}
-  .btn.sec{color:var(--ink);background:rgba(255,255,255,.07);border:1px solid var(--line)}
-  .btn.sec:hover{background:rgba(255,255,255,.11)}
-
-  /* stats */
-  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line2);border:1px solid var(--line2);border-radius:18px;overflow:hidden;margin:30px 0 8px}
-  @media(max-width:560px){.stats{grid-template-columns:repeat(2,1fr)}}
-  .stat{background:var(--bg);padding:22px 16px;text-align:center}
-  .stat b{display:block;font-size:30px;font-weight:600;letter-spacing:-0.03em;line-height:1}
-  .stat.a b{color:#fff}.stat.n b{color:var(--emerald)}.stat.s b{color:var(--amber)}.stat.c b{color:var(--violet)}
-  .stat span{display:block;font-size:12px;color:var(--faint);margin-top:8px;font-weight:500;letter-spacing:.01em}
-  .updated{text-align:center;font-size:12px;color:var(--faint);margin:14px 0 0}.updated a{color:var(--dim);border-bottom:1px solid var(--line)}
-
-  /* controls — Apple segmented + clean */
-  .controls{background:var(--card);border:1px solid var(--line2);border-radius:18px;padding:14px;margin:34px 0 18px;display:flex;flex-direction:column;gap:12px}
-  .ctl-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  .search{flex:1;min-width:180px;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:12px;padding:11px 15px;color:var(--ink);font:inherit;font-size:14.5px;outline:none;transition:.15s}
-  .search:focus{border-color:rgba(45,212,255,.5);background:rgba(255,255,255,.07)}
-  .lbl{font-size:11px;color:var(--faint);font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-right:2px}
-  .seg{display:inline-flex;background:rgba(255,255,255,.05);border:1px solid var(--line2);border-radius:11px;padding:3px;gap:2px}
-  .seg-opt{border:0;background:transparent;color:var(--dim);font:inherit;font-size:13px;font-weight:600;padding:7px 13px;border-radius:8px;cursor:pointer;transition:.16s;white-space:nowrap;letter-spacing:-0.01em}
-  .seg-opt:hover{color:var(--ink)}
-  .seg-opt.on{background:rgba(255,255,255,.13);color:#fff;box-shadow:0 1px 2px rgba(0,0,0,.35)}
-  select.sel{background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:11px;color:var(--ink);font:inherit;font-size:13.5px;padding:8px 12px;outline:none;cursor:pointer;font-weight:500}
-  select.sel:focus{border-color:rgba(45,212,255,.5)}
-  .chips{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
-  .chip{cursor:pointer;font-size:12.5px;border:1px solid var(--line2);background:rgba(255,255,255,.04);color:var(--dim);border-radius:999px;padding:7px 13px;display:inline-flex;align-items:center;gap:7px;transition:.15s;font-weight:500}
-  .chip:hover{color:var(--ink)}.chip.on{color:#fff;background:rgba(255,255,255,.09)}.chip .dot{width:8px;height:8px;border-radius:50%}
-  .chip .cnt{font-size:10px;font-weight:700;color:var(--faint);background:rgba(255,255,255,.07);border-radius:5px;padding:1px 5px;margin-left:1px}
-  .tg{cursor:pointer;font-size:12.5px;color:var(--dim);border:1px solid var(--line2);border-radius:999px;padding:7px 13px;background:rgba(255,255,255,.04);transition:.15s;font-weight:600}
-  .tg.on{color:#04121a;border-color:transparent}.tg.act.on{background:var(--emerald)}.tg.new.on{background:var(--amber)}
-
-  /* radar */
-  .panel{background:var(--card);border:1px solid var(--line2);border-radius:22px;box-shadow:var(--shadow);padding:22px}
-  .radar-wrap{position:relative;display:flex;flex-direction:column;align-items:center;width:100%}
-  canvas#radar{display:block;width:100%;max-width:460px;aspect-ratio:1/1;margin:0 auto;touch-action:none}
-  #tip{position:absolute;pointer-events:none;background:rgba(14,17,24,.96);border:1px solid var(--line);border-radius:11px;padding:9px 12px;font-size:12px;opacity:0;transition:.12s;max-width:240px;box-shadow:var(--shadow);z-index:5;backdrop-filter:blur(8px)}
-  #tip b{color:#fff}#tip .m{color:var(--dim);font-size:11px}
-  .legend{display:flex;flex-wrap:wrap;gap:9px 16px;justify-content:center;margin-top:16px;font-size:11.5px;color:var(--faint)}
-  .legend span{display:inline-flex;align-items:center;gap:6px}.legend .dot{width:8px;height:8px;border-radius:50%}
-
-  /* grid */
-  .ghead{display:flex;justify-content:space-between;align-items:baseline;margin:0 2px 14px;font-size:13px;color:var(--faint)}
-  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
-  .pc{position:relative;background:var(--card);border:1px solid var(--line2);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:11px;transition:transform .18s cubic-bezier(.2,.7,.3,1),border-color .18s,box-shadow .18s;color:var(--ink);overflow:hidden;animation:fade .4s both}
-  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-  .pc::after{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--cc,#94a3b8);opacity:.9}
-  .pc:hover{transform:translateY(-4px);border-color:rgba(45,212,255,.35);box-shadow:0 22px 50px -26px rgba(45,212,255,.5)}
-  .pc .top{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-  .pill{font-size:11px;font-weight:600;padding:4px 10px;border-radius:999px;white-space:nowrap;letter-spacing:-0.01em}
-  .nb{font-size:10px;font-weight:700;letter-spacing:.05em;padding:4px 9px;border-radius:999px;background:linear-gradient(120deg,var(--amber),#fde68a);color:#3a2c05}
-  .ev{font-size:10px;font-weight:700;letter-spacing:.03em;padding:3px 7px;border-radius:6px;border:1px solid;background:rgba(255,255,255,.03);cursor:help}
-  .rise{font-size:10px;font-weight:700;letter-spacing:.04em;padding:4px 9px;border-radius:999px;background:linear-gradient(120deg,var(--emerald),#6ee7b7);color:#053a23}
-  .st{margin-left:auto;color:var(--amber);font-weight:600;font-size:13.5px;white-space:nowrap}
-  .pc h3{margin:0;font-size:16px;font-weight:600;letter-spacing:-0.02em;word-break:break-word}
-  .pc .desc{margin:0;color:var(--dim);font-size:13px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.45}
-  .pc .foot{margin-top:auto;display:flex;align-items:center;gap:12px;font-size:12px;color:var(--faint);padding-top:4px}
-  .pc .lng{display:inline-flex;align-items:center;gap:6px}.lng .ld{width:8px;height:8px;border-radius:50%;background:#5a6680}
-  .pc .ac{margin-left:auto;display:inline-flex;align-items:center;gap:6px}.ac .ad{width:7px;height:7px;border-radius:50%;background:#3a4256}.ac .ad.on{background:var(--emerald);box-shadow:0 0 7px var(--emerald)}
-  .empty{text-align:center;padding:54px 16px;color:var(--dim);grid-column:1/-1}.empty .big{font-size:21px;color:var(--ink);font-weight:600;margin-bottom:8px;letter-spacing:-0.02em}
-  .hidden{display:none}
-  .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:1px}
-  .tag{font-size:10.5px;color:var(--faint);background:rgba(255,255,255,.045);border:1px solid var(--line2);border-radius:6px;padding:2px 7px;font-weight:500;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .tg.clr{color:var(--dim);font-weight:600}
-  .lnkbtn{background:none;border:0;color:var(--accent);font:inherit;font-weight:600;cursor:pointer;padding:0;text-decoration:underline}
-
-  section.block{margin-top:56px}
-  h2{font-size:clamp(22px,3.4vw,30px);font-weight:600;letter-spacing:-0.025em;margin:0 0 8px;text-align:center}
-  .blk-sub{text-align:center;color:var(--dim);font-size:15px;max-width:56ch;margin:0 auto 26px}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:680px){.grid2{grid-template-columns:1fr}}
-  .card{background:var(--card);border:1px solid var(--line2);border-radius:18px;padding:20px;transition:.16s}
-  .card:hover{border-color:var(--line);background:var(--card2)}
-  .card h3{margin:0 0 7px;font-size:16px;font-weight:600;letter-spacing:-0.01em}.card p{margin:0;color:var(--dim);font-size:13.5px;line-height:1.5}
-  .card a{color:var(--accent)}
-  ol.policy{margin:10px 0 0;padding-left:20px;color:var(--dim);font-size:13.5px}ol.policy li{margin:4px 0}
-  .visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-  footer{margin-top:64px;padding:36px 0;border-top:1px solid var(--line2);text-align:center;font-size:12px;color:var(--faint);line-height:1.8}
-  footer a{color:var(--dim)}
-  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:rgba(20,24,32,.96);border:1px solid var(--line);color:#fff;padding:11px 20px;border-radius:12px;font-size:14px;font-weight:500;opacity:0;transition:.25s;z-index:100;box-shadow:var(--shadow);backdrop-filter:blur(10px);pointer-events:none}
-  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-</style>
+<link rel="stylesheet" href="assets/app.css">
 </head>
 <body>
 <nav>
@@ -164,6 +51,12 @@
   <div class="stats" id="stats"></div>
   <div class="updated" id="updated"></div>
 
+  <div class="tabs" id="tabs" role="tablist" aria-label="Views">
+    <button class="tab on" data-view="projects" type="button" role="tab">Projects</button>
+    <button class="tab" data-view="builders" type="button" role="tab">Builders</button>
+    <button class="tab" data-view="methodology" type="button" role="tab">Methodology</button>
+  </div>
+  <div id="view-projects">
   <div class="controls">
     <div class="ctl-row">
       <input class="search" id="search" placeholder="Search projects, languages, topics…" autocomplete="off" aria-label="Search projects">
@@ -191,6 +84,31 @@
   <div class="ghead"><span id="gcount" aria-live="polite"></span><button class="seg-opt" id="shareBtn" style="border:1px solid var(--line2)">⤴ Share</button></div>
   <div class="cards" id="cards"></div>
 
+  </div><!-- /view-projects -->
+
+  <div id="view-builders" hidden>
+    <div class="ph"><h2>Top builders</h2><span class="note">owners with 2+ tracked projects, by total stars</span></div>
+    <div class="lead" id="buildersList"></div>
+  </div>
+
+  <div id="view-methodology" hidden>
+    <div class="ph"><h2>How this radar works</h2><span class="note">discovery, not endorsement</span></div>
+    <div class="card" style="max-width:820px">
+      <p>The radar is generated from <b>public GitHub topic search</b>. A repository is kept if it carries a core BCI/neuro topic, <b>or</b> a context topic (signal processing, embedded, privacy…) <b>plus</b> an anchored neuro keyword — so generic projects don't leak in. Recency is measured from a fixed 6-hour snapshot, so unchanged projects keep a stable position. It's a discovery map — <b>not an endorsement or a ranking of quality, safety, or clinical fitness</b>. AxonOS is ranked by the same formula as everyone else.</p>
+    </div>
+    <div class="ph" style="margin-top:24px"><h2>Evidence tiers</h2><span class="note">why each project qualifies</span></div>
+    <div class="tier-grid">
+      <div class="tier-row"><span class="tg-badge" style="color:#34d399;border-color:#34d39955">L3</span><span class="tg-txt"><b>Explicit BCI.</b> Carries a direct brain–computer-interface / neural-interface topic. The clearest signal of relevance.</span></div>
+      <div class="tier-row"><span class="tg-badge" style="color:#2dd4ff;border-color:#2dd4ff55">L2</span><span class="tg-txt"><b>Neural signal.</b> A neural-signal topic or keyword (EEG, ECoG, EMG, spike sorting, motor imagery…) without an explicit BCI tag.</span></div>
+      <div class="tier-row"><span class="tg-badge" style="color:#a78bfa;border-color:#a78bfa55">L1</span><span class="tg-txt"><b>Context + keyword.</b> A context topic (signal processing, embedded, real-time, privacy) <b>plus</b> an anchored neuro keyword in the metadata.</span></div>
+      <div class="tier-row"><span class="tg-badge" style="color:#fb7185;border-color:#fb718555">L0</span><span class="tg-txt"><b>Weak adjacency.</b> Included but flagged for review — a borderline match that may be a false positive.</span></div>
+    </div>
+    <div class="ph" style="margin-top:24px"><h2>Scoring</h2><span class="note">transparent, neutral</span></div>
+    <div class="card" style="max-width:820px">
+      <p>Position is a neutral discovery signal: <span class="mono">log₁₀(stars+1) × 10 + recency</span>. <b>Rising</b> reflects real 7-day star velocity from accumulated history. No hand-tuned “hype”, no paid placement, no self-boosting — every project, including AxonOS, is ranked by the same formula.</p>
+    </div>
+  </div>
+
   <section class="block">
     <h2>Help the ecosystem grow</h2>
     <p class="blk-sub">A discovery map is only as alive as its community. Here's how to plug in.</p>
@@ -202,19 +120,6 @@
     </div>
   </section>
 
-  <section class="block">
-    <h2>How this radar works</h2>
-    <div class="card" style="max-width:820px;margin:0 auto">
-      <p>The radar is generated from <b>public GitHub topic search</b>. A repository is kept only if it carries a core BCI/neuro topic, or a context topic (signal processing, embedded, privacy…) <b>plus</b> a neuro keyword — so generic projects don't leak in. Recency is measured from a fixed 6-hour snapshot, so unchanged projects keep a stable position. Coloured sectors group projects by category. It's a discovery map — <b>not an endorsement or a ranking of quality</b>.</p>
-      <p style="margin-top:12px">Engagement is deliberate and low-noise:</p>
-      <ol class="policy">
-        <li>Star only genuinely relevant repositories.</li>
-        <li>React only to releases that are genuinely relevant.</li>
-        <li>Open PRs only when they add real technical value.</li>
-        <li>No mass-follows, no auto-comments, no low-signal noise.</li>
-      </ol>
-    </div>
-  </section>
 </div>
 
 <footer>
@@ -225,195 +130,6 @@
 </footer>
 <div class="toast" id="toast"></div>
 
-<script>
-(function(){
-  'use strict';
-  function __showErr(msg){try{var d=document.getElementById('__err__');if(!d){d=document.createElement('div');d.id='__err__';d.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:99999;background:rgba(60,0,0,.95);color:#fff;font:12px/1.4 monospace;padding:10px 12px;white-space:pre-wrap;max-height:45%;overflow:auto;border-top:2px solid #f55';document.body.appendChild(d);}d.textContent='Radar error — please screenshot:\n'+msg;}catch(_){}}
-  window.addEventListener('error',function(e){__showErr((e.message||'')+'  @'+(e.lineno||0)+':'+(e.colno||0));});
-  window.addEventListener('unhandledrejection',function(e){__showErr('promise: '+((e.reason&&e.reason.message)||e.reason));});
-
-  var CATS=[{n:'Hardware & Acquisition',c:'#2dd4ff'},{n:'Signal Processing',c:'#38bdf8'},{n:'Decoding & ML',c:'#a78bfa'},
-    {n:'Privacy & Security',c:'#fb7185'},{n:'Real-time & Embedded',c:'#34d399'},{n:'Protocols & OS',c:'#fbbf24'},{n:'Other',c:'#94a3b8'}];
-  var NS=6;
-  function catColor(n){for(var i=0;i<CATS.length;i++)if(CATS[i].n===n)return CATS[i].c;return '#94a3b8';}
-  function catIndex(n){for(var i=0;i<CATS.length;i++)if(CATS[i].n===n)return i;return CATS.length-1;}
-  function $(id){return document.getElementById(id);}
-  function hash(s){var h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=(h*16777619)>>>0;}return h;}
-  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
-  function safeUrl(u){u=String(u||'');return /^https:\/\/github\.com\//.test(u)?u:'#';}
-  function fmtAge(d){if(d==null||d>=9000)return '—';if(d<=0)return 'today';if(d<7)return d+'d';if(d<60)return Math.round(d/7)+'w';if(d<730)return Math.round(d/30)+'mo';return Math.round(d/365)+'y';}
-
-  var DATA={projects:[],generated_at:null,counts:{total:0,active_30d:0,new:0}};
-  var state={q:'',cats:{},lang:'',activeOnly:false,newOnly:false,sort:'activity',view:'grid'};
-  var points=[];
-
-  function filtered(){
-    var q=state.q.toLowerCase(),anyCat=Object.keys(state.cats).some(function(k){return state.cats[k];});
-    var arr=DATA.projects.filter(function(p){
-      if(state.activeOnly&&!p.active)return false;
-      if(state.newOnly&&!p.is_new)return false;
-      if(anyCat&&!state.cats[p.category])return false;
-      if(state.lang&&(p.language||'')!==state.lang)return false;
-      if(q){var hay=(p.full_name+' '+(p.description||'')+' '+(p.language||'')+' '+(p.topics||[]).join(' ')).toLowerCase();if(hay.indexOf(q)<0)return false;}
-      return true;
-    });
-    arr.sort(state.sort==='stars'?function(a,b){return (b.stars||0)-(a.stars||0);}
-      :state.sort==='new'?function(a,b){return String(b.first_seen||'').localeCompare(String(a.first_seen||''));}
-      :state.sort==='name'?function(a,b){return a.full_name.toLowerCase().localeCompare(b.full_name.toLowerCase());}
-      :function(a,b){return (a.days_since_push||9999)-(b.days_since_push||9999);});
-    return arr;
-  }
-
-  // ── radar ──
-  var cv=$('radar'),ctx=cv.getContext('2d'),DPR=1,S=460;
-  function layout(){var rect=cv.getBoundingClientRect();S=Math.round(rect.width)||((cv.parentNode.clientWidth||356)-44);if(!S||S<200)S=Math.max(200,((cv.parentNode.clientWidth||356)-44));DPR=Math.min(2,window.devicePixelRatio||1);cv.width=Math.round(S*DPR);cv.height=Math.round(S*DPR);ctx.setTransform(DPR,0,0,DPR,0,0);}
-  function tierFrac(d){if(d==null||d>=9000)return .88;if(d<=7)return .22;if(d<=30)return .46;if(d<=90)return .68;return .85;}
-  function drawRadar(arr){
-    if(state.view!=='radar')return;
-    layout();var cx=S/2,cy=S/2,R=S/2-12;ctx.clearRect(0,0,S,S);
-    for(var s=0;s<NS;s++){var a0=(s/NS)*6.283-Math.PI/2,a1=((s+1)/NS)*6.283-Math.PI/2;
-      ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,R,a0,a1);ctx.closePath();ctx.fillStyle=CATS[s].c;ctx.globalAlpha=.08;ctx.fill();ctx.globalAlpha=1;
-      ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a0)*R,cy+Math.sin(a0)*R);ctx.strokeStyle='rgba(160,180,220,.1)';ctx.lineWidth=1;ctx.stroke();}
-    ctx.beginPath();ctx.arc(cx,cy,R,0,6.283);ctx.strokeStyle='rgba(170,190,230,.2)';ctx.lineWidth=1.5;ctx.stroke();
-    var rings=[{f:.22,l:'7d'},{f:.46,l:'30d'},{f:.68,l:'90d'}];
-    for(var r=0;r<rings.length;r++){var rr=R*rings[r].f;ctx.beginPath();ctx.arc(cx,cy,rr,0,6.283);ctx.strokeStyle='rgba(170,190,230,'+(.18-r*.03)+')';ctx.lineWidth=1;ctx.stroke();
-      var ly=cy-rr;ctx.fillStyle='rgba(6,7,11,.82)';ctx.fillRect(cx-15,ly-7.5,30,15);ctx.fillStyle='rgba(214,223,242,.9)';ctx.font='600 10px ui-monospace,monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(rings[r].l,cx,ly);}
-    ctx.beginPath();ctx.arc(cx,cy,4.5,0,6.283);ctx.fillStyle='#fff';ctx.shadowColor='#2dd4ff';ctx.shadowBlur=14;ctx.fill();ctx.shadowBlur=0;
-    points=[];
-    for(var i=0;i<arr.length;i++){var p=arr[i];var si=catIndex(p.category);if(si>=NS)si=hash(p.full_name)%NS;
-      var h=hash(p.full_name);
-      var ang=((si+0.5)/NS)*6.283-Math.PI/2+((h%50)-25)/25*(6.283/NS)*0.40;
-      var fr=Math.min(.96,tierFrac(p.days_since_push)*(0.94+((h>>6)%12)/100));
-      var x=cx+Math.cos(ang)*R*fr,y=cy+Math.sin(ang)*R*fr;
-      var rad=4.5+Math.min(11,Math.log((p.stars||0)+1)/Math.LN10*2.6),col=CATS[si].c;
-      ctx.shadowColor=col;ctx.shadowBlur=p.active?15:6;
-      ctx.beginPath();ctx.arc(x,y,rad,0,6.283);ctx.fillStyle=col;ctx.globalAlpha=p.active?1:.5;ctx.fill();ctx.globalAlpha=1;ctx.shadowBlur=0;
-      ctx.beginPath();ctx.arc(x,y,rad,0,6.283);ctx.strokeStyle='rgba(255,255,255,.55)';ctx.lineWidth=1;ctx.stroke();
-      if(p.is_new){ctx.beginPath();ctx.arc(x,y,rad+4,0,6.283);ctx.strokeStyle='#fde68a';ctx.globalAlpha=.9;ctx.lineWidth=1.5;ctx.stroke();ctx.globalAlpha=1;}
-      points.push({x:x,y:y,r:rad+6,p:p});
-    }
-    var cats={};arr.forEach(function(p){cats[p.category]=1;});var nw=arr.filter(function(p){return p.is_new;}).length;
-    var alt='Radar showing '+arr.length+' projects across '+Object.keys(cats).length+' categories'+(nw?', '+nw+' new':'')+'.';
-    var ra=$('radar-alt');if(ra)ra.textContent=alt;cv.setAttribute('aria-label',alt);
-  }
-  function showTip(pt,mx,my){var t=$('tip');if(!t)return;var p=pt.p;t.innerHTML='<b>'+esc(p.full_name)+'</b>'+(p.is_new?' ✦':'')+'<br><span class="m">⭐ '+(p.stars||0)+' · '+esc(p.language||'n/a')+' · '+esc(p.category)+' · '+fmtAge(p.days_since_push)+'</span>';t.style.left=Math.min(mx+12,cv.clientWidth-220)+'px';t.style.top=Math.max(0,my-10)+'px';t.style.opacity=1;}
-  cv.addEventListener('pointermove',function(e){var r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top,best=null,bd=1e9;for(var i=0;i<points.length;i++){var dx=mx-points[i].x,dy=my-points[i].y,d=dx*dx+dy*dy;if(d<points[i].r*points[i].r&&d<bd){bd=d;best=points[i];}}if(best){showTip(best,mx,my);cv.style.cursor='pointer';}else{var tp=$('tip');if(tp)tp.style.opacity=0;cv.style.cursor='default';}});
-  cv.addEventListener('pointerleave',function(){var tp=$('tip');if(tp)tp.style.opacity=0;});
-  cv.addEventListener('click',function(e){var r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;for(var i=0;i<points.length;i++){var dx=mx-points[i].x,dy=my-points[i].y;if(dx*dx+dy*dy<points[i].r*points[i].r){var u=safeUrl(points[i].p.html_url);if(u!=='#')window.open(u,'_blank','noopener');return;}}});
-
-  var GENERIC={rust:1,python:1,c:1,'c-plus-plus':1,cpp:1,javascript:1,typescript:1,go:1,'no-std':1};
-  function tagRow(p){var t=(p.topics||[]).filter(function(x){return !GENERIC[String(x).toLowerCase()];}).slice(0,3);
-    return t.length?'<div class="tags">'+t.map(function(x){return '<span class="tag">'+esc(x)+'</span>';}).join('')+'</div>':'';}
-  var TIER={L3_EXPLICIT_BCI:['L3','#34d399'],L2_NEURAL_SIGNAL:['L2','#2dd4ff'],L1_CONTEXT_PLUS_NEURO:['L1','#a78bfa'],L0_WEAK_ADJACENT:['L0','#fb7185']};
-  function evBadge(p){var t=p.evidence_tier;if(!t)return '';var e=TIER[t]||['•','#6b7488'];
-    return '<span class="ev" style="color:'+e[1]+';border-color:'+e[1]+'55" title="'+esc(p.inclusion_reason||t)+'">'+e[0]+'</span>';}
-  function renderCards(arr){
-    var l=$('cards');
-    if(!arr.length){l.innerHTML='<div class="empty"><div class="big">'+(DATA.generated_at?'No matches':'Radar warming up')+'</div>'+(DATA.generated_at?(anyFilter()?'Nothing matches these filters — <button class="lnkbtn" id="emptyCl" type="button">clear all</button>.':'No projects yet.'):'The first scan runs on publish and refreshes every 6 hours. Real projects appear here shortly.')+'</div>';var ec=$('emptyCl');if(ec)ec.addEventListener('click',clearFilters);return;}
-    var html='';
-    for(var i=0;i<arr.length;i++){var p=arr[i],col=catColor(p.category);
-      html+='<a class="pc" style="--cc:'+col+';animation-delay:'+Math.min(i*18,360)+'ms" href="'+esc(safeUrl(p.html_url))+'" target="_blank" rel="noopener">'
-        +'<div class="top"><span class="pill" style="color:'+col+';background:'+col+'1f">'+esc(p.category)+'</span>'+evBadge(p)
-        +(p.rising?'<span class="rise">↑ '+(p.stars_delta_7d>0?('+'+p.stars_delta_7d+'/7d'):'rising')+'</span>':(p.is_new?'<span class="nb">NEW</span>':''))+'<span class="st">★ '+(p.stars||0)+'</span></div>'
-        +'<h3>'+esc(p.full_name)+'</h3><p class="desc">'+esc(p.description||'—')+'</p>'
-        +tagRow(p)
-        +'<div class="foot"><span class="lng"><span class="ld"></span>'+esc(p.language||'n/a')+'</span>'
-        +'<span class="ac"><span class="ad'+(p.active?' on':'')+'"></span>'+fmtAge(p.days_since_push)+'</span></div></a>';}
-    l.innerHTML=html;
-  }
-
-  function anyFilter(){return !!(state.q||state.lang||state.activeOnly||state.newOnly||Object.keys(state.cats).some(function(k){return state.cats[k];}));}
-  function clearFilters(){state.q='';state.lang='';state.activeOnly=false;state.newOnly=false;state.cats={};
-    var se=$('search');if(se)se.value='';var ls=$('langSel');if(ls)ls.value='';
-    ['tAct','tNew'].forEach(function(id){var t=$(id);if(t){t.classList.remove('on');t.setAttribute('aria-pressed','false');}});
-    buildChips();render();}
-  function readHash(){try{var h=(location.hash||'').replace(/^#/,'');if(!h)return;var p={};h.split('&').forEach(function(kv){var i=kv.indexOf('=');if(i>0)p[kv.slice(0,i)]=decodeURIComponent(kv.slice(i+1).replace(/\+/g,' '));});
-    if(p.view==='radar'||p.view==='grid')state.view=p.view;
-    if(['activity','stars','new','name'].indexOf(p.sort)>=0)state.sort=p.sort;
-    if(p.lang)state.lang=p.lang; if(p.q)state.q=p.q;
-    state.activeOnly=p.active==='1'; state.newOnly=p.new==='1';
-    if(p.cat)p.cat.split(',').forEach(function(c){if(c)state.cats[c]=true;});}catch(e){}}
-  function writeHash(){try{var p=[];
-    if(state.view!=='grid')p.push('view='+state.view);
-    if(state.sort!=='activity')p.push('sort='+state.sort);
-    if(state.lang)p.push('lang='+encodeURIComponent(state.lang));
-    if(state.q)p.push('q='+encodeURIComponent(state.q));
-    if(state.activeOnly)p.push('active=1'); if(state.newOnly)p.push('new=1');
-    var on=Object.keys(state.cats).filter(function(k){return state.cats[k];});
-    if(on.length)p.push('cat='+on.map(encodeURIComponent).join(','));
-    if(window.history&&history.replaceState)history.replaceState(null,'',p.length?'#'+p.join('&'):location.pathname+location.search);}catch(e){}}
-  function reflect(){var se=$('search');if(se)se.value=state.q;var ls=$('langSel');if(ls)ls.value=state.lang;
-    [['tAct',state.activeOnly],['tNew',state.newOnly]].forEach(function(x){var t=$(x[0]);if(t){t.classList.toggle('on',x[1]);t.setAttribute('aria-pressed',String(x[1]));}});}
-  function render(){
-    var arr=filtered();
-    $('radarSec').classList.toggle('hidden',state.view!=='radar');
-    $('cards').classList.toggle('hidden',false);
-    drawRadar(arr);renderCards(arr);
-    $('gcount').textContent='Showing '+arr.length+' of '+DATA.projects.length+' projects';
-    var cb=$('clearBtn');if(cb)cb.classList.toggle('hidden',!anyFilter());
-    writeHash();
-  }
-
-  // ── Apple-style segmented controls (built in JS → testable + reliable) ──
-  function buildSeg(id,opts,get,set){var c=$(id);if(!c)return;c.innerHTML='';var btns=[];
-    opts.forEach(function(o){var b=document.createElement('button');b.className='seg-opt'+(o.v===get()?' on':'');b.textContent=o.l;
-      b.setAttribute('role','tab');b.setAttribute('tabindex','0');b.setAttribute('aria-selected',String(o.v===get()));
-      b.addEventListener('click',function(){set(o.v);btns.forEach(function(x){x.classList.remove('on');x.setAttribute('aria-selected','false');});b.classList.add('on');b.setAttribute('aria-selected','true');render();});
-      btns.push(b);c.appendChild(b);});}
-
-  function buildChips(){var c=$('chips');if(!c)return;c.innerHTML='';
-    var counts={};DATA.projects.forEach(function(p){counts[p.category]=(counts[p.category]||0)+1;});
-    CATS.forEach(function(cat){if(cat.n==='Other')return;var on=!!state.cats[cat.n],nn=counts[cat.n]||0;
-    var el=document.createElement('div');el.className='chip'+(on?' on':'');el.setAttribute('role','button');el.setAttribute('tabindex','0');el.setAttribute('aria-pressed',String(on));
-    el.innerHTML='<span class="dot" style="background:'+cat.c+'"></span>'+esc(cat.n)+(nn?' <span class="cnt">'+nn+'</span>':'');
-    el.addEventListener('click',function(){state.cats[cat.n]=!state.cats[cat.n];el.classList.toggle('on',state.cats[cat.n]);el.setAttribute('aria-pressed',String(!!state.cats[cat.n]));render();});
-    c.appendChild(el);});}
-  function buildLegend(){var l=$('legend');if(!l)return;l.innerHTML='';CATS.forEach(function(cat){if(cat.n==='Other')return;l.innerHTML+='<span><span class="dot" style="background:'+cat.c+'"></span>'+esc(cat.n)+'</span>';});l.innerHTML+='<span style="color:#5a6680">· inner = recent · size = stars · ✦ new</span>';}
-  function buildLangs(){var sel=$('langSel');if(!sel)return;var langs={};DATA.projects.forEach(function(p){if(p.language)langs[p.language]=(langs[p.language]||0)+1;});
-    var arr=Object.keys(langs).sort(function(a,b){return langs[b]-langs[a];});
-    sel.innerHTML='<option value="">All languages</option>'+arr.map(function(L){return '<option value="'+esc(L)+'">'+esc(L)+' ('+langs[L]+')</option>';}).join('');
-    sel.value=state.lang;}
-
-  function setStats(){
-    var c=DATA.counts||{},tot=c.total||DATA.projects.length,act=c.active_30d||0,nw=c.new||0;
-    var stars=DATA.projects.reduce(function(s,p){return s+(p.stars||0);},0),cats={};DATA.projects.forEach(function(p){cats[p.category]=1;});
-    function k(n){return n>=1000?(n/1000).toFixed(n>=10000?0:1)+'k':String(n);}
-    $('stats').innerHTML='<div class="stat a"><b>'+tot+'</b><span>PROJECTS</span></div>'
-      +'<div class="stat n"><b>'+nw+'</b><span>NEW THIS WEEK</span></div>'
-      +'<div class="stat s"><b>'+k(stars)+'</b><span>TOTAL STARS</span></div>'
-      +'<div class="stat c"><b>'+act+'</b><span>ACTIVE 30D</span></div>';
-    var u=$('updated');
-    if(DATA.generated_at){var d=new Date(DATA.generated_at);u.innerHTML='Updated '+d.toUTCString().replace('GMT','UTC')+' · refreshes every 6h · <a href="./feed.xml">RSS</a>';}
-    else u.textContent='Warming up — first scan runs on publish · refreshes every 6h';
-  }
-
-  function toast(msg){var t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},1800);}
-
-  function bindToggle(id,key){$(id).addEventListener('click',function(){state[key]=!state[key];this.classList.toggle('on',state[key]);this.setAttribute('aria-pressed',String(state[key]));render();});}
-
-  function boot(){
-    readHash();
-    buildSeg('segView',[{v:'grid',l:'☰ Grid'},{v:'radar',l:'◎ Radar'}],function(){return state.view;},function(v){state.view=v;});
-    buildSeg('segSort',[{v:'activity',l:'Activity'},{v:'stars',l:'Stars'},{v:'new',l:'Newest'},{v:'name',l:'A–Z'}],function(){return state.sort;},function(v){state.sort=v;});
-    buildChips();buildLegend();buildLangs();setStats();reflect();
-    $('search').addEventListener('input',function(e){state.q=e.target.value;render();});
-    $('langSel').addEventListener('change',function(e){state.lang=e.target.value;render();});
-    bindToggle('tAct','activeOnly');bindToggle('tNew','newOnly');
-    var cb=$('clearBtn');if(cb)cb.addEventListener('click',clearFilters);
-    $('shareBtn').addEventListener('click',function(){var url='https://axonos-bci.github.io/axonos-community-radar/';
-      if(navigator.share){navigator.share({title:'AxonOS Radar',url:location.href}).catch(function(){});}
-      else if(navigator.clipboard){navigator.clipboard.writeText(url).then(function(){toast('Link copied');}).catch(function(){toast(url);});}
-      else toast(url);});
-    document.addEventListener('keydown',function(e){
-      var tag=e.target&&e.target.tagName;
-      if(e.key==='/'&&['INPUT','SELECT','TEXTAREA'].indexOf(tag)<0){e.preventDefault();var s2=$('search');if(s2&&s2.focus)s2.focus();return;}
-      if((e.key==='Enter'||e.key===' ')&&e.target&&e.target.getAttribute&&e.target.getAttribute('role')==='button'){e.preventDefault();e.target.click();}});
-    window.addEventListener('resize',function(){drawRadar(filtered());});
-    render();
-    fetch('./data/radar.json',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){DATA=j||DATA;if(!DATA.projects)DATA.projects=[];buildChips();buildLangs();setStats();render();}).catch(function(err){console.log('radar data not loaded:',err);setStats();render();});
-  }
-  boot();
-})();
-</script>
+<script src="assets/app.js" defer></script>
 </body>
 </html>

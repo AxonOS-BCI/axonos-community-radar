@@ -1,5 +1,22 @@
 # Changelog
 
+## [3.1.0] - 2026-06-26
+
+First public beta of the v3 experience.
+
+### Added
+- **Three-view UI** in the radar: **Projects** (the map and grid), **Builders** (a leaderboard of owners with 2+ tracked projects), and **Methodology** (inclusion rule, evidence tiers L3–L0, and the transparent scoring formula). Tabs are wired via event listeners — no inline handlers.
+- **Externalised front-end:** all JavaScript moved to `assets/app.js` and all CSS to `assets/app.css`.
+- **Strict script CSP:** `script-src 'self'` — inline script execution is no longer allowed (the XSS backstop). Inline `style=` colour attributes remain, so `style-src` keeps `'unsafe-inline'`; this is stated honestly rather than over-claimed.
+
+### Changed
+- **Categorisation rewritten** (`categorise()`): a keyword in the repository name is the strongest signal, an exact topic match is strong, a description hit is weak, and ties break toward the more specific category. This fixes systematic mis-bucketing — e.g. `*-protocol`, `*-consent`, and `*-sdk` repositories now land in **Protocols & OS** instead of generic buckets they merely brushed against. Re-categorising the current dataset moved 40 of 106 projects and grew Protocols & OS from 2 to 16.
+- **Broader inclusion:** `min_stars` lowered from 3 to 1 (more of the field is discovered on the next scan; weak matches are honestly labelled by evidence tier and quality flags rather than hidden), and the **Protocols & OS** keyword set expanded (consent, interop, conformance, mmp, middleware, kernel, os, sdk, …) with the duplicate `openbci` removed.
+- CI now checks the externalised `assets/app.js`, guards against a regression to inline-script CSP, and requires the asset files.
+
+### Notes
+- Full removal of `'unsafe-inline'` from `style-src` (class-based colours) is deferred to a later patch; the current CSP is described accurately.
+
 ## [3.0.0-alpha.4] - 2026-06-26
 
 ### Added

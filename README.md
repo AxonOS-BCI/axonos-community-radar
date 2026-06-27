@@ -8,7 +8,7 @@
 
 [![Live](https://img.shields.io/badge/live-axonos--bci.github.io-a78bfa?style=flat-square)](https://axonos-bci.github.io/axonos-community-radar/)
 [![CI](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-3.3.0-0a4a8f?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.4.0-0a4a8f?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-475569?style=flat-square)](LICENSE)
 [![Data](https://img.shields.io/badge/data-refreshed%20every%206h-2dd4ff?style=flat-square)](#-how-a-project-gets-on-the-radar)
 [![Runtime deps](https://img.shields.io/badge/runtime%20deps-zero-34d399?style=flat-square)](#-architecture)
@@ -20,7 +20,7 @@
 
 ---
 
-**AxonOS Radar** is a continuously-updated, public map of the open brain–computer-interface world. Every six hours it scans **public GitHub metadata**, keeps only what is genuinely BCI/neuro-relevant, labels *why* each project qualifies, ranks the field by a neutral discovery score, and renders it as an interactive radar, a card grid, a statistics dashboard, and a self-updating GitHub issue. It is, in spirit, a **momentum tracker for the open neurotech field** — built the way [ICO Drops](https://icodrops.com/) tracks an industry, but on *real, verifiable signals* rather than hype.
+**AxonOS Radar** is a continuously-updated, public map of the open brain–computer-interface world. Every six hours it scans **public GitHub metadata**, keeps only what is genuinely BCI/neuro-relevant, labels *why* each project qualifies, ranks the field by a neutral discovery score, and renders it as an interactive radar, a card grid, a statistics dashboard, and a self-updating GitHub issue. It is, in spirit, a **momentum tracker for the open neurotech field** — surfacing what's active, what's rising, and who's building, on *real, verifiable signals* rather than hype.
 
 It is an open community project from **[AxonOS](https://axonos.org)** — an open, real-time neural operating system for BCIs.
 
@@ -134,6 +134,22 @@ The Radar is the community-facing edge of a larger open project. The engineering
 | [`axonos-signal-pipeline`](https://github.com/AxonOS-org/axonos-signal-pipeline) | Fixed-point DSP chain: raw frame → epoch → features → decision. |
 | [`axonos-standard`](https://github.com/AxonOS-org/axonos-standard) | The normative AxonOS Standard and claims catalogue. |
 | [`axonos-e2e-demo`](https://github.com/AxonOS-org/axonos-e2e-demo) | Synthetic signal → typed intent, bit-for-bit reproducible. |
+
+## 📑 &nbsp;Citation
+
+If you reference AxonOS Radar in academic or technical work, please cite it:
+
+```bibtex
+@software{yermakou_axonos_radar_2026,
+  author  = {Yermakou, Denis},
+  title   = {{AxonOS Radar: a living map of the open brain--computer-interface field}},
+  year    = {2026},
+  url     = {https://github.com/AxonOS-BCI/axonos-community-radar},
+  version = {3.4.0}
+}
+```
+
+GitHub's **"Cite this repository"** button (from [`CITATION.cff`](CITATION.cff)) generates APA and BibTeX automatically.
 
 ## 🔐 &nbsp;Data & privacy
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## [3.4.0] - 2026-06-26
+
+### Added
+- **Citation:** a `CITATION.cff` (so GitHub shows a "Cite this repository" button) and a Citation section in the README with ready BibTeX.
+- **Publish-fresh-data action:** a button in the Methodology view that opens the scan workflow so a maintainer can rescan on demand and refresh the live stats issue, plus a direct link to that issue. `radar.yml` gains `workflow_dispatch` for manual runs.
+
+### Changed
+- Reworded the project description to stand on its own terms.
+
 ## [3.3.0] - 2026-06-26
 
 ### Fixed

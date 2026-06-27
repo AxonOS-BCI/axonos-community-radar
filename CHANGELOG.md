@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.1.1] - 2026-06-26
+
+### Changed
+- Rewrote the README into a deep, accurate project document modelled on the AxonOS house style: what it does and **why it's useful**, a 30-second **quick-start**, the three views, the inclusion rule with **evidence tiers**, the transparent **scoring** formula, the data files ("a small, honest API"), an updated architecture tree, and the Radar's place **within AxonOS** — with every badge verified true and every internal link checked.
+
+### Fixed
+- Removed a typo and stale claims from the previous README (it predated the v3 three-view UI, the statistics page, evidence tiers, and the live stats issue).
+
 ## [3.1.0] - 2026-06-26
 
 First public beta of the v3 experience.

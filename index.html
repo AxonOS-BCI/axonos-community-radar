@@ -55,6 +55,7 @@
     <button class="tab on" data-view="projects" type="button" role="tab">Projects</button>
     <button class="tab" data-view="builders" type="button" role="tab">Builders</button>
     <button class="tab" data-view="methodology" type="button" role="tab">Methodology</button>
+    <button class="tab" data-view="axonos" type="button" role="tab">AxonOS</button>
   </div>
   <div id="view-projects">
   <div class="controls">
@@ -106,6 +107,33 @@
     <div class="ph mt24"><h2>Scoring</h2><span class="note">transparent, neutral</span></div>
     <div class="card mw820">
       <p>Position is a neutral discovery signal: <span class="mono">log₁₀(stars+1) × 10 + recency</span>. <b>Rising</b> reflects real 7-day star velocity from accumulated history. No hand-tuned “hype”, no paid placement, no self-boosting — every project, including AxonOS, is ranked by the same formula.</p>
+    </div>
+  </div>
+
+  <div id="view-axonos" hidden>
+    <div class="ph"><h2>What we're building</h2><span class="note">the AxonOS engineering roadmap</span></div>
+    <p class="ax-intro">AxonOS is an open, real-time <b>neural operating system</b> for brain–computer interfaces — a <span class="mono">no_std</span> Rust kernel, a wire-level consent protocol, a deterministic signal pipeline, and the standard that ties them together. This is what's shipped, in progress, and planned.</p>
+    <div class="ax-grid">
+        <a class="ax-card" href="https://github.com/AxonOS-org/axonos-kernel" target="_blank" rel="noopener"><div class="ax-top"><span class="ax-stage st-beta">Beta</span><span class="ax-area">Kernel</span></div><h3>axonos-kernel</h3><p>Real-time no_std kernel: deterministic scheduler, SPSC queues, monotonic time, capability model.</p></a>
+        <a class="ax-card" href="https://github.com/AxonOS-org/axonos-consent" target="_blank" rel="noopener"><div class="ax-top"><span class="ax-stage st-shipped">Shipped</span><span class="ax-area">Consent & Protocol</span></div><h3>axonos-consent</h3><p>Kernel-level consent FSM with formally-bounded withdrawal latency. Live MMP interop test PASS.</p></a>
+        <a class="ax-card" href="https://github.com/AxonOS-org/axonos-protocol" target="_blank" rel="noopener"><div class="ax-top"><span class="ax-stage st-shipped">Shipped</span><span class="ax-area">Consent & Protocol</span></div><h3>axonos-protocol</h3><p>The AxonOS Consent Protocol on the wire: bounded CBOR, exhaustive FSM, hardware StimGuard.</p></a>
+        <a class="ax-card" href="https://github.com/AxonOS-org/axonos-signal-pipeline" target="_blank" rel="noopener"><div class="ax-top"><span class="ax-stage st-shipped">Shipped</span><span class="ax-area">Signal & ML</span></div><h3>axonos-signal-pipeline</h3><p>Fixed-point DSP chain: raw frame to typed decision, vector-pinned and deterministic.</p></a>
+        <a class="ax-card" href="https://github.com/AxonOS-org/axonos-standard" target="_blank" rel="noopener"><div class="ax-top"><span class="ax-stage st-shipped">Shipped</span><span class="ax-area">Standard</span></div><h3>axonos-standard</h3><p>The normative standard and the CLAIMS.md catalogue that keeps every claim verifiable.</p></a>
+        <a class="ax-card" href="https://github.com/AxonOS-org/axonos-conformance" target="_blank" rel="noopener"><div class="ax-top"><span class="ax-stage st-beta">Beta</span><span class="ax-area">Standard</span></div><h3>axonos-conformance</h3><p>Byte-exact wire-format vectors and codecs across several languages.</p></a>
+        <a class="ax-card" href="https://github.com/AxonOS-BCI/axonos-community-radar" target="_blank" rel="noopener"><div class="ax-top"><span class="ax-stage st-beta">Beta</span><span class="ax-area">Community</span></div><h3>axonos-community-radar</h3><p>This radar: a living, momentum-first map of the open BCI field.</p></a>
+        <a class="ax-card" href="https://github.com/users/AxonOS-BCI/projects/1" target="_blank" rel="noopener"><div class="ax-top"><span class="ax-stage st-beta">Beta</span><span class="ax-area">Research</span></div><h3>Consent-enforcement paper</h3><p>Co-authored preprint on protocol-level consent enforcement for cognitive mesh systems.</p></a>
+        <a class="ax-card" href="https://github.com/users/AxonOS-BCI/projects/1" target="_blank" rel="noopener"><div class="ax-top"><span class="ax-stage st-shipped">Shipped</span><span class="ax-area">Research</span></div><h3>Neural Boundary Game</h3><p>A no_std deterministic Rust/WASM engine — a playable demonstration of cognitive boundaries.</p></a>
+        <a class="ax-card" href="https://github.com/users/AxonOS-BCI/projects/1" target="_blank" rel="noopener"><div class="ax-top"><span class="ax-stage st-alpha">Alpha</span><span class="ax-area">Signal & ML</span></div><h3>ZeroCalib</h3><p>Calibration-free decoding: usable accuracy in seconds, no per-user calibration session.</p></a>
+        <a class="ax-card" href="https://github.com/users/AxonOS-BCI/projects/1" target="_blank" rel="noopener"><div class="ax-top"><span class="ax-stage st-planned">Planned</span><span class="ax-area">Hardware</span></div><h3>M33 + TrustZone-S</h3><p>Move the secure path to Cortex-M33 with TrustZone-S — StimGuard and charge limits in the secure world.</p></a>
+        <a class="ax-card" href="https://github.com/users/AxonOS-BCI/projects/1" target="_blank" rel="noopener"><div class="ax-top"><span class="ax-stage st-planned">Planned</span><span class="ax-area">Hardware</span></div><h3>8-channel dev kit</h3><p>An open 8-channel acquisition dev kit so others can run AxonOS on real signals.</p></a>
+    </div>
+    <div class="ax-cta"><a class="ax-board" href="https://github.com/users/AxonOS-BCI/projects/1" target="_blank" rel="noopener">📋 View the full roadmap board →</a></div>
+
+    <div class="donate">
+      <div class="donate-h">🐕 Support AxonOS</div>
+      <p>AxonOS is independent and open. If it's useful to you, a Dogecoin tip helps keep the work going.</p>
+      <div class="donate-addr"><code id="dogeAddr">DMwHAhqVNWf7dyEznukxCufNS5rjuP5MTp</code><button class="donate-copy" id="dogeCopy" type="button">Copy</button></div>
+      <span class="donate-note">DOGE only · a donation address, not a payment for goods or services.</span>
     </div>
   </div>
 

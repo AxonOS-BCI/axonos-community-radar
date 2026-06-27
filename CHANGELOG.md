@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.3.0] - 2026-06-26
+
+### Fixed
+- **Crash on render** (regression in 3.2.0): the review badge read `quality_flags` as an array, but it is an object — `indexOf is not a function` aborted the card render. It now reads the object correctly (and tolerates either shape).
+
+### Added
+- **AxonOS view** — a fourth tab that showcases the engineering roadmap (kernel, consent, protocol, signal pipeline, standard, conformance, radar, research, hardware) as premium cards with honest stage badges, linking to each repository and to the public roadmap board.
+- **Dogecoin donation** card with one-tap copy-to-clipboard (no inline handlers; strict CSP preserved).
+- **Rising sort** — order the field by 7-day star velocity, alongside Activity / Stars / Newest / A–Z.
+
+### Notes
+- All additions are class-based and event-listener-wired, so the fully strict CSP (`script-src 'self'; style-src 'self'`, no `unsafe-inline`) is preserved.
+
 ## [3.2.0] - 2026-06-26
 
 Premium-UX release: fully strict CSP, plus a review signal on the cards.

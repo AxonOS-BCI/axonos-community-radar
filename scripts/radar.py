@@ -49,6 +49,24 @@ if TOKEN:
     HEADERS["Authorization"] = f"Bearer {TOKEN}"
 
 
+def _is_safe_github_url(url, min_segments=2) -> bool:
+    """Exact-host check: https://github.com/<...> with >= min_segments path parts
+    (repos need 2: owner/repo). Blocks look-alike hosts like github.com.evil.com."""
+    if not isinstance(url, str):
+        return False
+    try:
+        q = urllib.parse.urlparse(url)
+        segs = [s for s in q.path.split("/") if s]
+        return q.scheme == "https" and q.netloc == "github.com" and len(segs) >= min_segments
+    except Exception:
+        return False
+    try:
+        q = urllib.parse.urlparse(url)
+        return q.scheme == "https" and q.netloc == "github.com" and q.path.count("/") >= 2
+    except Exception:
+        return False
+
+
 def xesc(s):
     """XML-correct escaping for element content and attribute values."""
     return _xescape(str(s if s is not None else ""), {'"': "&quot;", "'": "&apos;"})
@@ -250,7 +268,7 @@ def validate(payload, cap):
     assert payload["counts"]["total"] >= 0, "negative total"
     for r in p:
         assert r.get("full_name"), "project missing full_name"
-        assert (r.get("html_url") or "").startswith("https://github.com/"), f"suspicious url: {r.get('html_url')!r}"
+        assert _is_safe_github_url(r.get("html_url")), f"suspicious url: {r.get('html_url')!r}"
         assert r.get("category"), "project missing category"
 
 

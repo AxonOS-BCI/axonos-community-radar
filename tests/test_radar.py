@@ -212,3 +212,41 @@ def test_rising_detects_star_velocity():
     radar.enrich_v3(projects, seeds, snap, history)
     assert projects[0]["stars_delta_7d"] == 20
     assert projects[0]["rising"] is True  # 20 >= max(2, ceil(120*0.05)=6)
+
+
+def test_stats_issue_digest_renders_analytics():
+    """The living issue must embed a Gartner-style quadrant + category pie (Mermaid)."""
+    import importlib.util
+    import os
+    here = os.path.dirname(__file__)
+    path = os.path.join(here, "..", "scripts", "publish_stats_issue.py")
+    spec = importlib.util.spec_from_file_location("pstats", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    radar = {
+        "counts": {"total": 3},
+        "projects": [
+            {"full_name": "a/x", "repo": "x", "html_url": "https://github.com/a/x",
+             "stars": 1200, "forks": 300, "days_since_push": 0, "_score": 9,
+             "category": "Decoding & ML", "language": "Python", "evidence_tier": "L3_EXPLICIT_BCI"},
+            {"full_name": "b/y", "repo": "y", "html_url": "https://github.com/b/y",
+             "stars": 400, "forks": 200, "days_since_push": 1, "_score": 7,
+             "category": "Signal Processing", "language": "Rust", "evidence_tier": "L2_NEURAL_SIGNAL"},
+            {"full_name": "c/z", "repo": "z", "html_url": "https://github.com/c/z",
+             "stars": 90, "forks": 12, "days_since_push": 3, "_score": 5,
+             "category": "Decoding & ML", "language": "Python", "evidence_tier": "L1_CONTEXT_PLUS_NEURO"},
+            {"full_name": "d/w", "repo": "w", "html_url": "https://github.com/d/w",
+             "stars": 50, "forks": 30, "days_since_push": 2, "_score": 4,
+             "category": "Hardware", "language": "C", "evidence_tier": "L2_NEURAL_SIGNAL"},
+        ],
+        "builders": [],
+    }
+    body = mod.build_body(radar, {"snapshots": []}, "owner/repo")
+    assert "```mermaid" in body
+    assert "quadrantChart" in body
+    assert "pie showData" in body
+    assert body.startswith("<!-- axonos-radar-stats -->")
+    # quadrant points must be inside the plotting range, not fabricated beyond [0,1]
+    import re
+    for xs, ys in re.findall(r"\[([\d.]+), ([\d.]+)\]", body):
+        assert 0.0 <= float(xs) <= 1.0 and 0.0 <= float(ys) <= 1.0

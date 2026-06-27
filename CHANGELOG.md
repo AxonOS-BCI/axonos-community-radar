@@ -1,5 +1,19 @@
 # Changelog
 
+## [3.6.0] - 2026-06-27
+
+### Added
+- **Analytics-grade live issue.** The auto-updating stats issue is now rendered as a Visual-Capitalist-style data report with a **Gartner-style quadrant** and a **category pie**, both drawn with native GitHub **Mermaid** so they render right inside the issue. The quadrant maps **reach** (stars, log) against **engagement** (forks per star) — raw public-GitHub signals only, clearly labelled as a descriptive ecosystem map, not a vision/quality ranking. Dense tables for rising, new, builders, evidence tiers and languages round out the report.
+
+### Security / Reliability
+- **Stronger URL validation:** `radar.py` and `validate_payload.py` now verify `html_url` with `urllib.parse` (scheme + exact `github.com` host + path), replacing prefix checks — defence-in-depth against look-alike hosts.
+- **No duplicate live issues:** on a GitHub 5xx outage the issue publisher now skips the run instead of falling through and creating a second dashboard issue.
+- **Pipeline timeout:** the refresh job gets `timeout-minutes: 15` so a hung request can't idle for hours.
+
+### Changed
+- Removed the unused `has_release` field from the data schema (it was never populated).
+- New pytest guards the issue analytics (quadrant + pie must render).
+
 ## [3.5.0] - 2026-06-26
 
 ### Added

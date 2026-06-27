@@ -1,6 +1,17 @@
 #!/usr/bin/env python3
 """Publish/update ONE living GitHub issue with the radar's ecosystem statistics.
 
+The issue is rendered as a Visual-Capitalist-style data report with a
+Gartner-style quadrant. GitHub renders the embedded Mermaid ``quadrantChart``
+and ``pie`` natively inside the issue, so the result reads like real analytics
+rather than a wall of numbers.
+
+Every figure comes from real public-GitHub signals. The quadrant axes are
+honest and labelled as such (adoption = stars on a log scale; momentum =
+recency, with recent star-growth folding in as velocity history accumulates).
+We do NOT fabricate "vision", "execution", or "hype" scores from data we do
+not have.
+
 Zero runtime dependencies. The issue carries a hidden marker; this script finds
 that one issue and edits it in place (or creates it the first time), so there is
 always exactly one always-current "live dashboard" issue rather than a flood of
@@ -12,6 +23,7 @@ quality, safety, or clinical ratings; AxonOS is ranked like everyone else.
 from __future__ import annotations
 
 import json
+import math
 import os
 import urllib.error
 import urllib.request
@@ -20,7 +32,7 @@ from datetime import datetime, timezone
 TOKEN = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
 REPO = os.environ.get("GITHUB_REPOSITORY")  # "owner/name"
 MARKER = "<!-- axonos-radar-stats -->"
-TITLE = "\U0001F4E1 AxonOS Radar \u2014 Live Ecosystem Stats"
+TITLE = "\U0001F4E1 AxonOS Radar \u2014 The State of Open BCI"
 API = "https://api.github.com"
 
 
@@ -43,7 +55,7 @@ def k(n):
     return (f"{n / 1000:.1f}k".replace(".0k", "k")) if n >= 1000 else str(n)
 
 
-def bar(v, mx, width=12):
+def bar(v, mx, width=14):
     if mx <= 0:
         return ""
     return "\u2588" * (max(1, round(v / mx * width)) if v else 0)
@@ -52,6 +64,60 @@ def bar(v, mx, width=12):
 def pages_url(repo):
     owner, _, name = repo.partition("/")
     return f"https://{owner.lower()}.github.io/{name}/"
+
+
+def _mq_label(x):
+    s = x.get("repo") or x.get("full_name") or "?"
+    for ch in '"[]':
+        s = s.replace(ch, "")
+    return s[:22]
+
+
+def _nrm(v, lo, hi):
+    if hi - lo < 1e-9:
+        return 0.5
+    return min(0.97, max(0.03, (v - lo) / (hi - lo)))
+
+
+def mermaid_quadrant(projects):
+    """Gartner-style quadrant on REAL, raw GitHub axes that actually vary.
+
+    Y = reach (log10 stars). X = engagement = forks-per-star, i.e. how much
+    the community builds on a project versus simply watching it. Engagement is
+    size-independent, so it gives genuine 2-D spread. Positions are relative to
+    the projects shown; labels are descriptive, not a vision/quality judgement.
+    (Star-velocity is not used while history is still accumulating, rather than
+    fabricating a momentum axis that does not yet have data behind it.)
+    """
+    items = [x for x in projects if (x.get("stars") or 0) > 0]
+    if len(items) < 4:
+        return ""
+    items = sorted(items, key=lambda x: -(x.get("_score") or 0))[:14]
+    ys = [math.log10((x.get("stars") or 0) + 1) for x in items]
+    xs = [(x.get("forks") or 0) / (x.get("stars") or 1) for x in items]
+    ymin, ymax, xmin, xmax = min(ys), max(ys), min(xs), max(xs)
+    out = ["```mermaid", "quadrantChart",
+           "    title Reach vs Engagement - the open BCI field (public GitHub signals)",
+           "    x-axis Watched --> Built upon",
+           "    y-axis Niche --> Widely adopted",
+           "    quadrant-1 Pillars",
+           "    quadrant-2 Widely watched",
+           "    quadrant-3 Emerging",
+           "    quadrant-4 Developer favourites"]
+    for x, ly, lx in zip(items, ys, xs):
+        out.append(f'    "{_mq_label(x)}": [{_nrm(lx, xmin, xmax):.3f}, {_nrm(ly, ymin, ymax):.3f}]')
+    out.append("```")
+    return "\n".join(out)
+
+
+def mermaid_pie(cats):
+    if not cats:
+        return ""
+    out = ["```mermaid", "pie showData", "    title Projects by category"]
+    for name, v in sorted(cats.items(), key=lambda t: -t[1]):
+        out.append(f'    "{name.replace(chr(34), "")}" : {v}')
+    out.append("```")
+    return "\n".join(out)
 
 
 def build_body(radar, history, repo):
@@ -66,6 +132,8 @@ def build_body(radar, history, repo):
     new = c.get("new", sum(1 for x in p if x.get("is_new")))
     rising = c.get("rising", sum(1 for x in p if x.get("rising")))
     nbuild = len(builders) or c.get("builders", 0)
+    big = sum(1 for x in p if (x.get("stars") or 0) >= 1000)
+    langs_n = len({x.get("language") for x in p if x.get("language")})
 
     snaps = sorted(history.get("snapshots", []), key=lambda s: s.get("snapshot_at", ""))
     delta = ""
@@ -77,25 +145,46 @@ def build_body(radar, history, repo):
             delta = f"_\u0394 since last refresh: {dp:+d} projects \u00b7 {ds:+d} \u2605_"
 
     L = [MARKER, f"# {TITLE}\n",
-         "> The open brain\u2013computer-interface field, tracked automatically from public GitHub "
-         "metadata. **Inclusion is not endorsement; figures are discovery signals, not quality, "
-         "safety, or clinical ratings.** AxonOS is ranked by the same formula as everyone else.\n",
-         f"**Updated:** {now} \u00b7 refreshes every 6h \u00b7 [\U0001F4C8 live stats]({base}stats.html) "
-         f"\u00b7 [\U0001F5FA map]({base}) \u00b7 "
-         f"[\u2795 add a project](https://github.com/{repo}/issues/new?template=add-project.yml)\n",
-         "## \U0001F4CA At a glance\n",
-         "| Projects | Total \u2605 | Active 30d | New (7d) | \U0001F525 Rising | \U0001F3D7 Builders |",
-         "|---:|---:|---:|---:|---:|---:|",
-         f"| **{tot}** | **{k(stars)}** | {active} | {new} | {rising} | {nbuild} |"]
+         "> A data snapshot of the open brain\u2013computer-interface field, compiled automatically "
+         "from public GitHub metadata and refreshed every six hours. **Inclusion is not endorsement; "
+         "every figure is a discovery signal, not a quality, safety, or clinical rating.** AxonOS is "
+         "ranked by the same formula as every other project.\n",
+         f"**Updated** {now} \u00b7 [\U0001F4C8 dashboard]({base}stats.html) \u00b7 [\U0001F5FA map]({base}) "
+         f"\u00b7 [data]({base}data/radar.json)\n"]
+
+    L += ["## The field at a glance\n",
+          "| Projects | Total \u2605 | \u2265 1k \u2605 | Active 30d | New (7d) | \U0001F525 Rising | "
+          "\U0001F3D7 Builders | Languages |",
+          "|---:|---:|---:|---:|---:|---:|---:|---:|",
+          f"| **{tot}** | **{k(stars)}** | {big} | {active} | {new} | {rising} | {nbuild} | {langs_n} |"]
     if delta:
         L.append("\n" + delta)
+
+    mq = mermaid_quadrant(p)
+    if mq:
+        L.append("\n## \U0001F9ED Ecosystem quadrant \u2014 reach \u00d7 engagement\n")
+        L.append(mq)
+        L.append("\n_How to read it: the vertical axis is **reach** (stars, log scale); the horizontal axis "
+                 "is **engagement** \u2014 forks per star, i.e. how much the community builds on a project "
+                 "rather than just watching it. Both are raw public-GitHub metrics and positions are relative "
+                 "to the projects shown \u2014 a descriptive ecosystem map, not a quality or vision ranking._")
+
+    cats = {}
+    for x in p:
+        cats[x.get("category", "Other")] = cats.get(x.get("category", "Other"), 0) + 1
+    pie = mermaid_pie(cats)
+    if pie:
+        L.append("\n## \U0001F5C2 Ecosystem by category\n")
+        L.append(pie)
 
     ris = sorted([x for x in p if x.get("rising")], key=lambda x: -(x.get("stars_delta_7d") or 0))[:5]
     if ris:
         L.append("\n## \U0001F525 Rising \u2014 biggest 7-day movers\n")
+        L.append("| # | Project | 7-day | \u2605 | Category |")
+        L.append("|--:|---|--:|--:|---|")
         for i, x in enumerate(ris, 1):
-            L.append(f"{i}. **[{x['full_name']}]({x['html_url']})** \u2191 +{x.get('stars_delta_7d', 0)}/7d "
-                     f"\u00b7 \u2605 {x.get('stars', 0)} \u00b7 _{x.get('category', '')}_")
+            L.append(f"| {i} | [{x['full_name']}]({x['html_url']}) | +{x.get('stars_delta_7d', 0)} | "
+                     f"{x.get('stars', 0)} | {x.get('category', '')} |")
 
     nw = [x for x in p if x.get("is_new")][:6]
     if nw:
@@ -115,15 +204,6 @@ def build_body(radar, history, repo):
             L.append(f"| {i} | [{b['owner']}]({b['html_url']}) | {b.get('project_count', 0)} | "
                      f"{k(b.get('total_stars', 0))} | {b.get('active_projects_30d', 0)} | {focus} |")
 
-    cats = {}
-    for x in p:
-        cats[x.get("category", "Other")] = cats.get(x.get("category", "Other"), 0) + 1
-    if cats:
-        mx = max(cats.values())
-        L.append("\n## \U0001F5C2 By category\n")
-        for name, v in sorted(cats.items(), key=lambda t: -t[1]):
-            L.append(f"`{name:<22}` {bar(v, mx)} **{v}**  ")
-
     tiers = {}
     for x in p:
         t = x.get("evidence_tier")
@@ -133,19 +213,41 @@ def build_body(radar, history, repo):
         order = ["L3_EXPLICIT_BCI", "L2_NEURAL_SIGNAL", "L1_CONTEXT_PLUS_NEURO", "L0_WEAK_ADJACENT"]
         lab = {"L3_EXPLICIT_BCI": "L3 explicit BCI", "L2_NEURAL_SIGNAL": "L2 neural signal",
                "L1_CONTEXT_PLUS_NEURO": "L1 context+keyword", "L0_WEAK_ADJACENT": "L0 weak (review)"}
-        L.append("\n## \U0001F52C Evidence\n")
-        L.append(" \u00b7 ".join(f"**{lab[t]}** {tiers[t]}" for t in order if t in tiers))
+        mx = max(tiers.values())
+        L.append("\n## \U0001F52C Evidence tiers\n")
+        for t in order:
+            if t in tiers:
+                L.append(f"`{lab[t]:<20}` {bar(tiers[t], mx)} **{tiers[t]}**  ")
+
+    langs = {}
+    for x in p:
+        lg = x.get("language")
+        if lg:
+            langs[lg] = langs.get(lg, 0) + 1
+    if langs:
+        top = sorted(langs.items(), key=lambda t: -t[1])[:8]
+        mx = top[0][1]
+        L.append("\n## \U0001F4BB Languages\n")
+        for name, v in top:
+            L.append(f"`{name:<14}` {bar(v, mx)} **{v}**  ")
 
     L.append("\n---")
     L.append(f"*An [AxonOS](https://axonos.org) community project \u00b7 "
              f"[methodology](https://github.com/{repo}/blob/main/docs/METHODOLOGY.md) \u00b7 "
-             "auto-generated every 6 hours \u2014 do not edit by hand.*")
+             "compiled automatically every 6 hours from public GitHub signals \u2014 do not edit by hand. "
+             "Inclusion is discovery, not endorsement.*")
     return "\n".join(L)
 
 
 def find_issue():
     try:
         issues = _api("GET", f"/repos/{REPO}/issues?state=open&per_page=100")
+    except urllib.error.HTTPError as e:
+        # On a server-side outage, do NOT fall through to "create" — that would
+        # spawn a duplicate living issue. Signal the caller to skip this run.
+        if e.code in (500, 502, 503, 504):
+            return "RETRY"
+        return None
     except Exception:  # noqa: BLE001
         return None
     for it in issues:
@@ -172,6 +274,9 @@ def main():
 
     body = build_body(radar, history, REPO)
     existing = find_issue()
+    if existing == "RETRY":
+        print("publish_stats_issue: GitHub API unavailable; skipping to avoid duplicate issues")
+        return 0
     if existing:
         if (existing.get("body") or "").strip() == body.strip():
             print("publish_stats_issue: no change, issue", existing["number"])

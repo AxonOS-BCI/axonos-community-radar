@@ -22,9 +22,28 @@ Usage:
 from __future__ import annotations
 
 import json
+import urllib.parse
 import sys
 
 GITHUB_PREFIX = "https://github.com/"
+
+
+def _is_safe_github_url(url, min_segments=2) -> bool:
+    """Exact-host check: https://github.com/<...> with >= min_segments path parts
+    (repos need 2: owner/repo). Blocks look-alike hosts like github.com.evil.com."""
+    if not isinstance(url, str):
+        return False
+    try:
+        q = urllib.parse.urlparse(url)
+        segs = [s for s in q.path.split("/") if s]
+        return q.scheme == "https" and q.netloc == "github.com" and len(segs) >= min_segments
+    except Exception:
+        return False
+    try:
+        q = urllib.parse.urlparse(url)
+        return q.scheme == "https" and q.netloc == "github.com" and q.path.count("/") >= 2
+    except Exception:
+        return False
 MAX_DESC = 240
 DEFAULT_CAP = 2000
 ALLOWED_TIERS = {
@@ -81,7 +100,7 @@ def validate_payload(payload, cap: int = DEFAULT_CAP):
         # html_url MUST be a github.com https URL. This rejects javascript:,
         # http://, and look-alike hosts like https://github.com.evil.com/ .
         url = r.get("html_url")
-        if not (isinstance(url, str) and url.startswith(GITHUB_PREFIX)):
+        if not _is_safe_github_url(url):
             errors.append(f"{tag} html_url is not a https://github.com/ URL: {url!r}")
 
         # description length cap
@@ -147,7 +166,7 @@ def validate_payload(payload, cap: int = DEFAULT_CAP):
                 if isinstance(bp, list) and isinstance(b.get("project_count"), int) and b["project_count"] != len(bp):
                     errors.append(f"builders[{j}] project_count ({b['project_count']}) != len(projects) ({len(bp)})")
                 bu = b.get("html_url") or ""
-                if not (isinstance(bu, str) and bu.startswith(GITHUB_PREFIX)):
+                if not _is_safe_github_url(bu, 1):
                     errors.append(f"builders[{j}] html_url is not a github.com URL: {bu!r}")
 
     return errors

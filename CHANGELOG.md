@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.6.2] - 2026-06-28
+
+### Fixed
+- **The live issue now refreshes on every release, and the pile of "skipped" workflow runs is gone.** The issue-publishing workflow was path-filtered, so most pushes marked it *skipped* and never ran it — and a newly-added path-filtered workflow does not reliably fire on its own first push either. `stats-issue.yml` now runs on **every push to main** (no path filter), plus a 6-hourly backstop, plus the manual **Run workflow** button, so the living issue always reflects the committed data.
+
+### Changed
+- Discovery (`radar.yml`) no longer has a push trigger; it runs on its 6-hourly schedule and on demand. This removes the *skipped* runs that piled up on documentation-only release commits — a full ecosystem scan never needed to run on those.
+
 ## [3.6.1] - 2026-06-28
 
 ### Fixed

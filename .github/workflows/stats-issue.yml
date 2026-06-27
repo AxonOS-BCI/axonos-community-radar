@@ -1,21 +1,20 @@
 name: Live stats issue
 
-# Publishes/updates the ONE living "dashboard" issue, decoupled from the
+# Publishes/updates the ONE living "dashboard" issue, fully decoupled from the
 # discovery pipeline so a transient GitHub-search hiccup in radar.py can never
-# block the issue from refreshing. Runs:
-#   - on demand (workflow_dispatch) — the "Run workflow" button updates the
-#     issue immediately from the data already committed in the repo;
-#   - whenever the digest code itself changes (push to publish_stats_issue.py).
-# The 6-hourly refresh after a successful discovery is still handled inside
-# radar.yml (its publish step runs with `if: always()`).
+# block the issue from refreshing. It is intentionally NOT path-filtered, so it
+# runs on every push to main (no confusing "skipped" runs) and always reflects
+# the data currently committed in the repo. Triggers:
+#   - every push to main;
+#   - a 6-hourly backstop (a few minutes after the discovery cron);
+#   - on demand via the "Run workflow" button (workflow_dispatch).
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "27 */6 * * *"
   push:
     branches: [main]
-    paths:
-      - "scripts/publish_stats_issue.py"
-      - ".github/workflows/stats-issue.yml"
 
 permissions:
   contents: read

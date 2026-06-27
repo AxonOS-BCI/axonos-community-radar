@@ -4,13 +4,6 @@ on:
   schedule:
     - cron: "17 */6 * * *"
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/radar.yml"
-      - "scripts/**"
-      - "!scripts/publish_stats_issue.py"  # digest-only edits are handled by stats-issue.yml
-      - "data/seeds.json"
 
 permissions:
   contents: write

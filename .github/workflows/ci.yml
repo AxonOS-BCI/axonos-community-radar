@@ -21,13 +21,11 @@ jobs:
           python3 -c "import json;json.load(open('data/seeds.json'));print('seeds.json ok')"
           python3 -c "import json;json.load(open('data/radar.json'));print('radar.json ok')"
 
-      - name: stats.html integrity + inline JS
+      - name: stats integrity + JS
         run: |
-          for s in 'Content-Security-Policy' 'function safeUrl' "'./data/radar.json'" 'id="growth"'; do
-            grep -q "$s" stats.html || { echo "stats.html missing: $s"; exit 1; }
-          done
-          awk '/<script>/{f=1;next} /<\/script>/{f=0} f' stats.html > /tmp/stats.js
-          node --check /tmp/stats.js && echo "stats.html inline JS ok"
+          for s in 'Content-Security-Policy' 'id="growth"'; do grep -q "$s" stats.html || { echo "stats.html missing: $s"; exit 1; }; done
+          grep -q 'function safeUrl' assets/stats.js && grep -q "'./data/radar.json'" assets/stats.js || { echo "stats.js missing safeUrl/data"; exit 1; }
+          node --check assets/stats.js && echo "stats ok"
 
       - name: Validate published radar.json
         run: python3 scripts/validate_payload.py data/radar.json
@@ -70,17 +68,17 @@ jobs:
           grep -q 'Content-Security-Policy' index.html
           grep -q 'function safeUrl' assets/app.js
           grep -q 'og:image' index.html
-          grep -q "script-src 'self';" index.html
-          ! grep -q "script-src 'self' 'unsafe-inline'" index.html && echo "strict script-CSP ok"
+          for f in index.html stats.html; do grep -q "script-src 'self';" "$f" && grep -q "style-src 'self';" "$f" && ! grep -q "unsafe-inline" "$f" || { echo "CSP not strict: $f"; exit 1; }; done
+          echo "strict CSP (no unsafe-inline) ok"
 
       - name: Inline JS syntax
         run: |
           node --check assets/app.js
-          node --check assets/app.css 2>/dev/null || true
+          node --check assets/stats.js
 
       - name: Required files
         run: |
-          for f in README.md LICENSE VERSION index.html assets/app.js assets/app.css stats.html feed.xml og-image.png CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md data/seeds.json data/radar.schema.json scripts/radar.py scripts/publish_data.py scripts/validate_payload.py scripts/publish_stats_issue.py tests/test_radar.py; do
+          for f in README.md LICENSE VERSION index.html assets/app.js assets/app.css assets/stats.js stats.html feed.xml og-image.png CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md data/seeds.json data/radar.schema.json scripts/radar.py scripts/publish_data.py scripts/validate_payload.py scripts/publish_stats_issue.py tests/test_radar.py; do
             test -f "$f" || { echo "missing $f"; exit 1; }
           done
 

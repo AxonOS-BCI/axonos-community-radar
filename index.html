@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
 <meta name="theme-color" content="#06070b">
 <meta name="description" content="AxonOS Radar — a living, curated map of the open brain–computer-interface field. An AxonOS community project.">
 <link rel="alternate" type="application/rss+xml" title="New BCI projects" href="./feed.xml">
@@ -81,7 +81,7 @@
     <div class="legend" id="legend"></div>
   </section>
 
-  <div class="ghead"><span id="gcount" aria-live="polite"></span><button class="seg-opt" id="shareBtn" style="border:1px solid var(--line2)">⤴ Share</button></div>
+  <div class="ghead"><span id="gcount" aria-live="polite"></span><button class="seg-opt bordered" id="shareBtn">⤴ Share</button></div>
   <div class="cards" id="cards"></div>
 
   </div><!-- /view-projects -->
@@ -93,18 +93,18 @@
 
   <div id="view-methodology" hidden>
     <div class="ph"><h2>How this radar works</h2><span class="note">discovery, not endorsement</span></div>
-    <div class="card" style="max-width:820px">
+    <div class="card mw820">
       <p>The radar is generated from <b>public GitHub topic search</b>. A repository is kept if it carries a core BCI/neuro topic, <b>or</b> a context topic (signal processing, embedded, privacy…) <b>plus</b> an anchored neuro keyword — so generic projects don't leak in. Recency is measured from a fixed 6-hour snapshot, so unchanged projects keep a stable position. It's a discovery map — <b>not an endorsement or a ranking of quality, safety, or clinical fitness</b>. AxonOS is ranked by the same formula as everyone else.</p>
     </div>
-    <div class="ph" style="margin-top:24px"><h2>Evidence tiers</h2><span class="note">why each project qualifies</span></div>
+    <div class="ph mt24"><h2>Evidence tiers</h2><span class="note">why each project qualifies</span></div>
     <div class="tier-grid">
-      <div class="tier-row"><span class="tg-badge" style="color:#34d399;border-color:#34d39955">L3</span><span class="tg-txt"><b>Explicit BCI.</b> Carries a direct brain–computer-interface / neural-interface topic. The clearest signal of relevance.</span></div>
-      <div class="tier-row"><span class="tg-badge" style="color:#2dd4ff;border-color:#2dd4ff55">L2</span><span class="tg-txt"><b>Neural signal.</b> A neural-signal topic or keyword (EEG, ECoG, EMG, spike sorting, motor imagery…) without an explicit BCI tag.</span></div>
-      <div class="tier-row"><span class="tg-badge" style="color:#a78bfa;border-color:#a78bfa55">L1</span><span class="tg-txt"><b>Context + keyword.</b> A context topic (signal processing, embedded, real-time, privacy) <b>plus</b> an anchored neuro keyword in the metadata.</span></div>
-      <div class="tier-row"><span class="tg-badge" style="color:#fb7185;border-color:#fb718555">L0</span><span class="tg-txt"><b>Weak adjacency.</b> Included but flagged for review — a borderline match that may be a false positive.</span></div>
+      <div class="tier-row"><span class="tg-badge tl3">L3</span><span class="tg-txt"><b>Explicit BCI.</b> Carries a direct brain–computer-interface / neural-interface topic. The clearest signal of relevance.</span></div>
+      <div class="tier-row"><span class="tg-badge tl2">L2</span><span class="tg-txt"><b>Neural signal.</b> A neural-signal topic or keyword (EEG, ECoG, EMG, spike sorting, motor imagery…) without an explicit BCI tag.</span></div>
+      <div class="tier-row"><span class="tg-badge tl1">L1</span><span class="tg-txt"><b>Context + keyword.</b> A context topic (signal processing, embedded, real-time, privacy) <b>plus</b> an anchored neuro keyword in the metadata.</span></div>
+      <div class="tier-row"><span class="tg-badge tl0">L0</span><span class="tg-txt"><b>Weak adjacency.</b> Included but flagged for review — a borderline match that may be a false positive.</span></div>
     </div>
-    <div class="ph" style="margin-top:24px"><h2>Scoring</h2><span class="note">transparent, neutral</span></div>
-    <div class="card" style="max-width:820px">
+    <div class="ph mt24"><h2>Scoring</h2><span class="note">transparent, neutral</span></div>
+    <div class="card mw820">
       <p>Position is a neutral discovery signal: <span class="mono">log₁₀(stars+1) × 10 + recency</span>. <b>Rising</b> reflects real 7-day star velocity from accumulated history. No hand-tuned “hype”, no paid placement, no self-boosting — every project, including AxonOS, is ranked by the same formula.</p>
     </div>
   </div>

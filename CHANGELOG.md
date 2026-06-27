@@ -1,5 +1,20 @@
 # Changelog
 
+## [3.2.0] - 2026-06-26
+
+Premium-UX release: fully strict CSP, plus a review signal on the cards.
+
+### Added
+- **Review badge** on project cards: an `⚠ review` chip for entries the pipeline flagged `possible_false_positive` (the L0/weak matches), so borderline inclusions are visible, not hidden.
+- A subtle, staggered card entrance — done entirely in CSS (`:nth-child`), no inline styles.
+
+### Changed
+- **Fully strict Content-Security-Policy** on both the radar and the statistics page: `script-src 'self'; style-src 'self'`, with **no `unsafe-inline` anywhere**. All dynamic colours are now applied via CSS classes and the CSSOM (`element.style.setProperty`), which CSP permits, rather than inline `style=` attributes. `stats.html`'s JavaScript was externalised to `assets/stats.js` to complete this.
+- CI now enforces the strict CSP (fails if `unsafe-inline` reappears in either page) and checks `assets/stats.js`.
+
+### Security
+- Removing `unsafe-inline` from `style-src` (and keeping it off `script-src`) closes the last inline-injection avenue; the card render path was already output-encoded, and is now defence-in-depth complete.
+
 ## [3.1.1] - 2026-06-26
 
 ### Changed

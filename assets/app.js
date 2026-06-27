@@ -76,22 +76,24 @@
   var GENERIC={rust:1,python:1,c:1,'c-plus-plus':1,cpp:1,javascript:1,typescript:1,go:1,'no-std':1};
   function tagRow(p){var t=(p.topics||[]).filter(function(x){return !GENERIC[String(x).toLowerCase()];}).slice(0,3);
     return t.length?'<div class="tags">'+t.map(function(x){return '<span class="tag">'+esc(x)+'</span>';}).join('')+'</div>':'';}
-  var TIER={L3_EXPLICIT_BCI:['L3','#34d399'],L2_NEURAL_SIGNAL:['L2','#2dd4ff'],L1_CONTEXT_PLUS_NEURO:['L1','#a78bfa'],L0_WEAK_ADJACENT:['L0','#fb7185']};
-  function evBadge(p){var t=p.evidence_tier;if(!t)return '';var e=TIER[t]||['•','#6b7488'];
-    return '<span class="ev" style="color:'+e[1]+';border-color:'+e[1]+'55" title="'+esc(p.inclusion_reason||t)+'">'+e[0]+'</span>';}
+  var TIER={L3_EXPLICIT_BCI:['L3','tl3'],L2_NEURAL_SIGNAL:['L2','tl2'],L1_CONTEXT_PLUS_NEURO:['L1','tl1'],L0_WEAK_ADJACENT:['L0','tl0']};
+  function evBadge(p){var t=p.evidence_tier;if(!t)return '';var e=TIER[t]||['\u2022','tl0'];
+    return '<span class="ev '+e[1]+'" title="'+esc(p.inclusion_reason||t)+'">'+e[0]+'</span>';}
+  function flagBadge(p){return (p.quality_flags||[]).indexOf('possible_false_positive')>=0?'<span class="flag" title="Borderline match \u2014 flagged for review">\u26A0 review</span>':'';}
   function renderCards(arr){
     var l=$('cards');
     if(!arr.length){l.innerHTML='<div class="empty"><div class="big">'+(DATA.generated_at?'No matches':'Radar warming up')+'</div>'+(DATA.generated_at?(anyFilter()?'Nothing matches these filters — <button class="lnkbtn" id="emptyCl" type="button">clear all</button>.':'No projects yet.'):'The first scan runs on publish and refreshes every 6 hours. Real projects appear here shortly.')+'</div>';var ec=$('emptyCl');if(ec)ec.addEventListener('click',clearFilters);return;}
     var html='';
     for(var i=0;i<arr.length;i++){var p=arr[i],col=catColor(p.category);
-      html+='<a class="pc" style="--cc:'+col+';animation-delay:'+Math.min(i*18,360)+'ms" href="'+esc(safeUrl(p.html_url))+'" target="_blank" rel="noopener">'
-        +'<div class="top"><span class="pill" style="color:'+col+';background:'+col+'1f">'+esc(p.category)+'</span>'+evBadge(p)
+      html+='<a class="pc" data-cc="'+esc(col)+'" href="'+esc(safeUrl(p.html_url))+'" target="_blank" rel="noopener">'
+        +'<div class="top"><span class="pill">'+esc(p.category)+'</span>'+evBadge(p)+flagBadge(p)
         +(p.rising?'<span class="rise">↑ '+(p.stars_delta_7d>0?('+'+p.stars_delta_7d+'/7d'):'rising')+'</span>':(p.is_new?'<span class="nb">NEW</span>':''))+'<span class="st">★ '+(p.stars||0)+'</span></div>'
         +'<h3>'+esc(p.full_name)+'</h3><p class="desc">'+esc(p.description||'—')+'</p>'
         +tagRow(p)
         +'<div class="foot"><span class="lng"><span class="ld"></span>'+esc(p.language||'n/a')+'</span>'
         +'<span class="ac"><span class="ad'+(p.active?' on':'')+'"></span>'+fmtAge(p.days_since_push)+'</span></div></a>';}
     l.innerHTML=html;
+    var pcs=l.querySelectorAll('.pc');for(var j=0;j<pcs.length;j++){var cc=pcs[j].getAttribute('data-cc');if(cc)pcs[j].style.setProperty('--cc',cc);}
   }
 
   function anyFilter(){return !!(state.q||state.lang||state.activeOnly||state.newOnly||Object.keys(state.cats).some(function(k){return state.cats[k];}));}
@@ -137,10 +139,10 @@
     var counts={};DATA.projects.forEach(function(p){counts[p.category]=(counts[p.category]||0)+1;});
     CATS.forEach(function(cat){if(cat.n==='Other')return;var on=!!state.cats[cat.n],nn=counts[cat.n]||0;
     var el=document.createElement('div');el.className='chip'+(on?' on':'');el.setAttribute('role','button');el.setAttribute('tabindex','0');el.setAttribute('aria-pressed',String(on));
-    el.innerHTML='<span class="dot" style="background:'+cat.c+'"></span>'+esc(cat.n)+(nn?' <span class="cnt">'+nn+'</span>':'');
+    el.style.setProperty('--cc',cat.c);el.innerHTML='<span class="dot"></span>'+esc(cat.n)+(nn?' <span class="cnt">'+nn+'</span>':'');
     el.addEventListener('click',function(){state.cats[cat.n]=!state.cats[cat.n];el.classList.toggle('on',state.cats[cat.n]);el.setAttribute('aria-pressed',String(!!state.cats[cat.n]));render();});
     c.appendChild(el);});}
-  function buildLegend(){var l=$('legend');if(!l)return;l.innerHTML='';CATS.forEach(function(cat){if(cat.n==='Other')return;l.innerHTML+='<span><span class="dot" style="background:'+cat.c+'"></span>'+esc(cat.n)+'</span>';});l.innerHTML+='<span style="color:#5a6680">· inner = recent · size = stars · ✦ new</span>';}
+  function buildLegend(){var l=$('legend');if(!l)return;l.innerHTML='';CATS.forEach(function(cat){if(cat.n==='Other')return;var s=document.createElement('span');s.style.setProperty('--cc',cat.c);s.innerHTML='<span class="dot"></span>'+esc(cat.n);l.appendChild(s);});var n=document.createElement('span');n.className='leg-note';n.textContent='\u00b7 inner = recent \u00b7 size = stars \u00b7 \u2726 new';l.appendChild(n);}
   function buildLangs(){var sel=$('langSel');if(!sel)return;var langs={};DATA.projects.forEach(function(p){if(p.language)langs[p.language]=(langs[p.language]||0)+1;});
     var arr=Object.keys(langs).sort(function(a,b){return langs[b]-langs[a];});
     sel.innerHTML='<option value="">All languages</option>'+arr.map(function(L){return '<option value="'+esc(L)+'">'+esc(L)+' ('+langs[L]+')</option>';}).join('');

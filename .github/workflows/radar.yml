@@ -2,7 +2,7 @@ name: AxonOS Radar
 
 on:
   schedule:
-    - cron: "17 */6 * * *"
+    - cron: "17 */3 * * *"
   workflow_dispatch:
 
 permissions:
@@ -32,7 +32,12 @@ jobs:
           python3 -c "import json;d=json.load(open('data/radar.json'));assert len(d['projects'])<=120;assert all(p['html_url'].startswith('https://github.com/') for p in d['projects']);print('radar.json ok:',d['counts'])"
           python3 -c "import xml.dom.minidom as m;m.parse('feed.xml');print('feed.xml ok')"
 
-      - name: Commit changed data via GitHub API (Verified)
+      - name: Build the report page (report.html)
+        if: always()  # regenerate from committed data even if discovery hiccuped
+        run: python3 scripts/build_report.py
+
+      - name: Commit changed data + report via GitHub API (Verified)
+        if: always()
         run: python3 scripts/publish_data.py
 
       - name: Publish live stats issue

@@ -68,7 +68,7 @@ jobs:
           grep -q 'Content-Security-Policy' index.html
           grep -q 'function safeUrl' assets/app.js
           grep -q 'og:image' index.html
-          for f in index.html stats.html; do grep -q "script-src 'self';" "$f" && grep -q "style-src 'self';" "$f" && ! grep -q "unsafe-inline" "$f" || { echo "CSP not strict: $f"; exit 1; }; done
+          for f in index.html stats.html report.html; do grep -q "script-src 'self';" "$f" && grep -q "style-src 'self';" "$f" && ! grep -q "unsafe-inline" "$f" || { echo "CSP not strict: $f"; exit 1; }; done
           echo "strict CSP (no unsafe-inline) ok"
 
       - name: Inline JS syntax
@@ -78,7 +78,7 @@ jobs:
 
       - name: Required files
         run: |
-          for f in README.md LICENSE VERSION index.html assets/app.js assets/app.css assets/stats.js stats.html feed.xml og-image.png CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md data/seeds.json data/radar.schema.json scripts/radar.py scripts/publish_data.py scripts/validate_payload.py scripts/publish_stats_issue.py tests/test_radar.py; do
+          for f in README.md LICENSE VERSION index.html report.html assets/app.js assets/app.css assets/report.css assets/stats.js stats.html scripts/build_report.py feed.xml og-image.png CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md data/seeds.json data/radar.schema.json scripts/radar.py scripts/publish_data.py scripts/validate_payload.py scripts/publish_stats_issue.py tests/test_radar.py; do
             test -f "$f" || { echo "missing $f"; exit 1; }
           done
 

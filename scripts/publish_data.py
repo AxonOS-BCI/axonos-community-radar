@@ -100,7 +100,8 @@ def main():
     hist_changed = put("data/history.json", "radar: update star history [skip ci]")
     fs_changed = put("data/first_seen.json", "radar: update first_seen log [skip ci]")
     feed_changed = put("feed.xml", "radar: refresh feed [skip ci]")
-    if not (changed or hist_changed or fs_changed or feed_changed):
+    report_changed = put("report.html", "radar: refresh report page [skip ci]")
+    if not (changed or hist_changed or fs_changed or feed_changed or report_changed):
         print("No meaningful change — nothing committed.")
 
 

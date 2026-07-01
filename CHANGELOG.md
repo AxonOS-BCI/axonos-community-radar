@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.7.0] - 2026-06-28
+
+### Added
+- **A full analytics report, right in the repo.** A new zero-dependency generator (`scripts/build_report.py`) renders `report.html` — a professional, Visual-Capitalist-style *State of Open BCI* report with a Gartner-style **reach × engagement quadrant**, a category donut, evidence-tier and language breakdowns, momentum and builder tables, and a **complete table of every tracked resource**. It is static, strict-CSP (all styling in `assets/report.css`, charts pre-rendered as inline SVG, zero JavaScript), so it renders anywhere and cannot break. Served one click away at `/report.html`.
+- The report is committed to the repo and **regenerated every 3 hours**, so the link is always an exhaustive, current snapshot.
+- A prominent **Report** link in the radar's nav and hero.
+
+### Changed
+- The refresh cadence moves from every 6 hours to **every 3 hours**. `build_report.py` and the data/issue publishers now run with `if: always()`, so the report and data refresh from committed data even if a discovery scan hiccups.
+- Fixed `CITATION.cff`, which had drifted to 3.4.0, to track the release version.
+
 ## [3.6.2] - 2026-06-28
 
 ### Fixed

@@ -250,3 +250,41 @@ def test_stats_issue_digest_renders_analytics():
     import re
     for xs, ys in re.findall(r"\[([\d.]+), ([\d.]+)\]", body):
         assert 0.0 <= float(xs) <= 1.0 and 0.0 <= float(ys) <= 1.0
+
+
+def test_report_html_renders_and_is_csp_safe():
+    """report.html must render all key sections with zero inline styles/scripts (strict CSP)."""
+    import importlib.util
+    import os
+    here = os.path.dirname(__file__)
+    path = os.path.join(here, "..", "scripts", "build_report.py")
+    spec = importlib.util.spec_from_file_location("breport", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    radar = {
+        "counts": {"total": 3},
+        "projects": [
+            {"full_name": "a/x", "repo": "x", "html_url": "https://github.com/a/x", "stars": 1200,
+             "forks": 300, "days_since_push": 0, "_score": 9, "active": True,
+             "category": "Decoding & ML", "language": "Python", "evidence_tier": "L3_EXPLICIT_BCI"},
+            {"full_name": "b/y", "repo": "y", "html_url": "https://github.com/b/y", "stars": 400,
+             "forks": 200, "days_since_push": 1, "_score": 7, "active": True,
+             "category": "Signal Processing", "language": "Rust", "evidence_tier": "L2_NEURAL_SIGNAL"},
+            {"full_name": "c/z", "repo": "z", "html_url": "https://github.com/c/z", "stars": 90,
+             "forks": 12, "days_since_push": 3, "_score": 5, "active": False,
+             "category": "Hardware & Acquisition", "language": "C", "evidence_tier": "L2_NEURAL_SIGNAL"},
+            {"full_name": "d/w", "repo": "w", "html_url": "https://github.com/d/w", "stars": 50,
+             "forks": 30, "days_since_push": 2, "_score": 4, "active": True,
+             "category": "Decoding & ML", "language": "Python", "evidence_tier": "L1_CONTEXT_PLUS_NEURO"},
+        ],
+        "builders": [{"owner": "a", "html_url": "https://github.com/a", "project_count": 2,
+                      "total_stars": 1600, "active_projects_30d": 2, "top_categories": ["Decoding & ML"]}],
+    }
+    out = mod.build(radar)
+    assert 'style="' not in out and "<script" not in out and "<style" not in out
+    assert "Content-Security-Policy" in out and "assets/report.css" in out
+    assert 'class="quad"' in out and 'class="donut"' in out
+    assert "All 4 tracked resources" in out  # full-field table present
+    # every project appears in the full table
+    for fn in ("a/x", "b/y", "c/z", "d/w"):
+        assert fn in out

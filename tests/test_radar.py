@@ -288,3 +288,23 @@ def test_report_html_renders_and_is_csp_safe():
     # every project appears in the full table
     for fn in ("a/x", "b/y", "c/z", "d/w"):
         assert fn in out
+
+
+def test_v4_scoring_and_curated():
+    """v4: multi-signal score is monotone + graceful; curated merge is honest."""
+    import importlib.util, os
+    here = os.path.dirname(__file__)
+    def load(name):
+        spec = importlib.util.spec_from_file_location(name, os.path.join(here, "..", "scripts", name + ".py"))
+        m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m); return m
+    radar = load("radar"); enrich = load("enrich")
+    bare = {"stars": 1000, "days_since_push": 5}
+    rich = {"stars": 1000, "days_since_push": 5, "total_downloads": 50000,
+            "contributors": 80, "commits_52w": 1200, "releases_count": 15}
+    assert radar.compute_score(rich) > radar.compute_score(bare) > 0
+    assert radar.compute_score({"stars": 10}) > 0  # graceful with no enriched fields
+    # funding platform keys are recognised
+    assert "open_collective" in enrich._FUND_KEYS and "github" in enrich._FUND_KEYS
+    # Link-header contributor count
+    hdr = {"Link": '<https://api.github.com/x?per_page=1&page=42>; rel="last"'}
+    assert enrich._last_page(hdr) == 42

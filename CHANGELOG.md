@@ -1,5 +1,25 @@
 # Changelog
 
+## [4.0.0] — 2026-07-01
+
+Serious ETL + professional visualization. The scan gets real depth and the report stops being a summary and becomes a dashboard.
+
+### Added — ETL & enrichment
+- **Paginated discovery** — up to 100 results per topic (GitHub's 1000-result cap respected), so broad topics are no longer truncated to a handful.
+- **Per-repository enrichment** pulling real GitHub signals: contributor counts (team size), release-asset **download** totals (adoption), a 52-week **commit-activity** histogram (maintenance), declared **funding channels** (FUNDING.yml), true watchers, size, open issues, homepage and archived state. Rate-limit aware; never fails a scan.
+- **Multi-signal scoring** — log-scaled stars + recency + enriched terms (downloads, contributors, activity, releases), published and applied identically to every project. AxonOS is never boosted.
+- **Honest curated overrides** (`data/curated.json`) for facts GitHub cannot provide — capital raised, legal domicile — source-cited only, never fabricated, empty by default.
+- **`data/status.json`** — per-scan observability (counts, enrichment coverage, archived, totals).
+
+### Added — visualization
+- **"Who leads the field"** — Most-starred and Most-built-on leaderboards always; Most-downloaded, Largest-teams and a funding-channels panel once enriched.
+- **Enriched full-field table** — Team, Downloads, Releases and a 52-week activity **sparkline** per project; a source-cited capital/domicile badge where available.
+- **Richer KPI band** — downloads, contributors, releases and funded counts when data is present.
+
+### Honesty
+- GitHub exposes repository **page views only to a repo's own owners**, so views are deliberately never shown rather than approximated.
+- Money-raised and domicile appear **only** via the curated, source-cited file.
+
 ## [3.7.0] - 2026-06-28
 
 ### Added

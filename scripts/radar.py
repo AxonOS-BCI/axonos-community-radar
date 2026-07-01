@@ -36,6 +36,8 @@ OUT = os.path.join(ROOT, "data", "radar.json")
 FIRST_SEEN = os.path.join(ROOT, "data", "first_seen.json")
 FEED = os.path.join(ROOT, "feed.xml")
 
+import enrich  # local module: scripts/enrich.py
+
 TOKEN = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
 SELF_REPO = os.environ.get("GITHUB_REPOSITORY", "AxonOS-BCI/axonos-community-radar").lower()
 SITE = "https://axonos-bci.github.io/axonos-community-radar/"
@@ -470,6 +472,51 @@ def enrich_v3(projects, seeds, snap, history):
     return builders, counts
 
 
+def compute_score(p):
+    """Published, uniform multi-signal score. Base = log(stars) + recency (kept
+    backward-compatible with earlier versions); enriched bonuses (downloads,
+    contributors, 52-week commit activity, releases) add depth and are 0 when a
+    signal is absent, so un-enriched projects still rank sensibly. Applied
+    identically to every project — AxonOS is never boosted."""
+    stars = int(p.get("stars") or 0)
+    days = int(p.get("days_since_push") or 999)
+    base = math.log10(stars + 1) * 10 + max(0, 60 - days) * 0.5
+    bonus = (math.log10(int(p.get("total_downloads") or 0) + 1) * 3.0
+             + math.log10(int(p.get("contributors") or 0) + 1) * 4.0
+             + math.log10(int(p.get("commits_52w") or 0) + 1) * 3.0
+             + min(int(p.get("releases_count") or 0), 20) * 0.3)
+    return round(base + bonus, 3)
+
+
+def load_curated():
+    path = os.path.join(ROOT, "data", "curated.json")
+    try:
+        with open(path, encoding="utf-8") as fh:
+            data = json.load(fh)
+    except Exception:  # noqa: BLE001
+        return {}
+    return {k.lower(): v for k, v in data.items() if isinstance(v, dict) and not k.startswith("_")}
+
+
+CURATED_FIELDS = ("funding_raised_usd", "funding_round", "funding_source",
+                  "org_legal_name", "org_domicile", "org_founded", "curated_note")
+
+
+def merge_curated(projects):
+    """Merge hand-curated, source-cited facts GitHub cannot provide (money raised,
+    legal domicile). Never fabricated: only fields explicitly present in
+    data/curated.json are set, and the project is marked so the UI can label it."""
+    cur = load_curated()
+    for p in projects:
+        c = cur.get((p.get("full_name") or "").lower())
+        if not c:
+            continue
+        for field in CURATED_FIELDS:
+            if field in c:
+                p[field] = c[field]
+        p["data_source"] = "curated+github"
+
+
 def main():
     seeds = load_seeds()
     core = {t.lower() for t in seeds.get("core_topics", [])}
@@ -489,43 +536,57 @@ def main():
     fseen = load_first_seen(snap_iso)
 
     repos, seen_lc, scanned, dropped, failed = {}, set(), 0, 0, []
+    per_page = 100  # GitHub search returns <=100/page and caps at 1000 results per query
     for topic in topics:
         q = f"topic:{topic} archived:false fork:false"
-        url = "https://api.github.com/search/repositories?" + urllib.parse.urlencode(
-            {"q": q, "sort": "updated", "order": "desc", "per_page": str(max_per_topic)})
         print(f"Scanning topic:{topic}")
-        try:
-            data = gh_json(url)
-        except Exception as exc:  # noqa: BLE001  (resilience: collect, decide after loop)
-            print(f"  WARN: search failed for topic:{topic}: {type(exc).__name__}: {exc}")
+        pulled, page, topic_failed = 0, 1, False
+        while pulled < max_per_topic and page <= 10:
+            n = min(per_page, max_per_topic - pulled)
+            url = "https://api.github.com/search/repositories?" + urllib.parse.urlencode(
+                {"q": q, "sort": "updated", "order": "desc", "per_page": str(n), "page": str(page)})
+            try:
+                data = gh_json(url)
+            except Exception as exc:  # noqa: BLE001  (resilience: collect, decide after loop)
+                print(f"  WARN: search failed for topic:{topic} p{page}: {type(exc).__name__}: {exc}")
+                if page == 1:
+                    topic_failed = True
+                break
+            items = data.get("items", [])
+            if not items:
+                break
+            for item in items:
+                scanned += 1
+                pulled += 1
+                fn = item.get("full_name")
+                key = (fn or "").lower()
+                if not fn or key == SELF_REPO or key in seen_lc:
+                    continue
+                seen_lc.add(key)
+                if fn.split("/")[0].lower() in excl_owners or fn.lower() in excl_repos:
+                    continue
+                if int(item.get("stargazers_count") or 0) < min_stars:
+                    continue
+                if not is_relevant(item, core, context, keywords):
+                    dropped += 1
+                    continue
+                repos[fn] = {
+                    "full_name": fn, "html_url": item.get("html_url"),
+                    "description": (item.get("description") or "").strip()[:240],
+                    "stars": int(item.get("stargazers_count") or 0),
+                    "forks": int(item.get("forks_count") or 0),
+                    "language": item.get("language") or "",
+                    "pushed_at": item.get("pushed_at") or "",
+                    "topics": (item.get("topics") or [])[:12],
+                    "license": (item.get("license") or {}).get("spdx_id"),
+                    "has_license": bool((item.get("license") or {}).get("spdx_id")
+                                        and (item.get("license") or {}).get("spdx_id") != "NOASSERTION"),
+                }
+            if len(items) < n:
+                break
+            page += 1
+        if topic_failed:
             failed.append(topic)
-            continue
-        for item in data.get("items", []):
-            scanned += 1
-            fn = item.get("full_name")
-            key = (fn or "").lower()
-            if not fn or key == SELF_REPO or key in seen_lc:
-                continue
-            seen_lc.add(key)
-            if fn.split("/")[0].lower() in excl_owners or fn.lower() in excl_repos:
-                continue
-            if int(item.get("stargazers_count") or 0) < min_stars:
-                continue
-            if not is_relevant(item, core, context, keywords):
-                dropped += 1
-                continue
-            repos[fn] = {
-                "full_name": fn, "html_url": item.get("html_url"),
-                "description": (item.get("description") or "").strip()[:240],
-                "stars": int(item.get("stargazers_count") or 0),
-                "forks": int(item.get("forks_count") or 0),
-                "language": item.get("language") or "",
-                "pushed_at": item.get("pushed_at") or "",
-                "topics": (item.get("topics") or [])[:12],
-                "license": (item.get("license") or {}).get("spdx_id"),
-                "has_license": bool((item.get("license") or {}).get("spdx_id")
-                                    and (item.get("license") or {}).get("spdx_id") != "NOASSERTION"),
-            }
 
     # Partial-failure safeguard: preserve last-good data rather than publishing a half-empty radar.
     if topics and len(failed) / len(topics) > FAIL_RATIO:
@@ -551,6 +612,16 @@ def main():
     out.sort(key=lambda x: x["_score"], reverse=True)
     out = out[:max_projects]
 
+    # --- v4 enrichment: real per-repo signals (team, downloads, activity, funding) ---
+    estats = {"enriched": 0, "errors": 0, "attempted": 0, "rate_limit_stop": False}
+    if seeds.get("enrich", True):
+        estats = enrich.enrich_repos(out, TOKEN, max_enrich=int(seeds.get("enrich_max", 200)))
+        print(f"Enrichment: {estats}")
+    merge_curated(out)                     # honest, source-cited overrides
+    for r in out:
+        r["_score"] = compute_score(r)     # richer score, applied to every project
+    out.sort(key=lambda x: x["_score"], reverse=True)
+
     history = load_history()
     builders, counts = enrich_v3(out, seeds, snap, history)
 
@@ -560,11 +631,15 @@ def main():
         "criteria": ("Public, non-archived, non-fork repositories that carry a core BCI/neuro "
                      "topic, or a context topic plus a neuro keyword. Ranked by recency (from the "
                      "6-hour snapshot slot) and stars. Categorisation and evidence tiers are heuristic."),
-        "refresh": "every 6 hours via GitHub Actions", "min_stars": min_stars,
+        "refresh": "every 3 hours via GitHub Actions", "min_stars": min_stars,
         "topics_failed": len(failed), "topics": topics,
-        "methodology": {"scoring_version": "3.0", "category_version": "3.0",
+        "methodology": {"scoring_version": "4.0", "category_version": "3.0",
                         "evidence_version": "3.0", "docs": "docs/METHODOLOGY.md",
-                        "note": "Inclusion is not endorsement; AxonOS is not boosted."},
+                        "note": ("Inclusion is not endorsement; AxonOS is scored by the same "
+                                 "formula as every project. Enriched signals (team, downloads, "
+                                 "activity, funding channels) are real GitHub data; money-raised "
+                                 "and legal domicile, when shown, are hand-curated and source-cited.")},
+        "enrichment": estats,
         "counts": counts,
         "projects": out,
         "builders": builders,
@@ -580,6 +655,20 @@ def main():
     save_first_seen(fseen, set(repos.keys()), snap)
     with open(FEED, "w", encoding="utf-8") as fh:
         fh.write(build_feed(out, now))
+    status = {
+        "generated_at": now.replace(microsecond=0).isoformat(), "snapshot_at": snap_iso,
+        "projects": len(out), "scanned": scanned, "dropped_off_topic": dropped,
+        "topics": len(topics), "topics_failed": len(failed),
+        "enriched": estats.get("enriched", 0), "enrich_errors": estats.get("errors", 0),
+        "enrich_rate_limit_stop": estats.get("rate_limit_stop", False),
+        "archived_or_disabled": sum(1 for p in out if p.get("archived") or p.get("disabled")),
+        "total_downloads": sum(int(p.get("total_downloads") or 0) for p in out),
+        "total_contributors": sum(int(p.get("contributors") or 0) for p in out),
+        "curated_records": sum(1 for p in out if p.get("data_source") == "curated+github"),
+    }
+    with open(os.path.join(ROOT, "data", "status.json"), "w", encoding="utf-8") as fh:
+        json.dump(status, fh, ensure_ascii=False, indent=2)
+        fh.write("\n")
     print(f"Wrote {len(out)} v3 projects + {len(builders)} builders (scanned {scanned}, "
           f"dropped {dropped} off-topic, {len(failed)} topics failed, {counts['active_30d']} active, "
           f"{counts['new']} new, {counts['rising']} rising). history + first_seen + feed updated.")

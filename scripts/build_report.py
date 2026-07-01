@@ -131,10 +131,46 @@ def bars_svg(items, violet=False):
 # --------------------------------------------------------------------------- #
 # report
 # --------------------------------------------------------------------------- #
+def leaderboard_svg(items, violet=False):
+    """Horizontal bar leaderboard: [(label, value)] sorted desc, values k-formatted."""
+    if not items:
+        return ""
+    mx = max(v for _, v in items) or 1
+    rh, top, bx, bw = 8.6, 1.5, 34.0, 51.0
+    h = top + len(items) * rh
+    cls = "bar-fill v" if violet else "bar-fill"
+    out = [f'<svg class="bars" viewBox="0 0 100 {h:.1f}" role="img" aria-label="leaderboard">']
+    for i, (label, v) in enumerate(items):
+        y = top + i * rh
+        out.append(f'<text class="bar-lab" x="0" y="{y+3.5:.2f}">{esc(label)[:20]}</text>')
+        out.append(f'<rect class="bar-track" x="{bx}" y="{y:.2f}" width="{bw}" height="4.4" rx="2.2"/>')
+        out.append(f'<rect class="{cls}" x="{bx}" y="{y:.2f}" width="{bw*v/mx:.2f}" height="4.4" rx="2.2"/>')
+        out.append(f'<text class="bar-val" x="{bx+bw+1.5}" y="{y+3.5:.2f}">{k(v)}</text>')
+    out.append("</svg>")
+    return "".join(out)
+
+
+def sparkline_svg(values, w=40.0, h=11.0):
+    vals = [int(v or 0) for v in (values or [])]
+    if len(vals) < 2:
+        return ""
+    mx = max(vals) or 1
+    n = len(vals)
+    pts = " ".join(f"{i/(n-1)*w:.1f},{h-(v/mx)*(h-1.5)-0.75:.1f}" for i, v in enumerate(vals))
+    return (f'<svg class="spark" viewBox="0 0 {w:.0f} {h:.0f}" preserveAspectRatio="none" '
+            f'role="img" aria-label="activity"><polyline class="spark-l" points="{pts}"/></svg>')
+
+
 def build(radar):
     p = radar.get("projects", [])
     c = radar.get("counts", {})
     builders = radar.get("builders", [])
+    enriched_any = any(x.get("enriched") for x in p)
+    tot_downloads = sum(int(x.get("total_downloads") or 0) for x in p)
+    tot_contrib = sum(int(x.get("contributors") or 0) for x in p)
+    tot_releases = sum(int(x.get("releases_count") or 0) for x in p)
+    funded = [x for x in p if x.get("funding_platforms")]
+    curated = [x for x in p if x.get("data_source") == "curated+github"]
     base = pages_url()
     now = datetime.now(timezone.utc).strftime("%d %b %Y, %H:%M UTC")
 
@@ -206,8 +242,12 @@ def build(radar):
 
     # KPI band
     kpis = [("Projects", tot, True), ("Total stars", k(stars), False), ("\u2265 1k stars", big, False),
-            ("Active (30d)", active, False), ("New this week", new, False), ("\U0001F525 Rising", rising, False),
-            ("Builders", nbuild, False), ("Languages", len(langs), False)]
+            ("Active (30d)", active, False)]
+    if enriched_any:
+        kpis += [("Downloads", k(tot_downloads), True), ("Contributors", k(tot_contrib), False),
+                 ("Releases", k(tot_releases), False), ("Funded", len(funded), False)]
+    kpis += [("New this week", new, False), ("\U0001F525 Rising", rising, False),
+             ("Builders", nbuild, False), ("Languages", len(langs), False)]
     A('<div class="kpis">')
     for label, val, acc in kpis:
         A(f'<div class="kpi"><div class="n{" accent" if acc else ""}">{val}</div>'
@@ -282,6 +322,63 @@ def build(radar):
 
     # full table
     allp = sorted(p, key=lambda x: -(x.get("_score") or 0))
+    # adoption / teams / funding
+    top_stars = sorted([x for x in p if x.get("stars")], key=lambda x: -(x.get("stars") or 0))[:8]
+    top_forks = sorted([x for x in p if x.get("forks")], key=lambda x: -(x.get("forks") or 0))[:8]
+
+    def _nm(x):
+        return x.get("repo") or (x.get("full_name") or "?").split("/")[-1]
+
+    A('<section id="adoption"><div class="sec-head"><div class="sec-k">Reach &amp; adoption</div>'
+      "<h2>Who leads the field</h2><p>Leaderboards from real public signals. Stars and engagement are "
+      "always available; downloads, teams and funding are fetched per repository during enrichment.</p></div>")
+    A('<div class="grid2">')
+    A('<div class="card"><div class="sec-head"><div class="sec-k">Reach</div><h2>Most starred</h2></div>')
+    A(leaderboard_svg([(_nm(x), x.get("stars") or 0) for x in top_stars]))
+    A('</div><div class="card"><div class="sec-head"><div class="sec-k">Engagement</div>'
+      "<h2>Most built-on (forks)</h2></div>")
+    A(leaderboard_svg([(_nm(x), x.get("forks") or 0) for x in top_forks], violet=True))
+    A("</div></div>")
+    if enriched_any:
+        top_dl = sorted([x for x in p if x.get("total_downloads")],
+                        key=lambda x: -(x.get("total_downloads") or 0))[:8]
+        top_team = sorted([x for x in p if x.get("contributors")],
+                          key=lambda x: -(x.get("contributors") or 0))[:8]
+        A('<div class="grid2">')
+        A('<div class="card"><div class="sec-head"><div class="sec-k">Adoption</div>'
+          "<h2>Most downloaded</h2><p>Total release-asset downloads.</p></div>")
+        A(leaderboard_svg([(_nm(x), x.get("total_downloads") or 0) for x in top_dl])
+          or '<p class="q-note">No release downloads recorded yet.</p>')
+        A('</div><div class="card"><div class="sec-head"><div class="sec-k">People</div>'
+          "<h2>Largest teams</h2><p>Distinct contributors.</p></div>")
+        A(leaderboard_svg([(_nm(x), x.get("contributors") or 0) for x in top_team], violet=True))
+        A("</div></div>")
+        if funded:
+            from collections import Counter
+            plat = Counter()
+            for x in funded:
+                for pl in x.get("funding_platforms") or []:
+                    plat[pl] += 1
+            chips = ", ".join(f"{pl.replace('_', ' ')} ({c})" for pl, c in plat.most_common())
+            A('<div class="card"><div class="sec-head"><div class="sec-k">Funding</div>'
+              "<h2>Funding channels</h2></div>")
+            A(f"<p>{len(funded)} of {tot} projects expose a funding channel \u2014 by platform: {chips}.</p>")
+            paid = [x for x in curated if x.get("funding_raised_usd")]
+            if paid:
+                rows = " \u00b7 ".join(
+                    f'{esc(x.get("full_name"))} (${k(int(x.get("funding_raised_usd")))}'
+                    + (f', {esc(x.get("org_domicile"))}' if x.get("org_domicile") else "") + ")"
+                    for x in paid)
+                A(f'<p class="q-note">Capital raised / domicile (hand-curated, source-cited): {rows}.</p>')
+            A("</div>")
+    else:
+        A('<div class="card"><p class="q-note"><b>Teams, downloads and funding</b> populate on the first '
+          "enriched scan: the pipeline fetches real contributor counts, release-asset download totals, "
+          "52-week commit activity and declared FUNDING.yml channels for every project. GitHub exposes "
+          "repository page views only to a repo\u2019s own owners, so views are deliberately never "
+          "shown rather than approximated.</p></div>")
+    A("</section>")
+
     tpill = {"L3_EXPLICIT_BCI": ("t3", "L3"), "L2_NEURAL_SIGNAL": ("t2", "L2"),
              "L1_CONTEXT_PLUS_NEURO": ("t1", "L1"), "L0_WEAK_ADJACENT": ("t0", "L0")}
     A('<section id="all"><div class="sec-head"><div class="sec-k">Full field</div>'
@@ -289,17 +386,29 @@ def build(radar):
       "<p>Every project on the radar, ranked by discovery score. One table, the whole field \u2014 the "
       "one-click, exhaustive answer.</p></div>")
     A('<div class="tbl-scroll"><table><thead><tr><th>#</th><th>Project</th><th>Category</th>'
-      '<th class="num">Stars</th><th class="num">Forks</th><th>Language</th><th>Evidence</th>'
-      '<th class="num">Active</th></tr></thead><tbody>')
+      '<th class="num">Stars</th><th class="num">Forks</th><th class="num">Team</th>'
+      '<th class="num">Downloads</th><th class="num">Rel.</th><th class="num">Activity</th>'
+      '<th>Language</th><th>Evidence</th><th class="num">Active</th></tr></thead><tbody>')
     for i, x in enumerate(allp, 1):
         pc, pl = tpill.get(x.get("evidence_tier"), ("", "\u2014"))
         live = '<span class="dotlive">\u25cf</span>' if x.get("active") else '<span class="dotstale">\u25cb</span>'
         desc = (x.get("description") or "").strip()
-        desc = (desc[:66] + "\u2026") if len(desc) > 66 else desc
+        desc = (desc[:60] + "\u2026") if len(desc) > 60 else desc
+        team = k(x["contributors"]) if x.get("contributors") is not None else "\u2014"
+        dls = k(x["total_downloads"]) if x.get("total_downloads") else "\u2014"
+        rels = str(x["releases_count"]) if x.get("releases_count") else "\u2014"
+        spark = sparkline_svg(x.get("activity_spark")) or "\u2014"
+        cur = ""
+        if x.get("data_source") == "curated+github" and x.get("funding_raised_usd"):
+            dom = f' \u00b7 {esc(x.get("org_domicile"))}' if x.get("org_domicile") else ""
+            cur = f'<span class="cur">\U0001F4B0 ${k(int(x["funding_raised_usd"]))}{dom}</span>'
         A(f'<tr><td class="num">{i}</td><td><a class="proj" href="{esc(x.get("html_url"))}">'
-          f'{esc(x.get("full_name"))}</a>' + (f'<br><span class="desc">{esc(desc)}</span>' if desc else "")
+          f'{esc(x.get("full_name"))}</a>{cur}'
+          + (f'<br><span class="desc">{esc(desc)}</span>' if desc else "")
           + f'</td><td>{esc(x.get("category"))}</td><td class="num">{k(x.get("stars", 0))}</td>'
-          f'<td class="num">{k(x.get("forks", 0))}</td><td>{esc(x.get("language") or "\u2014")}</td>'
+          f'<td class="num">{k(x.get("forks", 0))}</td><td class="num">{team}</td>'
+          f'<td class="num">{dls}</td><td class="num">{rels}</td><td class="num">{spark}</td>'
+          f'<td>{esc(x.get("language") or "\u2014")}</td>'
           f'<td><span class="pill {pc}">{pl}</span></td><td class="num">{live}</td></tr>')
     A("</tbody></table></div></section>")
 
@@ -312,9 +421,15 @@ def build(radar):
       "candidate before it appears here.</p>")
     A("<p><b>Evidence tiers.</b> Each repository is graded L3\u2013L0 by how strongly it signals a genuine "
       "BCI focus, with weak or adjacent matches flagged for review rather than hidden.</p>")
-    A("<p><b>Scoring.</b> Projects are ranked by a single published formula \u2014 log-scaled stars plus a "
-      "recency term \u2014 applied identically to every project. AxonOS is ranked like everyone else and "
-      "is never boosted.</p>")
+    A("<p><b>Scoring.</b> A single published multi-signal formula \u2014 log-scaled stars and recency, "
+      "plus enriched terms for release downloads, contributors and commit activity \u2014 applied "
+      "identically to every project. AxonOS is ranked like everyone else and is never boosted.</p>")
+    A("<p><b>Enriched signals.</b> Per repository the pipeline additionally fetches real GitHub data: "
+      "contributor counts (team size), release-asset download totals (adoption), a 52-week commit-activity "
+      "histogram (maintenance) and declared funding channels (FUNDING.yml). GitHub exposes repository page "
+      "views only to a repo\u2019s own owners, so views are deliberately not shown rather than approximated.</p>")
+    A("<p><b>Money &amp; domicile.</b> Capital raised and legal domicile are not in GitHub; when shown they "
+      "come only from a hand-curated, source-cited overrides file and are labelled as such. Nothing is estimated.</p>")
     A("<p><b>The quadrant.</b> Axes are raw GitHub metrics (stars; forks per star), min-max normalised "
       "across the projects shown. It is a descriptive map, not a vision or quality judgement.</p>")
     A("<p><b>Refresh.</b> The whole field is re-scanned every three hours; the last good snapshot is kept "

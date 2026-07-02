@@ -81,23 +81,33 @@ def quadrant_svg(projects, cidx):
              'Engagement \u2014 forks per star \u2192</text>')
     s.append(f'<text class="q-axtitle" x="28" y="{my:.1f}" text-anchor="middle" '
              f'transform="rotate(-90 28 {my:.1f})">Reach \u2014 stars, log \u2192</text>')
-    placed = []
+    # Draw every dot; place labels greedily (highest score first) and skip any
+    # label that cannot sit clear of those already placed, so nothing overlaps.
+    placed = []  # (x0, x1, y) bounding boxes of labels already drawn
     for x, rv, ev in zip(items, reach, eng):
         px = X0 + nrm(ev, emin, emax) * (X1 - X0)
         py = Y1 - nrm(rv, rmin, rmax) * (Y1 - Y0)
         rad = 5.0 + math.log10((x.get("stars") or 0) + 1) * 2.3
-        lab = esc((x.get("repo") or x.get("full_name") or "?")[:18])
-        right = px <= mx  # label to the right for left-half dots, else to the left
-        tx = px + (rad + 6) if right else px - (rad + 6)
-        anchor = "start" if right else "end"
-        ty = py + 4.5
-        for _pxo, pyo in placed:  # nudge to reduce vertical label collisions
-            if abs(ty - pyo) < 13 and abs(tx - _pxo) < 130:
-                ty = pyo + 13
-        placed.append((tx, ty))
         s.append(f'<circle class="q-dot qc-{cidx(x.get("category"))}" cx="{px:.1f}" '
                  f'cy="{py:.1f}" r="{rad:.1f}"/>')
-        s.append(f'<text class="q-lab" x="{tx:.1f}" y="{ty:.1f}" text-anchor="{anchor}">{lab}</text>')
+        lab = esc((x.get("repo") or x.get("full_name") or "?")[:18])
+        right = px <= mx  # label to the right for left-half dots, else to the left
+        anchor = "start" if right else "end"
+        tx = px + (rad + 7) if right else px - (rad + 7)
+        est_w = len(lab) * 7.1 + 6.0
+        x0 = tx if right else tx - est_w
+        x1 = tx + est_w if right else tx
+        for dy in (4.5, 15.0, -8.0, 25.0, -18.0):  # try baseline, then nudge
+            ty = py + dy
+            if ty < Y0 + 11 or ty > Y1 - 4:
+                continue
+            clash = any(abs(ty - py2) < 12 and not (x1 < bx0 or x0 > bx1)
+                        for bx0, bx1, py2 in placed)
+            if not clash:
+                placed.append((x0, x1, ty))
+                s.append(f'<text class="q-lab" x="{tx:.1f}" y="{ty:.1f}" '
+                         f'text-anchor="{anchor}">{lab}</text>')
+                break
     s.append("</svg>")
     return "".join(s)
 
@@ -417,9 +427,10 @@ def build(radar):
       f"<h2>All {len(allp)} tracked resources</h2>"
       "<p>Every project on the radar, ranked by discovery score. One table, the whole field \u2014 the "
       "one-click, exhaustive answer.</p></div>")
+    enr_head = ('<th class="num">Team</th><th class="num">Downloads</th>'
+                '<th class="num">Rel.</th><th class="num">Activity</th>') if enriched_any else ""
     A('<div class="tbl-scroll"><table><thead><tr><th>#</th><th>Project</th><th>Category</th>'
-      '<th class="num">Stars</th><th class="num">Forks</th><th class="num">Team</th>'
-      '<th class="num">Downloads</th><th class="num">Rel.</th><th class="num">Activity</th>'
+      '<th class="num">Stars</th><th class="num">Forks</th>' + enr_head +
       '<th>Language</th><th>Evidence</th><th class="num">Active</th></tr></thead><tbody>')
     for i, x in enumerate(allp, 1):
         pc, pl = tpill.get(x.get("evidence_tier"), ("", "\u2014"))
@@ -438,9 +449,10 @@ def build(radar):
           f'{esc(x.get("full_name"))}</a>{cur}'
           + (f'<br><span class="desc">{esc(desc)}</span>' if desc else "")
           + f'</td><td>{esc(x.get("category"))}</td><td class="num">{k(x.get("stars", 0))}</td>'
-          f'<td class="num">{k(x.get("forks", 0))}</td><td class="num">{team}</td>'
-          f'<td class="num">{dls}</td><td class="num">{rels}</td><td class="num">{spark}</td>'
-          f'<td>{esc(x.get("language") or "\u2014")}</td>'
+          f'<td class="num">{k(x.get("forks", 0))}</td>'
+          + ((f'<td class="num">{team}</td><td class="num">{dls}</td>'
+              f'<td class="num">{rels}</td><td class="num">{spark}</td>') if enriched_any else "")
+          + f'<td>{esc(x.get("language") or "\u2014")}</td>'
           f'<td><span class="pill {pc}">{pl}</span></td><td class="num">{live}</td></tr>')
     A("</tbody></table></div></section>")
 

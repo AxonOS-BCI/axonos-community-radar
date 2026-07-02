@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.2.0] - 2026-07-01
+### Fixed
+- Reach x engagement quadrant: labels are now placed greedily (highest score first) and any label that cannot sit clear of the others is dropped, so dot labels no longer overlap in dense regions. All dots are still shown.
+### Changed
+- Full-field table now shows the enrichment columns (Team, Downloads, Rel., Activity) only once enrichment data exists, instead of a column of em dashes before the first enriched scan. The columns appear automatically after enrichment runs.
+
 ## [4.1.0] - 2026-07-01
 ### Changed
 - Report chart system rebuilt for legibility. Horizontal bars (evidence tiers, languages, leaderboards, distributions) now render as HTML+CSS with pre-defined width classes instead of tiny-viewBox SVG, so labels and values are crisp and a consistent size at any width instead of scaling with the container and colliding. The reach x engagement quadrant and the category donut now use real-pixel viewBoxes so their text renders at its literal size.

@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.0] - 2026-07-01
+### Changed
+- Report chart system rebuilt for legibility. Horizontal bars (evidence tiers, languages, leaderboards, distributions) now render as HTML+CSS with pre-defined width classes instead of tiny-viewBox SVG, so labels and values are crisp and a consistent size at any width instead of scaling with the container and colliding. The reach x engagement quadrant and the category donut now use real-pixel viewBoxes so their text renders at its literal size.
+### Added
+- New "Distribution" section: projects per star band and last-push recency, as two horizontal-bar charts.
+- Visible separators in the report header meta line.
+
 ## [4.0.0] — 2026-07-01
 
 Serious ETL + professional visualization. The scan gets real depth and the report stops being a summary and becomes a dashboard.

@@ -214,3 +214,27 @@ svg.spark { width: 42px; height: 11px; vertical-align: middle; }
 .cur { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 999px;
        font: 600 10.5px/1.5 var(--mono); color: var(--amber);
        border: 1px solid rgba(251,191,36,.35); white-space: nowrap; }
+
+
+/* ===== v4.1 chart system: HTML bars + real-pixel SVG ===== */
+.lb { display: flex; flex-direction: column; gap: 10px; }
+.lb-row { display: flex; align-items: center; gap: 12px; }
+.lb-lab { flex: 0 0 38%; max-width: 38%; font: 600 13px var(--mono); color: var(--dim);
+          white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lb-bar { flex: 1 1 auto; height: 11px; background: rgba(255,255,255,.05); border-radius: 6px; overflow: hidden; }
+.lb-fill { display: block; height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--cyan), #38bdf8); }
+.lb-fill.v { background: linear-gradient(90deg, var(--violet), #c4b5fd); }
+.lb-val { flex: 0 0 auto; min-width: 52px; text-align: right; font: 700 13px var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; }
+.w0{width:0%}.w1{width:1%}.w2{width:2%}.w3{width:3%}.w4{width:4%}.w5{width:5%}.w6{width:6%}.w7{width:7%}.w8{width:8%}.w9{width:9%}.w10{width:10%}.w11{width:11%}.w12{width:12%}.w13{width:13%}.w14{width:14%}.w15{width:15%}.w16{width:16%}.w17{width:17%}.w18{width:18%}.w19{width:19%}.w20{width:20%}.w21{width:21%}.w22{width:22%}.w23{width:23%}.w24{width:24%}.w25{width:25%}.w26{width:26%}.w27{width:27%}.w28{width:28%}.w29{width:29%}.w30{width:30%}.w31{width:31%}.w32{width:32%}.w33{width:33%}.w34{width:34%}.w35{width:35%}.w36{width:36%}.w37{width:37%}.w38{width:38%}.w39{width:39%}.w40{width:40%}.w41{width:41%}.w42{width:42%}.w43{width:43%}.w44{width:44%}.w45{width:45%}.w46{width:46%}.w47{width:47%}.w48{width:48%}.w49{width:49%}.w50{width:50%}.w51{width:51%}.w52{width:52%}.w53{width:53%}.w54{width:54%}.w55{width:55%}.w56{width:56%}.w57{width:57%}.w58{width:58%}.w59{width:59%}.w60{width:60%}.w61{width:61%}.w62{width:62%}.w63{width:63%}.w64{width:64%}.w65{width:65%}.w66{width:66%}.w67{width:67%}.w68{width:68%}.w69{width:69%}.w70{width:70%}.w71{width:71%}.w72{width:72%}.w73{width:73%}.w74{width:74%}.w75{width:75%}.w76{width:76%}.w77{width:77%}.w78{width:78%}.w79{width:79%}.w80{width:80%}.w81{width:81%}.w82{width:82%}.w83{width:83%}.w84{width:84%}.w85{width:85%}.w86{width:86%}.w87{width:87%}.w88{width:88%}.w89{width:89%}.w90{width:90%}.w91{width:91%}.w92{width:92%}.w93{width:93%}.w94{width:94%}.w95{width:95%}.w96{width:96%}.w97{width:97%}.w98{width:98%}.w99{width:99%}.w100{width:100%}
+
+.q-axis { stroke-width: 1.4; }
+.q-grid { stroke-width: 1; stroke-dasharray: 4 5; }
+.q-frame { fill: none; stroke: var(--line2); stroke-width: 1.1; }
+.q-dot { stroke-width: 1.3; }
+.q-lab { font: 500 12.5px var(--sans); }
+.q-qlabel { font: 700 12px var(--mono); }
+.q-axtitle { font: 600 13px var(--sans); }
+.donut-mid-n { font: 800 36px var(--sans); }
+.donut-mid-l { font: 600 10px var(--mono); }
+svg.quad { width: 100%; max-width: 760px; height: auto; }
+.meta i { font-style: normal; color: var(--faint); margin: 0 10px; }

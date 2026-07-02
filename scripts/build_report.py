@@ -43,111 +43,112 @@ def pages_url():
 # charts
 # --------------------------------------------------------------------------- #
 def quadrant_svg(projects, cidx):
+    """Reach x engagement map. Real-pixel viewBox (760x480) so labels stay a
+    consistent, legible size at any width instead of scaling with the container."""
     items = [x for x in projects if (x.get("stars") or 0) > 0]
     if len(items) < 4:
         return ""
-    items = sorted(items, key=lambda x: -(x.get("_score") or 0))[:16]
+    items = sorted(items, key=lambda x: -(x.get("_score") or 0))[:14]
     reach = [math.log10((x.get("stars") or 0) + 1) for x in items]
     eng = [(x.get("forks") or 0) / (x.get("stars") or 1) for x in items]
     rmin, rmax, emin, emax = min(reach), max(reach), min(eng), max(eng)
 
     def nrm(v, lo, hi):
-        return 0.5 if hi - lo < 1e-9 else min(0.97, max(0.03, (v - lo) / (hi - lo)))
+        return 0.5 if hi - lo < 1e-9 else min(0.93, max(0.07, (v - lo) / (hi - lo)))
 
-    X0, X1, Y0, Y1 = 20.0, 114.0, 6.0, 84.0
+    W, H = 760.0, 480.0
+    X0, X1, Y0, Y1 = 120.0, 724.0, 42.0, 392.0
     mx, my = (X0 + X1) / 2, (Y0 + Y1) / 2
-    s = ['<svg class="quad" viewBox="0 0 120 96" role="img" '
+    s = [f'<svg class="quad" viewBox="0 0 {W:.0f} {H:.0f}" role="img" '
          'aria-label="Reach versus engagement quadrant of open BCI projects">']
-    s.append(f'<rect class="q-bg-1" x="{mx}" y="{Y0}" width="{X1-mx}" height="{my-Y0}"/>')
-    s.append(f'<rect class="q-bg-2" x="{X0}" y="{Y0}" width="{mx-X0}" height="{my-Y0}"/>')
-    s.append(f'<rect class="q-bg-3" x="{X0}" y="{my}" width="{mx-X0}" height="{Y1-my}"/>')
-    s.append(f'<rect class="q-bg-4" x="{mx}" y="{my}" width="{X1-mx}" height="{Y1-my}"/>')
-    for gx in (X0 + (X1 - X0) * f for f in (0.25, 0.5, 0.75)):
-        s.append(f'<line class="q-grid" x1="{gx:.1f}" y1="{Y0}" x2="{gx:.1f}" y2="{Y1}"/>')
-    for gy in (Y0 + (Y1 - Y0) * f for f in (0.25, 0.5, 0.75)):
-        s.append(f'<line class="q-grid" x1="{X0}" y1="{gy:.1f}" x2="{X1}" y2="{gy:.1f}"/>')
-    s.append(f'<line class="q-axis" x1="{mx}" y1="{Y0}" x2="{mx}" y2="{Y1}"/>')
-    s.append(f'<line class="q-axis" x1="{X0}" y1="{my}" x2="{X1}" y2="{my}"/>')
-    s.append(f'<text class="q-qlabel" x="{X1-1}" y="{Y0+3.5}" text-anchor="end">Pillars</text>')
-    s.append(f'<text class="q-qlabel" x="{X0+1}" y="{Y0+3.5}">Widely watched</text>')
-    s.append(f'<text class="q-qlabel" x="{X0+1}" y="{Y1-1.5}">Emerging</text>')
-    s.append(f'<text class="q-qlabel" x="{X1-1}" y="{Y1-1.5}" text-anchor="end">Developer favourites</text>')
-    s.append(f'<text class="q-axtitle" x="{mx}" y="93.5" text-anchor="middle">'
+    s.append(f'<rect class="q-bg-1" x="{mx:.1f}" y="{Y0:.1f}" width="{X1-mx:.1f}" height="{my-Y0:.1f}"/>')
+    s.append(f'<rect class="q-bg-2" x="{X0:.1f}" y="{Y0:.1f}" width="{mx-X0:.1f}" height="{my-Y0:.1f}"/>')
+    s.append(f'<rect class="q-bg-3" x="{X0:.1f}" y="{my:.1f}" width="{mx-X0:.1f}" height="{Y1-my:.1f}"/>')
+    s.append(f'<rect class="q-bg-4" x="{mx:.1f}" y="{my:.1f}" width="{X1-mx:.1f}" height="{Y1-my:.1f}"/>')
+    for f in (0.25, 0.5, 0.75):
+        gx = X0 + (X1 - X0) * f
+        gy = Y0 + (Y1 - Y0) * f
+        s.append(f'<line class="q-grid" x1="{gx:.1f}" y1="{Y0:.1f}" x2="{gx:.1f}" y2="{Y1:.1f}"/>')
+        s.append(f'<line class="q-grid" x1="{X0:.1f}" y1="{gy:.1f}" x2="{X1:.1f}" y2="{gy:.1f}"/>')
+    s.append(f'<rect class="q-frame" x="{X0:.1f}" y="{Y0:.1f}" width="{X1-X0:.1f}" height="{Y1-Y0:.1f}"/>')
+    s.append(f'<line class="q-axis" x1="{mx:.1f}" y1="{Y0:.1f}" x2="{mx:.1f}" y2="{Y1:.1f}"/>')
+    s.append(f'<line class="q-axis" x1="{X0:.1f}" y1="{my:.1f}" x2="{X1:.1f}" y2="{my:.1f}"/>')
+    s.append(f'<text class="q-qlabel" x="{X1-10:.1f}" y="{Y0+20:.1f}" text-anchor="end">Pillars</text>')
+    s.append(f'<text class="q-qlabel" x="{X0+10:.1f}" y="{Y0+20:.1f}">Widely watched</text>')
+    s.append(f'<text class="q-qlabel" x="{X0+10:.1f}" y="{Y1-12:.1f}">Emerging</text>')
+    s.append(f'<text class="q-qlabel" x="{X1-10:.1f}" y="{Y1-12:.1f}" text-anchor="end">Dev favourites</text>')
+    s.append(f'<text class="q-axtitle" x="{mx:.1f}" y="{H-16:.1f}" text-anchor="middle">'
              'Engagement \u2014 forks per star \u2192</text>')
-    s.append(f'<text class="q-axtitle" x="7" y="{my}" text-anchor="middle" '
-             f'transform="rotate(-90 7 {my})">Reach \u2014 stars, log \u2192</text>')
+    s.append(f'<text class="q-axtitle" x="28" y="{my:.1f}" text-anchor="middle" '
+             f'transform="rotate(-90 28 {my:.1f})">Reach \u2014 stars, log \u2192</text>')
+    placed = []
     for x, rv, ev in zip(items, reach, eng):
         px = X0 + nrm(ev, emin, emax) * (X1 - X0)
         py = Y1 - nrm(rv, rmin, rmax) * (Y1 - Y0)
-        rad = 1.5 + math.log10((x.get("stars") or 0) + 1) * 0.62
-        lab = esc((x.get("repo") or x.get("full_name") or "?")[:16])
-        s.append(f'<circle class="q-dot qc-{cidx(x.get("category"))}" cx="{px:.2f}" '
-                 f'cy="{py:.2f}" r="{rad:.2f}"/>')
-        s.append(f'<text class="q-lab" x="{px+rad+0.7:.2f}" y="{py+0.85:.2f}">{lab}</text>')
+        rad = 5.0 + math.log10((x.get("stars") or 0) + 1) * 2.3
+        lab = esc((x.get("repo") or x.get("full_name") or "?")[:18])
+        right = px <= mx  # label to the right for left-half dots, else to the left
+        tx = px + (rad + 6) if right else px - (rad + 6)
+        anchor = "start" if right else "end"
+        ty = py + 4.5
+        for _pxo, pyo in placed:  # nudge to reduce vertical label collisions
+            if abs(ty - pyo) < 13 and abs(tx - _pxo) < 130:
+                ty = pyo + 13
+        placed.append((tx, ty))
+        s.append(f'<circle class="q-dot qc-{cidx(x.get("category"))}" cx="{px:.1f}" '
+                 f'cy="{py:.1f}" r="{rad:.1f}"/>')
+        s.append(f'<text class="q-lab" x="{tx:.1f}" y="{ty:.1f}" text-anchor="{anchor}">{lab}</text>')
     s.append("</svg>")
     return "".join(s)
 
 
 def donut_svg(cats_sorted, cidx, total):
-    cx = cy = 21.0
-    R = 20.0
+    """Category donut. Real-pixel viewBox (200x200) so the centre label renders
+    at its literal size."""
+    cx = cy = 100.0
+    R = 92.0
     ang = -math.pi / 2
-    s = ['<svg class="donut" viewBox="0 0 42 42" role="img" aria-label="Projects by category">']
+    s = ['<svg class="donut" viewBox="0 0 200 200" role="img" aria-label="Projects by category">']
     for name, cnt in cats_sorted:
         frac = cnt / total if total else 0
         a1 = ang + frac * 2 * math.pi
         x0, y0 = cx + R * math.cos(ang), cy + R * math.sin(ang)
         x1, y1 = cx + R * math.cos(a1), cy + R * math.sin(a1)
         large = 1 if (a1 - ang) > math.pi else 0
-        s.append(f'<path class="qc-{cidx(name)}" d="M{cx} {cy} L{x0:.3f} {y0:.3f} '
-                 f'A{R} {R} 0 {large} 1 {x1:.3f} {y1:.3f} Z"/>')
+        s.append(f'<path class="qc-{cidx(name)}" d="M{cx:.1f} {cy:.1f} L{x0:.2f} {y0:.2f} '
+                 f'A{R:.1f} {R:.1f} 0 {large} 1 {x1:.2f} {y1:.2f} Z"/>')
         ang = a1
-    s.append(f'<circle cx="{cx}" cy="{cy}" r="{R*0.6:.2f}" fill="#0e141d"/>')
-    s.append(f'<text class="donut-mid-n" x="{cx}" y="{cy-0.3}">{total}</text>')
-    s.append(f'<text class="donut-mid-l" x="{cx}" y="{cy+3.4}">PROJECTS</text>')
+    s.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{R*0.62:.1f}" fill="#0e141d"/>')
+    s.append(f'<text class="donut-mid-n" x="{cx:.1f}" y="{cy-3:.1f}">{total}</text>')
+    s.append(f'<text class="donut-mid-l" x="{cx:.1f}" y="{cy+20:.1f}">PROJECTS</text>')
     s.append("</svg>")
     return "".join(s)
 
 
 def bars_svg(items, violet=False):
+    """Horizontal bars rendered as HTML+CSS: text is normal HTML (crisp and a
+    consistent size everywhere), and bar length uses pre-defined width classes so
+    no inline styles are needed (strict-CSP safe). Replaces the old tiny-viewBox
+    SVG bars whose labels scaled with the container and collided."""
     if not items:
         return ""
     mx = max(v for _, v in items) or 1
-    rh, top = 7.4, 1.5
-    h = top + len(items) * rh
-    lab_w, bx, bw = 26.0, 27.0, 60.0
-    cls = "bar-fill v" if violet else "bar-fill"
-    s = [f'<svg class="bars" viewBox="0 0 100 {h:.1f}" role="img" aria-label="distribution">']
-    for i, (label, v) in enumerate(items):
-        y = top + i * rh
-        s.append(f'<text class="bar-lab" x="0" y="{y+3.6:.2f}">{esc(label)[:16]}</text>')
-        s.append(f'<rect class="bar-track" x="{bx}" y="{y:.2f}" width="{bw}" height="4.4" rx="2.2"/>')
-        s.append(f'<rect class="{cls}" x="{bx}" y="{y:.2f}" width="{bw*v/mx:.2f}" height="4.4" rx="2.2"/>')
-        s.append(f'<text class="bar-val" x="{bx+bw+1.5}" y="{y+3.6:.2f}">{v}</text>')
-    s.append("</svg>")
-    return "".join(s)
+    vv = " v" if violet else ""
+    rows = []
+    for label, v in items:
+        pct = int(round((v / mx) * 100))
+        rows.append(
+            f'<div class="lb-row"><span class="lb-lab">{esc(str(label))}</span>'
+            f'<span class="lb-bar"><i class="lb-fill{vv} w{pct}"></i></span>'
+            f'<span class="lb-val">{k(v)}</span></div>')
+    return '<div class="lb">' + "".join(rows) + "</div>"
 
 
 # --------------------------------------------------------------------------- #
 # report
 # --------------------------------------------------------------------------- #
 def leaderboard_svg(items, violet=False):
-    """Horizontal bar leaderboard: [(label, value)] sorted desc, values k-formatted."""
-    if not items:
-        return ""
-    mx = max(v for _, v in items) or 1
-    rh, top, bx, bw = 8.6, 1.5, 34.0, 51.0
-    h = top + len(items) * rh
-    cls = "bar-fill v" if violet else "bar-fill"
-    out = [f'<svg class="bars" viewBox="0 0 100 {h:.1f}" role="img" aria-label="leaderboard">']
-    for i, (label, v) in enumerate(items):
-        y = top + i * rh
-        out.append(f'<text class="bar-lab" x="0" y="{y+3.5:.2f}">{esc(label)[:20]}</text>')
-        out.append(f'<rect class="bar-track" x="{bx}" y="{y:.2f}" width="{bw}" height="4.4" rx="2.2"/>')
-        out.append(f'<rect class="{cls}" x="{bx}" y="{y:.2f}" width="{bw*v/mx:.2f}" height="4.4" rx="2.2"/>')
-        out.append(f'<text class="bar-val" x="{bx+bw+1.5}" y="{y+3.5:.2f}">{k(v)}</text>')
-    out.append("</svg>")
-    return "".join(out)
+    return bars_svg(items, violet)  # HTML bars \u2014 see bars_svg
 
 
 def sparkline_svg(values, w=40.0, h=11.0):
@@ -211,6 +212,24 @@ def build(radar):
             tcount[t] = tcount.get(t, 0) + 1
     tier_bars = [(lab, tcount[t]) for t, lab in tier_order if t in tcount]
 
+    sbd = {"10k+": 0, "1k\u201310k": 0, "100\u20131k": 0, "10\u2013100": 0, "< 10": 0}
+    for x in p:
+        st = x.get("stars") or 0
+        key = ("10k+" if st >= 10000 else "1k\u201310k" if st >= 1000 else
+               "100\u20131k" if st >= 100 else "10\u2013100" if st >= 10 else "< 10")
+        sbd[key] += 1
+    star_bars = [(k_, sbd[k_]) for k_ in ("10k+", "1k\u201310k", "100\u20131k", "10\u2013100", "< 10") if sbd[k_]]
+
+    rcd = {"active < 30d": 0, "30\u201390d": 0, "90d\u20131y": 0, "> 1y": 0}
+    for x in p:
+        d = x.get("days_since_push")
+        if d is None:
+            continue
+        key = ("active < 30d" if d < 30 else "30\u201390d" if d < 90 else
+               "90d\u20131y" if d < 365 else "> 1y")
+        rcd[key] += 1
+    rec_bars = [(k_, rcd[k_]) for k_ in ("active < 30d", "30\u201390d", "90d\u20131y", "> 1y") if rcd[k_]]
+
     H = []
     A = H.append
     A('<!doctype html><html lang="en"><head>')
@@ -236,8 +255,8 @@ def build(radar):
     A('<p class="lede">An exhaustive, automatically-compiled snapshot of every open-source project, '
       'tool and team building brain\u2013computer interfaces in public \u2014 discovered, relevance-filtered '
       'and ranked from public GitHub signals.</p>')
-    A(f'<div class="meta"><span>Updated <b>{now}</b></span><span>Refreshed every 3 hours</span>'
-      f'<span>{tot} resources tracked</span><span>Inclusion \u2260 endorsement</span></div>')
+    A(f'<div class="meta"><span>Updated <b>{now}</b></span><i>\u00b7</i><span>Refreshed every 3 hours</span>'
+      f'<i>\u00b7</i><span>{tot} resources tracked</span><i>\u00b7</i><span>Inclusion \u2260 endorsement</span></div>')
     A("</header>")
 
     # KPI band
@@ -292,6 +311,19 @@ def build(radar):
           "<h2>Languages of the field</h2>"
           "<p>What open BCI is actually written in \u2014 by number of tracked projects.</p></div>")
         A(f'<div class="card">{bars_svg(langs_top)}</div></section>')
+
+    # distribution (stars concentration + recency) \u2014 more signal, same solid HTML bars
+    A('<section id="dist"><div class="sec-head"><div class="sec-k">Distribution</div>'
+      "<h2>How the field is spread</h2>"
+      "<p>Two lenses on the tracked projects \u2014 how star reach concentrates, and how "
+      'recently each project was last pushed.</p></div><div class="grid2">')
+    A('<div class="card"><div class="sec-head"><div class="sec-k">By reach</div>'
+      "<h2>Projects per star band</h2></div>")
+    A(bars_svg(star_bars))
+    A('</div><div class="card"><div class="sec-head"><div class="sec-k">By activity</div>'
+      "<h2>Last-push recency</h2></div>")
+    A(bars_svg(rec_bars, violet=True))
+    A("</div></section>")
 
     # rising + new
     ris = sorted([x for x in p if x.get("rising")], key=lambda x: -(x.get("stars_delta_7d") or 0))[:8]

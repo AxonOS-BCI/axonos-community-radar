@@ -17,7 +17,7 @@ jobs:
   radar:
     name: Refresh ecosystem radar
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     env:
       GH_TOKEN: ${{ github.token }}
       GITHUB_TOKEN: ${{ github.token }}
@@ -33,13 +33,23 @@ jobs:
           python3 -c "import xml.dom.minidom as m;m.parse('feed.xml');print('feed.xml ok')"
 
       - name: Build the report page (report.html)
-        if: always()  # regenerate from committed data even if discovery hiccuped
         run: python3 scripts/build_report.py
 
       - name: Commit changed data + report via GitHub API (Verified)
-        if: always()
         run: python3 scripts/publish_data.py
 
       - name: Publish live stats issue
-        if: always()  # refresh the issue even if discovery hiccuped (uses committed data)
         run: python3 scripts/publish_stats_issue.py
+
+      # Disaster-recovery backup: every scan's data is retained as a workflow
+      # artifact for 90 days, independent of git history (audit: backup strategy).
+      - name: Archive data snapshot (90-day retention)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
+        with:
+          name: radar-data-${{ github.run_id }}
+          path: |
+            data/*.json
+            feed.xml
+          retention-days: 90
+          if-no-files-found: warn

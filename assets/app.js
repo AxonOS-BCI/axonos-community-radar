@@ -16,6 +16,30 @@
   function fmtAge(d){if(d==null||d>=9000)return '—';if(d<=0)return 'today';if(d<7)return d+'d';if(d<60)return Math.round(d/7)+'w';if(d<730)return Math.round(d/30)+'mo';return Math.round(d/365)+'y';}
 
   var DATA={projects:[],generated_at:null,counts:{total:0,active_30d:0,new:0}};
+  // Ingress validation (defense-in-depth): if radar.json is ever compromised,
+  // every field the UI touches is coerced to its expected type and URLs pass
+  // the github.com allowlist BEFORE any rendering. esc() remains the second wall.
+  function str(v,max){v=(v==null?'':String(v));return v.length>max?v.slice(0,max):v;}
+  function num(v){v=Number(v);return isFinite(v)?v:0;}
+  function sanitizeProject(p){
+    if(!p||typeof p!=='object')return null;
+    var q=p.quality_flags&&typeof p.quality_flags==='object'?p.quality_flags:{};
+    return {full_name:str(p.full_name,140),html_url:safeUrl(p.html_url),
+      description:str(p.description,300),category:str(p.category,60)||'Other',
+      language:str(p.language,40),stars:num(p.stars),forks:num(p.forks),
+      days_since_push:num(p.days_since_push),active:!!p.active,is_new:!!p.is_new,
+      rising:!!p.rising,falling:!!p.falling,stars_delta_7d:num(p.stars_delta_7d),
+      evidence_tier:str(p.evidence_tier,40),inclusion_reason:str(p.inclusion_reason,200),
+      topics:(Array.isArray(p.topics)?p.topics:[]).slice(0,12).map(function(t){return str(t,50);}),
+      quality_flags:{possible_false_positive:!!q.possible_false_positive},
+      first_seen:str(p.first_seen,40)};
+  }
+  function sanitizeData(j){
+    if(!j||typeof j!=='object')return DATA;
+    var ps=(Array.isArray(j.projects)?j.projects:[]).map(sanitizeProject).filter(Boolean);
+    return {projects:ps,generated_at:str(j.generated_at,40)||null,
+      counts:(j.counts&&typeof j.counts==='object')?j.counts:{total:ps.length}};
+  }
   var state={q:'',cats:{},lang:'',activeOnly:false,newOnly:false,sort:'activity',view:'grid'};
   var points=[];
 
@@ -69,7 +93,12 @@
     var alt='Radar showing '+arr.length+' projects across '+Object.keys(cats).length+' categories'+(nw?', '+nw+' new':'')+'.';
     var ra=$('radar-alt');if(ra)ra.textContent=alt;cv.setAttribute('aria-label',alt);
   }
-  function showTip(pt,mx,my){var t=$('tip');if(!t)return;var p=pt.p;t.innerHTML='<b>'+esc(p.full_name)+'</b>'+(p.is_new?' ✦':'')+'<br><span class="m">⭐ '+(p.stars||0)+' · '+esc(p.language||'n/a')+' · '+esc(p.category)+' · '+fmtAge(p.days_since_push)+'</span>';t.style.left=Math.min(mx+12,cv.clientWidth-220)+'px';t.style.top=Math.max(0,my-10)+'px';t.style.opacity=1;}
+  function showTip(pt,mx,my){var t=$('tip');if(!t)return;var p=pt.p;
+    t.textContent='';var b=document.createElement('b');b.textContent=p.full_name+(p.is_new?' \u2726':'');
+    var m=document.createElement('span');m.className='m';
+    m.textContent='\u2b50 '+(p.stars||0)+' \u00b7 '+(p.language||'n/a')+' \u00b7 '+p.category+' \u00b7 '+fmtAge(p.days_since_push);
+    t.appendChild(b);t.appendChild(document.createElement('br'));t.appendChild(m);
+    t.style.left=Math.min(mx+12,cv.clientWidth-220)+'px';t.style.top=Math.max(0,my-10)+'px';t.style.opacity=1;}
   cv.addEventListener('pointermove',function(e){var r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top,best=null,bd=1e9;for(var i=0;i<points.length;i++){var dx=mx-points[i].x,dy=my-points[i].y,d=dx*dx+dy*dy;if(d<points[i].r*points[i].r&&d<bd){bd=d;best=points[i];}}if(best){showTip(best,mx,my);cv.style.cursor='pointer';}else{var tp=$('tip');if(tp)tp.style.opacity=0;cv.style.cursor='default';}});
   cv.addEventListener('pointerleave',function(){var tp=$('tip');if(tp)tp.style.opacity=0;});
   cv.addEventListener('click',function(e){var r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;for(var i=0;i<points.length;i++){var dx=mx-points[i].x,dy=my-points[i].y;if(dx*dx+dy*dy<points[i].r*points[i].r){var u=safeUrl(points[i].p.html_url);if(u!=='#')window.open(u,'_blank','noopener');return;}}});
@@ -83,12 +112,12 @@
   function flagBadge(p){var q=p.quality_flags||{};var hit=Array.isArray(q)?q.indexOf('possible_false_positive')>=0:!!q.possible_false_positive;return hit?'<span class="flag" title="Borderline match \u2014 flagged for review">\u26A0 review</span>':'';}
   function renderCards(arr){
     var l=$('cards');
-    if(!arr.length){l.innerHTML='<div class="empty"><div class="big">'+(DATA.generated_at?'No matches':'Radar warming up')+'</div>'+(DATA.generated_at?(anyFilter()?'Nothing matches these filters — <button class="lnkbtn" id="emptyCl" type="button">clear all</button>.':'No projects yet.'):'The first scan runs on publish and refreshes every 6 hours. Real projects appear here shortly.')+'</div>';var ec=$('emptyCl');if(ec)ec.addEventListener('click',clearFilters);return;}
+    if(!arr.length){l.innerHTML='<div class="empty"><div class="big">'+(DATA.generated_at?'No matches':'Radar warming up')+'</div>'+(DATA.generated_at?(anyFilter()?'Nothing matches these filters — <button class="lnkbtn" id="emptyCl" type="button">clear all</button>.':'No projects yet.'):'The first scan runs on publish and refreshes every 3 hours. Real projects appear here shortly.')+'</div>';var ec=$('emptyCl');if(ec)ec.addEventListener('click',clearFilters);return;}
     var html='';
     for(var i=0;i<arr.length;i++){var p=arr[i],col=catColor(p.category);
       html+='<a class="pc" data-cc="'+esc(col)+'" href="'+esc(safeUrl(p.html_url))+'" target="_blank" rel="noopener">'
         +'<div class="top"><span class="pill">'+esc(p.category)+'</span>'+evBadge(p)+flagBadge(p)
-        +(p.rising?'<span class="rise">↑ '+(p.stars_delta_7d>0?('+'+p.stars_delta_7d+'/7d'):'rising')+'</span>':(p.is_new?'<span class="nb">NEW</span>':''))+'<span class="st">★ '+(p.stars||0)+'</span></div>'
+        +(p.rising?'<span class="rise">↑ '+(p.stars_delta_7d>0?('+'+p.stars_delta_7d+'/7d'):'rising')+'</span>':(p.falling?'<span class="fallb">↓ '+p.stars_delta_7d+'/7d</span>':(p.is_new?'<span class="nb">NEW</span>':'')))+'<span class="st">★ '+(p.stars||0)+'</span></div>'
         +'<h3>'+esc(p.full_name)+'</h3><p class="desc">'+esc(p.description||'—')+'</p>'
         +tagRow(p)
         +'<div class="foot"><span class="lng"><span class="ld"></span>'+esc(p.language||'n/a')+'</span>'
@@ -158,8 +187,8 @@
       +'<div class="stat s"><b>'+k(stars)+'</b><span>TOTAL STARS</span></div>'
       +'<div class="stat c"><b>'+act+'</b><span>ACTIVE 30D</span></div>';
     var u=$('updated');
-    if(DATA.generated_at){var d=new Date(DATA.generated_at);u.innerHTML='Updated '+d.toUTCString().replace('GMT','UTC')+' · refreshes every 6h · <a href="./feed.xml">RSS</a>';}
-    else u.textContent='Warming up — first scan runs on publish · refreshes every 6h';
+    if(DATA.generated_at){var d=new Date(DATA.generated_at);u.innerHTML='Updated '+d.toUTCString().replace('GMT','UTC')+' · refreshes every 3h · <a href="./feed.xml">RSS</a>';}
+    else u.textContent='Warming up — first scan runs on publish · refreshes every 3h';
   }
 
   function toast(msg){var t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},1800);}
@@ -185,7 +214,7 @@
       if((e.key==='Enter'||e.key===' ')&&e.target&&e.target.getAttribute&&e.target.getAttribute('role')==='button'){e.preventDefault();e.target.click();}});
     window.addEventListener('resize',function(){drawRadar(filtered());});
     render();
-    fetch('./data/radar.json',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){DATA=j||DATA;if(!DATA.projects)DATA.projects=[];buildChips();buildLangs();setStats();render();}).catch(function(err){console.log('radar data not loaded:',err);setStats();render();});
+    fetch('./data/radar.json',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){DATA=sanitizeData(j);buildChips();buildLangs();setStats();render();}).catch(function(err){console.log('radar data not loaded:',err);setStats();render();});
   }
   boot();
 

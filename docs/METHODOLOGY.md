@@ -63,6 +63,57 @@ rising = stars_delta_7d >= max(2, ceil(stars * 0.05))
 Missing history yields a delta of zero; the first scan does not mark everything
 as rising.
 
+## Falling
+
+Symmetry with rising (v4.3.0): negative movement is shown, not hidden.
+
+```
+falling = stars_delta_7d <= -2
+```
+
+Falling projects keep their place in the ranking — the flag is information,
+not a penalty.
+
+## Two meanings of "active"
+
+`active` means **code recency**: last `git push` within 30 days. Because a
+push is not the only life sign (issues, discussions, metadata edits update
+`updated_at` instead), v4.3.0 also records `community_active` — pushed *or*
+updated within 30 days. The headline "Active (30d)" count keeps the stricter
+push-based meaning.
+
+## Archived repositories
+
+The search query excludes archived repos, and any repo found to be archived or
+disabled **during enrichment** is removed from the ranking (it no longer
+displaces active projects). The number removed is published in
+`data/status.json` as `excluded_archived`.
+
+## Enrichment buffer (sampling-bias fix)
+
+Ranking happens in two passes. The base score (stars + recency) orders all
+candidates; then the pipeline enriches a **buffer of cap + 30** projects — not
+just the final cap — recomputes the full score with the enriched terms
+(downloads, contributors, commit activity, releases), re-sorts, and only then
+cuts to the cap. A project just below the base-score line can therefore earn
+its way in on real adoption signals.
+
+## Search-cap honesty
+
+GitHub Search hard-caps any query at 1 000 results, and the radar additionally
+pulls a bounded number per topic by design. When a topic reports more matches
+than were pulled, that topic is counted in `status.json` as
+`search_saturated_topics` — the radar is a **high-recall sample of the most
+relevant and recently active work**, and it says so rather than claiming
+exhaustiveness.
+
+## Category tie-breaking
+
+Categorisation is scored (name hit > topic hit > description hit). Ties break
+deterministically: higher score → more specific category (the fixed
+`CATEGORY_PRIORITY` order) → alphabetical. Two identical inputs always land in
+the same category.
+
 ## Removal and correction
 
 To remove or correct an entry, open an issue or a pull request editing the

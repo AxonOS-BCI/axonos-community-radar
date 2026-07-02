@@ -4,11 +4,11 @@
 
 ### The open brain–computer-interface field, mapped automatically.
 
-#### A living, momentum-first map of open BCI — discovered live from public GitHub, refreshed every six hours.
+#### A living, momentum-first map of open BCI — discovered live from public GitHub, refreshed every three hours.
 
 [![Live](https://img.shields.io/badge/live-axonos--bci.github.io-a78bfa?style=flat-square)](https://axonos-bci.github.io/axonos-community-radar/)
 [![CI](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-4.2.0-0a4a8f?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.3.0-0a4a8f?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-475569?style=flat-square)](LICENSE)
 [![Data](https://img.shields.io/badge/data-refreshed%20every%206h-2dd4ff?style=flat-square)](#-how-a-project-gets-on-the-radar)
 [![Runtime deps](https://img.shields.io/badge/runtime%20deps-zero-34d399?style=flat-square)](#-architecture)
@@ -20,7 +20,7 @@
 
 ---
 
-**AxonOS Radar** is a continuously-updated, public map of the open brain–computer-interface world. Every six hours it scans **public GitHub metadata**, keeps only what is genuinely BCI/neuro-relevant, labels *why* each project qualifies, ranks the field by a neutral discovery score, and renders it as an interactive radar, a card grid, a statistics dashboard, and a self-updating GitHub issue. It is, in spirit, a **momentum tracker for the open neurotech field** — surfacing what's active, what's rising, and who's building, on *real, verifiable signals* rather than hype.
+**AxonOS Radar** is a continuously-updated, public map of the open brain–computer-interface world. Every three hours it scans **public GitHub metadata**, keeps only what is genuinely BCI/neuro-relevant, labels *why* each project qualifies, ranks the field by a neutral discovery score, and renders it as an interactive radar, a card grid, a statistics dashboard, and a self-updating GitHub issue. It is, in spirit, a **momentum tracker for the open neurotech field** — surfacing what's active, what's rising, and who's building, on *real, verifiable signals* rather than hype.
 
 It is an open community project from **[AxonOS](https://axonos.org)** — an open, real-time neural operating system for BCIs.
 
@@ -57,9 +57,24 @@ The open BCI field is scattered across hundreds of repositories with no single, 
 
 | View | What it shows |
 |:--|:--|
-| **Projects** | The interactive radar (categories as sectors, recency as distance, stars as size) and a searchable, filterable card grid. Each card carries its real GitHub topics, an **evidence tier**, and a **Rising** badge when it's moving. |
+| **Projects** | The interactive radar (categories as sectors, recency as distance, stars as size) and a searchable, filterable card grid. Each card carries its real GitHub topics, an **evidence tier**, and a **Rising** or **Falling** badge when it's moving either way. |
 | **Builders** | A leaderboard of *owners with 2+ tracked projects* — total stars, active projects, and their focus areas. The people, not just the repos. |
 | **Methodology** | The inclusion rule, the four evidence tiers, and the scoring formula — in the product, not buried in docs. |
+
+## ✨ &nbsp;New in 4.3.0 — momentum, both directions
+
+The report grew from a snapshot into a **motion picture** of the field, and the
+pipeline got a hardening pass driven by an external-style audit:
+
+* **How the field moved** — headline deltas (projects, stars, active, rising) across the last week of snapshots, measured from `data/history.json`, never estimated.
+* **Star trajectories** — real per-project star curves across scans for the top of the field.
+* **Declining** — projects losing stars are shown with the same prominence as risers; hiding degradation would be dishonest cartography.
+* **Category health matrix** — size, reach, active-share, movers both ways and median push age, per category.
+* **Licence posture** — declared / unclear (NOASSERTION) / missing, now distinguished correctly.
+* **Pipeline health panel** — the radar reports on itself from `data/status.json`: scan stats, enrichment coverage, archived exclusions, search saturation, API budget.
+* **Fairer ranking** — enrichment now covers a buffer beyond the cap before the final cut (kills the top-N sampling bias); archived repos leave the ranking; category ties break deterministically.
+* **Self-diagnosing** — every run writes `data/last_run.json`; a twice-daily health monitor watches the *published* data and maintains a single self-closing alert issue if it goes stale.
+* **Deeper docs** — [threat model](docs/THREAT_MODEL.md) · [incident response](docs/INCIDENT_RESPONSE.md) · [data retention](docs/RETENTION.md) · [SBOM](docs/SBOM.md).
 
 ## 🔬 &nbsp;How a project gets on the radar
 
@@ -153,7 +168,7 @@ GitHub's **"Cite this repository"** button (from [`CITATION.cff`](CITATION.cff))
 
 ## 🔐 &nbsp;Data & privacy
 
-The radar shows only **public** repository metadata GitHub already exposes through its search API (name, description, topics, stars, language, last-push date). It stores no personal data and sets no cookies. The UI is self-contained — vanilla JS under a Content-Security-Policy with **externalised scripts** (no inline script execution, no external network requests, no trackers). To request removal of a project, add it to the exclude list in [`data/seeds.json`](data/seeds.json) or [open an issue](https://github.com/AxonOS-BCI/axonos-community-radar/issues/new) — see [`SECURITY.md`](SECURITY.md).
+The radar shows only **public** repository metadata GitHub already exposes through its search API (name, description, topics, stars, language, last-push date). It stores no personal data and sets no cookies. The UI is self-contained — vanilla JS under a Content-Security-Policy with **externalised scripts** (no inline script execution, no external network requests, no trackers). To request removal of a project, add it to the exclude list in [`data/seeds.json`](data/seeds.json) or [open an issue](https://github.com/AxonOS-BCI/axonos-community-radar/issues/new) — see [`SECURITY.md`](SECURITY.md) and the [data-retention policy](docs/RETENTION.md).
 
 ## 🤝 &nbsp;Contributing
 

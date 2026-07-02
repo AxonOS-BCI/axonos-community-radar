@@ -111,7 +111,7 @@
     </div>
     <div class="ph mt24"><h2>Live data</h2><span class="note">automated, and on demand</span></div>
     <div class="card mw820">
-      <p>The dataset refreshes automatically every 6 hours and is published to a single, always-current <b>live stats issue</b>. You can also publish a fresh scan to that issue on demand:</p>
+      <p>The dataset refreshes automatically every 3 hours and is published to a single, always-current <b>live stats issue</b>. You can also publish a fresh scan to that issue on demand:</p>
       <div class="data-actions">
         <a class="data-btn primary" href="https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/radar.yml" target="_blank" rel="noopener">↻ Publish fresh data to the issue</a>
         <a class="data-btn" href="https://github.com/AxonOS-BCI/axonos-community-radar/issues?q=is%3Aissue%20is%3Aopen%20label%3Aradar-stats" target="_blank" rel="noopener">📋 Open the live stats issue</a>
@@ -164,11 +164,13 @@
 <footer>
   <div class="wrap">
     © The AxonOS Project / Denis Yermakou &nbsp;·&nbsp; <a href="https://axonos.org">axonos.org</a> &nbsp;·&nbsp; <a href="https://medium.com/@AxonOS">medium.com/@AxonOS</a> &nbsp;·&nbsp; connect@axonos.org &nbsp;·&nbsp; security@axonos.org<br>
-    Data: public GitHub search · auto-refreshed every 6h · relevance-filtered · categorisation is opinionated · not an endorsement.
+    Data: public GitHub search · auto-refreshed every 3h · relevance-filtered · categorisation is opinionated · not an endorsement.
   </div>
 </footer>
 <div class="toast" id="toast"></div>
 
 <script src="assets/app.js" defer></script>
+<noscript><div class="noscript"><b>JavaScript is off.</b> The live map needs JS, but every number is public:
+open <a href="./data/radar.json">data/radar.json</a> (full dataset), the <a href="./report.html">static report</a> (no JS needed), or the <a href="./feed.xml">RSS feed</a>.</div></noscript>
 </body>
 </html>

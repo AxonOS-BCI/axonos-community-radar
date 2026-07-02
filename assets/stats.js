@@ -34,7 +34,7 @@
                ['m4',nw,'New this week'],['m5',rising,'Rising'],['m6',builders,'Builders']];
     $('metrics').innerHTML=cells.map(function(x){return '<div class="metric '+x[0]+'"><b>'+x[1]+'</b><span>'+x[2]+'</span></div>';}).join('');
     var u=$('updated');
-    if(DATA.generated_at){var d=new Date(DATA.generated_at);u.innerHTML='Updated '+d.toUTCString().replace('GMT','UTC')+' · refreshes every 6h · <a href="./feed.xml">RSS</a> · <a href="./">open the map →</a>';}
+    if(DATA.generated_at){var d=new Date(DATA.generated_at);u.innerHTML='Updated '+d.toUTCString().replace('GMT','UTC')+' · refreshes every 3h · <a href="./feed.xml">RSS</a> · <a href="./">open the map →</a>';}
     else u.textContent='Warming up — first scan runs on publish.';
   }
 
@@ -44,7 +44,7 @@
     var note=$('growthNote');
     if(!snaps.length){svg.innerHTML='';note.textContent='no history yet';return;}
     var pts=snaps.map(function(s){var m=snapMeta(s);return {t:s.snapshot_at,proj:m.total||0,stars:m.total_stars||0};});
-    note.textContent=pts.length===1?'1 snapshot — the curve fills in every 6h':pts.length+' snapshots · '+new Date(pts[0].t).toLocaleDateString()+' → '+new Date(pts[pts.length-1].t).toLocaleDateString();
+    note.textContent=pts.length===1?'1 snapshot — the curve fills in every 3h':pts.length+' snapshots · '+new Date(pts[0].t).toLocaleDateString()+' → '+new Date(pts[pts.length-1].t).toLocaleDateString();
     var n=pts.length;
     function xs(i){return n===1?W/2:PADL+(W-PADL-PADR)*i/(n-1);}
     function maxOf(key){var mx=0;pts.forEach(function(p){if(p[key]>mx)mx=p[key];});return mx||1;}

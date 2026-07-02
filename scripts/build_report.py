@@ -23,6 +23,26 @@ import os
 from datetime import datetime, timezone
 
 REPO = os.environ.get("GITHUB_REPOSITORY", "AxonOS-BCI/axonos-community-radar")
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def _read_version():
+    try:
+        with open(os.path.join(ROOT, "VERSION"), encoding="utf-8") as fh:
+            return fh.read().strip()
+    except Exception:  # noqa: BLE001
+        return "dev"
+
+
+RADAR_VERSION = _read_version()
+
+
+def _d7cell(x):
+    d = x.get("stars_delta_7d")
+    if not d:
+        return "\u2014"
+    return (f'<span class="rise">+{d}</span>' if d > 0
+            else f'<span class="fall">\u2212{abs(d)}</span>')
 
 
 def esc(s):
@@ -161,6 +181,67 @@ def leaderboard_svg(items, violet=False):
     return bars_svg(items, violet)  # HTML bars \u2014 see bars_svg
 
 
+def star_series(history, full_name):
+    """Star counts for a repo across history snapshots (oldest→newest)."""
+    vals = []
+    for snp in (history or {}).get("snapshots", []):
+        st = (snp.get("stars") or {}).get(full_name)
+        if isinstance(st, int):
+            vals.append(st)
+    return vals
+
+
+def movement(history):
+    """Field-level deltas: latest snapshot meta vs the oldest within ~7 days."""
+    snaps = (history or {}).get("snapshots", [])
+    if len(snaps) < 2:
+        return None
+    latest = snaps[-1]
+    try:
+        t_latest = datetime.fromisoformat(latest["snapshot_at"]).timestamp()
+    except Exception:  # noqa: BLE001
+        return None
+    base = None
+    for snp in snaps[:-1]:
+        try:
+            t = datetime.fromisoformat(snp["snapshot_at"]).timestamp()
+        except Exception:  # noqa: BLE001
+            continue
+        if t_latest - t <= 8 * 86400:
+            base = snp
+            break
+    if base is None:
+        base = snaps[0]
+    lm, bm = latest.get("meta") or {}, base.get("meta") or {}
+    keys = ("total", "total_stars", "active_30d", "rising")
+    return {"span_from": base.get("snapshot_at", ""), "span_to": latest.get("snapshot_at", ""),
+            "delta": {kk: int(lm.get(kk) or 0) - int(bm.get(kk) or 0) for kk in keys},
+            "now": {kk: int(lm.get(kk) or 0) for kk in keys}}
+
+
+def delta_pill(d):
+    if not d:
+        return '<span class="dp flat">\u00b10</span>'
+    cls = "up" if d > 0 else "down"
+    sign = "+" if d > 0 else "\u2212"
+    return f'<span class="dp {cls}">{sign}{abs(d)}</span>'
+
+
+def traj_svg(values, w=120.0, h=26.0):
+    """Star-trajectory line for the Momentum section (bigger than table sparks)."""
+    vals = [int(v or 0) for v in (values or [])]
+    if len(vals) < 2:
+        return ""
+    lo, hi = min(vals), max(vals)
+    rng = (hi - lo) or 1
+    n = len(vals)
+    pts = " ".join(f"{i/(n-1)*(w-4)+2:.1f},{h-2-((v-lo)/rng)*(h-6):.1f}" for i, v in enumerate(vals))
+    lx, ly = (n - 1) / (n - 1) * (w - 4) + 2, h - 2 - ((vals[-1] - lo) / rng) * (h - 6)
+    return (f'<svg class="traj" viewBox="0 0 {w:.0f} {h:.0f}" role="img" aria-label="star trajectory">'
+            f'<polyline class="traj-l" points="{pts}"/>'
+            f'<circle class="traj-d" cx="{lx:.1f}" cy="{ly:.1f}" r="2.6"/></svg>')
+
+
 def sparkline_svg(values, w=40.0, h=11.0):
     vals = [int(v or 0) for v in (values or [])]
     if len(vals) < 2:
@@ -172,7 +253,7 @@ def sparkline_svg(values, w=40.0, h=11.0):
             f'role="img" aria-label="activity"><polyline class="spark-l" points="{pts}"/></svg>')
 
 
-def build(radar):
+def build(radar, history=None, status=None):
     p = radar.get("projects", [])
     c = radar.get("counts", {})
     builders = radar.get("builders", [])
@@ -240,6 +321,24 @@ def build(radar):
         rcd[key] += 1
     rec_bars = [(k_, rcd[k_]) for k_ in ("active < 30d", "30\u201390d", "90d\u20131y", "> 1y") if rcd[k_]]
 
+    falling = sorted([x for x in p if x.get("falling")], key=lambda x: (x.get("stars_delta_7d") or 0))[:8]
+    entrants = [x for x in p if x.get("is_new")][:10]
+    lic_ok = sum(1 for x in p if x.get("license") and x.get("license") != "NOASSERTION")
+    lic_unclear = sum(1 for x in p if x.get("license") == "NOASSERTION")
+    lic_missing = tot - lic_ok - lic_unclear
+    mv = movement(history)
+    cat_rows = []
+    for name, cnt in cats_sorted:
+        grp = [x for x in p if x.get("category") == name]
+        act = sum(1 for x in grp if x.get("active"))
+        cat_rows.append({
+            "name": name, "n": cnt, "stars": cat_stars.get(name, 0),
+            "active_pct": int(round(100 * act / cnt)) if cnt else 0,
+            "rising": sum(1 for x in grp if x.get("rising")),
+            "falling": sum(1 for x in grp if x.get("falling")),
+            "med_push": sorted(int(x.get("days_since_push") or 0) for x in grp)[len(grp) // 2] if grp else 0,
+        })
+
     H = []
     A = H.append
     A('<!doctype html><html lang="en"><head>')
@@ -266,7 +365,8 @@ def build(radar):
       'tool and team building brain\u2013computer interfaces in public \u2014 discovered, relevance-filtered '
       'and ranked from public GitHub signals.</p>')
     A(f'<div class="meta"><span>Updated <b>{now}</b></span><i>\u00b7</i><span>Refreshed every 3 hours</span>'
-      f'<i>\u00b7</i><span>{tot} resources tracked</span><i>\u00b7</i><span>Inclusion \u2260 endorsement</span></div>')
+      f'<i>\u00b7</i><span>{tot} resources tracked</span><i>\u00b7</i><span>Inclusion \u2260 endorsement</span>'
+      f'<i>\u00b7</i><span>Radar v{RADAR_VERSION}</span></div>')
     A("</header>")
 
     # KPI band
@@ -282,6 +382,19 @@ def build(radar):
         A(f'<div class="kpi"><div class="n{" accent" if acc else ""}">{val}</div>'
           f'<div class="l">{label}</div></div>')
     A("</div>")
+
+    # movement band — how the field moved over ~the last week (real history)
+    if mv:
+        A('<section id="movement"><div class="sec-head"><div class="sec-k">Momentum \u00b7 field level</div>'
+          "<h2>How the field moved</h2>"
+          f'<p>Change across tracked snapshots ({esc(mv["span_from"][:10])} \u2192 '
+          f'{esc(mv["span_to"][:10])}) \u2014 measured, not estimated.</p></div>')
+        A('<div class="move">')
+        for lab, kk in (("Projects", "total"), ("Total stars", "total_stars"),
+                        ("Active (30d)", "active_30d"), ("Rising", "rising")):
+            A(f'<div class="move-chip"><div class="mv-n">{k(mv["now"][kk])}{delta_pill(mv["delta"][kk])}</div>'
+              f'<div class="mv-l">{lab}</div></div>')
+        A("</div></section>")
 
     # quadrant
     quad = quadrant_svg(p, cidx)
@@ -347,6 +460,49 @@ def build(radar):
               f'{esc(x.get("full_name"))}</a></td><td class="num rise">+{x.get("stars_delta_7d", 0)}</td>'
               f'<td class="num">{k(x.get("stars", 0))}</td><td>{esc(x.get("category"))}</td></tr>')
         A("</tbody></table></div></section>")
+
+    # star trajectories — real multi-snapshot history per project
+    traj_items = []
+    for x in sorted(p, key=lambda y: -(y.get("_score") or 0)):
+        series = star_series(history, x.get("full_name"))
+        if len(series) >= 2:
+            traj_items.append((x, series))
+        if len(traj_items) >= 8:
+            break
+    if traj_items:
+        A('<section id="traj"><div class="sec-head"><div class="sec-k">Momentum \u00b7 per project</div>'
+          "<h2>Star trajectories</h2><p>Real star counts across radar snapshots for the highest-scoring "
+          "projects \u2014 the line grows richer with every scan.</p></div>")
+        A('<div class="card"><div class="traj-grid">')
+        for x, series in traj_items:
+            d7 = x.get("stars_delta_7d") or 0
+            A('<div class="traj-row">'
+              f'<a class="proj" href="{esc(x.get("html_url"))}">{esc(x.get("repo") or x.get("full_name"))}</a>'
+              f'{traj_svg(series)}'
+              f'<span class="traj-val">{k(x.get("stars", 0))}\u2605 {delta_pill(d7)}</span></div>')
+        A("</div></div></section>")
+
+    # declining — hidden degradation made visible (audit fix)
+    if falling:
+        A('<section id="falling"><div class="sec-head"><div class="sec-k">Momentum \u00b7 cooling</div>'
+          "<h2>Declining \u2014 losing stars this week</h2>"
+          "<p>Negative movement is shown, not hidden: projects whose star count dropped over 7 days.</p></div>")
+        A('<div class="tbl-scroll"><table><thead><tr><th>#</th><th>Project</th>'
+          '<th class="num">7-day</th><th class="num">Stars</th><th>Category</th></tr></thead><tbody>')
+        for i, x in enumerate(falling, 1):
+            A(f'<tr><td class="num">{i}</td><td><a class="proj" href="{esc(x.get("html_url"))}">'
+              f'{esc(x.get("full_name"))}</a></td><td class="num fall">\u2212{abs(x.get("stars_delta_7d", 0))}</td>'
+              f'<td class="num">{k(x.get("stars", 0))}</td><td>{esc(x.get("category"))}</td></tr>')
+        A("</tbody></table></div></section>")
+
+    # new entrants
+    if entrants:
+        A('<section id="entrants"><div class="sec-head"><div class="sec-k">Discovery</div>'
+          "<h2>New on the radar this week</h2></div><div class=\"newchips\">")
+        for x in entrants:
+            A(f'<a class="newchip" href="{esc(x.get("html_url"))}">\u2726 {esc(x.get("full_name"))}'
+              f'<span>{k(x.get("stars", 0))}\u2605</span></a>')
+        A("</div></section>")
 
     # builders
     if builders:
@@ -421,6 +577,57 @@ def build(radar):
           "shown rather than approximated.</p></div>")
     A("</section>")
 
+    # category health matrix — one honest row per category
+    A('<section id="health"><div class="sec-head"><div class="sec-k">Composition \u00b7 depth</div>'
+      "<h2>Category health matrix</h2><p>Per-category vitals from the same public signals: size, reach, "
+      "share pushed in the last 30 days, weekly movers both ways, and the median time since last push.</p></div>")
+    A('<div class="tbl-scroll"><table class="matrix"><thead><tr><th>Category</th><th class="num">Projects</th>'
+      '<th class="num">Stars</th><th class="num">Active %</th><th class="num">Rising</th>'
+      '<th class="num">Falling</th><th class="num">Median push</th></tr></thead><tbody>')
+    for cr in cat_rows:
+        hcls = "ok" if cr["active_pct"] >= 50 else ("warn" if cr["active_pct"] >= 25 else "cold")
+        A(f'<tr><td><span class="sw lg-{cidx(cr["name"])}"></span> {esc(cr["name"])}</td>'
+          f'<td class="num">{cr["n"]}</td><td class="num">{k(cr["stars"])}</td>'
+          f'<td class="num"><span class="hp {hcls}">{cr["active_pct"]}%</span></td>'
+          f'<td class="num rise">{cr["rising"] or "\u2014"}</td>'
+          f'<td class="num fall">{cr["falling"] or "\u2014"}</td>'
+          f'<td class="num">{cr["med_push"]}d</td></tr>')
+    A("</tbody></table></div></section>")
+
+    # licence posture — split "unclear" from "missing" (audit fix)
+    A('<section id="licenses"><div class="sec-head"><div class="sec-k">Governance</div>'
+      "<h2>Licence posture</h2><p>Whether the field is legally reusable: a declared SPDX licence, "
+      "a licence GitHub cannot classify (NOASSERTION), or none at all.</p></div>")
+    A('<div class="card">')
+    A(bars_svg([("Declared licence", lic_ok), ("Unclear (NOASSERTION)", lic_unclear),
+                ("No licence", lic_missing)]))
+    A("</div></section>")
+
+    # pipeline & data-freshness panel — status.json is public, show it
+    if status:
+        rl = status.get("rate_limit") or {}
+        ok_run = (status.get("topics_failed", 0) == 0)
+        rows = [
+            ("Last scan", esc(str(status.get("generated_at", ""))[:16].replace("T", " ")) + " UTC", ok_run),
+            ("Repos scanned", k(status.get("scanned", 0)), True),
+            ("Off-topic dropped", k(status.get("dropped_off_topic", 0)), True),
+            ("Enriched", f'{status.get("enriched", 0)} / {status.get("projects", 0)}',
+             status.get("enrich_errors", 0) == 0),
+            ("Archived excluded", str(status.get("excluded_archived", status.get("archived_or_disabled", 0))), True),
+            ("Topics saturated", str(status.get("search_saturated_topics", 0)),
+             status.get("search_saturated_topics", 0) == 0),
+            ("API budget left", str(rl.get("remaining_end", "\u2014")),
+             (rl.get("remaining_end") or 1000) > 200),
+        ]
+        A('<section id="pipeline"><div class="sec-head"><div class="sec-k">Trust \u00b7 the machine</div>'
+          "<h2>Pipeline health</h2><p>The radar reports on itself: every number below comes from "
+          "<code>data/status.json</code>, committed with each scan.</p></div>")
+        A('<div class="card"><div class="pipe">')
+        for lab, val, good in rows:
+            A(f'<div class="pipe-row"><span class="hd {"ok" if good else "warn"}"></span>'
+              f'<span class="pl">{lab}</span><span class="pv">{val}</span></div>')
+        A("</div></div></section>")
+
     tpill = {"L3_EXPLICIT_BCI": ("t3", "L3"), "L2_NEURAL_SIGNAL": ("t2", "L2"),
              "L1_CONTEXT_PLUS_NEURO": ("t1", "L1"), "L0_WEAK_ADJACENT": ("t0", "L0")}
     A('<section id="all"><div class="sec-head"><div class="sec-k">Full field</div>'
@@ -430,7 +637,7 @@ def build(radar):
     enr_head = ('<th class="num">Team</th><th class="num">Downloads</th>'
                 '<th class="num">Rel.</th><th class="num">Activity</th>') if enriched_any else ""
     A('<div class="tbl-scroll"><table><thead><tr><th>#</th><th>Project</th><th>Category</th>'
-      '<th class="num">Stars</th><th class="num">Forks</th>' + enr_head +
+      '<th class="num">Stars</th><th class="num">\u03947d</th><th class="num">Forks</th>' + enr_head +
       '<th>Language</th><th>Evidence</th><th class="num">Active</th></tr></thead><tbody>')
     for i, x in enumerate(allp, 1):
         pc, pl = tpill.get(x.get("evidence_tier"), ("", "\u2014"))
@@ -449,6 +656,7 @@ def build(radar):
           f'{esc(x.get("full_name"))}</a>{cur}'
           + (f'<br><span class="desc">{esc(desc)}</span>' if desc else "")
           + f'</td><td>{esc(x.get("category"))}</td><td class="num">{k(x.get("stars", 0))}</td>'
+          f'<td class="num">{_d7cell(x)}</td>'
           f'<td class="num">{k(x.get("forks", 0))}</td>'
           + ((f'<td class="num">{team}</td><td class="num">{dls}</td>'
               f'<td class="num">{rels}</td><td class="num">{spark}</td>') if enriched_any else "")
@@ -488,10 +696,18 @@ def build(radar):
 
     A(f'<footer><span>\u00a9 The AxonOS Project</span><a href="https://axonos.org">axonos.org</a>'
       f'<a href="https://medium.com/@AxonOS">medium.com/@AxonOS</a>'
-      f'<a href="{base}">Live map</a><span>Generated {now} \u00b7 do not edit by hand</span></footer>')
+      f'<a href="{base}">Live map</a><span>Generated {now} \u00b7 report engine v{RADAR_VERSION} \u00b7 do not edit by hand</span></footer>')
 
     A("</div></body></html>")
     return "\n".join(H)
+
+
+def _load(path):
+    try:
+        with open(path, encoding="utf-8") as fh:
+            return json.load(fh)
+    except Exception:  # noqa: BLE001
+        return None
 
 
 def main():
@@ -500,7 +716,9 @@ def main():
     except Exception as e:  # noqa: BLE001
         print("build_report: cannot read radar.json:", e)
         return 0
-    out = build(radar)
+    history = _load("data/history.json")
+    status = _load("data/status.json")
+    out = build(radar, history=history, status=status)
     with open("report.html", "w", encoding="utf-8") as f:
         f.write(out)
     print(f"build_report: wrote report.html ({len(out)} bytes, {len(radar.get('projects', []))} projects)")

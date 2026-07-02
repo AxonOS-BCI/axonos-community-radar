@@ -308,3 +308,129 @@ def test_v4_scoring_and_curated():
     # Link-header contributor count
     hdr = {"Link": '<https://api.github.com/x?per_page=1&page=42>; rel="last"'}
     assert enrich._last_page(hdr) == 42
+
+
+# ── v4.3.0: audit-driven logic ───────────────────────────────────────────────
+import json  # noqa: E402
+
+def test_norm_excl_handles_messy_entries():
+    got = radar._norm_excl([" Owner/Repo/ ", "owner2/repo2@main", "OWNER3", "", None])
+    assert got == {"owner/repo", "owner2/repo2", "owner3"}
+
+
+def test_categorise_tiebreak_is_deterministic():
+    cats = {"Decoding & ML": ["decoder"], "Signal Processing": ["decoder"]}
+    repo = {"full_name": "x/decoder", "topics": [], "description": ""}
+    a = radar.categorise(repo, cats)
+    b = radar.categorise(repo, dict(reversed(list(cats.items()))))
+    assert a == b == "Decoding & ML"  # priority order, insertion-order independent
+
+
+def test_quality_flags_split_unclear_from_missing():
+    missing = radar.quality_flags_for({"license": None, "has_license": False,
+                                       "description": "x", "topics": ["a"],
+                                       "days_since_push": 1}, "L3_EXPLICIT_BCI")
+    unclear = radar.quality_flags_for({"license": "NOASSERTION", "has_license": False,
+                                       "description": "x", "topics": ["a"],
+                                       "days_since_push": 1}, "L3_EXPLICIT_BCI")
+    ok = radar.quality_flags_for({"license": "MIT", "has_license": True,
+                                  "description": "x", "topics": ["a"],
+                                  "days_since_push": 1}, "L3_EXPLICIT_BCI")
+    assert missing["missing_license"] and not missing["unclear_license"]
+    assert unclear["unclear_license"] and not unclear["missing_license"]
+    assert not ok["missing_license"] and not ok["unclear_license"]
+
+
+def test_falling_flag_and_counts():
+    snap = datetime(2026, 7, 2, tzinfo=timezone.utc)
+    hist = {"snapshots": [
+        {"snapshot_at": "2026-06-24T00:00:00+00:00", "stars": {"a/b": 100, "c/d": 100}},
+    ]}
+    seeds = {"core_topics": ["bci"], "context_topics": [], "neuro_keywords": []}
+    projects = [
+        {"full_name": "a/b", "stars": 95, "topics": ["bci"], "description": "",
+         "pushed_at": "2026-07-01T00:00:00Z", "days_since_push": 1, "license": "MIT"},
+        {"full_name": "c/d", "stars": 100, "topics": ["bci"], "description": "",
+         "pushed_at": "2026-07-01T00:00:00Z", "days_since_push": 1, "license": "MIT"},
+    ]
+    _, counts = radar.enrich_v3(projects, seeds, snap, hist)
+    byname = {p["full_name"]: p for p in projects}
+    assert byname["a/b"]["falling"] is True and byname["a/b"]["stars_delta_7d"] == -5
+    assert byname["c/d"]["falling"] is False
+    assert counts["falling"] == 1
+
+
+def test_feed_skips_future_first_seen():
+    gen = datetime(2026, 7, 2, 12, 0, tzinfo=timezone.utc)
+    xml = radar.build_feed([
+        {"full_name": "ok/now", "first_seen": "2026-07-01T00:00:00+00:00",
+         "html_url": "https://github.com/ok/now", "category": "Other"},
+        {"full_name": "bad/future", "first_seen": "2027-01-01T00:00:00+00:00",
+         "html_url": "https://github.com/bad/future", "category": "Other"},
+    ], gen)
+    assert "ok/now" in xml and "bad/future" not in xml
+
+
+def test_validate_rejects_future_first_seen():
+    payload = {"snapshot_at": "2026-07-02T00:00:00+00:00",
+               "counts": {"total": 1},
+               "projects": [{"full_name": "a/b", "html_url": "https://github.com/a/b",
+                             "category": "Other",
+                             "first_seen": "2027-01-01T00:00:00+00:00"}]}
+    try:
+        radar.validate(payload, 10)
+        assert False, "future first_seen must be rejected"
+    except AssertionError as e:
+        assert "future first_seen" in str(e)
+
+
+def test_load_first_seen_bootstrap_clamps_future(tmp_path, monkeypatch):
+    snap_iso = "2026-07-02T00:00:00+00:00"
+    radar_json = tmp_path / "radar.json"
+    radar_json.write_text(json.dumps({"projects": [
+        {"full_name": "a/b", "first_seen": "2027-09-09T00:00:00+00:00"},
+        {"full_name": "c/d", "first_seen": "2026-01-01T00:00:00+00:00"},
+    ]}), encoding="utf-8")
+    monkeypatch.setattr(radar, "FIRST_SEEN", str(tmp_path / "first_seen.json"))
+    monkeypatch.setattr(radar, "OUT", str(radar_json))
+    got = radar.load_first_seen(snap_iso)
+    assert got["a/b"] == snap_iso            # clamped
+    assert got["c/d"] == "2026-01-01T00:00:00+00:00"
+
+
+def test_write_last_run_roundtrip(tmp_path, monkeypatch):
+    monkeypatch.setattr(radar, "LAST_RUN", str(tmp_path / "last_run.json"))
+    radar.write_last_run(False, "topic_fail_ratio_exceeded", failed_topics=["eeg"])
+    d = json.loads((tmp_path / "last_run.json").read_text())
+    assert d["ok"] is False and d["reason"] == "topic_fail_ratio_exceeded"
+    assert d["failed_topics"] == ["eeg"] and "at" in d
+    radar.write_last_run(True)
+    d = json.loads((tmp_path / "last_run.json").read_text())
+    assert d["ok"] is True and d["reason"] == ""
+
+
+def test_publish_norm_last_run_ignores_timestamp():
+    import publish_data
+    a = json.dumps({"ok": True, "reason": "", "at": "2026-07-02T00:00:00+00:00"})
+    b = json.dumps({"ok": True, "reason": "", "at": "2026-07-02T06:00:00+00:00"})
+    c = json.dumps({"ok": False, "reason": "x", "at": "2026-07-02T06:00:00+00:00"})
+    assert publish_data.norm_last_run(a) == publish_data.norm_last_run(b)
+    assert publish_data.norm_last_run(a) != publish_data.norm_last_run(c)
+
+
+def test_report_movement_and_d7cell():
+    import build_report
+    hist = {"snapshots": [
+        {"snapshot_at": "2026-06-26T00:00:00+00:00",
+         "meta": {"total": 100, "total_stars": 1000, "active_30d": 50, "rising": 2},
+         "stars": {"a/b": 10}},
+        {"snapshot_at": "2026-07-02T00:00:00+00:00",
+         "meta": {"total": 105, "total_stars": 1100, "active_30d": 55, "rising": 4},
+         "stars": {"a/b": 14}},
+    ]}
+    mv = build_report.movement(hist)
+    assert mv["delta"] == {"total": 5, "total_stars": 100, "active_30d": 5, "rising": 2}
+    assert build_report.star_series(hist, "a/b") == [10, 14]
+    assert "rise" in build_report._d7cell({"stars_delta_7d": 3})
+    assert "fall" in build_report._d7cell({"stars_delta_7d": -3})
+    assert build_report._d7cell({"stars_delta_7d": 0}) == "\u2014"

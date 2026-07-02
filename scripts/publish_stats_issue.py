@@ -253,6 +253,9 @@ def find_issue():
     for it in issues:
         if "pull_request" in it:
             continue
+        author = ((it.get("user") or {}).get("login") or "")
+        if author not in ("github-actions[bot]", "github-actions"):
+            continue   # marker collision defense: only trust the Actions bot
         if MARKER in (it.get("body") or ""):
             return it
     return None

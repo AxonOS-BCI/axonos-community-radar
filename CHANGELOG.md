@@ -1,5 +1,40 @@
 # Changelog
 
+## [4.3.0] — 2026-07-02
+
+Momentum both ways, a self-diagnosing pipeline, and an audit-driven hardening
+pass. The report becomes a motion picture of the field.
+
+### Added
+- **Report — How the field moved:** headline weekly deltas (projects, stars, active, rising) computed from `data/history.json`.
+- **Report — Star trajectories:** real per-project star curves across snapshots for the top of the field.
+- **Report — Declining:** projects losing stars, shown with the same prominence as risers; `falling` flag (`stars_delta_7d ≤ −2`), `counts.falling`, red Δ7d in the full table and a ↓ card badge on the map.
+- **Report — New entrants, Category health matrix, Licence posture** (declared / NOASSERTION-unclear / missing), **Pipeline health panel** driven by `data/status.json`.
+- **`data/last_run.json`:** machine-readable outcome of every run, including abort reasons (topic-failure ratio, corrupt state files) — published like the rest of the data.
+- **Health monitor** (`health.yml` + `scripts/health_check.py`): twice-daily freshness check of the *published* Pages data; maintains a single self-closing alert issue (bot-author verified, marker-collision safe).
+- **Data snapshots:** every scan uploads a 90-day workflow artifact of `data/*.json` + `feed.xml` (disaster recovery independent of git history).
+- **Frontend ingress validation:** `sanitizeData()` type-coerces every rendered field and allowlists URLs before any DOM work; radar tooltip now builds via `textContent`.
+- **`community_active`** (pushed *or* updated ≤ 30d) alongside the stricter push-based `active`.
+- **Docs:** `docs/THREAT_MODEL.md`, `docs/INCIDENT_RESPONSE.md`, `docs/RETENTION.md`, `docs/SBOM.md`; METHODOLOGY sections for falling, active semantics, archived exclusion, the enrichment buffer, search-cap honesty and category tie-breaking.
+- **Dependabot** for pinned GitHub Actions; `noscript` fallbacks on both pages.
+
+### Changed
+- **Fairer ranking:** enrichment now covers a buffer of cap + 30 before the final cut, so a project just under the base-score line can earn its way in on real signals (top-N sampling-bias fix). Archived/disabled repos found during enrichment leave the ranking (`excluded_archived` in status).
+- **Deterministic category ties:** score → priority (specificity) → alphabetical.
+- **Licence semantics:** `NOASSERTION` is now `unclear_license`, distinct from `missing_license`.
+- **Refresh cadence texts** unified to the actual every-3-hours schedule (README, UI, report).
+- **Status:** adds `rate_limit` start/end budget, `search_saturated_topics`, `falling`, `community_active_30d`, `excluded_archived`.
+- **Workflow:** publish steps no longer run on failed scans (`always()` removed — a failed scan must look failed); job timeout 15 → 30 min.
+- `publish_data.py` change detection now includes `builders`; `stats` issue lookup trusts only bot-authored issues.
+
+### Fixed
+- Dead unreachable branch in `_is_safe_github_url` (pipeline and its duplicate risk).
+- Future-dated `first_seen` is clamped at bootstrap, healed on read, rejected by `validate()`, skipped by the RSS feed, and gated in CI.
+- `stats/commit_activity` HTTP 202 (GitHub still computing) is retried once and then recorded as *pending*, never as false "no activity".
+- Enriched `homepage` values are kept only when they are `http(s)` URLs.
+- Exclude lists in `seeds.json` are normalised (case, slashes, `@ref`) before matching; explicit fork guard after search.
+- `_kw_pattern` LRU cache widened 8 → 64 (regex thrash with many keyword sets).
+
 ## [4.2.0] - 2026-07-01
 ### Fixed
 - Reach x engagement quadrant: labels are now placed greedily (highest score first) and any label that cannot sit clear of the others is dropped, so dot labels no longer overlap in dense regions. All dots are still shown.

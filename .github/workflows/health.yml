@@ -1,0 +1,33 @@
+name: Health monitor
+
+# External-ish monitoring for the radar pipeline (audit: "if the pipeline dies
+# silently, nobody notices"). Runs on its own schedule, reads the PUBLISHED
+# Pages data, and maintains a single alert issue when the data goes stale or
+# the last run recorded a failure. Closes the alert automatically on recovery.
+
+on:
+  schedule:
+    - cron: "43 6,18 * * *"   # twice a day, offset from the radar cron
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+
+concurrency:
+  group: axonos-radar-health
+  cancel-in-progress: false
+
+jobs:
+  health:
+    name: Data freshness check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744  # v4
+
+      - name: Check published data freshness
+        run: python3 scripts/health_check.py

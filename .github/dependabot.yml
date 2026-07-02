@@ -1,0 +1,10 @@
+# Keep pinned GitHub Actions fresh: Dependabot proposes SHA bumps weekly,
+# CI's "actions are pinned" gate keeps every ref a full commit hash.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "ci"

@@ -131,6 +131,11 @@ def validate_payload(payload, cap: int = DEFAULT_CAP):
                 if isinstance(d, int) and d > stars:
                     errors.append(f"{tag} {df} ({d}) exceeds current stars ({stars}) — impossible jump")
 
+        # first_seen must not be in the future relative to the snapshot
+        fs, snap = r.get("first_seen"), payload.get("snapshot_at")
+        if isinstance(fs, str) and isinstance(snap, str) and fs > snap:
+            errors.append(f"{tag} first_seen {fs!r} is after snapshot_at {snap!r}")
+
         # v3-only invariants
         if is_v3:
             tier = r.get("evidence_tier")

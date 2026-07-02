@@ -36,6 +36,7 @@ OUT = os.path.join(ROOT, "data", "radar.json")
 FIRST_SEEN = os.path.join(ROOT, "data", "first_seen.json")
 FEED = os.path.join(ROOT, "feed.xml")
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # local modules win over site-packages
 import enrich  # local module: scripts/enrich.py
 
 TOKEN = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
@@ -60,11 +61,6 @@ def _is_safe_github_url(url, min_segments=2) -> bool:
         q = urllib.parse.urlparse(url)
         segs = [s for s in q.path.split("/") if s]
         return q.scheme == "https" and q.netloc == "github.com" and len(segs) >= min_segments
-    except Exception:
-        return False
-    try:
-        q = urllib.parse.urlparse(url)
-        return q.scheme == "https" and q.netloc == "github.com" and q.path.count("/") >= 2
     except Exception:
         return False
 
@@ -108,9 +104,40 @@ def gh_json(url, retries=3):
     return {"items": []}
 
 
+LAST_RUN = os.path.join(ROOT, "data", "last_run.json")
+
+
+def write_last_run(ok, reason="", **extra):
+    """Best-effort machine-readable outcome of the last pipeline run — success
+    overwrites failure, so a green run clears the diagnostic (audit: aborts must
+    leave artifacts). Never raises."""
+    try:
+        body = {"ok": bool(ok), "reason": str(reason or ""),
+                "at": datetime.now(timezone.utc).replace(microsecond=0).isoformat()}
+        body.update(extra)
+        with open(LAST_RUN, "w", encoding="utf-8") as fh:
+            json.dump(body, fh, ensure_ascii=False, indent=2, sort_keys=True)
+            fh.write("\n")
+    except Exception:  # noqa: BLE001
+        pass
+
+
 def load_seeds():
     with open(SEEDS, encoding="utf-8") as fh:
         return json.load(fh)
+
+
+def _norm_excl(values):
+    """Normalise exclude lists: strip whitespace/slashes, drop @ref suffixes,
+    lower-case — so 'Owner/Repo/', ' owner/repo@main ' all match."""
+    out = set()
+    for v in values or []:
+        if not isinstance(v, str):
+            continue
+        v = v.strip().strip("/").split("@", 1)[0].strip().lower()
+        if v:
+            out.add(v)
+    return out
 
 
 def load_first_seen(snap_iso):
@@ -128,16 +155,24 @@ def load_first_seen(snap_iso):
                 return {k: v for k, v in d.items() if isinstance(v, str)}
         except Exception as exc:  # noqa: BLE001
             print(f"CRITICAL: first_seen.json is corrupt ({exc}); aborting to avoid NEW flood.")
+            write_last_run(False, "first_seen_corrupt", error=str(exc)[:200])
             sys.exit(1)
     # bootstrap from radar.json if it exists
     if os.path.exists(OUT):
         try:
             with open(OUT, encoding="utf-8") as fh:
                 prev = json.load(fh)
-            return {p["full_name"]: p.get("first_seen") or snap_iso
-                    for p in prev.get("projects", []) if p.get("full_name")}
+            boot = {}
+            for pp in prev.get("projects", []):
+                if not pp.get("full_name"):
+                    continue
+                iso = pp.get("first_seen") or snap_iso
+                # heal: a first_seen in the future (bug or tamper) is clamped to now
+                boot[pp["full_name"]] = iso if iso <= snap_iso else snap_iso
+            return boot
         except Exception as exc:  # noqa: BLE001
             print(f"CRITICAL: radar.json present but unreadable ({exc}); aborting to preserve identity.")
+            write_last_run(False, "radar_json_unreadable", error=str(exc)[:200])
             sys.exit(1)
     return {}
 
@@ -166,7 +201,7 @@ def repo_text(repo):
     ]).lower()
 
 
-@functools.lru_cache(maxsize=8)
+@functools.lru_cache(maxsize=64)
 def _kw_pattern(keywords):
     """Word-start-anchored keyword regex (prefix match). Prevents short keywords like
     'erp'/'lfp' from matching inside unrelated words ('interpreter', 'cleverpad')."""
@@ -211,14 +246,17 @@ def categorise(repo, categories):
             elif kwl in desc:
                 s += 1
         scores[cat] = s
-    best, best_s = "Other", 0
-    for cat in CATEGORY_PRIORITY:
-        if scores.get(cat, 0) > best_s:
-            best, best_s = cat, scores[cat]
-    for cat, s in scores.items():
-        if cat not in CATEGORY_PRIORITY and s > best_s:
-            best, best_s = cat, s
-    return best
+    # Deterministic tie-break: highest score wins; on ties the more specific
+    # category (earlier in CATEGORY_PRIORITY) wins; remaining ties break
+    # alphabetically. Documented in docs/METHODOLOGY.md.
+    def _rank(cat):
+        try:
+            pr = CATEGORY_PRIORITY.index(cat)
+        except ValueError:
+            pr = len(CATEGORY_PRIORITY)
+        return (-scores.get(cat, 0), pr, cat)
+    best = min(scores, key=_rank) if scores else "Other"
+    return best if scores.get(best, 0) > 0 else "Other"
 
 
 def snapshot_now():
@@ -238,7 +276,9 @@ def days_since(iso, snap):
 
 
 def build_feed(projects, generated):
-    items = sorted([p for p in projects if p.get("first_seen")],
+    now_iso = generated.replace(microsecond=0).isoformat()
+    items = sorted([p for p in projects
+                    if p.get("first_seen") and p["first_seen"] <= now_iso],
                    key=lambda p: p["first_seen"], reverse=True)[:25]
     parts = ['<?xml version="1.0" encoding="UTF-8"?>', '<rss version="2.0"><channel>',
              "<title>AxonOS Radar — new projects</title>",
@@ -268,10 +308,13 @@ def validate(payload, cap):
     assert isinstance(p, list), "projects must be a list"
     assert len(p) <= cap, f"too many projects: {len(p)} > {cap}"
     assert payload["counts"]["total"] >= 0, "negative total"
+    snap_iso = payload.get("snapshot_at") or ""
     for r in p:
         assert r.get("full_name"), "project missing full_name"
         assert _is_safe_github_url(r.get("html_url")), f"suspicious url: {r.get('html_url')!r}"
         assert r.get("category"), "project missing category"
+        fs = r.get("first_seen") or ""
+        assert not snap_iso or not fs or fs <= snap_iso, f"future first_seen: {r['full_name']}"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -343,7 +386,8 @@ def quality_flags_for(repo, tier):
     return {
         "possible_false_positive": tier == "L0_WEAK_ADJACENT",
         "low_metadata": not (repo.get("description") or "").strip() or not (repo.get("topics") or []),
-        "missing_license": not bool(repo.get("has_license")),
+        "missing_license": not repo.get("license"),
+        "unclear_license": repo.get("license") == "NOASSERTION",
         "no_recent_activity": int(repo.get("days_since_push") or 9999) > 180,
     }
 
@@ -368,6 +412,7 @@ def load_history():
                 return {"version": 1, "snapshots": []}
             print(f"CRITICAL: history.json corrupt ({exc}); aborting "
                   "(set RADAR_REBUILD_HISTORY=1 to reset).")
+            write_last_run(False, "history_corrupt", error=str(exc)[:200])
             sys.exit(1)
     return {"version": 1, "snapshots": []}
 
@@ -394,6 +439,7 @@ def update_history(history, projects, snap, snap_iso):
         "active_30d": sum(1 for p in projects if p.get("active")),
         "new": sum(1 for p in projects if p.get("is_new")),
         "rising": sum(1 for p in projects if p.get("rising")),
+        "falling": sum(1 for p in projects if p.get("falling")),
         "total_stars": sum(int(p.get("stars") or 0) for p in projects),
     }
     snaps = [s for s in history.get("snapshots", []) if s.get("snapshot_at") != snap_iso]
@@ -460,6 +506,7 @@ def enrich_v3(projects, seeds, snap, history):
         p["stars_delta_7d"] = _stars_delta(history, p["full_name"], stars, snap, 7)
         p["stars_delta_30d"] = _stars_delta(history, p["full_name"], stars, snap, 30)
         p["rising"] = p["stars_delta_7d"] >= max(2, math.ceil(stars * 0.05))
+        p["falling"] = p["stars_delta_7d"] <= -2
         p["axon_relevance"] = axon_relevance_for(p)
     builders = build_builders(projects)
     counts = {
@@ -467,6 +514,8 @@ def enrich_v3(projects, seeds, snap, history):
         "active_30d": sum(1 for p in projects if p.get("active")),
         "new": sum(1 for p in projects if p.get("is_new")),
         "rising": sum(1 for p in projects if p.get("rising")),
+        "falling": sum(1 for p in projects if p.get("falling")),
+        "community_active_30d": sum(1 for p in projects if p.get("community_active")),
         "builders": len(builders),
     }
     return builders, counts
@@ -528,19 +577,19 @@ def main():
     max_projects = int(seeds.get("max_projects", 120))
     min_stars = int(seeds.get("min_stars", 3))
     new_days = int(seeds.get("new_window_days", 7))
-    excl_owners = {o.lower() for o in seeds.get("exclude_owners", [])}
-    excl_repos = {r.lower() for r in seeds.get("exclude_repos", [])}
+    excl_owners = _norm_excl(seeds.get("exclude_owners", []))
+    excl_repos = _norm_excl(seeds.get("exclude_repos", []))
 
     now, snap = snapshot_now()
     snap_iso = snap.isoformat()
     fseen = load_first_seen(snap_iso)
 
-    repos, seen_lc, scanned, dropped, failed = {}, set(), 0, 0, []
+    repos, seen_lc, scanned, dropped, failed, saturated = {}, set(), 0, 0, [], []
     per_page = 100  # GitHub search returns <=100/page and caps at 1000 results per query
     for topic in topics:
         q = f"topic:{topic} archived:false fork:false"
         print(f"Scanning topic:{topic}")
-        pulled, page, topic_failed = 0, 1, False
+        pulled, page, topic_failed, topic_total = 0, 1, False, 0
         while pulled < max_per_topic and page <= 10:
             n = min(per_page, max_per_topic - pulled)
             url = "https://api.github.com/search/repositories?" + urllib.parse.urlencode(
@@ -552,6 +601,8 @@ def main():
                 if page == 1:
                     topic_failed = True
                 break
+            if page == 1:
+                topic_total = int(data.get("total_count") or 0)
             items = data.get("items", [])
             if not items:
                 break
@@ -565,6 +616,8 @@ def main():
                 seen_lc.add(key)
                 if fn.split("/")[0].lower() in excl_owners or fn.lower() in excl_repos:
                     continue
+                if item.get("fork"):        # defense-in-depth: query says fork:false
+                    continue
                 if int(item.get("stargazers_count") or 0) < min_stars:
                     continue
                 if not is_relevant(item, core, context, keywords):
@@ -577,6 +630,7 @@ def main():
                     "forks": int(item.get("forks_count") or 0),
                     "language": item.get("language") or "",
                     "pushed_at": item.get("pushed_at") or "",
+                    "updated_at": item.get("updated_at") or "",
                     "topics": (item.get("topics") or [])[:12],
                     "license": (item.get("license") or {}).get("spdx_id"),
                     "has_license": bool((item.get("license") or {}).get("spdx_id")
@@ -587,40 +641,60 @@ def main():
             page += 1
         if topic_failed:
             failed.append(topic)
+        if topic_total > pulled:
+            saturated.append(topic)
 
     # Partial-failure safeguard: preserve last-good data rather than publishing a half-empty radar.
     if topics and len(failed) / len(topics) > FAIL_RATIO:
         print(f"CRITICAL: {len(failed)}/{len(topics)} topic queries failed "
               f"(> {int(FAIL_RATIO*100)}%). Aborting WITHOUT writing to preserve committed data.")
+        write_last_run(False, "topic_fail_ratio_exceeded",
+                       failed_topics=sorted(failed), scanned=scanned,
+                       fail_ratio=round(len(failed) / len(topics), 3))
         sys.exit(1)
 
     out = []
     for r in repos.values():
         days = days_since(r["pushed_at"], snap)
         first_seen = fseen.get(r["full_name"]) or snap_iso
+        if first_seen > snap_iso:   # heal future timestamps (bug or tamper)
+            first_seen = snap_iso
         fseen[r["full_name"]] = first_seen
         try:
             is_new = (snap - datetime.fromisoformat(first_seen)).days <= new_days
         except Exception:  # noqa: BLE001
             is_new = False
+        upd_days = days_since(r.get("updated_at") or r["pushed_at"], snap)
         r.update({"days_since_push": days, "active": days <= 30,
+                  "community_active": min(days, upd_days) <= 30,
                   "category": categorise(r, categories), "first_seen": first_seen,
                   "is_new": is_new,
                   "_score": round(math.log10(r["stars"] + 1) * 10 + max(0, 60 - days) * 0.5, 3)})
         out.append(r)
 
     out.sort(key=lambda x: x["_score"], reverse=True)
-    out = out[:max_projects]
+    # Enrich a BUFFER beyond the final cap, then re-rank on the richer score and
+    # only then cut — so a project just below the base-score line can still earn
+    # its way in on real signals (kills the old top-N sampling bias).
+    buffer_n = min(len(out), max_projects + int(seeds.get("enrich_buffer", 30)))
+    candidates = out[:buffer_n]
 
     # --- v4 enrichment: real per-repo signals (team, downloads, activity, funding) ---
     estats = {"enriched": 0, "errors": 0, "attempted": 0, "rate_limit_stop": False}
+    rate_start = enrich.rate_remaining(TOKEN)
     if seeds.get("enrich", True):
-        estats = enrich.enrich_repos(out, TOKEN, max_enrich=int(seeds.get("enrich_max", 200)))
+        estats = enrich.enrich_repos(candidates, TOKEN, max_enrich=int(seeds.get("enrich_max", 200)))
         print(f"Enrichment: {estats}")
-    merge_curated(out)                     # honest, source-cited overrides
-    for r in out:
+    rate_end = enrich.rate_remaining(TOKEN)
+    merge_curated(candidates)              # honest, source-cited overrides
+    for r in candidates:
         r["_score"] = compute_score(r)     # richer score, applied to every project
-    out.sort(key=lambda x: x["_score"], reverse=True)
+    # Archived/disabled repos (flagged during enrichment) leave the ranking —
+    # they no longer displace active projects; the count is kept in status.json.
+    excluded_archived = [r for r in candidates if r.get("archived") or r.get("disabled")]
+    candidates = [r for r in candidates if not (r.get("archived") or r.get("disabled"))]
+    candidates.sort(key=lambda x: x["_score"], reverse=True)
+    out = candidates[:max_projects]
 
     history = load_history()
     builders, counts = enrich_v3(out, seeds, snap, history)
@@ -661,7 +735,11 @@ def main():
         "topics": len(topics), "topics_failed": len(failed),
         "enriched": estats.get("enriched", 0), "enrich_errors": estats.get("errors", 0),
         "enrich_rate_limit_stop": estats.get("rate_limit_stop", False),
-        "archived_or_disabled": sum(1 for p in out if p.get("archived") or p.get("disabled")),
+        "excluded_archived": len(excluded_archived),
+        "search_saturated_topics": len(saturated),
+        "rate_limit": {"remaining_start": rate_start, "remaining_end": rate_end},
+        "falling": counts.get("falling", 0),
+        "community_active_30d": counts.get("community_active_30d", 0),
         "total_downloads": sum(int(p.get("total_downloads") or 0) for p in out),
         "total_contributors": sum(int(p.get("contributors") or 0) for p in out),
         "curated_records": sum(1 for p in out if p.get("data_source") == "curated+github"),
@@ -669,6 +747,8 @@ def main():
     with open(os.path.join(ROOT, "data", "status.json"), "w", encoding="utf-8") as fh:
         json.dump(status, fh, ensure_ascii=False, indent=2)
         fh.write("\n")
+    write_last_run(True, "", projects=len(out), scanned=scanned,
+                   failed_topics=sorted(failed), saturated_topics=len(saturated))
     print(f"Wrote {len(out)} v3 projects + {len(builders)} builders (scanned {scanned}, "
           f"dropped {dropped} off-topic, {len(failed)} topics failed, {counts['active_30d']} active, "
           f"{counts['new']} new, {counts['rising']} rising). history + first_seen + feed updated.")

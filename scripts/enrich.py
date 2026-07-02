@@ -106,12 +106,21 @@ def releases_info(fn, token):
 
 
 def commit_activity(fn, token):
-    """52 weekly commit totals. Returns (total_52w, last_12_weeks list)."""
+    """52 weekly commit totals. Returns (total_52w, last_12_weeks, limited).
+
+    GitHub answers 202 while it is still computing the histogram; a single short
+    retry usually resolves it. If it is still pending we return None (meaning
+    "unknown, not zero") so a fresh repo is never mislabelled as inactive."""
     code, data, _ = gh_get(f"{API}/repos/{fn}/stats/commit_activity", token)
+    if code == 202:
+        time.sleep(2.5)
+        code, data, _ = gh_get(f"{API}/repos/{fn}/stats/commit_activity", token)
     if code == 429:
         return None, None, True
+    if code == 202:
+        return None, None, False   # still computing — unknown, not zero
     if code != 200 or not isinstance(data, list) or not data:
-        return 0, [], False  # 202 = GitHub still computing; treat as no data
+        return 0, [], False
     weeks = [int(w.get("total") or 0) for w in data]
     return sum(weeks), weeks[-12:], False
 
@@ -165,11 +174,14 @@ def repo_extra(fn, token):
         return None, True
     if code != 200 or not isinstance(data, dict):
         return {}, False
+    home = (data.get("homepage") or "").strip()
+    if home and not (home.startswith("https://") or home.startswith("http://")):
+        home = ""   # ingress validation: only http(s) homepages survive
     return {
         "watchers": int(data.get("subscribers_count") or 0),
         "size_kb": int(data.get("size") or 0),
         "open_issues": int(data.get("open_issues_count") or 0),
-        "homepage": (data.get("homepage") or "").strip(),
+        "homepage": home,
         "archived": bool(data.get("archived")),
         "disabled": bool(data.get("disabled")),
     }, False
@@ -213,7 +225,10 @@ def enrich_repos(projects, token, max_enrich=200, keep_headroom=200, log=print):
             if limited:
                 stopped = True
                 break
-            p["commits_52w"], p["activity_spark"] = total52, spark
+            if total52 is None:
+                p["activity_pending"] = True   # GitHub still computing — retried once
+            else:
+                p["commits_52w"], p["activity_spark"] = total52, spark
             plats, purl, limited = funding(fn, token)
             if limited:
                 stopped = True

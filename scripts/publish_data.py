@@ -50,9 +50,22 @@ def get_remote(path):
 
 
 def norm_radar(txt):
+    """Meaningful-change detector: everything except run timestamps. Projects
+    carry the enriched fields inside them, and builders are included too, so a
+    change in ONLY enriched/builder data still publishes (audit fix)."""
     try:
         d = json.loads(txt)
-        return json.dumps({"projects": d.get("projects"), "counts": d.get("counts")}, sort_keys=True)
+        return json.dumps({"projects": d.get("projects"), "counts": d.get("counts"),
+                           "builders": d.get("builders")}, sort_keys=True)
+    except Exception:  # noqa: BLE001
+        return txt
+
+
+def norm_last_run(txt):
+    try:
+        d = json.loads(txt)
+        d.pop("at", None)   # timestamp-only diffs do not spam the history
+        return json.dumps(d, sort_keys=True)
     except Exception:  # noqa: BLE001
         return txt
 
@@ -68,7 +81,8 @@ def norm_json(txt):
         return txt
 
 
-NORMALIZERS = {"data/radar.json": norm_radar, "data/history.json": norm_json, "feed.xml": norm_feed}
+NORMALIZERS = {"data/radar.json": norm_radar, "data/history.json": norm_json,
+               "feed.xml": norm_feed, "data/last_run.json": norm_last_run}
 
 
 def put(path, message):
@@ -102,6 +116,8 @@ def main():
     feed_changed = put("feed.xml", "radar: refresh feed [skip ci]")
     report_changed = put("report.html", "radar: refresh report page [skip ci]")
     status_changed = put("data/status.json", "radar: update status [skip ci]")
+    if os.path.exists("data/last_run.json"):
+        put("data/last_run.json", "radar: record run outcome [skip ci]")
     if not (changed or hist_changed or fs_changed or feed_changed or report_changed or status_changed):
         print("No meaningful change — nothing committed.")
 

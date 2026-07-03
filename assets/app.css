@@ -225,3 +225,18 @@ body.compact .cards{gap:8px}
 body.loading .stats .stat b{color:transparent;background:linear-gradient(90deg,#1a2332 25%,#243149 50%,#1a2332 75%);background-size:200% 100%;animation:shim 1.1s linear infinite;border-radius:6px}
 @keyframes shim{to{background-position:-200% 0}}
 .who .ob{margin-left:7px;font-size:9px;font-weight:800;letter-spacing:.08em;color:#8fd0ff;border:1px solid rgba(143,208,255,.4);border-radius:5px;padding:1px 5px;vertical-align:2px}
+.vchip{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#8fd0ff;border:1px solid rgba(143,208,255,.35);border-radius:999px;padding:1.5px 8px}
+
+/* ── v5.0.1: Dogecoin support card ───────────────────────── */
+.donate{max-width:1180px;margin:2px auto 12px;padding:13px 16px;display:flex;gap:14px;align-items:center;background:linear-gradient(135deg,rgba(194,166,51,.10),rgba(194,166,51,.03) 55%,transparent);border:1px solid rgba(194,166,51,.35);border-radius:14px}
+.donate.hidden{display:none}
+.dg-mark{flex:0 0 auto;width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:24px;color:#0b0f16;background:radial-gradient(circle at 32% 30%,#e9cf7a,#c2a633 62%,#8f7a26);box-shadow:0 0 0 1px rgba(194,166,51,.5),0 6px 18px rgba(194,166,51,.18)}
+.dg-body{min-width:0;flex:1}
+.dg-t{font-weight:800;letter-spacing:.02em;color:#e9cf7a;font-size:14px}
+.dg-x{color:#b9c3d6;font-size:12.5px;margin-top:2px;line-height:1.45}
+.dg-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+.dg-amt{font-weight:800;font-size:12px;color:#0b0f16;background:linear-gradient(135deg,#e9cf7a,#c2a633);border-radius:999px;padding:3px 11px}
+.dg-addr{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#e7ecf5;background:rgba(255,255,255,.05);border:1px solid #2a3648;border-radius:8px;padding:4px 9px;max-width:100%;overflow-wrap:anywhere;user-select:all}
+.dg-copy{font:inherit;font-size:12px;font-weight:700;color:#e9cf7a;background:transparent;border:1px solid rgba(194,166,51,.5);border-radius:8px;padding:4px 12px;cursor:pointer}
+.dg-copy:hover{background:rgba(194,166,51,.12)}
+@media (max-width:640px){.donate{align-items:flex-start}.dg-mark{width:38px;height:38px;font-size:20px}}

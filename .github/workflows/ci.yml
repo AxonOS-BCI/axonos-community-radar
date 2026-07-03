@@ -193,6 +193,9 @@ jobs:
           if not m or m.group(1).strip() != v: errs.append(f"CITATION.cff != {v}")
           m = re.search(r"^## \[([0-9.]+)\]", chlog, re.M)
           if not m or m.group(1) != v: errs.append(f"CHANGELOG top {m.group(1) if m else '?'} != {v}")
+          for page in ("index.html", "stats.html"):
+              if f"v{v}" not in open(page, encoding="utf-8").read():
+                  errs.append(f"{page} footer chip != v{v}")
           if errs: print("\n".join(errs)); sys.exit(1)
           print(f"version {v} consistent across VERSION/README badge/bibtex/CITATION/CHANGELOG")
           PY

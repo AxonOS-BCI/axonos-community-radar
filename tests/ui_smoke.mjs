@@ -120,6 +120,24 @@ assert(window.document.body.textContent.indexOf("ORG") >= 0 &&
        window.document.body.textContent.indexOf("42 followers") >= 0,
        "builders board shows owner type and followers");
 
+// donate card: hidden with empty address (default source)
+assert($("donate").classList.contains("hidden"), "donate card hidden when no address configured");
+
+// donate card: visible with an address injected the way the publish script does
+{
+  const dom2 = new JSDOM(html, { url: "https://radar.test/", runScripts: "outside-only", pretendToBeVisual: true });
+  const w2 = dom2.window;
+  w2.HTMLCanvasElement.prototype.getContext = () => new Proxy({}, { get: () => noop });
+  w2.fetch = window.fetch;
+  w2.eval(appJs.replace("var DONATE_DOGE='';", "var DONATE_DOGE='D8gv3JcQmWkzT4yPabcdefghij123456789';"));
+  await new Promise((r) => setTimeout(r, 40));
+  const d2 = w2.document.getElementById("donate");
+  assert(!d2.classList.contains("hidden") && d2.textContent.indexOf("\u0110 100") >= 0,
+         "donate card renders with \u0110 100 when address configured");
+  assert(d2.querySelector(".dg-copy") && d2.querySelector(".dg-addr").textContent.startsWith("D"),
+         "donate card shows address and Copy button");
+}
+
 // zero innerHTML statically (belt & braces with the refactor)
 assert(appJs.indexOf("innerHTML") < 0, "app.js contains zero innerHTML");
 

@@ -14,13 +14,14 @@ on:
     types: [completed]
   push:
     branches: [main]
+    # Only human-edited site files: everything the scan generates
+    # (data/**, feed.xml, report.html) is already covered by workflow_run —
+    # listing it here too made every scan race two deploys against each
+    # other, and the loser showed up as a red ✗.
     paths:
       - "index.html"
       - "stats.html"
-      - "report.html"
       - "assets/**"
-      - "data/**"
-      - "feed.xml"
       - "og-image.png"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
@@ -68,4 +69,13 @@ jobs:
           path: _site
 
       - id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128  # v5.0.0
+        continue-on-error: true   # Pages occasionally answers "try again later" — so we do
+
+      - name: Retry deploy once (Pages transient)
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 25
+
+      - id: deployment_retry
+        if: steps.deployment.outcome == 'failure'
         uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128  # v5.0.0

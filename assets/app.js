@@ -50,6 +50,10 @@
     return {projects:ps,builders:bs,generated_at:str(j.generated_at,40)||null,
       counts:(j.counts&&typeof j.counts==='object')?j.counts:{total:ps.length}};
   }
+  // Dogecoin support address. Empty string = the card stays hidden.
+  // Set at publish time; keeps the radar's scans, enrichment budget and
+  // hosting free for everyone.
+  var DONATE_DOGE='DMwHAhqVNWf7dyEznukxCufNS5rjuP5MTp';
   var state={q:'',cats:{},lang:'',activeOnly:false,newOnly:false,fallingOnly:false,tiers:{},dens:false,sort:'activity',view:'grid'};
   var points=[];
 
@@ -250,6 +254,29 @@
     else u.textContent='Warming up \u2014 first scan runs on publish \u00b7 refreshes every 3h';
   }
 
+  function renderDonate(){
+    var host=$('donate');if(!host||!DONATE_DOGE)return;
+    host.textContent='';
+    var mark=document.createElement('div');mark.className='dg-mark';mark.textContent='\u0110';host.appendChild(mark);
+    var body=document.createElement('div');body.className='dg-body';
+    var h=document.createElement('div');h.className='dg-t';h.textContent='Fuel the radar';body.appendChild(h);
+    var tx=document.createElement('div');tx.className='dg-x';
+    tx.textContent='Scans every 3 hours, enrichment burns API budget, the map stays free for everyone. \u0110100 keeps every feature shipping \u2014 much scan, very open.';
+    body.appendChild(tx);
+    var row=document.createElement('div');row.className='dg-row';
+    var amt=document.createElement('span');amt.className='dg-amt';amt.textContent='\u0110 100';row.appendChild(amt);
+    var ad=document.createElement('code');ad.className='dg-addr';ad.textContent=DONATE_DOGE;ad.title='Dogecoin address';row.appendChild(ad);
+    var btn=document.createElement('button');btn.type='button';btn.className='dg-copy';btn.textContent='Copy';
+    btn.addEventListener('click',function(){
+      var done=function(){btn.textContent='Copied \u2713';setTimeout(function(){btn.textContent='Copy';},1600);toast('DOGE address copied');};
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(DONATE_DOGE).then(done,function(){fallback();});}
+      else fallback();
+      function fallback(){var ta=document.createElement('textarea');ta.value=DONATE_DOGE;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(ta);}
+    });
+    row.appendChild(btn);body.appendChild(row);
+    host.appendChild(body);
+    host.classList.remove('hidden');
+  }
   function dpEl(d){var sp=document.createElement('span');
     sp.className='dp '+(d>0?'up':(d<0?'down':'flat'));
     sp.textContent=d>0?('+'+d):(d<0?('\u2212'+Math.abs(d)):'\u00b10');return sp;}
@@ -302,6 +329,7 @@
     document.body.classList.add('loading');
     render();
     fetch('./data/radar.json',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){DATA=sanitizeData(j);document.body.classList.remove('loading');buildChips();buildTierChips();buildLangs();setStats();render();}).catch(function(err){console.log('radar data not loaded:',err);document.body.classList.remove('loading');setStats();render();});
+    renderDonate();
     fetch('./data/weekly.json',{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(renderWeekly).catch(function(){});
   }
   boot();

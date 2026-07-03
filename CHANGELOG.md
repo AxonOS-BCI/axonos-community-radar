@@ -1,5 +1,25 @@
 # Changelog
 
+## [5.0.1] — 2026-07-03
+
+### Fixed
+- **Deploy race eliminated**: each scan used to trigger *two* competing Pages
+  deploys (push on `data/**` + `workflow_run`); the loser surfaced as a red ✗.
+  Push paths now cover only human-edited site files — the scan's own commits
+  are handled solely by `workflow_run`. One scan, one deploy.
+- **Deploy retry**: `deploy-pages` occasionally answers "try again later" —
+  the workflow now waits 25 s and retries once before going red.
+- Stale version strings refreshed: docs (SBOM, THREAT_MODEL) said 4.3.0.
+
+### Added
+- **Visible version chip** in the footers of the map and stats pages —
+  instantly distinguishes a cached page from the live release. The CI version
+  gate now checks both pages too.
+- **Dogecoin support card** on the map (opt-in): suggested Ð 100, address with
+  one-tap Copy, doge-gold styling. Hidden until an address is configured at
+  publish time; funding keeps every feature free for everyone — the radar has
+  no paywalled functionality.
+
 ## [5.0.0] — 2026-07-03
 
 A major release: faster and fairer pipeline, a shareable instrument of a UI,

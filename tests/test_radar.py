@@ -434,3 +434,131 @@ def test_report_movement_and_d7cell():
     assert "rise" in build_report._d7cell({"stars_delta_7d": 3})
     assert "fall" in build_report._d7cell({"stars_delta_7d": -3})
     assert build_report._d7cell({"stars_delta_7d": 0}) == "\u2014"
+
+
+# ════════════════════════════ v5.0.0 additions ════════════════════════════
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SEEDS = os.path.join(ROOT, "data", "seeds.json")
+
+def test_https_only_funding():
+    import enrich
+    assert enrich._https_only("https://example.com/fund") == "https://example.com/fund"
+    assert enrich._https_only("http://example.com") == ""
+    assert enrich._https_only("httpevil-not-a-url") == ""
+    assert enrich._https_only("https://") == ""
+    assert enrich._https_only(None) == ""
+
+
+def test_kw_hit_word_boundaries():
+    import radar
+    assert radar._kw_hit("api", "a public api for eeg")
+    assert not radar._kw_hit("api", "rapid decoding")
+    assert not radar._kw_hit("adc", "broadcast tools")
+    assert radar._kw_hit("adc", "ads1299 adc driver")
+    assert radar._kw_hit("real-time", "hard real-time kernel")
+
+
+def test_seeds_min_stars_and_hyphen_keywords():
+    seeds = json.load(open(SEEDS, encoding="utf-8"))
+    assert seeds["min_stars"] == 2
+    kw = seeds["neuro_keywords"]
+    for h in ("brain-machine", "spike-sorting", "motor-imagery"):
+        assert h in kw, f"hyphen variant missing: {h}"
+
+
+def test_build_weekly_deltas_and_movers():
+    import radar
+    hist = {"snapshots": [
+        {"snapshot_at": "2026-06-26T00:00:00+00:00",
+         "meta": {"total": 10, "total_stars": 1000, "active_30d": 5, "rising": 2}},
+        {"snapshot_at": "2026-07-03T00:00:00+00:00",
+         "meta": {"total": 12, "total_stars": 1500, "active_30d": 7, "rising": 3}},
+    ]}
+    projects = [
+        {"full_name": "a/up", "stars": 100, "stars_delta_7d": 9, "is_new": True},
+        {"full_name": "a/down", "stars": 90, "stars_delta_7d": -3, "is_new": False},
+        {"full_name": "a/flat", "stars": 10, "stars_delta_7d": 0, "is_new": False},
+    ]
+    w = radar.build_weekly(projects, hist, "2026-07-03T00:00:00+00:00")
+    assert w["delta"] == {"total": 2, "total_stars": 500, "active_30d": 2, "rising": 1}
+    assert [x["full_name"] for x in w["top_risers"]] == ["a/up"]
+    assert [x["full_name"] for x in w["top_fallers"]] == ["a/down"]
+    assert w["entrants"] == ["a/up"]
+
+
+def test_build_weekly_needs_two_snapshots():
+    import radar
+    hist = {"snapshots": [{"snapshot_at": "2026-07-03T00:00:00+00:00", "meta": {"total": 1}}]}
+    assert radar.build_weekly([], hist, "2026-07-03T00:00:00+00:00") is None
+
+
+def test_owner_extra_parses_and_handles_429(monkeypatch):
+    import enrich
+    monkeypatch.setattr(enrich, "gh_get",
+                        lambda url, tok: (200, {"type": "Organization", "followers": 7}, {}))
+    info, limited = enrich.owner_extra("acme", "t")
+    assert info == {"owner_type": "Organization", "followers": 7} and not limited
+    monkeypatch.setattr(enrich, "gh_get", lambda url, tok: (429, None, {}))
+    info, limited = enrich.owner_extra("acme", "t")
+    assert info is None and limited
+    monkeypatch.setattr(enrich, "gh_get", lambda url, tok: (404, None, {}))
+    info, limited = enrich.owner_extra("ghost", "t")
+    assert info == {} and not limited
+
+
+def test_norm_weekly_ignores_generated_at():
+    import publish_data as pub
+    a = json.dumps({"generated_at": "T1", "delta": {"total": 1}})
+    b = json.dumps({"generated_at": "T2", "delta": {"total": 1}})
+    c = json.dumps({"generated_at": "T2", "delta": {"total": 9}})
+    assert pub.norm_weekly(a) == pub.norm_weekly(b)
+    assert pub.norm_weekly(a) != pub.norm_weekly(c)
+
+
+def test_movement_prefers_weekly():
+    import build_report as br
+    weekly = {"span_from": "A", "span_to": "B",
+              "delta": {"total": 3, "total_stars": 50, "active_30d": 1, "rising": 0},
+              "now": {"total": 20, "total_stars": 900, "active_30d": 10, "rising": 2}}
+    mv = br.movement({"snapshots": []}, weekly)
+    assert mv["delta"]["total"] == 3 and mv["now"]["total_stars"] == 900
+    assert br.movement({"snapshots": []}, {"bogus": 1}) == br._movement_from_history({"snapshots": []})
+
+
+def test_history_meta_has_categories():
+    import radar
+    hist = {"version": 1, "snapshots": []}
+    projects = [{"full_name": "a/x", "stars": 1, "category": "Decoding & ML"},
+                {"full_name": "a/y", "stars": 1, "category": "Decoding & ML"},
+                {"full_name": "a/z", "stars": 1, "category": "Privacy & Security"}]
+    from datetime import datetime, timezone
+    snap = datetime(2026, 7, 3, tzinfo=timezone.utc)
+    out = radar.update_history(hist, projects, snap, "2026-07-03T00:00:00+00:00")
+    cats = out["snapshots"][-1]["meta"]["categories"]
+    assert cats == {"Decoding & ML": 2, "Privacy & Security": 1}
+
+
+def test_schema_accepts_v5_fields():
+    import jsonschema
+    schema = json.load(open(os.path.join(ROOT, "data", "radar.schema.json"), encoding="utf-8"))
+    doc = json.load(open(os.path.join(ROOT, "data", "radar.json"), encoding="utf-8"))
+    if doc.get("projects"):
+        doc["projects"][0].update({"falling": True, "community_active": True,
+                                   "updated_at": "2026-07-01T00:00:00Z"})
+    if doc.get("builders"):
+        doc["builders"][0].update({"owner_type": "Organization", "followers": 3})
+    jsonschema.validate(doc, schema)
+
+
+def test_schema_rejects_bad_html_url():
+    import jsonschema, copy
+    schema = json.load(open(os.path.join(ROOT, "data", "radar.schema.json"), encoding="utf-8"))
+    doc = copy.deepcopy(json.load(open(os.path.join(ROOT, "data", "radar.json"), encoding="utf-8")))
+    assert doc.get("projects"), "need at least one live project"
+    doc["projects"][0]["html_url"] = "https://github.com/"
+    try:
+        jsonschema.validate(doc, schema)
+        raise AssertionError("schema accepted owner-less github URL")
+    except jsonschema.ValidationError:
+        pass

@@ -194,3 +194,34 @@
 .ax-climb{color:#34d399;font-weight:600}
 .noscript{max-width:720px;margin:40px auto;padding:18px 22px;background:#131a26;border:1px solid #2a3648;border-radius:14px;color:#c7d2e4;font-size:14px;line-height:1.6}
 .noscript a{color:#5cc8ff}
+.radar-fatal{position:fixed;left:0;right:0;bottom:0;z-index:99999;background:rgba(60,0,0,.95);color:#fff;font:12px/1.4 ui-monospace,monospace;padding:10px 12px;white-space:pre-wrap;max-height:45%;overflow:auto;border-top:2px solid #f55}
+
+/* ── v5: weekly digest strip ─────────────────────────────── */
+.weekly{max-width:1180px;margin:2px auto 10px;padding:10px 14px;background:#0d1420;border:1px solid #1d2735;border-radius:14px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font-size:12.5px}
+.weekly .wk-t{font-weight:800;letter-spacing:.08em;font-size:10.5px;color:#8b98ad;text-transform:uppercase}
+.weekly .wk-d{display:inline-flex;align-items:baseline;gap:5px;color:#c7d2e4}
+.weekly .wk-d b{font-size:13.5px}
+.weekly .dp{font-size:11px;font-weight:700;border-radius:999px;padding:1px 7px}
+.weekly .dp.up{color:#3fd68f;background:rgba(63,214,143,.12)}
+.weekly .dp.down{color:#ff6b8a;background:rgba(255,107,138,.12)}
+.weekly .dp.flat{color:#8b98ad;background:rgba(139,152,173,.12)}
+.weekly .wk-m a{color:#9fd8ff;text-decoration:none}
+.weekly .wk-m a:hover{text-decoration:underline}
+.weekly .wk-sep{color:#33415a}
+
+/* ── v5: tier filter chips ───────────────────────────────── */
+.tiers .chip .dot{display:none}
+.tiers .chip{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:11px}
+
+/* ── v5: falling toggle + licence marker + density ───────── */
+.tg.fall.on{border-color:#ff6b8a;color:#ff9eb4;background:rgba(255,107,138,.1)}
+.pc .lic{margin-left:auto;font-size:10px;color:#ffcf6b;border:1px solid rgba(255,207,107,.4);border-radius:999px;padding:1.5px 7px}
+body.compact .pc{padding:10px 12px}
+body.compact .pc .desc{display:none}
+body.compact .pc h3{font-size:13.5px;margin:4px 0 2px}
+body.compact .cards{gap:8px}
+
+/* ── v5: loading shimmer ─────────────────────────────────── */
+body.loading .stats .stat b{color:transparent;background:linear-gradient(90deg,#1a2332 25%,#243149 50%,#1a2332 75%);background-size:200% 100%;animation:shim 1.1s linear infinite;border-radius:6px}
+@keyframes shim{to{background-position:-200% 0}}
+.who .ob{margin-left:7px;font-size:9px;font-weight:800;letter-spacing:.08em;color:#8fd0ff;border:1px solid rgba(143,208,255,.4);border-radius:5px;padding:1px 5px;vertical-align:2px}

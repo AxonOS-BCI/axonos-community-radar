@@ -8,11 +8,13 @@
 
 [![Live](https://img.shields.io/badge/live-axonos--bci.github.io-a78bfa?style=flat-square)](https://axonos-bci.github.io/axonos-community-radar/)
 [![CI](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-4.3.0-0a4a8f?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-5.0.0-0a4a8f?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-475569?style=flat-square)](LICENSE)
-[![Data](https://img.shields.io/badge/data-refreshed%20every%206h-2dd4ff?style=flat-square)](#-how-a-project-gets-on-the-radar)
+[![Data](https://img.shields.io/badge/data-refreshed%20every%203h-2dd4ff?style=flat-square)](#-how-a-project-gets-on-the-radar)
 [![Runtime deps](https://img.shields.io/badge/runtime%20deps-zero-34d399?style=flat-square)](#-architecture)
 [![CSP](https://img.shields.io/badge/CSP-strict-34d399?style=flat-square)](#-data--privacy)
+[![SAST](https://img.shields.io/badge/SAST-bandit%20blocking-34d399?style=flat-square)](docs/THREAT_MODEL.md)
+[![Pages](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml)
 
 **[🛰️ Open the live radar →](https://axonos-bci.github.io/axonos-community-radar/)** &nbsp;•&nbsp; **[📈 Statistics](https://axonos-bci.github.io/axonos-community-radar/stats.html)** &nbsp;•&nbsp; **[➕ Add a project](https://github.com/AxonOS-BCI/axonos-community-radar/issues/new?template=add-project.yml)** &nbsp;•&nbsp; **[📰 RSS](https://axonos-bci.github.io/axonos-community-radar/feed.xml)**
 
@@ -61,20 +63,28 @@ The open BCI field is scattered across hundreds of repositories with no single, 
 | **Builders** | A leaderboard of *owners with 2+ tracked projects* — total stars, active projects, and their focus areas. The people, not just the repos. |
 | **Methodology** | The inclusion rule, the four evidence tiers, and the scoring formula — in the product, not buried in docs. |
 
-## ✨ &nbsp;New in 4.3.0 — momentum, both directions
+## ✨ &nbsp;New in 5.0.0 — the field, in motion
 
-The report grew from a snapshot into a **motion picture** of the field, and the
-pipeline got a hardening pass driven by an external-style audit:
+A major release: the pipeline got faster and fairer, the UI became a shareable
+instrument, and every page now renders through DOM-safe code with zero
+`innerHTML` on data paths.
 
-* **How the field moved** — headline deltas (projects, stars, active, rising) across the last week of snapshots, measured from `data/history.json`, never estimated.
-* **Star trajectories** — real per-project star curves across scans for the top of the field.
-* **Declining** — projects losing stars are shown with the same prominence as risers; hiding degradation would be dishonest cartography.
-* **Category health matrix** — size, reach, active-share, movers both ways and median push age, per category.
-* **Licence posture** — declared / unclear (NOASSERTION) / missing, now distinguished correctly.
-* **Pipeline health panel** — the radar reports on itself from `data/status.json`: scan stats, enrichment coverage, archived exclusions, search saturation, API budget.
-* **Fairer ranking** — enrichment now covers a buffer beyond the cap before the final cut (kills the top-N sampling bias); archived repos leave the ranking; category ties break deterministically.
-* **Self-diagnosing** — every run writes `data/last_run.json`; a twice-daily health monitor watches the *published* data and maintains a single self-closing alert issue if it goes stale.
-* **Deeper docs** — [threat model](docs/THREAT_MODEL.md) · [incident response](docs/INCIDENT_RESPONSE.md) · [data retention](docs/RETENTION.md) · [SBOM](docs/SBOM.md).
+**Pipeline**
+* **Parallel enrichment** — a 4-worker stdlib thread pool with a shared, locked API budget cuts scan wall-time ~3–4× at the same politeness per connection.
+* **Saturated-topic recovery** — when GitHub search reports more matches than a topic pull returned, one bounded `sort=stars` pass recovers big-but-quiet classics, through **exactly the same relevance gate** as everything else.
+* **`data/weekly.json`** — a ~1 KB movement digest (field deltas, top movers, entrants) computed server-side each scan; the map, the stats page and the report all read the same numbers.
+* **Builders, enriched** — the Builders board now shows account type (ORG/USER) and followers from public owner profiles.
+* **min_stars = 2** and hyphen-aware keyword matching sharpen inclusion.
+
+**Experience**
+* **This-week strip** on the map and stats; **Momentum chart** (rising vs falling per snapshot) on the stats page.
+* **Evidence-tier filter** (L3/L2/L1/L0), **↓ Falling** quick filter, **licence markers** on cards, **density toggle**, `Esc` clears search — all encoded in shareable `#` permalinks.
+* **Category trend arrows** and **owner columns** in the printable report.
+
+**Engineering honesty**
+* **Pages deploys as one artifact per scan** (`pages.yml`) — killing the cosmetic red ✗ storm from per-commit Jekyll builds. One-time setup: *Settings → Pages → Source = GitHub Actions*.
+* **Zero `innerHTML`** across `app.js` and `stats.js`; the stats page's inline `<style>` (silently blocked by our own strict CSP!) now lives in `assets/stats.css` where the CSP allows it.
+* **Six independent CI jobs** (data integrity, Python quality, frontend + jsdom smoke, report build, security, release hygiene); **bandit is blocking**; every action **SHA-pinned with truthful version labels**; the JSON Schema is a full typed contract.
 
 ## 🔬 &nbsp;How a project gets on the radar
 
@@ -137,6 +147,13 @@ axonos-community-radar/
 
 > **Zero runtime dependencies.** The page is vanilla JavaScript; the pipeline uses only the Python standard library. The only CI-time packages (`pytest`, `jsonschema`) are version-pinned in [`requirements-ci.txt`](requirements-ci.txt).
 
+### Deployment note
+
+The site ships as a **single Pages artifact per scan** via `pages.yml` (no
+Jekyll). One-time repository setting: **Settings → Pages → Source = "GitHub
+Actions"**. The schedule runs at **:17 past every third hour (UTC)** — offset
+from the top of the hour by design to avoid the crowd.
+
 ## 🧬 &nbsp;Within AxonOS
 
 The Radar is the community-facing edge of a larger open project. The engineering it points back to:
@@ -160,7 +177,7 @@ If you reference AxonOS Radar in academic or technical work, please cite it:
   title   = {{AxonOS Radar: a living map of the open brain--computer-interface field}},
   year    = {2026},
   url     = {https://github.com/AxonOS-BCI/axonos-community-radar},
-  version = {3.4.0}
+  version = {5.0.0}
 }
 ```
 

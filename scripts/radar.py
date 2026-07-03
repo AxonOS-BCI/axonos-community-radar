@@ -15,7 +15,6 @@ Honest, hardened data pipeline:
   * Rate-limit aware, response-size capped, timezone-robust, self-validating.
   * Emits an RSS feed (XML-correct escaping) of the newest projects. No auto-engagement.
 """
-import base64  # noqa: F401  (kept for parity; not required at runtime)
 import json
 import os
 import re
@@ -35,6 +34,7 @@ SEEDS = os.path.join(ROOT, "data", "seeds.json")
 OUT = os.path.join(ROOT, "data", "radar.json")
 FIRST_SEEN = os.path.join(ROOT, "data", "first_seen.json")
 FEED = os.path.join(ROOT, "feed.xml")
+WEEKLY = os.path.join(ROOT, "data", "weekly.json")
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # local modules win over site-packages
 import enrich  # local module: scripts/enrich.py
@@ -392,9 +392,15 @@ def quality_flags_for(repo, tier):
     }
 
 
+def _kw_hit(k, txt):
+    """Word-boundary keyword hit: 'api' must not fire inside 'rapid', 'adc'
+    must not fire inside 'broadcast'. Hyphen/underscore count as boundaries."""
+    return re.search(r"(?<![a-z0-9])" + re.escape(k) + r"(?![a-z0-9])", txt) is not None
+
+
 def axon_relevance_for(repo):
     txt = repo_text(repo)
-    return {dim: round(min(1.0, sum(1 for k in kws if k in txt) * 0.34), 2)
+    return {dim: round(min(1.0, sum(1 for k in kws if _kw_hit(k, txt)) * 0.34), 2)
             for dim, kws in AXON_DIMS.items()}
 
 
@@ -431,6 +437,49 @@ def _stars_delta(history, full_name, current_stars, snap, days):
     return 0 if best is None else current_stars - int(best[1])
 
 
+def build_weekly(projects, history, snap_iso):
+    """A ~1 KB movement digest computed server-side each scan: field deltas vs
+    ~a week ago plus the week's top movers and entrants. None when history is
+    too short — consumers simply hide the panel."""
+    snaps = (history or {}).get("snapshots", [])
+    if len(snaps) < 2:
+        return None
+    latest = snaps[-1]
+    try:
+        t_latest = datetime.fromisoformat(latest["snapshot_at"]).timestamp()
+    except Exception:  # noqa: BLE001
+        return None
+    base = None
+    for snp in snaps[:-1]:
+        try:
+            t = datetime.fromisoformat(snp["snapshot_at"]).timestamp()
+        except Exception:  # noqa: BLE001
+            continue
+        if t_latest - t <= 8 * 86400:
+            base = snp
+            break
+    if base is None:
+        base = snaps[0]
+    lm, bm = latest.get("meta") or {}, base.get("meta") or {}
+    delta = {k: int(lm.get(k) or 0) - int(bm.get(k) or 0)
+             for k in ("total", "total_stars", "active_30d", "rising")}
+    movers = sorted((p for p in projects if p.get("stars_delta_7d")),
+                    key=lambda p: -(p.get("stars_delta_7d") or 0))
+    def brief(p):
+        return {"full_name": p["full_name"], "stars": int(p.get("stars") or 0),
+                "d7": int(p.get("stars_delta_7d") or 0)}
+    return {
+        "generated_at": snap_iso,
+        "span_from": base.get("snapshot_at", ""),
+        "span_to": latest.get("snapshot_at", ""),
+        "delta": delta,
+        "now": {k: int(lm.get(k) or 0) for k in ("total", "total_stars", "active_30d", "rising")},
+        "top_risers": [brief(p) for p in movers[:5] if (p.get("stars_delta_7d") or 0) > 0],
+        "top_fallers": [brief(p) for p in movers[::-1][:5] if (p.get("stars_delta_7d") or 0) < 0],
+        "entrants": [p["full_name"] for p in projects if p.get("is_new")][:10],
+    }
+
+
 def update_history(history, projects, snap, snap_iso):
     top = sorted(projects, key=lambda p: int(p.get("stars") or 0), reverse=True)[:HISTORY_MAX_REPOS]
     stars_map = {p["full_name"]: int(p.get("stars") or 0) for p in top}
@@ -441,6 +490,11 @@ def update_history(history, projects, snap, snap_iso):
         "rising": sum(1 for p in projects if p.get("rising")),
         "falling": sum(1 for p in projects if p.get("falling")),
         "total_stars": sum(int(p.get("stars") or 0) for p in projects),
+        # v5: per-category sizes — powers category trend arrows once two
+        # snapshots carry this field.
+        "categories": dict(sorted(
+            __import__("collections").Counter(
+                p.get("category") or "Other" for p in projects).items())),
     }
     snaps = [s for s in history.get("snapshots", []) if s.get("snapshot_at") != snap_iso]
     snaps.append({"snapshot_at": snap_iso, "meta": meta, "stars": stars_map})
@@ -585,6 +639,44 @@ def main():
     fseen = load_first_seen(snap_iso)
 
     repos, seen_lc, scanned, dropped, failed, saturated = {}, set(), 0, 0, [], []
+    recovered = 0
+
+    def ingest(item):
+        """The single relevance/dedup/exclusion gate for BOTH the main scan and
+        the saturated-topic recovery pass — recovered repos face exactly the
+        same inclusion rules as everything else."""
+        nonlocal scanned, dropped
+        scanned += 1
+        fn = item.get("full_name")
+        key = (fn or "").lower()
+        if not fn or key == SELF_REPO or key in seen_lc:
+            return False
+        seen_lc.add(key)
+        if fn.split("/")[0].lower() in excl_owners or fn.lower() in excl_repos:
+            return False
+        if item.get("fork"):        # defense-in-depth: query says fork:false
+            return False
+        if item.get("archived") or item.get("disabled"):
+            return False
+        if int(item.get("stargazers_count") or 0) < min_stars:
+            return False
+        if not is_relevant(item, core, context, keywords):
+            dropped += 1
+            return False
+        repos[fn] = {
+            "full_name": fn, "html_url": item.get("html_url"),
+            "description": (item.get("description") or "").strip()[:240],
+            "stars": int(item.get("stargazers_count") or 0),
+            "forks": int(item.get("forks_count") or 0),
+            "language": item.get("language") or "",
+            "pushed_at": item.get("pushed_at") or "",
+            "updated_at": item.get("updated_at") or "",
+            "topics": (item.get("topics") or [])[:12],
+            "license": (item.get("license") or {}).get("spdx_id"),
+            "has_license": bool((item.get("license") or {}).get("spdx_id")
+                                and (item.get("license") or {}).get("spdx_id") != "NOASSERTION"),
+        }
+        return True
     per_page = 100  # GitHub search returns <=100/page and caps at 1000 results per query
     for topic in topics:
         q = f"topic:{topic} archived:false fork:false"
@@ -607,35 +699,8 @@ def main():
             if not items:
                 break
             for item in items:
-                scanned += 1
                 pulled += 1
-                fn = item.get("full_name")
-                key = (fn or "").lower()
-                if not fn or key == SELF_REPO or key in seen_lc:
-                    continue
-                seen_lc.add(key)
-                if fn.split("/")[0].lower() in excl_owners or fn.lower() in excl_repos:
-                    continue
-                if item.get("fork"):        # defense-in-depth: query says fork:false
-                    continue
-                if int(item.get("stargazers_count") or 0) < min_stars:
-                    continue
-                if not is_relevant(item, core, context, keywords):
-                    dropped += 1
-                    continue
-                repos[fn] = {
-                    "full_name": fn, "html_url": item.get("html_url"),
-                    "description": (item.get("description") or "").strip()[:240],
-                    "stars": int(item.get("stargazers_count") or 0),
-                    "forks": int(item.get("forks_count") or 0),
-                    "language": item.get("language") or "",
-                    "pushed_at": item.get("pushed_at") or "",
-                    "updated_at": item.get("updated_at") or "",
-                    "topics": (item.get("topics") or [])[:12],
-                    "license": (item.get("license") or {}).get("spdx_id"),
-                    "has_license": bool((item.get("license") or {}).get("spdx_id")
-                                        and (item.get("license") or {}).get("spdx_id") != "NOASSERTION"),
-                }
+                ingest(item)
             if len(items) < n:
                 break
             page += 1
@@ -643,6 +708,20 @@ def main():
             failed.append(topic)
         if topic_total > pulled:
             saturated.append(topic)
+            # v5 recovery pass: 'sort=updated' favours the recently touched, so
+            # a saturated topic can hide big-but-quiet classics. One bounded
+            # extra page sorted by stars recovers them (dedup via seen_lc).
+            q2_url = "https://api.github.com/search/repositories?" + urllib.parse.urlencode(
+                {"q": q, "sort": "stars", "order": "desc",
+                 "per_page": str(min(per_page, 25)), "page": "1"})
+            try:
+                data2 = gh_json(q2_url)
+            except Exception as exc:  # noqa: BLE001
+                print(f"  WARN: recovery pass failed for topic:{topic}: {type(exc).__name__}")
+                data2 = {}
+            for item in (data2.get("items") or []):
+                if ingest(item):
+                    recovered += 1
 
     # Partial-failure safeguard: preserve last-good data rather than publishing a half-empty radar.
     if topics and len(failed) / len(topics) > FAIL_RATIO:
@@ -699,6 +778,21 @@ def main():
     history = load_history()
     builders, counts = enrich_v3(out, seeds, snap, history)
 
+    # v5: enrich the Builders board with public owner profile (type, followers).
+    # Bounded to the builders list; never blocks the run.
+    owners_enriched = 0
+    if seeds.get("enrich", True) and builders:
+        for b in builders[:20]:
+            try:
+                info, limited = enrich.owner_extra(b.get("owner", ""), TOKEN)
+                if limited:
+                    break
+                if info:
+                    b.update(info)
+                    owners_enriched += 1
+            except Exception:  # noqa: BLE001
+                break
+
     payload = {
         "version": 3, "generated_at": now.replace(microsecond=0).isoformat(),
         "snapshot_at": snap_iso, "source": "GitHub topic search (public)",
@@ -723,6 +817,15 @@ def main():
         json.dump(payload, fh, ensure_ascii=False, indent=2)
         fh.write("\n")
     history = update_history(history, out, snap, snap_iso)
+
+    # v5: weekly digest — one small file the UI and report can read instantly
+    # instead of re-deriving movement from full history on every visit. Built
+    # AFTER update_history so "latest" is this very scan.
+    weekly = build_weekly(out, history, snap_iso)
+    if weekly:
+        with open(WEEKLY, "w", encoding="utf-8") as fh:
+            json.dump(weekly, fh, ensure_ascii=False, indent=2, sort_keys=True)
+            fh.write("\n")
     with open(HISTORY, "w", encoding="utf-8") as fh:
         json.dump(history, fh, ensure_ascii=False, indent=2)
         fh.write("\n")
@@ -737,6 +840,8 @@ def main():
         "enrich_rate_limit_stop": estats.get("rate_limit_stop", False),
         "excluded_archived": len(excluded_archived),
         "search_saturated_topics": len(saturated),
+        "recovered_by_stars_pass": recovered,
+        "owners_enriched": owners_enriched,
         "rate_limit": {"remaining_start": rate_start, "remaining_end": rate_end},
         "falling": counts.get("falling", 0),
         "community_active_30d": counts.get("community_active_30d", 0),
@@ -747,7 +852,7 @@ def main():
     with open(os.path.join(ROOT, "data", "status.json"), "w", encoding="utf-8") as fh:
         json.dump(status, fh, ensure_ascii=False, indent=2)
         fh.write("\n")
-    write_last_run(True, "", projects=len(out), scanned=scanned,
+    write_last_run(True, "", projects=len(out), scanned=scanned, recovered=recovered,
                    failed_topics=sorted(failed), saturated_topics=len(saturated))
     print(f"Wrote {len(out)} v3 projects + {len(builders)} builders (scanned {scanned}, "
           f"dropped {dropped} off-topic, {len(failed)} topics failed, {counts['active_30d']} active, "

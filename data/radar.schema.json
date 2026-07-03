@@ -4,89 +4,302 @@
   "title": "AxonOS Radar dataset",
   "description": "Public data contract for data/radar.json. Derived only from public GitHub metadata. Inclusion is not endorsement; scores are discovery signals, not quality, safety, or clinical ratings.",
   "type": "object",
-  "required": ["version", "generated_at", "counts", "projects"],
+  "required": [
+    "version",
+    "generated_at",
+    "counts",
+    "projects"
+  ],
   "properties": {
-    "version": { "type": "integer", "enum": [2, 3] },
-    "generated_at": { "type": "string" },
-    "snapshot_at": { "type": "string" },
-    "source": { "type": "string" },
-    "criteria": { "type": "string" },
-    "refresh": { "type": "string" },
-    "min_stars": { "type": "integer", "minimum": 0 },
-    "topics_failed": { "type": "integer", "minimum": 0 },
-    "topics": { "type": "array", "items": { "type": "string" } },
-    "methodology": { "type": "object" },
-    "counts": {
-      "type": "object",
-      "required": ["total"],
-      "properties": {
-        "total": { "type": "integer", "minimum": 0 },
-        "active_30d": { "type": "integer", "minimum": 0 },
-        "new": { "type": "integer", "minimum": 0 },
-        "rising": { "type": "integer", "minimum": 0 },
-        "builders": { "type": "integer", "minimum": 0 }
+    "version": {
+      "type": "integer",
+      "enum": [
+        2,
+        3
+      ]
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "snapshot_at": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    },
+    "criteria": {
+      "type": "string"
+    },
+    "refresh": {
+      "type": "string"
+    },
+    "min_stars": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "topics_failed": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "topics": {
+      "type": "array",
+      "items": {
+        "type": "string"
       }
     },
-    "projects": { "type": "array", "items": { "$ref": "#/$defs/project" } },
-    "builders": { "type": "array", "items": { "$ref": "#/$defs/builder" } }
+    "methodology": {
+      "type": "object"
+    },
+    "counts": {
+      "type": "object",
+      "required": [
+        "total"
+      ],
+      "properties": {
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "active_30d": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "new": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rising": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "builders": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "projects": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/project"
+      }
+    },
+    "builders": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/builder"
+      }
+    }
   },
   "$defs": {
     "project": {
       "type": "object",
-      "required": ["full_name", "html_url", "category"],
+      "required": [
+        "full_name",
+        "html_url",
+        "category"
+      ],
       "properties": {
-        "full_name": { "type": "string", "minLength": 1 },
-        "owner": { "type": "string" },
-        "repo": { "type": "string" },
-        "html_url": { "type": "string", "pattern": "^https://github\\.com/" },
-        "description": { "type": "string", "maxLength": 240 },
-        "stars": { "type": "integer", "minimum": 0 },
-        "forks": { "type": "integer", "minimum": 0 },
-        "language": { "type": "string" },
-        "license": { "type": ["string", "null"] },
-        "has_license": { "type": "boolean" },
-        "pushed_at": { "type": "string" },
-        "days_since_push": { "type": "integer", "minimum": 0 },
-        "topics": { "type": "array", "items": { "type": "string" } },
-        "category": { "type": "string", "minLength": 1 },
+        "full_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner": {
+          "type": "string"
+        },
+        "repo": {
+          "type": "string"
+        },
+        "html_url": {
+          "type": "string",
+          "pattern": "^https://github\\.com/[^/]+/[^/]+"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "stars": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "forks": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "language": {
+          "type": "string"
+        },
+        "license": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "has_license": {
+          "type": "boolean"
+        },
+        "pushed_at": {
+          "type": "string"
+        },
+        "days_since_push": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "topics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1
+        },
         "evidence_tier": {
           "type": "string",
-          "enum": ["L3_EXPLICIT_BCI", "L2_NEURAL_SIGNAL", "L1_CONTEXT_PLUS_NEURO", "L0_WEAK_ADJACENT"]
+          "enum": [
+            "L3_EXPLICIT_BCI",
+            "L2_NEURAL_SIGNAL",
+            "L1_CONTEXT_PLUS_NEURO",
+            "L0_WEAK_ADJACENT"
+          ]
         },
-        "inclusion_reason": { "type": "string", "minLength": 1 },
-        "matched_topics": { "type": "array", "items": { "type": "string" } },
-        "matched_keywords": { "type": "array", "items": { "type": "string" } },
+        "inclusion_reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "matched_topics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "matched_keywords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "quality_flags": {
           "type": "object",
           "properties": {
-            "possible_false_positive": { "type": "boolean" },
-            "low_metadata": { "type": "boolean" },
-            "missing_license": { "type": "boolean" },
-            "no_recent_activity": { "type": "boolean" }
+            "possible_false_positive": {
+              "type": "boolean"
+            },
+            "low_metadata": {
+              "type": "boolean"
+            },
+            "missing_license": {
+              "type": "boolean"
+            },
+            "no_recent_activity": {
+              "type": "boolean"
+            },
+            "unclear_license": {
+              "type": "boolean"
+            },
+            "no_description": {
+              "type": "boolean"
+            },
+            "no_topics": {
+              "type": "boolean"
+            },
+            "stale_365d": {
+              "type": "boolean"
+            }
           }
         },
-        "first_seen": { "type": "string" },
-        "is_new": { "type": "boolean" },
-        "active": { "type": "boolean" },
-        "stars_delta_7d": { "type": "integer" },
-        "stars_delta_30d": { "type": "integer" },
-        "rising": { "type": "boolean" },
-        "axon_relevance": { "type": "object" },
-        "_score": { "type": "number" }
+        "first_seen": {
+          "type": "string"
+        },
+        "is_new": {
+          "type": "boolean"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "stars_delta_7d": {
+          "type": "integer"
+        },
+        "stars_delta_30d": {
+          "type": "integer"
+        },
+        "rising": {
+          "type": "boolean"
+        },
+        "axon_relevance": {
+          "type": "object"
+        },
+        "_score": {
+          "type": "number"
+        },
+        "updated_at": {
+          "type": "string"
+        },
+        "falling": {
+          "type": "boolean"
+        },
+        "community_active": {
+          "type": "boolean"
+        },
+        "activity_pending": {
+          "type": "boolean"
+        }
       }
     },
     "builder": {
       "type": "object",
-      "required": ["owner", "html_url", "project_count"],
+      "required": [
+        "owner",
+        "html_url",
+        "project_count"
+      ],
       "properties": {
-        "owner": { "type": "string", "minLength": 1 },
-        "html_url": { "type": "string", "pattern": "^https://github\\.com/" },
-        "project_count": { "type": "integer", "minimum": 1 },
-        "total_stars": { "type": "integer", "minimum": 0 },
-        "active_projects_30d": { "type": "integer", "minimum": 0 },
-        "top_categories": { "type": "array", "items": { "type": "string" } },
-        "top_languages": { "type": "array", "items": { "type": "string" } },
-        "projects": { "type": "array", "items": { "type": "string" } }
+        "owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "html_url": {
+          "type": "string",
+          "pattern": "^https://github\\.com/"
+        },
+        "project_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "total_stars": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "active_projects_30d": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "top_categories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "top_languages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "projects": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "owner_type": {
+          "type": "string"
+        },
+        "followers": {
+          "type": "integer",
+          "minimum": 0
+        }
       }
     }
   }

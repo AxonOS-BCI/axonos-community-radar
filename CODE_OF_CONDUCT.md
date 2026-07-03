@@ -26,7 +26,7 @@ Examples of unacceptable behaviour:
 ## Enforcement
 
 Instances of abusive, harassing or otherwise unacceptable behaviour may be
-reported to the maintainers at **connect@axonos.org**. All complaints will be
+reported to the maintainers at **connect@axonos.org (for security vulnerabilities use security@axonos.org — see SECURITY.md)**. All complaints will be
 reviewed and investigated promptly and fairly.
 
 This Code of Conduct is adapted from the [Contributor Covenant](https://www.contributor-covenant.org), version 2.1.

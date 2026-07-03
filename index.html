@@ -50,6 +50,7 @@
   </header>
 
   <div class="stats" id="stats"></div>
+  <section class="weekly hidden" id="weekly" aria-label="This week on the radar"></section>
   <div class="updated" id="updated"></div>
 
   <div class="tabs" id="tabs" role="tablist" aria-label="Views">
@@ -69,9 +70,11 @@
     </div>
     <div class="ctl-row">
       <div class="chips" id="chips"></div>
+      <div class="chips tiers" id="tierChips" aria-label="Evidence tier filter"></div>
       <select class="sel" id="langSel" aria-label="Filter by language"><option value="">All languages</option></select>
       <div class="tg act" id="tAct" role="button" tabindex="0" aria-pressed="false">● Active 30d</div>
       <div class="tg new" id="tNew" role="button" tabindex="0" aria-pressed="false">✦ New</div>
+      <div class="tg fall" id="tFall" role="button" tabindex="0" aria-pressed="false">↓ Falling</div>
       <button class="tg clr hidden" id="clearBtn" type="button" aria-label="Clear all filters">✕ Clear</button>
     </div>
   </div>
@@ -83,7 +86,7 @@
     <div class="legend" id="legend"></div>
   </section>
 
-  <div class="ghead"><span id="gcount" aria-live="polite"></span><button class="seg-opt bordered" id="dlBtn" title="Download the dataset as JSON">↓ Data</button><button class="seg-opt bordered" id="shareBtn">⤴ Share</button></div>
+  <div class="ghead"><span id="gcount" aria-live="polite"></span><button class="seg-opt bordered" id="densBtn" title="Toggle compact density" aria-pressed="false">▤ Density</button><button class="seg-opt bordered" id="dlBtn" title="Download the dataset as JSON">↓ Data</button><button class="seg-opt bordered" id="shareBtn">⤴ Share</button></div>
   <div class="cards" id="cards"></div>
 
   </div><!-- /view-projects -->

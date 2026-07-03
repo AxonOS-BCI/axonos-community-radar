@@ -21,6 +21,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import time
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
@@ -41,8 +42,13 @@ if TOKEN:
 
 
 def fetch_json(url):
+    # Cache-busting query defeats CDN caching in front of GitHub Pages —
+    # without it a stale cached status.json can trigger false alerts.
+    sep = "&" if "?" in url else "?"
+    url = f"{url}{sep}_t={int(time.time())}"
     req = urllib.request.Request(url, headers={"User-Agent": HEADERS["User-Agent"],
-                                               "Cache-Control": "no-cache"})
+                                               "Cache-Control": "no-cache, no-store, must-revalidate",
+                                               "Pragma": "no-cache"})
     try:
         with urllib.request.urlopen(req, timeout=30) as r:  # noqa: S310
             return json.loads(r.read(4 * 1024 * 1024).decode("utf-8"))

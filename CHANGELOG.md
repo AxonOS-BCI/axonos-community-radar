@@ -1,5 +1,73 @@
 # Changelog
 
+## [5.0.0] — 2026-07-03
+
+A major release: faster and fairer pipeline, a shareable instrument of a UI,
+DOM-safe rendering everywhere, and a root-cause fix for the red
+`pages-build-deployment` runs.
+
+### Added
+- **`pages.yml`** — the site now deploys as **one Pages artifact per scan**
+  (triggered by radar completion / site-file pushes / manual dispatch), with
+  `concurrency: cancel-in-progress`. Kills the superseded-Jekyll-build ✗ storm
+  at the root. One-time setup: Settings → Pages → Source = "GitHub Actions".
+  `.nojekyll` added for the interim.
+- **Parallel enrichment** — stdlib `ThreadPoolExecutor` (4 workers) with a
+  shared, locked rate-limit budget; same per-request politeness, ~3–4× less
+  wall time. Budget stop and 429 handling are thread-safe.
+- **Saturated-topic recovery** — one bounded `sort=stars` page per saturated
+  topic recovers big-but-quiet classics through the exact same `ingest()`
+  relevance/dedup/exclusion gate as the main scan (`recovered_by_stars_pass`
+  in status).
+- **`data/weekly.json`** — server-computed movement digest (deltas vs ~7 days,
+  top risers/fallers, entrants); consumed by the map strip, the stats page and
+  the report so all three show identical numbers. Publisher normalises it and
+  commits only on meaningful change.
+- **Owner-enriched Builders** — account type (ORG/USER) and follower counts on
+  the Builders board (UI, stats, report), bounded to the builders list
+  (`owners_enriched` in status).
+- **History `meta.categories`** — per-category sizes per snapshot; powers new
+  category **trend arrows** in the report once two snapshots carry it.
+- **UI v5** — This-week strip; evidence-tier filter chips (L3/L2/L1/L0);
+  **↓ Falling** quick filter; **licence markers** (`⚠ no licence` /
+  `⚠ licence unclear`) on cards; density toggle; `Esc` clears search; loading
+  shimmer; all state (incl. tiers/falling/density) in shareable `#` permalinks.
+- **Stats v5** — **Momentum chart** (rising vs falling per snapshot) and a
+  This-week line; builders show ORG/USER + followers.
+- **Six-job CI** — data-integrity, python-quality, frontend (incl. a
+  **functional jsdom UI smoke**), report-build, security (blocking bandit,
+  pinned-SHA gate, secret scan, CRLF), release-hygiene (required files,
+  version consistency across VERSION/badge/bibtex/CITATION/CHANGELOG, licence
+  sanity).
+- **Full JSON-Schema contract** — typed properties for every project field,
+  `html_url` pattern requires `owner/repo`, `quality_flags` enumerated
+  (incl. `unclear_license`), builder `owner_type`/`followers`.
+
+### Changed
+- **Every action pinned to verified latest SHAs with truthful labels**:
+  checkout v7.0.0, upload-artifact v7.0.1, configure-pages v6.0.0,
+  upload-pages-artifact v5.0.0, deploy-pages v5.0.0. (The old `f43a0e5` pin
+  was actually checkout **3.6.0** mislabelled "# v4" — fixed; supersedes
+  Dependabot PRs #3/#4.)
+- `min_stars` 1 → **2**; hyphen variants added for multi-word neuro keywords
+  (`brain-machine`, `spike-sorting`, `motor-imagery`).
+- `axon_relevance_for` uses **word-boundary** keyword matching ('api' no
+  longer fires inside 'rapid').
+- Scan workflow timeout 30 → 45 min; forensic artifact step renamed to state
+  its 90-day retention explicitly.
+
+### Fixed
+- **stats.html was styling-dead under its own strict CSP**: the page declared
+  `style-src 'self'` *and* carried an inline `<style>` block, which compliant
+  browsers block. Styles extracted to `assets/stats.css`.
+- README bibtex citation said `3.4.0` while the project was at 4.3.0 — now CI
+  enforces version consistency everywhere.
+- `_funding_url` accepted any string starting with "http" (incl. `http://`
+  and junk like `httpevil`) — now strict `https://` + urlparse validation.
+- Dead `import base64` removed; `__showErr` inline `cssText` moved to a CSS
+  class; health-check now cache-busts Pages reads (defeats stale-CDN false
+  alerts); CoC points security reports to SECURITY.md.
+
 ## [4.3.0] — 2026-07-02
 
 Momentum both ways, a self-diagnosing pipeline, and an audit-driven hardening

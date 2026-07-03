@@ -28,11 +28,14 @@ verified property, not a promise.
 
 | Action | Pinned SHA | Tag | Used in |
 |---|---|---|---|
-| `actions/checkout` | `f43a0e5ff2bd294095638e18286ca9a3d1956744` | v4 | ci.yml, radar.yml, health.yml |
-| `actions/upload-artifact` | `ea165f8d65b6e75b540449e92b4886f43607fa02` | v4.6.2 | radar.yml (data snapshots) |
+| `actions/checkout` | `9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0` | v7.0.0 | ci.yml, radar.yml, health.yml, pages.yml |
+| `actions/upload-artifact` | `043fb46d1a93c77aae656e7c1c64a875d1fc6a0a` | v7.0.1 | radar.yml (data snapshots) |
+| `actions/configure-pages` | `45bfe0192ca1faeb007ade9deae92b16b8254a0d` | v6.0.0 | pages.yml |
+| `actions/upload-pages-artifact` | `fc324d3547104276b827a68afc52ff2a11cc49c9` | v5.0.0 | pages.yml |
+| `actions/deploy-pages` | `cd2ce8fcbc39b97be8ca5fce6e763baed58fa128` | v5.0.0 | pages.yml |
 
 CI-only Python packages (never shipped, used for tests/validation only) are
-pinned in `requirements-ci.txt`: `jsonschema`, `pytest` and their
+pinned in `requirements-ci.txt` (`pytest==8.3.4`, `jsonschema==4.23.0`) and their
 dependencies.
 
 ## External services consumed
@@ -49,3 +52,9 @@ dependencies.
 * `CI → "Actions are pinned to a commit SHA"` fails on any unpinned action.
 * `CI → "Secret scan"` fails on token/key patterns in the tree.
 * Dependabot (`.github/dependabot.yml`) proposes action-SHA updates weekly.
+
+### CI-only Node dependency
+
+| Package | Where | Why |
+| --- | --- | --- |
+| `jsdom` (installed per-run via `npm install --no-save`) | ci.yml → frontend job | Functional UI smoke: boots the real `index.html` + `app.js` against fixture data and asserts cards, filters, permalinks and licence markers actually work. Never shipped; the site itself remains zero-dependency vanilla JS. |

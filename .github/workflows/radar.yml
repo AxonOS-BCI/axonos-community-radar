@@ -17,12 +17,12 @@ jobs:
   radar:
     name: Refresh ecosystem radar
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     env:
       GH_TOKEN: ${{ github.token }}
       GITHUB_TOKEN: ${{ github.token }}
     steps:
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744  # v4
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
 
       - name: Refresh radar data (self-validating)
         run: python3 scripts/radar.py
@@ -43,9 +43,9 @@ jobs:
 
       # Disaster-recovery backup: every scan's data is retained as a workflow
       # artifact for 90 days, independent of git history (audit: backup strategy).
-      - name: Archive data snapshot (90-day retention)
+      - name: Forensic data snapshot (kept 90 days, even on failed runs)
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         with:
           name: radar-data-${{ github.run_id }}
           path: |

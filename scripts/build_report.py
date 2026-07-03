@@ -191,7 +191,20 @@ def star_series(history, full_name):
     return vals
 
 
-def movement(history):
+def movement(history, weekly=None):
+    """Prefers the pipeline-computed data/weekly.json when present (single
+    source of truth with the UI); falls back to deriving from history."""
+    if isinstance(weekly, dict) and isinstance(weekly.get("delta"), dict) \
+            and isinstance(weekly.get("now"), dict):
+        keys = ("total", "total_stars", "active_30d", "rising")
+        return {"span_from": str(weekly.get("span_from", ""))[:32],
+                "span_to": str(weekly.get("span_to", ""))[:32],
+                "delta": {k_: int(weekly["delta"].get(k_) or 0) for k_ in keys},
+                "now": {k_: int(weekly["now"].get(k_) or 0) for k_ in keys}}
+    return _movement_from_history(history)
+
+
+def _movement_from_history(history):
     """Field-level deltas: latest snapshot meta vs the oldest within ~7 days."""
     snaps = (history or {}).get("snapshots", [])
     if len(snaps) < 2:
@@ -253,7 +266,7 @@ def sparkline_svg(values, w=40.0, h=11.0):
             f'role="img" aria-label="activity"><polyline class="spark-l" points="{pts}"/></svg>')
 
 
-def build(radar, history=None, status=None):
+def build(radar, history=None, status=None, weekly=None):
     p = radar.get("projects", [])
     c = radar.get("counts", {})
     builders = radar.get("builders", [])
@@ -326,13 +339,24 @@ def build(radar, history=None, status=None):
     lic_ok = sum(1 for x in p if x.get("license") and x.get("license") != "NOASSERTION")
     lic_unclear = sum(1 for x in p if x.get("license") == "NOASSERTION")
     lic_missing = tot - lic_ok - lic_unclear
-    mv = movement(history)
+    mv = movement(history, weekly)
+    # category trend arrows: prior per-category sizes from history meta (v5)
+    prev_cats = {}
+    for snp in reversed(((history or {}).get("snapshots") or [])[:-1]):
+        mcat = (snp.get("meta") or {}).get("categories")
+        if isinstance(mcat, dict):
+            prev_cats = mcat
+            break
     cat_rows = []
     for name, cnt in cats_sorted:
         grp = [x for x in p if x.get("category") == name]
         act = sum(1 for x in grp if x.get("active"))
+        prev_n = prev_cats.get(name)
+        trend = ""
+        if isinstance(prev_n, int) and prev_n != cnt:
+            trend = "\u2191" if cnt > prev_n else "\u2193"
         cat_rows.append({
-            "name": name, "n": cnt, "stars": cat_stars.get(name, 0),
+            "name": name, "n": cnt, "trend": trend, "stars": cat_stars.get(name, 0),
             "active_pct": int(round(100 * act / cnt)) if cnt else 0,
             "rising": sum(1 for x in grp if x.get("rising")),
             "falling": sum(1 for x in grp if x.get("falling")),
@@ -508,12 +532,24 @@ def build(radar, history=None, status=None):
     if builders:
         A('<section id="builders"><div class="sec-head"><div class="sec-k">People</div>'
           "<h2>Top builders</h2><p>Owners and organisations shipping the most in the open.</p></div>")
-        A('<div class="tbl-scroll"><table><thead><tr><th>#</th><th>Owner</th><th class="num">Projects</th>'
+        owners_known = any(b.get("owner_type") for b in builders[:10])
+        own_head = '<th>Type</th><th class="num">Followers</th>' if owners_known else ''
+        A('<div class="tbl-scroll"><table><thead><tr><th>#</th><th>Owner</th>' + own_head +
+          '<th class="num">Projects</th>'
           '<th class="num">Stars</th><th class="num">Active</th><th>Focus</th></tr></thead><tbody>')
         for i, b in enumerate(builders[:10], 1):
             focus = " \u00b7 ".join((b.get("top_categories") or [])[:2])
+            own_cells = ""
+            if owners_known:
+                ot = b.get("owner_type") or ""
+                badge = ('<span class="ob">ORG</span>' if ot == "Organization"
+                         else ('<span class="ob u">USER</span>' if ot else "\u2014"))
+                fol = b.get("followers")
+                own_cells = (f'<td>{badge}</td>'
+                             f'<td class="num">{k(int(fol)) if isinstance(fol, int) and fol > 0 else "\u2014"}</td>')
             A(f'<tr><td class="num">{i}</td><td><a class="proj" href="{esc(b.get("html_url"))}">'
-              f'{esc(b.get("owner"))}</a></td><td class="num">{b.get("project_count", 0)}</td>'
+              f'{esc(b.get("owner"))}</a></td>' + own_cells +
+              f'<td class="num">{b.get("project_count", 0)}</td>'
               f'<td class="num">{k(b.get("total_stars", 0))}</td>'
               f'<td class="num">{b.get("active_projects_30d", 0)}</td><td>{esc(focus)}</td></tr>')
         A("</tbody></table></div></section>")
@@ -586,7 +622,9 @@ def build(radar, history=None, status=None):
       '<th class="num">Falling</th><th class="num">Median push</th></tr></thead><tbody>')
     for cr in cat_rows:
         hcls = "ok" if cr["active_pct"] >= 50 else ("warn" if cr["active_pct"] >= 25 else "cold")
-        A(f'<tr><td><span class="sw lg-{cidx(cr["name"])}"></span> {esc(cr["name"])}</td>'
+        tr_ = (f' <span class="ct {"rise" if cr["trend"] == "\u2191" else "fall"}">{cr["trend"]}</span>'
+               if cr.get("trend") else "")
+        A(f'<tr><td><span class="sw lg-{cidx(cr["name"])}"></span> {esc(cr["name"])}{tr_}</td>'
           f'<td class="num">{cr["n"]}</td><td class="num">{k(cr["stars"])}</td>'
           f'<td class="num"><span class="hp {hcls}">{cr["active_pct"]}%</span></td>'
           f'<td class="num rise">{cr["rising"] or "\u2014"}</td>'
@@ -718,7 +756,8 @@ def main():
         return 0
     history = _load("data/history.json")
     status = _load("data/status.json")
-    out = build(radar, history=history, status=status)
+    weekly = _load("data/weekly.json")
+    out = build(radar, history=history, status=status, weekly=weekly)
     with open("report.html", "w", encoding="utf-8") as f:
         f.write(out)
     print(f"build_report: wrote report.html ({len(out)} bytes, {len(radar.get('projects', []))} projects)")

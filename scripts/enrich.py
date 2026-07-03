@@ -76,6 +76,18 @@ def _last_page(headers):
     return None
 
 
+def owner_extra(owner, token):
+    """Public owner profile bits for the Builders board: account type and
+    followers. One call per owner; used only for the small builders list."""
+    code, data, _ = gh_get(f"{API}/users/{owner}", token)
+    if code == 429:
+        return None, True
+    if code != 200 or not isinstance(data, dict):
+        return {}, False
+    return {"owner_type": (data.get("type") or ""),
+            "followers": int(data.get("followers") or 0)}, False
+
+
 def contributors_count(fn, token):
     code, data, headers = gh_get(f"{API}/repos/{fn}/contributors?per_page=1&anon=true", token)
     if code == 429:
@@ -165,7 +177,20 @@ def _funding_url(key, val):
         "liberapay": f"https://liberapay.com/{val}",
         "buy_me_a_coffee": f"https://buymeacoffee.com/{val}",
         "polar": f"https://polar.sh/{val}",
-    }.get(key, val if val.startswith("http") else "")
+    }.get(key, _https_only(val))
+
+
+def _https_only(val):
+    """Custom FUNDING.yml entries: accept only well-formed https URLs.
+    http:// and free-form strings that merely start with 'http' are rejected
+    (audit: open-redirect surface in the funding pill)."""
+    if not isinstance(val, str) or not val.startswith("https://"):
+        return ""
+    try:
+        q = urllib.parse.urlparse(val)
+        return val if (q.scheme == "https" and q.netloc) else ""
+    except Exception:  # noqa: BLE001
+        return ""
 
 
 def repo_extra(fn, token):
@@ -187,64 +212,98 @@ def repo_extra(fn, token):
     }, False
 
 
-def enrich_repos(projects, token, max_enrich=200, keep_headroom=200, log=print):
+def _enrich_one(p, token):
+    """Enrich a single project in place. Returns (ok: bool, limited: bool)."""
+    fn = p.get("full_name")
+    if not fn:
+        return False, False
+    cc, limited = contributors_count(fn, token)
+    if limited:
+        return False, True
+    if cc is not None:
+        p["contributors"] = cc
+    rel, limited = releases_info(fn, token)
+    if limited:
+        return False, True
+    p.update(rel)
+    total52, spark, limited = commit_activity(fn, token)
+    if limited:
+        return False, True
+    if total52 is None:
+        p["activity_pending"] = True   # GitHub still computing — retried once
+    else:
+        p["commits_52w"], p["activity_spark"] = total52, spark
+    plats, purl, limited = funding(fn, token)
+    if limited:
+        return False, True
+    p["funding_platforms"], p["funding_url"] = plats, purl
+    extra, limited = repo_extra(fn, token)
+    if limited:
+        return False, True
+    p.update(extra)
+    p["enriched"] = True
+    return True, False
+
+
+def enrich_repos(projects, token, max_enrich=200, keep_headroom=200, log=print,
+                 workers=4):
     """Enrich projects in place (highest-scoring first). Returns a stats dict.
 
-    Stops early if the remaining rate-limit budget approaches keep_headroom, so
-    the run never exhausts the token. Repos left un-enriched keep enriched=False.
+    v5: runs on a small thread pool (stdlib concurrent.futures) — enrichment is
+    pure I/O wait, so 4 polite workers cut wall time ~3-4x while each worker
+    keeps the same per-request spacing as before. A shared, locked budget stops
+    every worker once the remaining rate limit approaches keep_headroom, so the
+    run never exhausts the token. Repos left un-enriched keep enriched=False.
     """
+    import concurrent.futures
+    import threading
+
     ordered = sorted(projects, key=lambda p: -(p.get("_score") or p.get("stars") or 0))
+    for p in ordered:
+        p.setdefault("enriched", False)
+    todo = ordered[:max_enrich]
+
     remaining = rate_remaining(token)
     if remaining is not None:
-        log(f"  enrich: rate-limit remaining={remaining}")
-    enriched = errors = 0
-    stopped = False
-    for i, p in enumerate(ordered):
-        p.setdefault("enriched", False)
-        if i >= max_enrich or stopped:
-            break
-        if remaining is not None and remaining <= keep_headroom:
-            log(f"  enrich: stopping early to preserve budget (remaining={remaining})")
-            break
-        fn = p.get("full_name")
-        if not fn:
-            continue
+        log(f"  enrich: rate-limit remaining={remaining}, workers={workers}")
+
+    lock = threading.Lock()
+    state = {"remaining": remaining, "enriched": 0, "errors": 0, "stopped": False}
+
+    def budget_ok():
+        with lock:
+            if state["stopped"]:
+                return False
+            if state["remaining"] is not None and state["remaining"] <= keep_headroom:
+                state["stopped"] = True
+                log(f"  enrich: stopping early to preserve budget "
+                    f"(remaining={state['remaining']})")
+                return False
+            return True
+
+    def work(p):
+        if not budget_ok():
+            return
         try:
-            cc, limited = contributors_count(fn, token)
-            if limited:
-                stopped = True
-                break
-            if cc is not None:
-                p["contributors"] = cc
-            rel, limited = releases_info(fn, token)
-            if limited:
-                stopped = True
-                break
-            p.update(rel)
-            total52, spark, limited = commit_activity(fn, token)
-            if limited:
-                stopped = True
-                break
-            if total52 is None:
-                p["activity_pending"] = True   # GitHub still computing — retried once
-            else:
-                p["commits_52w"], p["activity_spark"] = total52, spark
-            plats, purl, limited = funding(fn, token)
-            if limited:
-                stopped = True
-                break
-            p["funding_platforms"], p["funding_url"] = plats, purl
-            extra, limited = repo_extra(fn, token)
-            if limited:
-                stopped = True
-                break
-            p.update(extra)
-            p["enriched"] = True
-            enriched += 1
-            if remaining is not None:
-                remaining -= 5
+            ok, limited = _enrich_one(p, token)
+            with lock:
+                if limited:
+                    state["stopped"] = True
+                elif ok:
+                    state["enriched"] += 1
+                if state["remaining"] is not None:
+                    state["remaining"] -= 5
         except Exception as exc:  # noqa: BLE001  (never fail the whole scan)
-            errors += 1
-            log(f"  enrich: {fn} failed: {type(exc).__name__}")
-    return {"enriched": enriched, "errors": errors, "attempted": min(len(ordered), max_enrich),
-            "rate_limit_stop": stopped}
+            with lock:
+                state["errors"] += 1
+            log(f"  enrich: {p.get('full_name')} failed: {type(exc).__name__}")
+
+    if workers <= 1 or len(todo) <= 2:
+        for p in todo:
+            work(p)
+    else:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as ex:
+            list(ex.map(work, todo))
+
+    return {"enriched": state["enriched"], "errors": state["errors"],
+            "attempted": len(todo), "rate_limit_stop": state["stopped"]}

@@ -124,3 +124,40 @@ denylist in `data/seeds.json`. Removal requests are honoured.
 The radar never stars, follows, or comments on any repository. It reads public
 metadata and publishes a map. Any optional digest issue is created only inside
 this repository and never interacts with external projects.
+
+
+## v5 pipeline mechanics
+
+**Saturated-topic recovery.** GitHub search caps what one `sort=updated` pull
+returns. When `total_count` exceeds what we pulled for a topic, the scanner
+issues **one** extra `sort=stars` page for that topic. Recovered items pass
+through **the same `ingest()` gate** (self/dedup, exclusions, fork/archived,
+`min_stars`, relevance) as the main scan — recovery widens coverage, never
+loosens inclusion. The count is published as `recovered_by_stars_pass`.
+
+**Inclusion floor.** `min_stars` is **2**: one self-star no longer qualifies,
+while genuinely young projects still surface quickly. Multi-word neuro
+keywords also carry hyphen variants (`brain-machine`, `spike-sorting`,
+`motor-imagery`) so GitHub topic syntax matches as well as prose.
+
+**Categorisation notes.** Category keywords may match a whole topic or a
+hyphen-token inside one (so `eeg` matches `eeg-analysis`). Seed keywords are
+curated to contain no generic tokens, which is what keeps token matching
+safe; the deterministic tie-break is unchanged. The AxonOS-relevance
+dimensions use **word-boundary** matching ('api' does not fire inside
+'rapid').
+
+**Parallel enrichment etiquette.** Enrichment runs on 4 threads sharing one
+locked budget; each worker keeps the same per-request spacing as the serial
+version, and every worker stops as soon as the remaining rate limit
+approaches the reserve. A 429 anywhere stops everyone.
+
+**`data/weekly.json`.** After the history snapshot is appended, the scanner
+derives a ~1 KB digest — deltas vs the closest snapshot ≤ 8 days back, top
+risers/fallers by `stars_delta_7d`, and this scan's entrants. The map strip,
+the stats page and the report all read this one file, so every surface shows
+identical numbers.
+
+**Builders owner data.** For the small Builders list only, the scanner reads
+each owner's public profile once (`type`, `followers`). This is display
+context, not a ranking input — builder ordering is unchanged.

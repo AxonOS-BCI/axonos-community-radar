@@ -1,5 +1,8 @@
 name: CI
 
+# Six independent gates. Every push to main must turn the whole wall green —
+# the checks page IS the quality statement for this repository.
+
 on:
   push:
     branches: [main]
@@ -10,22 +13,17 @@ permissions:
   contents: read
 
 jobs:
-  validate:
-    name: Validate radar
+  data-integrity:
+    name: Data integrity
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744  # v4
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
 
       - name: JSON is valid
         run: |
           python3 -c "import json;json.load(open('data/seeds.json'));print('seeds.json ok')"
           python3 -c "import json;json.load(open('data/radar.json'));print('radar.json ok')"
-
-      - name: stats integrity + JS
-        run: |
-          for s in 'Content-Security-Policy' 'id="growth"'; do grep -q "$s" stats.html || { echo "stats.html missing: $s"; exit 1; }; done
-          grep -q 'function safeUrl' assets/stats.js && grep -q "'./data/radar.json'" assets/stats.js || { echo "stats.js missing safeUrl/data"; exit 1; }
-          node --check assets/stats.js && echo "stats ok"
 
       - name: Validate published radar.json
         run: python3 scripts/validate_payload.py data/radar.json
@@ -52,9 +50,6 @@ jobs:
       - name: Feed is well-formed
         run: python3 -c "import xml.dom.minidom as m;m.parse('feed.xml');print('feed.xml ok')"
 
-      - name: Python syntax
-        run: python3 -m py_compile scripts/radar.py scripts/enrich.py scripts/build_report.py scripts/publish_data.py scripts/validate_payload.py scripts/publish_stats_issue.py scripts/health_check.py
-
       - name: first_seen sanity (no future timestamps)
         run: |
           python3 - <<'PY'
@@ -67,49 +62,142 @@ jobs:
           print(f"first_seen ok ({len(fs)} entries, none in the future)")
           PY
 
+  python-quality:
+    name: Python quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+
+      - name: Python syntax
+        run: python3 -m py_compile scripts/radar.py scripts/enrich.py scripts/build_report.py scripts/publish_data.py scripts/validate_payload.py scripts/publish_stats_issue.py scripts/health_check.py
+
       - name: Unit tests
         run: |
           pip install -r requirements-ci.txt --quiet
           python3 -m pytest tests/ -q
 
-      - name: HTML integrity + security
+  frontend:
+    name: Frontend integrity
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+
+      - name: HTML integrity + strict CSP
         run: |
           grep -qi '<!doctype html>' index.html
           grep -q '<canvas id="radar"' index.html
           grep -q "'./data/radar.json'" assets/app.js
-          grep -q 'Content-Security-Policy' index.html
-          grep -q 'function safeUrl' assets/app.js
           grep -q 'og:image' index.html
+          grep -q 'function safeUrl' assets/app.js
           for f in index.html stats.html report.html; do grep -q "script-src 'self';" "$f" && grep -q "style-src 'self';" "$f" && ! grep -q "unsafe-inline" "$f" || { echo "CSP not strict: $f"; exit 1; }; done
           echo "strict CSP (no unsafe-inline) ok"
 
-      - name: Inline JS syntax
+      - name: stats page integrity
+        run: |
+          for s in 'Content-Security-Policy' 'id="growth"'; do grep -q "$s" stats.html || { echo "stats.html missing: $s"; exit 1; }; done
+          grep -q 'function safeUrl' assets/stats.js && grep -q "'./data/radar.json'" assets/stats.js || { echo "stats.js missing safeUrl/data"; exit 1; }
+          echo "stats ok"
+
+      - name: JS syntax
         run: |
           node --check assets/app.js
           node --check assets/stats.js
 
-      - name: Required files
+      - name: Functional UI smoke (jsdom)
         run: |
-          for f in README.md LICENSE VERSION index.html report.html assets/app.js assets/app.css assets/report.css assets/stats.js stats.html scripts/build_report.py scripts/enrich.py scripts/health_check.py feed.xml og-image.png CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md CITATION.cff data/seeds.json data/radar.schema.json data/curated.json docs/METHODOLOGY.md docs/DATA_MODEL.md docs/THREAT_MODEL.md docs/INCIDENT_RESPONSE.md docs/RETENTION.md docs/SBOM.md .github/dependabot.yml .github/workflows/health.yml scripts/radar.py scripts/publish_data.py scripts/validate_payload.py scripts/publish_stats_issue.py tests/test_radar.py; do
-            test -f "$f" || { echo "missing $f"; exit 1; }
+          npm install --no-save --silent jsdom
+          node tests/ui_smoke.mjs
+
+  report-build:
+    name: Report builds from live data
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+
+      - name: Build report.html and verify sections
+        run: |
+          python3 scripts/build_report.py
+          for sec in 'id="movement"' 'id="health"' 'id="licenses"' 'id="pipeline"'; do
+            grep -q "$sec" report.html || { echo "report missing $sec"; exit 1; }
           done
+          echo "report sections ok"
+
+  security:
+    name: Security gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
 
       - name: Secret scan
         run: |
-          if grep -rEn 'ghp_[A-Za-z0-9]{20,}|-----BEGIN [A-Z ]*PRIVATE KEY-----' --include='*.py' --include='*.html' --include='*.md' --include='*.json' .; then
+          if grep -rEn --exclude-dir=node_modules 'ghp_[A-Za-z0-9]{20,}|-----BEGIN [A-Z ]*PRIVATE KEY-----' --include='*.py' --include='*.html' --include='*.md' --include='*.json' .; then
             echo "potential secret found"; exit 1
           fi
           echo "no secrets"
 
-      - name: Line endings (no CRLF)
+      - name: SAST (bandit)
         run: |
-          if grep -rlP '\r$' --include='*.py' --include='*.html' --include='*.md' --include='*.json' --include='*.yml' .; then
-            echo "CRLF found"; exit 1
-          fi
-          echo "LF ok"
+          pip install bandit --quiet
+          # Skips are deliberate design, each reviewed in docs/THREAT_MODEL.md:
+          #   B101 assert            — validate() gates data with asserts, CI-enforced
+          #   B110/B112 try/except   — resilience: a bad snapshot/entry must never kill the pipeline
+          #   B310 urllib.urlopen    — every URL is allowlisted (api.github.com / *.github.io)
+          #   B406 xml.sax escape    — used to ESCAPE output for the RSS feed, never to parse XML
+          bandit -q -r scripts/ -s B101,B110,B112,B310,B406
+          echo "bandit clean"
 
       - name: Actions are pinned to a commit SHA
         run: |
           bad="$(grep -RhoE 'uses: [^ ]+@[A-Za-z0-9._/-]+' .github/workflows | sed -E 's/[[:space:]]+#.*//' | grep -vE '@[0-9a-f]{40}$' || true)"
           if [ -n "$bad" ]; then echo "Unpinned actions:"; echo "$bad"; exit 1; fi
           echo "all actions SHA-pinned"
+
+      - name: Line endings (no CRLF)
+        run: |
+          if grep -rlP --exclude-dir=node_modules '\r$' --include='*.py' --include='*.html' --include='*.md' --include='*.json' --include='*.yml' .; then
+            echo "CRLF found"; exit 1
+          fi
+          echo "LF ok"
+
+  release-hygiene:
+    name: Release hygiene
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+
+      - name: Required files
+        run: |
+          for f in README.md LICENSE VERSION index.html report.html assets/app.js assets/app.css assets/report.css assets/stats.js stats.html scripts/build_report.py scripts/enrich.py scripts/health_check.py feed.xml og-image.png CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md CITATION.cff data/seeds.json data/radar.schema.json data/curated.json docs/METHODOLOGY.md docs/DATA_MODEL.md docs/THREAT_MODEL.md docs/INCIDENT_RESPONSE.md docs/RETENTION.md docs/SBOM.md .github/dependabot.yml .github/workflows/health.yml .github/workflows/pages.yml .nojekyll tests/ui_smoke.mjs scripts/radar.py scripts/publish_data.py scripts/validate_payload.py scripts/publish_stats_issue.py tests/test_radar.py; do
+            test -f "$f" || { echo "missing $f"; exit 1; }
+          done
+          echo "all required files present"
+
+      - name: Version consistency (VERSION == badge == CITATION == bibtex == CHANGELOG)
+        run: |
+          python3 - <<'PY'
+          import re, sys
+          v = open("VERSION").read().strip()
+          readme = open("README.md", encoding="utf-8").read()
+          cff = open("CITATION.cff", encoding="utf-8").read()
+          chlog = open("CHANGELOG.md", encoding="utf-8").read()
+          errs = []
+          if f"version-{v}-" not in readme: errs.append(f"README badge != {v}")
+          m = re.search(r"version = \{([^}]+)\}", readme)
+          if not m or m.group(1) != v: errs.append(f"README bibtex {m.group(1) if m else '?'} != {v}")
+          m = re.search(r"^version: (.+)$", cff, re.M)
+          if not m or m.group(1).strip() != v: errs.append(f"CITATION.cff != {v}")
+          m = re.search(r"^## \[([0-9.]+)\]", chlog, re.M)
+          if not m or m.group(1) != v: errs.append(f"CHANGELOG top {m.group(1) if m else '?'} != {v}")
+          if errs: print("\n".join(errs)); sys.exit(1)
+          print(f"version {v} consistent across VERSION/README badge/bibtex/CITATION/CHANGELOG")
+          PY
+
+      - name: Licence sanity (MIT text intact)
+        run: |
+          grep -q "MIT License" LICENSE && grep -q "Denis Yermakou" LICENSE || { echo "LICENSE malformed"; exit 1; }
+          echo "LICENSE ok"

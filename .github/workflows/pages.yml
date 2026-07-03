@@ -1,0 +1,71 @@
+name: Deploy Pages
+
+# Root-cause fix for the red "pages-build-deployment" runs: publishing a scan
+# used to land ~6 rapid data commits, each queueing a Jekyll branch build; the
+# superseded builds were reported as failures. This workflow deploys the site
+# as ONE artifact per scan (after the radar finishes) or per code push — no
+# Jekyll, no build storm, no cosmetic red X.
+#
+# One-time setup: repository Settings → Pages → Source = "GitHub Actions".
+
+on:
+  workflow_run:
+    workflows: ["AxonOS Radar"]
+    types: [completed]
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "stats.html"
+      - "report.html"
+      - "assets/**"
+      - "data/**"
+      - "feed.xml"
+      - "og-image.png"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Build and deploy site artifact
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # For workflow_run, deploy only after a successful scan; direct pushes and
+    # manual dispatches always deploy.
+    if: >
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+        with:
+          ref: main   # workflow_run checks out the default sha; be explicit
+
+      - name: Assemble site (public files only — never .git or tooling)
+        run: |
+          mkdir -p _site/data _site/assets
+          cp index.html stats.html report.html feed.xml og-image.png _site/
+          cp -r assets/. _site/assets/
+          cp data/*.json _site/data/
+          touch _site/.nojekyll
+          echo "site files: $(find _site -type f | wc -l)"
+
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d  # v6.0.0
+
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9  # v5.0.0
+        with:
+          path: _site
+
+      - id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128  # v5.0.0

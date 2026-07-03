@@ -81,8 +81,18 @@ def norm_json(txt):
         return txt
 
 
+def norm_weekly(txt):
+    try:
+        d = json.loads(txt)
+        d.pop("generated_at", None)
+        return json.dumps(d, sort_keys=True)
+    except Exception:  # noqa: BLE001
+        return txt
+
+
 NORMALIZERS = {"data/radar.json": norm_radar, "data/history.json": norm_json,
-               "feed.xml": norm_feed, "data/last_run.json": norm_last_run}
+               "feed.xml": norm_feed, "data/last_run.json": norm_last_run,
+               "data/weekly.json": norm_weekly}
 
 
 def put(path, message):
@@ -118,6 +128,8 @@ def main():
     status_changed = put("data/status.json", "radar: update status [skip ci]")
     if os.path.exists("data/last_run.json"):
         put("data/last_run.json", "radar: record run outcome [skip ci]")
+    if os.path.exists("data/weekly.json"):
+        put("data/weekly.json", "radar: refresh weekly digest [skip ci]")
     if not (changed or hist_changed or fs_changed or feed_changed or report_changed or status_changed):
         print("No meaningful change — nothing committed.")
 

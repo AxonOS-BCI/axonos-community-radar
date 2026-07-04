@@ -8,7 +8,7 @@
 
 [![Live](https://img.shields.io/badge/live-axonos--bci.github.io-a78bfa?style=flat-square)](https://axonos-bci.github.io/axonos-community-radar/)
 [![CI](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-5.0.1-0a4a8f?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-5.0.2-0a4a8f?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-475569?style=flat-square)](LICENSE)
 [![Data](https://img.shields.io/badge/data-refreshed%20every%203h-2dd4ff?style=flat-square)](#-how-a-project-gets-on-the-radar)
 [![Runtime deps](https://img.shields.io/badge/runtime%20deps-zero-34d399?style=flat-square)](#-architecture)
@@ -63,11 +63,13 @@ The open BCI field is scattered across hundreds of repositories with no single, 
 | **Builders** | A leaderboard of *owners with 2+ tracked projects* — total stars, active projects, and their focus areas. The people, not just the repos. |
 | **Methodology** | The inclusion rule, the four evidence tiers, and the scoring formula — in the product, not buried in docs. |
 
-## ✨ &nbsp;New in 5.0.0 — the field, in motion
+## ✨ &nbsp;New in 5.0.x — the field, in motion
 
-A major release: the pipeline got faster and fairer, the UI became a shareable
-instrument, and every page now renders through DOM-safe code with zero
-`innerHTML` on data paths.
+A major release line: the pipeline got faster and fairer, the UI became a
+shareable instrument, every page renders through DOM-safe code with zero
+`innerHTML` on data paths, and the map carries an optional Dogecoin support
+card (the radar has no paywalled features — funding just keeps it free for
+everyone).
 
 **Pipeline**
 * **Parallel enrichment** — a 4-worker stdlib thread pool with a shared, locked API budget cuts scan wall-time ~3–4× at the same politeness per connection.
@@ -136,12 +138,12 @@ axonos-community-radar/
 ├── scripts/
 │   ├── radar.py            # discovery → relevance → evidence tier → categorise → score (stdlib only)
 │   ├── publish_data.py     # commits data via the GitHub API only when it meaningfully changes
-│   ├── publish_stats_issue.py  # upserts ONE living stats issue every 6h
+│   ├── publish_stats_issue.py  # upserts ONE living stats issue every scan
 │   └── validate_payload.py # strict, dependency-free dataset validator
 ├── tests/
 │   └── test_radar.py       # relevance, categorisation, determinism, safety, regressions
 └── .github/workflows/
-    ├── radar.yml           # every 6h: scan → validate → publish → update stats issue
+    ├── radar.yml           # every 3h: scan → validate → publish → update stats issue
     └── ci.yml              # JSON/XML/Python/HTML/CSP/secret gates on every push
 ```
 
@@ -177,7 +179,7 @@ If you reference AxonOS Radar in academic or technical work, please cite it:
   title   = {{AxonOS Radar: a living map of the open brain--computer-interface field}},
   year    = {2026},
   url     = {https://github.com/AxonOS-BCI/axonos-community-radar},
-  version = {5.0.1}
+  version = {5.0.2}
 }
 ```
 

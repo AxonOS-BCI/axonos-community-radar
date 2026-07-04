@@ -1,5 +1,20 @@
 # Changelog
 
+## [5.0.2] — 2026-07-04
+
+### Fixed
+- **Duplicate donate blocks removed** — a legacy static `.donate` card lived
+  inside the AxonOS tab while a second CSS rule collided with the new one; the
+  overlap skewed the AxonOS-view text. There is now a single JS-rendered card.
+- Version strings unified at 5.0.2 across VERSION, README (badge + bibtex),
+  CITATION, CHANGELOG, docs and both page footers (a CI gate enforces this).
+
+### Changed
+- **Premium Dogecoin support card**: gradient-ring frame, gold Ð medallion,
+  "Dogecoin" pill, Ð 100 suggestion, monospace address with one-tap Copy, and
+  a clean vertical stack on mobile. Real DOGE address wired in (card is live).
+  Wording makes the free-for-everyone stance explicit — no paywalled features.
+
 ## [5.0.1] — 2026-07-03
 
 ### Fixed

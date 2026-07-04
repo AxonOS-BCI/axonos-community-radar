@@ -257,11 +257,15 @@
   function renderDonate(){
     var host=$('donate');if(!host||!DONATE_DOGE)return;
     host.textContent='';
-    var mark=document.createElement('div');mark.className='dg-mark';mark.textContent='\u0110';host.appendChild(mark);
+    var inner=document.createElement('div');inner.className='dg-inner';
+    var mark=document.createElement('div');mark.className='dg-mark';mark.textContent='\u0110';inner.appendChild(mark);
     var body=document.createElement('div');body.className='dg-body';
-    var h=document.createElement('div');h.className='dg-t';h.textContent='Fuel the radar';body.appendChild(h);
+    var h=document.createElement('div');h.className='dg-t';
+    h.appendChild(document.createTextNode('Fuel the radar'));
+    var pill=document.createElement('span');pill.className='dg-pill';pill.textContent='Dogecoin';h.appendChild(pill);
+    body.appendChild(h);
     var tx=document.createElement('div');tx.className='dg-x';
-    tx.textContent='Scans every 3 hours, enrichment burns API budget, the map stays free for everyone. \u0110100 keeps every feature shipping \u2014 much scan, very open.';
+    tx.textContent='Every scan runs every 3 hours and enrichment burns API budget \u2014 the map, stats and report stay free for everyone, with no paywalled features. A \u0110100 tip keeps it all shipping.';
     body.appendChild(tx);
     var row=document.createElement('div');row.className='dg-row';
     var amt=document.createElement('span');amt.className='dg-amt';amt.textContent='\u0110 100';row.appendChild(amt);
@@ -274,7 +278,11 @@
       function fallback(){var ta=document.createElement('textarea');ta.value=DONATE_DOGE;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(ta);}
     });
     row.appendChild(btn);body.appendChild(row);
-    host.appendChild(body);
+    var note=document.createElement('span');note.className='dg-note';
+    note.textContent='DOGE only \u00b7 a voluntary donation address, not a payment for goods or services.';
+    body.appendChild(note);
+    inner.appendChild(body);
+    host.appendChild(inner);
     host.classList.remove('hidden');
   }
   function dpEl(d){var sp=document.createElement('span');

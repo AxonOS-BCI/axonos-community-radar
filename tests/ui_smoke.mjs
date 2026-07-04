@@ -121,7 +121,10 @@ assert(window.document.body.textContent.indexOf("ORG") >= 0 &&
        "builders board shows owner type and followers");
 
 // donate card: hidden with empty address (default source)
-assert($("donate").classList.contains("hidden"), "donate card hidden when no address configured");
+assert(!$("donate").classList.contains("hidden") && $("donate").textContent.indexOf("\u0110 100") >= 0,
+       "donate card visible with configured address");
+assert($("donate").querySelector(".dg-inner") && $("donate").querySelector(".dg-copy"),
+       "donate card has premium inner wrapper and copy button");
 
 // donate card: visible with an address injected the way the publish script does
 {
@@ -129,13 +132,11 @@ assert($("donate").classList.contains("hidden"), "donate card hidden when no add
   const w2 = dom2.window;
   w2.HTMLCanvasElement.prototype.getContext = () => new Proxy({}, { get: () => noop });
   w2.fetch = window.fetch;
-  w2.eval(appJs.replace("var DONATE_DOGE='';", "var DONATE_DOGE='D8gv3JcQmWkzT4yPabcdefghij123456789';"));
+  w2.eval(appJs.replace(/var DONATE_DOGE='[^']*';/, "var DONATE_DOGE='';"));
   await new Promise((r) => setTimeout(r, 40));
   const d2 = w2.document.getElementById("donate");
-  assert(!d2.classList.contains("hidden") && d2.textContent.indexOf("\u0110 100") >= 0,
-         "donate card renders with \u0110 100 when address configured");
-  assert(d2.querySelector(".dg-copy") && d2.querySelector(".dg-addr").textContent.startsWith("D"),
-         "donate card shows address and Copy button");
+  assert(d2.classList.contains("hidden"),
+         "donate card hidden when address is emptied");
 }
 
 // zero innerHTML statically (belt & braces with the refactor)

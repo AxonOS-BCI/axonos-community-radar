@@ -1,29 +1,27 @@
 name: Deploy Pages
 
-# Root-cause fix for the red "pages-build-deployment" runs: publishing a scan
-# used to land ~6 rapid data commits, each queueing a Jekyll branch build; the
-# superseded builds were reported as failures. This workflow deploys the site
-# as ONE artifact per scan (after the radar finishes) or per code push — no
-# Jekyll, no build storm, no cosmetic red X.
+# ─────────────────────────────────────────────────────────────────────────────
+# SINGLE deploy path. Root cause of the repeated "Canceling Pages deployment /
+# Unable to cancel as it's finished" failures was concurrency.cancel-in-progress
+# combined with multiple triggers: two runs overlapped, the newer tried to
+# cancel the older, the older finished mid-cancel, and the whole run errored.
 #
-# One-time setup: repository Settings → Pages → Source = "GitHub Actions".
+# Fix, definitively:
+#   • ONE trigger for automatic deploys: workflow_run after "AxonOS Radar".
+#     No push trigger (site files land via the scan's own commit, which fires
+#     workflow_run anyway) → the two-source overlap cannot happen.
+#   • concurrency cancel-in-progress: FALSE → deploys queue, never cancel each
+#     other. A queued deploy simply waits; nothing errors.
+#   • exactly one deploy-pages step (the old "retry" step spawned a SECOND
+#     deployment inside the same job — another overlap source). Removed.
+#
+# One-time setup: repo Settings → Pages → Source = "GitHub Actions".
+# ─────────────────────────────────────────────────────────────────────────────
 
 on:
   workflow_run:
     workflows: ["AxonOS Radar"]
     types: [completed]
-  push:
-    branches: [main]
-    # Only human-edited site files: everything the scan generates
-    # (data/**, feed.xml, report.html) is already covered by workflow_run —
-    # listing it here too made every scan race two deploys against each
-    # other, and the loser showed up as a red ✗.
-    paths:
-      - "index.html"
-      - "stats.html"
-      - "assets/**"
-      - "og-image.png"
-      - ".github/workflows/pages.yml"
   workflow_dispatch:
 
 permissions:
@@ -31,19 +29,20 @@ permissions:
   pages: write
   id-token: write
 
+# Queue deploys; never cancel a running one. This is the opposite of the old
+# setting and is what stops the "unable to cancel, it's finished" error.
 concurrency:
-  group: pages
-  cancel-in-progress: true
+  group: pages-deploy
+  cancel-in-progress: false
 
 jobs:
   deploy:
     name: Build and deploy site artifact
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # For workflow_run, deploy only after a successful scan; direct pushes and
-    # manual dispatches always deploy.
+    # Automatic runs deploy only after a green scan; manual dispatch always does.
     if: >
-      github.event_name != 'workflow_run' ||
+      github.event_name == 'workflow_dispatch' ||
       github.event.workflow_run.conclusion == 'success'
     environment:
       name: github-pages
@@ -51,7 +50,7 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
         with:
-          ref: main   # workflow_run checks out the default sha; be explicit
+          ref: main   # workflow_run checks out the triggering sha; be explicit
 
       - name: Assemble site (public files only — never .git or tooling)
         run: |
@@ -69,13 +68,4 @@ jobs:
           path: _site
 
       - id: deployment
-        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128  # v5.0.0
-        continue-on-error: true   # Pages occasionally answers "try again later" — so we do
-
-      - name: Retry deploy once (Pages transient)
-        if: steps.deployment.outcome == 'failure'
-        run: sleep 25
-
-      - id: deployment_retry
-        if: steps.deployment.outcome == 'failure'
         uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128  # v5.0.0

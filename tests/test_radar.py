@@ -562,3 +562,66 @@ def test_schema_rejects_bad_html_url():
         raise AssertionError("schema accepted owner-less github URL")
     except jsonschema.ValidationError:
         pass
+
+
+# ════════════════════════ v5.0.3: ecosystem ════════════════════════
+
+def test_ecosystem_record_shape():
+    import ecosystem
+    data = {"full_name": "AxonOS-org/axonos-kernel",
+            "html_url": "https://github.com/AxonOS-org/axonos-kernel",
+            "description": "kernel", "topics": ["Rust", "BCI"], "stargazers_count": 0,
+            "forks_count": 0, "language": "Rust", "pushed_at": "2026-07-01T00:00:00Z",
+            "license": {"spdx_id": "MIT"}, "archived": False}
+    r = ecosystem._repo_record(data)
+    assert r["full_name"] == "AxonOS-org/axonos-kernel"
+    assert r["stars"] == 0 and r["has_license"] is True
+    assert r["topics"] == ["rust", "bci"]  # lowercased
+
+
+def test_ecosystem_graph_shared_maintainers(monkeypatch):
+    import ecosystem
+    # two repos share contributor "denis", one has an extra "ava"
+    sets = {
+        "AxonOS-org/axonos-kernel": {"denis", "ava"},
+        "AxonOS-org/axonos-protocol": {"denis"},
+    }
+    monkeypatch.setattr(ecosystem, "resolve_owner",
+                        lambda o, t: {"login": o, "type": "Organization", "name": o})
+    monkeypatch.setattr(ecosystem, "org_members", lambda o, t, limit=8: [])
+    monkeypatch.setattr(ecosystem, "repo_contributor_logins",
+                        lambda fn, t, limit=30: sets.get(fn, set()))
+    recs = [{"full_name": "AxonOS-org/axonos-kernel"},
+            {"full_name": "AxonOS-org/axonos-protocol"}]
+    g = ecosystem.build_ecosystem_graph(recs, "tok")
+    assert g["links"] and g["links"][0]["shared"] == ["denis"]
+    assert g["links"][0]["weight"] == 1
+    # denis spans 2 repos → key person
+    assert any(kp["login"] == "denis" and kp["reach"] == 2 for kp in g["key_people"])
+
+
+def test_ecosystem_anchors_flagged(monkeypatch):
+    import ecosystem
+    monkeypatch.setattr(ecosystem, "_get", lambda url, tok, accept=None: (
+        200, {"full_name": "AxonOS-org/axonos-kernel", "stargazers_count": 0,
+              "html_url": "https://github.com/AxonOS-org/axonos-kernel",
+              "license": {"spdx_id": "MIT"}}))
+    anchors = {"AxonOS-org/axonos-kernel": {"role": "Kernel", "note": "core"}}
+    recs, meta = ecosystem.fetch_anchor_repos(anchors, "tok")
+    assert meta["anchors_found"] == 1
+    assert recs[0]["ecosystem"] is True and recs[0]["ecosystem_role"] == "Kernel"
+
+
+def test_ecosystem_missing_anchor_not_faked(monkeypatch):
+    import ecosystem
+    monkeypatch.setattr(ecosystem, "_get", lambda url, tok, accept=None: (404, None))
+    recs, meta = ecosystem.fetch_anchor_repos({"o/gone": {"role": "x"}}, "tok")
+    assert recs == [] and meta["anchors_missing"] == ["o/gone"]
+
+
+def test_load_anchors_reads_curated():
+    import radar
+    a = radar.load_anchors()
+    # curated.json ships with the AxonOS anchors
+    assert any("axonos-kernel" in k.lower() for k in a), "kernel anchor missing"
+    assert all(isinstance(v, dict) and "role" in v for v in a.values())

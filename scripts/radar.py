@@ -38,6 +38,7 @@ WEEKLY = os.path.join(ROOT, "data", "weekly.json")
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # local modules win over site-packages
 import enrich  # local module: scripts/enrich.py
+import ecosystem  # local module: scripts/ecosystem.py
 
 TOKEN = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
 SELF_REPO = os.environ.get("GITHUB_REPOSITORY", "AxonOS-BCI/axonos-community-radar").lower()
@@ -591,6 +592,18 @@ def compute_score(p):
     return round(base + bonus, 3)
 
 
+def load_anchors():
+    """Read _anchors from curated.json: {"owner/repo": {role,note,group}}."""
+    path = os.path.join(ROOT, "data", "curated.json")
+    try:
+        with open(path, encoding="utf-8") as fh:
+            data = json.load(fh)
+    except Exception:  # noqa: BLE001
+        return {}
+    anchors = data.get("_anchors", {})
+    return {k: v for k, v in anchors.items() if isinstance(v, dict)}
+
+
 def load_curated():
     path = os.path.join(ROOT, "data", "curated.json")
     try:
@@ -765,6 +778,46 @@ def main():
         estats = enrich.enrich_repos(candidates, TOKEN, max_enrich=int(seeds.get("enrich_max", 200)))
         print(f"Enrichment: {estats}")
     rate_end = enrich.rate_remaining(TOKEN)
+    # --- Ecosystem anchors: force-include AxonOS + field-defining repos ---
+    # Fetched BY NAME so they appear even with 0 stars / no topics. Flagged
+    # ecosystem=true, never star-boosted. A flagship radar must show its own
+    # field. Anchors already found by search are upgraded in place, not dup'd.
+    anchors = load_anchors()
+    eco_graph = {}
+    if anchors:
+        by_name = {(r.get("full_name") or "").lower(): r for r in candidates}
+        anchor_recs, eco_meta = ecosystem.fetch_anchor_repos(anchors, TOKEN)
+        print(f"Ecosystem anchors: {eco_meta}")
+        for rec in anchor_recs:
+            key = rec["full_name"].lower()
+            existing = by_name.get(key)
+            if existing:
+                existing["ecosystem"] = True
+                existing["ecosystem_role"] = rec.get("ecosystem_role", "")
+                existing["ecosystem_note"] = rec.get("ecosystem_note", "")
+                existing["ecosystem_group"] = rec.get("ecosystem_group", "AxonOS")
+            else:
+                d = days_since(rec.get("pushed_at") or "", snap)
+                upd = days_since(rec.get("updated_at") or rec.get("pushed_at") or "", snap)
+                fs = fseen.get(rec["full_name"]) or snap_iso
+                fseen[rec["full_name"]] = fs
+                try:
+                    isnew = (snap - datetime.fromisoformat(fs)).days <= new_days
+                except Exception:  # noqa: BLE001
+                    isnew = False
+                rec.update({"days_since_push": d, "active": d <= 30,
+                            "community_active": min(d, upd) <= 30,
+                            "category": categorise(rec, categories),
+                            "first_seen": fs, "is_new": isnew})
+                candidates.append(rec)
+                seen_lc.add(key)
+        fresh = [r for r in candidates if r.get("ecosystem") and not r.get("enriched")]
+        if fresh and seeds.get("enrich", True):
+            enrich.enrich_repos(fresh, TOKEN, max_enrich=len(fresh))
+        eco_present = [r for r in candidates if r.get("ecosystem")]
+        if eco_present:
+            eco_graph = ecosystem.build_ecosystem_graph(eco_present, TOKEN)
+
     merge_curated(candidates)              # honest, source-cited overrides
     for r in candidates:
         r["_score"] = compute_score(r)     # richer score, applied to every project
@@ -773,7 +826,11 @@ def main():
     excluded_archived = [r for r in candidates if r.get("archived") or r.get("disabled")]
     candidates = [r for r in candidates if not (r.get("archived") or r.get("disabled"))]
     candidates.sort(key=lambda x: x["_score"], reverse=True)
-    out = candidates[:max_projects]
+    # Ecosystem anchors are guaranteed a slot regardless of score rank.
+    eco = [r for r in candidates if r.get("ecosystem")]
+    rest = [r for r in candidates if not r.get("ecosystem")]
+    eco_keys = {r["full_name"] for r in eco}
+    out = eco + [r for r in rest if r["full_name"] not in eco_keys][:max(0, max_projects - len(eco))]
 
     history = load_history()
     builders, counts = enrich_v3(out, seeds, snap, history)
@@ -809,6 +866,8 @@ def main():
                                  "and legal domicile, when shown, are hand-curated and source-cited.")},
         "enrichment": estats,
         "counts": counts,
+        "ecosystem": eco_graph,
+        "ecosystem_count": sum(1 for r in out if r.get("ecosystem")),
         "projects": out,
         "builders": builders,
     }

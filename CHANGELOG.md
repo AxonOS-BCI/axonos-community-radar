@@ -1,5 +1,39 @@
 # Changelog
 
+## [5.0.3] — 2026-07-04
+
+A flagship release: the radar now shows **its own field**, maps the **people
+and connections** behind the ecosystem, and the Pages deploy is fixed at the
+root so it stops failing.
+
+### Added
+- **AxonOS in its own radar.** Ecosystem anchor repos (the AxonOS kernel,
+  protocol, consent, standard, signal-pipeline, and this radar) are now
+  force-included **by name** via `scripts/ecosystem.py` — so they appear even
+  with zero stars or no topics — flagged `ecosystem: true` with an honest role,
+  **never a fake star boost**. A flagship radar must not omit its own project.
+- **Ecosystem constellation** (`#ecosystem` on the map): the maintaining
+  org/user profile (type, location, followers, site), the **people** behind it
+  (public org members), **contributors who build across multiple ecosystem
+  repos**, and **shared-maintainer links** between repos — all live from the
+  public GitHub API, every fact source-backed, nothing fabricated.
+- **Ecosystem project cards** carry a cyan ◈ AxonOS badge and a one-line role.
+- Payload gains an `ecosystem` graph (`owners`, `links`, `key_people`) and
+  `ecosystem_count`.
+
+### Fixed
+- **Pages deploy failing repeatedly ("Unable to cancel deployment as it's
+  finished").** Root cause: `concurrency.cancel-in-progress: true` plus
+  multiple triggers made overlapping deploys cancel each other, and a deploy
+  that finished mid-cancel errored the whole run. Definitive fix: a **single**
+  automatic trigger (`workflow_run` after the scan), **`cancel-in-progress:
+  false`** so deploys queue instead of cancelling, and removal of the second
+  in-job "retry" deploy step that was itself a second deployment. One clean
+  deploy per scan.
+
+### Changed
+- Version chips and all version strings unified at 5.0.3 (CI gate enforces it).
+
 ## [5.0.2] — 2026-07-04
 
 ### Fixed

@@ -407,6 +407,47 @@ def build(radar, history=None, status=None, weekly=None):
           f'<div class="l">{label}</div></div>')
     A("</div>")
 
+    # AxonOS ecosystem section — the project behind the radar, its people, links
+    eco = radar.get("ecosystem") if isinstance(radar, dict) else None
+    if isinstance(eco, dict) and eco.get("owners"):
+        A('<section id="ecosystem"><div class="sec-head"><div class="sec-k">AxonOS \u00b7 the ecosystem</div>'
+          "<h2>The project behind the radar</h2>"
+          "<p>Its repositories, the people building them, and how they connect \u2014 "
+          "live from public GitHub, every fact source-backed.</p></div>")
+        A('<div class="eco-grid">')
+        for login, o in list(eco["owners"].items())[:6]:
+            A('<div class="eco-card">')
+            A(f'<div class="eco-top"><a href="{esc(o.get("html_url"))}"><b>{esc(o.get("name") or login)}</b></a>'
+              f'<span class="eco-t">{"ORG" if o.get("type")=="Organization" else "USER"}</span></div>')
+            if o.get("bio"):
+                A(f'<div class="eco-bio">{esc(o["bio"])}</div>')
+            chips = []
+            if o.get("location"): chips.append(esc(o["location"]))
+            if o.get("followers"): chips.append(f'{o["followers"]} followers')
+            if o.get("public_repos"): chips.append(f'{o["public_repos"]} repos')
+            if chips:
+                A('<div class="eco-chips">' + "".join(f'<span>{c}</span>' for c in chips) + '</div>')
+            mem = o.get("members") or []
+            if mem:
+                A('<div class="eco-ppl"><span class="eco-lbl">People</span> ' +
+                  " ".join(f'<a href="{esc(m.get("html_url"))}">{esc(m.get("login"))}</a>' for m in mem[:8]) +
+                  '</div>')
+            A("</div>")
+        A("</div>")
+        kp = eco.get("key_people") or []
+        if kp:
+            A('<div class="eco-cross"><span class="eco-lbl">Building across the stack</span> ' +
+              " ".join(f'<span class="eco-kp">{esc(k.get("login"))} <i>{k.get("reach")}</i></span>' for k in kp[:12]) +
+              '</div>')
+        lk = eco.get("links") or []
+        if lk:
+            A('<div class="eco-lk"><span class="eco-lbl">Shared maintainers</span><ul>')
+            for l in lk[:6]:
+                a_ = (l.get("a") or "").split("/")[-1]; b_ = (l.get("b") or "").split("/")[-1]
+                A(f'<li>{esc(a_)} \u2194 {esc(b_)} <i>({l.get("weight")})</i></li>')
+            A("</ul></div>")
+        A("</section>")
+
     # movement band — how the field moved over ~the last week (real history)
     if mv:
         A('<section id="movement"><div class="sec-head"><div class="sec-k">Momentum \u00b7 field level</div>'

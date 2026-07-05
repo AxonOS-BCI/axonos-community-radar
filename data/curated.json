@@ -1,14 +1,44 @@
 {
-  "_README": "Hand-curated, SOURCE-CITED facts that GitHub does not expose (money raised, funding round, legal name, domicile). This is the ONLY place such data may enter the radar. Every entry MUST cite a real source in 'funding_source'. Never estimate, infer, or fabricate — an empty file is correct until a value is verified. Keys are 'owner/repo' (case-insensitive); keys beginning with '_' are ignored by the loader.",
-  "_schema_example": {
-    "owner/repo": {
-      "funding_raised_usd": 0,
-      "funding_round": "Seed | Series A | Grant",
-      "funding_source": "https://source-url  (REQUIRED citation)",
-      "org_legal_name": "Registered legal entity",
-      "org_domicile": "Country of registration",
-      "org_founded": "YYYY",
-      "curated_note": "Any caveat"
+  "_README": "Hand-curated, SOURCE-CITED facts that GitHub does not expose. Two roles: (1) '_anchors' lists ecosystem repos force-included by scripts/ecosystem.py and flagged ecosystem=true (NEVER given a fake star boost) — each with a short honest role/note; (2) top-level 'owner/repo' keys carry source-cited facts merged by merge_curated() only if present here. Keep TRUE: every claim independently checkable. Keys beginning with '_' (except _anchors) are ignored by the loader.",
+
+  "_anchors": {
+    "AxonOS-org/axonos-kernel": {
+      "role": "Real-time neural OS kernel",
+      "note": "Hard real-time scheduling core of the AxonOS neural operating system.",
+      "group": "AxonOS"
+    },
+    "AxonOS-org/axonos-protocol": {
+      "role": "BCI-to-BCI mesh protocol",
+      "note": "Wire protocol and reference implementation for neural device meshing.",
+      "group": "AxonOS"
+    },
+    "AxonOS-org/axonos-consent": {
+      "role": "Protocol-level consent enforcement",
+      "note": "MMP Consent Extension: consent enforced at the connection layer.",
+      "group": "AxonOS"
+    },
+    "AxonOS-org/axonos-standard": {
+      "role": "Specifications & conformance",
+      "note": "The AxonOS standard, conformance tiers and test vectors.",
+      "group": "AxonOS"
+    },
+    "AxonOS-org/axonos-signal-pipeline": {
+      "role": "Deterministic signal pipeline",
+      "note": "no_std deterministic EEG / neural signal processing pipeline.",
+      "group": "AxonOS"
+    },
+    "AxonOS-BCI/axonos-community-radar": {
+      "role": "This radar",
+      "note": "The instrument you are looking at: a live map of the open BCI field.",
+      "group": "AxonOS"
     }
+  },
+
+  "AxonOS-org/axonos-kernel": {
+    "org_legal_name": "The AxonOS Project",
+    "org_domicile": "Singapore",
+    "funding_round": "Pre-seed",
+    "funding_source": "https://axonos.org",
+    "curated_note": "Open-source real-time neural OS for brain-computer interfaces."
   }
 }

@@ -15,6 +15,12 @@ const FIXTURE = {
   generated_at: "2026-07-03T00:17:00+00:00",
   counts: { total: 4, active_30d: 3, new: 1, rising: 1 },
   projects: [
+    { full_name: "AxonOS-org/axonos-kernel", html_url: "https://github.com/AxonOS-org/axonos-kernel",
+      description: "", category: "Protocols & OS", language: "Rust", stars: 0, forks: 0,
+      days_since_push: 2, active: true, is_new: true, rising: false, falling: false, stars_delta_7d: 0,
+      evidence_tier: "", inclusion_reason: "", topics: [], quality_flags: {},
+      license: "MIT", has_license: true, first_seen: "2026-07-01",
+      ecosystem: true, ecosystem_role: "Real-time neural OS kernel", ecosystem_note: "Kernel core" },
     { full_name: "acme/rising", html_url: "https://github.com/acme/rising",
       description: "EEG decoder", category: "Decoding & ML", language: "Python",
       stars: 500, forks: 10, days_since_push: 1, active: true, is_new: false,
@@ -41,6 +47,15 @@ const FIXTURE = {
       topics: ["privacy"], quality_flags: { possible_false_positive: true },
       license: "NOASSERTION", has_license: false, first_seen: "2026-06-20" },
   ],
+  ecosystem: {
+    owners: { "AxonOS-org": { login: "AxonOS-org", type: "Organization", name: "AxonOS",
+      bio: "Open real-time neural OS", location: "Singapore", followers: 12, public_repos: 6,
+      html_url: "https://github.com/AxonOS-org",
+      members: [{ login: "denis-y", html_url: "https://github.com/denis-y" }] } },
+    links: [{ a: "AxonOS-org/axonos-kernel", b: "AxonOS-org/axonos-protocol", weight: 2, shared: ["denis-y"] }],
+    key_people: [{ login: "denis-y", reach: 3, repos: ["AxonOS-org/axonos-kernel","AxonOS-org/axonos-protocol","AxonOS-org/axonos-consent"] }],
+    repo_count: 6
+  },
   builders: [
     { owner: "acme", html_url: "https://github.com/acme", project_count: 2,
       total_stars: 800, active_projects_30d: 1, top_categories: ["Decoding & ML"],
@@ -80,7 +95,7 @@ function assert(cond, name) {
   passed++; console.log("✓ " + name);
 }
 
-assert(q("#cards .pc").length === 4, "renders all fixture cards");
+assert(q("#cards .pc").length === 5, "renders all fixture cards");
 assert(window.document.body.textContent.indexOf("no licence") >= 0, "licence-missing marker shown");
 assert(window.document.body.textContent.indexOf("licence unclear") >= 0, "NOASSERTION marker shown");
 assert(!$("weekly").classList.contains("hidden") && $("weekly").textContent.indexOf("This week") >= 0,
@@ -108,7 +123,7 @@ search.value = "unlicensed";
 search.dispatchEvent(new window.Event("input", { bubbles: true }));
 assert(q("#cards .pc").length === 1, "search narrows results");
 window.document.dispatchEvent(new window.KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
-assert(q("#cards .pc").length === 4, "Esc clears the search");
+assert(q("#cards .pc").length === 5, "Esc clears the search");
 
 // density toggle flips body class
 $("densBtn").dispatchEvent(new window.Event("click", { bubbles: true }));
@@ -137,6 +152,19 @@ assert($("donate").querySelector(".dg-inner") && $("donate").querySelector(".dg-
   const d2 = w2.document.getElementById("donate");
   assert(d2.classList.contains("hidden"),
          "donate card hidden when address is emptied");
+}
+
+// AxonOS ecosystem: constellation renders and anchor card is flagged
+assert(!$("ecosystem").classList.contains("hidden"), "ecosystem constellation visible");
+assert($("ecosystem").textContent.indexOf("AxonOS ecosystem") >= 0, "ecosystem heading present");
+assert($("ecosystem").textContent.indexOf("Singapore") >= 0, "owner location shown");
+assert($("ecosystem").textContent.indexOf("denis-y") >= 0, "people/members shown");
+assert($("ecosystem").textContent.indexOf("Shared maintainers") >= 0, "shared-maintainer links shown");
+{
+  const ecoCard = [...q("#cards .pc")].find(c => c.textContent.indexOf("axonos-kernel") >= 0);
+  assert(ecoCard && ecoCard.classList.contains("eco"), "anchor repo card has .eco class");
+  assert(ecoCard.textContent.indexOf("AxonOS") >= 0 && ecoCard.textContent.indexOf("Real-time neural OS kernel") >= 0,
+         "anchor card shows AxonOS badge and role");
 }
 
 // zero innerHTML statically (belt & braces with the refactor)

@@ -33,6 +33,9 @@
       topics:(Array.isArray(p.topics)?p.topics:[]).slice(0,12).map(function(t){return str(t,50);}),
       license:str(p.license,40),has_license:!!p.has_license,
       quality_flags:{possible_false_positive:!!q.possible_false_positive},
+      ecosystem:!!p.ecosystem,ecosystem_role:str(p.ecosystem_role,80),
+      ecosystem_note:str(p.ecosystem_note,200),
+      org_domicile:str(p.org_domicile,60),funding_round:str(p.funding_round,40),
       first_seen:str(p.first_seen,40)};
   }
   function sanitizeBuilder(b){
@@ -43,11 +46,31 @@
       top_categories:(Array.isArray(b.top_categories)?b.top_categories:[]).slice(0,4).map(function(t){return str(t,60);}),
       owner_type:str(b.owner_type,20),followers:num(b.followers)};
   }
+  function sanitizeEcosystem(e){
+    if(!e||typeof e!=='object')return null;
+    function owner(o){if(!o||typeof o!=='object')return null;
+      return {login:str(o.login,80),type:str(o.type,20),name:str(o.name,120),
+        company:str(o.company,120),location:str(o.location,120),bio:str(o.bio,200),
+        blog:safeUrlAny(o.blog),followers:num(o.followers),public_repos:num(o.public_repos),
+        html_url:safeUrl(o.html_url),
+        members:(Array.isArray(o.members)?o.members:[]).slice(0,8).map(function(m){
+          return {login:str(m.login,80),html_url:safeUrl(m.html_url)};})};}
+    var owners={};if(e.owners&&typeof e.owners==='object'){Object.keys(e.owners).slice(0,10).forEach(function(k){var o=owner(e.owners[k]);if(o)owners[str(k,80)]=o;});}
+    return {owners:owners,
+      links:(Array.isArray(e.links)?e.links:[]).slice(0,20).map(function(l){
+        return {a:str(l.a,140),b:str(l.b,140),weight:num(l.weight),
+          shared:(Array.isArray(l.shared)?l.shared:[]).slice(0,6).map(function(x){return str(x,80);})};}),
+      key_people:(Array.isArray(e.key_people)?e.key_people:[]).slice(0,12).map(function(kp){
+        return {login:str(kp.login,80),reach:num(kp.reach),
+          repos:(Array.isArray(kp.repos)?kp.repos:[]).slice(0,10).map(function(x){return str(x,140);})};}),
+      repo_count:num(e.repo_count)};
+  }
   function sanitizeData(j){
     if(!j||typeof j!=='object')return DATA;
     var ps=(Array.isArray(j.projects)?j.projects:[]).map(sanitizeProject).filter(Boolean);
     var bs=(Array.isArray(j.builders)?j.builders:[]).map(sanitizeBuilder).filter(Boolean);
-    return {projects:ps,builders:bs,generated_at:str(j.generated_at,40)||null,
+    var eco=sanitizeEcosystem(j.ecosystem);
+    return {projects:ps,builders:bs,ecosystem:eco,generated_at:str(j.generated_at,40)||null,
       counts:(j.counts&&typeof j.counts==='object')?j.counts:{total:ps.length}};
   }
   // Dogecoin support address. Empty string = the card stays hidden.
@@ -127,6 +150,7 @@
   function evBadge(p){var t=p.evidence_tier;if(!t)return '';var e=TIER[t]||['\u2022','tl0'];
     return '<span class="ev '+e[1]+'" title="'+esc(p.inclusion_reason||t)+'">'+e[0]+'</span>';}
   function flagBadge(p){var q=p.quality_flags||{};var hit=Array.isArray(q)?q.indexOf('possible_false_positive')>=0:!!q.possible_false_positive;return hit?'<span class="flag" title="Borderline match \u2014 flagged for review">\u26A0 review</span>':'';}
+  function safeUrlAny(u){u=String(u||'');if(!u)return '';if(/^https?:\/\//.test(u))return u;if(/^[\w.-]+\.[a-z]{2,}(\/.*)?$/i.test(u))return 'https://'+u;return '';}
   function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
   function tagRowEl(p){var t=(p.topics||[]).filter(function(x){return !GENERIC[String(x).toLowerCase()];}).slice(0,3);
     if(!t.length)return null;var d=el('div','tags');t.forEach(function(x){d.appendChild(el('span','tag',x));});return d;}
@@ -145,8 +169,10 @@
       l.appendChild(em);return;}
     for(var i=0;i<arr.length;i++){(function(p){
       var col=catColor(p.category);
-      var a=el('a','pc');a.href=safeUrl(p.html_url);a.target='_blank';a.rel='noopener';a.style.setProperty('--cc',col);
-      var top=el('div','top');top.appendChild(el('span','pill',p.category));
+      var a=el('a','pc'+(p.ecosystem?' eco':''));a.href=safeUrl(p.html_url);a.target='_blank';a.rel='noopener';a.style.setProperty('--cc',col);
+      var top=el('div','top');
+      if(p.ecosystem){var eb=el('span','ecobadge','\u25C8 AxonOS');eb.title='AxonOS ecosystem project';top.appendChild(eb);}
+      top.appendChild(el('span','pill',p.category));
       var ev=evBadgeEl(p);if(ev)top.appendChild(ev);
       var fl=flagBadgeEl(p);if(fl)top.appendChild(fl);
       if(p.rising){top.appendChild(el('span','rise','\u2191 '+(p.stars_delta_7d>0?('+'+p.stars_delta_7d+'/7d'):'rising')));}
@@ -157,7 +183,8 @@
       top.appendChild(el('span','st','\u2605 '+(p.stars||0)));
       a.appendChild(top);
       a.appendChild(el('h3',null,p.full_name));
-      a.appendChild(el('p','desc',p.description||'\u2014'));
+      if(p.ecosystem&&p.ecosystem_role){a.appendChild(el('div','ecorole',p.ecosystem_role));}
+      a.appendChild(el('p','desc',p.description||(p.ecosystem&&p.ecosystem_note?p.ecosystem_note:'\u2014')));
       var tr=tagRowEl(p);if(tr)a.appendChild(tr);
       var foot=el('div','foot');
       var lng=el('span','lng');lng.appendChild(el('span','ld'));lng.appendChild(document.createTextNode(p.language||'n/a'));foot.appendChild(lng);
@@ -254,6 +281,76 @@
     else u.textContent='Warming up \u2014 first scan runs on publish \u00b7 refreshes every 3h';
   }
 
+  function ghUser(login){var a=el('a','eco-person');a.href=safeUrl('https://github.com/'+login);a.target='_blank';a.rel='noopener';
+    var av=el('img','eco-av');av.src='https://avatars.githubusercontent.com/'+login+'?s=48';av.alt='';av.width=24;av.height=24;av.loading='lazy';a.appendChild(av);
+    a.appendChild(el('span',null,login));return a;}
+  function renderEcosystem(){
+    var host=$('ecosystem');if(!host)return;var e=DATA.ecosystem;
+    if(!e||!e.owners||!Object.keys(e.owners).length){host.classList.add('hidden');return;}
+    host.textContent='';host.classList.remove('hidden');
+    var head=el('div','eco-head');
+    head.appendChild(el('span','eco-mark','\u25C8'));
+    var ht=el('div','eco-htext');
+    ht.appendChild(el('h2',null,'The AxonOS ecosystem'));
+    ht.appendChild(el('p','eco-sub','The project behind this radar \u2014 its repositories, the people building them, and how they connect. Live from public GitHub.'));
+    head.appendChild(ht);host.appendChild(head);
+
+    // owner cards (org profile + members)
+    var owners=Object.keys(e.owners);
+    var og=el('div','eco-owners');
+    owners.forEach(function(k){var o=e.owners[k];
+      var card=el('div','eco-owner');
+      var row=el('div','eco-orow');
+      var oa=el('a','eco-oname');oa.href=safeUrl(o.html_url);oa.target='_blank';oa.rel='noopener';
+      oa.appendChild(el('b',null,o.name||o.login));
+      var badge=el('span','eco-otype',o.type==='Organization'?'ORG':'USER');oa.appendChild(badge);
+      row.appendChild(oa);card.appendChild(row);
+      if(o.bio)card.appendChild(el('div','eco-bio',o.bio));
+      var meta=el('div','eco-ometa');
+      if(o.location){meta.appendChild(el('span','eco-chip','\uD83D\uDCCD '+o.location));}
+      if(o.company){meta.appendChild(el('span','eco-chip',o.company));}
+      if(o.followers){meta.appendChild(el('span','eco-chip',o.followers+' followers'));}
+      if(o.public_repos){meta.appendChild(el('span','eco-chip',o.public_repos+' repos'));}
+      if(o.blog){var bl=el('a','eco-chip eco-link','\uD83D\uDD17 site');bl.href=safeUrl(o.blog);bl.target='_blank';bl.rel='noopener';meta.appendChild(bl);}
+      if(meta.childNodes.length)card.appendChild(meta);
+      if(o.members&&o.members.length){
+        var pl=el('div','eco-people');pl.appendChild(el('span','eco-plabel','People'));
+        o.members.forEach(function(m){pl.appendChild(ghUser(m.login));});
+        card.appendChild(pl);
+      }
+      og.appendChild(card);
+    });
+    host.appendChild(og);
+
+    // cross-repo people (contributors spanning multiple ecosystem repos)
+    if(e.key_people&&e.key_people.length){
+      var kp=el('div','eco-crosspeople');
+      kp.appendChild(el('span','eco-plabel','Building across the stack'));
+      var wrap=el('div','eco-kpwrap');
+      e.key_people.forEach(function(p2){
+        var chip=el('span','eco-kp');
+        chip.appendChild(ghUser(p2.login));
+        chip.appendChild(el('span','eco-reach',p2.reach+' repos'));
+        chip.title=p2.repos.join(', ');
+        wrap.appendChild(chip);
+      });
+      kp.appendChild(wrap);host.appendChild(kp);
+    }
+
+    // shared-maintainer links
+    if(e.links&&e.links.length){
+      var lk=el('div','eco-links');
+      lk.appendChild(el('span','eco-plabel','Shared maintainers'));
+      e.links.slice(0,6).forEach(function(l){
+        var row2=el('div','eco-link-row');
+        row2.appendChild(el('span','eco-lrepo',l.a.split('/')[1]||l.a));
+        var mid=el('span','eco-lmid','\u2194 '+l.weight);mid.title=l.shared.join(', ');row2.appendChild(mid);
+        row2.appendChild(el('span','eco-lrepo',l.b.split('/')[1]||l.b));
+        lk.appendChild(row2);
+      });
+      host.appendChild(lk);
+    }
+  }
   function renderDonate(){
     var host=$('donate');if(!host||!DONATE_DOGE)return;
     host.textContent='';
@@ -336,7 +433,7 @@
     window.addEventListener('resize',function(){drawRadar(filtered());});
     document.body.classList.add('loading');
     render();
-    fetch('./data/radar.json',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){DATA=sanitizeData(j);document.body.classList.remove('loading');buildChips();buildTierChips();buildLangs();setStats();render();}).catch(function(err){console.log('radar data not loaded:',err);document.body.classList.remove('loading');setStats();render();});
+    fetch('./data/radar.json',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){DATA=sanitizeData(j);document.body.classList.remove('loading');buildChips();buildTierChips();buildLangs();setStats();renderEcosystem();render();}).catch(function(err){console.log('radar data not loaded:',err);document.body.classList.remove('loading');setStats();render();});
     renderDonate();
     fetch('./data/weekly.json',{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(renderWeekly).catch(function(){});
   }

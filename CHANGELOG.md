@@ -1,5 +1,23 @@
 # Changelog
 
+## [5.0.4] — 2026-07-05
+
+### Fixed
+- **AxonOS was missing from its own radar.** The ecosystem anchor-fetch used a
+  workflow's built-in `GITHUB_TOKEN`, which is an installation token scoped to
+  the running repository (`AxonOS-BCI`). Requests to the `AxonOS-org` repos
+  answered non-200 even though those repos are public, so every anchor was
+  silently skipped (`continue`) and AxonOS never appeared — including under the
+  "Protocols & OS" filter. Two-part fix: (1) `_get` now retries **without** the
+  token on any non-200 when a token was used — public metadata needs no auth,
+  so cross-org resolution succeeds; (2) if the API is unreachable entirely, the
+  anchor is still **included from its curated entry** (role/note/group), so a
+  flagship project is never dropped from its own radar. Degraded anchors carry
+  no fabricated live figures — stars/language/pushed_at fill in on the next
+  reachable scan, and are reported via `anchors_degraded` in status.
+
+### Changed
+- Version strings unified at 5.0.4 (CI gate).
 ## [5.0.3] — 2026-07-04
 
 A flagship release: the radar now shows **its own field**, maps the **people

@@ -29,8 +29,7 @@ API = "https://api.github.com"
 _UA = "AxonOS-Community-Radar (+https://axonos.org)"
 
 
-def _get(url, token, accept="application/vnd.github+json"):
-    """Single GET returning (status, json_or_none). Never raises."""
+def _get_once(url, token, accept):
     req = urllib.request.Request(url, headers={
         "User-Agent": _UA,
         "Accept": accept,
@@ -43,6 +42,25 @@ def _get(url, token, accept="application/vnd.github+json"):
         return e.code, None
     except Exception:  # noqa: BLE001
         return 0, None
+
+
+def _get(url, token, accept="application/vnd.github+json"):
+    """GET returning (status, json_or_none). Never raises.
+
+    Anchor repos may live in a *different* org than the one running the scan.
+    A workflow's built-in GITHUB_TOKEN is an installation token scoped to its
+    own repository; against another org's public repos the /repos endpoint can
+    answer 403/404 even though the data is public. So: try WITH the token
+    first (best rate limit for same-org calls), and if that is not a 200 and a
+    token was used, retry WITHOUT it — public metadata needs no auth. This
+    makes ecosystem resolution work across orgs while staying degrade-safe.
+    """
+    status, data = _get_once(url, token, accept)
+    if status != 200 and token:
+        status2, data2 = _get_once(url, None, accept)
+        if status2 == 200:
+            return status2, data2
+    return status, data
 
 
 def _repo_record(data):
@@ -76,23 +94,41 @@ def fetch_anchor_repos(anchors, token, log=print):
     ecosystem=True with ecosystem_role/ecosystem_note. Missing repos are noted
     in meta but never faked.
     """
-    records, missing = [], []
+    records, missing, degraded = [], [], []
     for full_name, info in anchors.items():
+        info = info or {}
         status, data = _get(f"{API}/repos/{full_name}", token)
-        if status != 200 or not data:
+        if status == 200 and data:
+            rec = _repo_record(data)
+        else:
+            # API unreachable (cross-org token, rate limit, outage). The repo is
+            # known and curated — include it from the anchor entry itself so a
+            # flagship project is never dropped from its own radar. Live figures
+            # (stars/pushed_at/language) fill in on the next reachable scan.
             missing.append(full_name)
-            log(f"  ecosystem: anchor {full_name} unavailable (HTTP {status})")
-            continue
-        rec = _repo_record(data)
+            log(f"  ecosystem: anchor {full_name} API unavailable (HTTP {status}) "
+                f"\u2014 including from curated entry")
+            owner, _, name = full_name.partition("/")
+            rec = {
+                "full_name": full_name,
+                "html_url": f"https://github.com/{full_name}",
+                "description": info.get("note", ""),
+                "topics": [], "stars": 0, "forks": 0, "language": "",
+                "pushed_at": "", "updated_at": "", "created_at": "",
+                "license": None, "has_license": False, "open_issues": 0,
+                "homepage": "", "archived": False, "disabled": False, "fork": False,
+            }
+            degraded.append(full_name)
         rec["ecosystem"] = True
-        rec["ecosystem_role"] = (info or {}).get("role", "")
-        rec["ecosystem_note"] = (info or {}).get("note", "")
-        rec["ecosystem_group"] = (info or {}).get("group", "AxonOS")
+        rec["ecosystem_role"] = info.get("role", "")
+        rec["ecosystem_note"] = info.get("note", "")
+        rec["ecosystem_group"] = info.get("group", "AxonOS")
         records.append(rec)
         log(f"  ecosystem: +{full_name} ({rec['stars']}\u2605, role='{rec['ecosystem_role']}')")
     return records, {"anchors_requested": len(anchors),
                      "anchors_found": len(records),
-                     "anchors_missing": missing}
+                     "anchors_api_missing": missing,
+                     "anchors_degraded": degraded}
 
 
 def resolve_owner(owner, token):

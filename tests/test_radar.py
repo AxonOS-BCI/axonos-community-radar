@@ -608,15 +608,21 @@ def test_ecosystem_anchors_flagged(monkeypatch):
               "license": {"spdx_id": "MIT"}}))
     anchors = {"AxonOS-org/axonos-kernel": {"role": "Kernel", "note": "core"}}
     recs, meta = ecosystem.fetch_anchor_repos(anchors, "tok")
-    assert meta["anchors_found"] == 1
+    assert meta["anchors_found"] == 1 and not meta["anchors_degraded"]
     assert recs[0]["ecosystem"] is True and recs[0]["ecosystem_role"] == "Kernel"
 
 
-def test_ecosystem_missing_anchor_not_faked(monkeypatch):
+def test_ecosystem_missing_anchor_included_from_curated(monkeypatch):
+    """When the API is unreachable, a curated anchor is still included (from its
+    curated entry) so a flagship repo is never dropped from its own radar —
+    but it is flagged as degraded and carries no fabricated live figures."""
     import ecosystem
     monkeypatch.setattr(ecosystem, "_get", lambda url, tok, accept=None: (404, None))
-    recs, meta = ecosystem.fetch_anchor_repos({"o/gone": {"role": "x"}}, "tok")
-    assert recs == [] and meta["anchors_missing"] == ["o/gone"]
+    recs, meta = ecosystem.fetch_anchor_repos({"o/gone": {"role": "x", "note": "n"}}, "tok")
+    assert len(recs) == 1, "curated anchor must still be included"
+    assert recs[0]["ecosystem"] is True and recs[0]["ecosystem_role"] == "x"
+    assert recs[0]["stars"] == 0 and recs[0]["language"] == ""  # no fabricated figures
+    assert meta["anchors_degraded"] == ["o/gone"]
 
 
 def test_load_anchors_reads_curated():

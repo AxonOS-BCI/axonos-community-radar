@@ -1,10 +1,21 @@
-# Keep pinned GitHub Actions fresh: Dependabot proposes SHA bumps weekly,
-# CI's "actions are pinned" gate keeps every ref a full commit hash.
+# Keep pinned GitHub Actions fresh. Every `uses:` is pinned to a full commit
+# SHA (with a "# vX.Y.Z" comment); Dependabot preserves that style — it bumps
+# the SHA and updates the comment, so the CI "actions are pinned to a commit
+# SHA" gate stays green on its PRs.
+#
+# All action bumps are collected into ONE grouped PR per week, and at most one
+# such PR is open at a time — so stale, superseded bumps can't pile up the way
+# individual per-action PRs did.
 version: 2
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 1
     commit-message:
       prefix: "ci"
+    groups:
+      github-actions:
+        patterns:
+          - "*"

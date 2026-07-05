@@ -434,17 +434,20 @@ def build(radar, history=None, status=None, weekly=None):
                   '</div>')
             A("</div>")
         A("</div>")
-        kp = eco.get("key_people") or []
+        # only real humans spanning >=2 repos (org/owner accounts filtered upstream)
+        kp = [k for k in (eco.get("key_people") or []) if k.get("login") and k.get("reach", 0) >= 2]
         if kp:
             A('<div class="eco-cross"><span class="eco-lbl">Building across the stack</span> ' +
-              " ".join(f'<span class="eco-kp">{esc(k.get("login"))} <i>{k.get("reach")}</i></span>' for k in kp[:12]) +
+              " ".join(f'<span class="eco-kp">{esc(k.get("login"))} <i>{k.get("reach")}&nbsp;repos</i></span>' for k in kp[:12]) +
               '</div>')
-        lk = eco.get("links") or []
+        # links carry signal only when a real maintainer is shared
+        lk = [l for l in (eco.get("links") or []) if l.get("shared")]
         if lk:
             A('<div class="eco-lk"><span class="eco-lbl">Shared maintainers</span><ul>')
-            for l in lk[:6]:
+            for l in lk[:8]:
                 a_ = (l.get("a") or "").split("/")[-1]; b_ = (l.get("b") or "").split("/")[-1]
-                A(f'<li>{esc(a_)} \u2194 {esc(b_)} <i>({l.get("weight")})</i></li>')
+                who = ", ".join(l.get("shared") or [])
+                A(f'<li>{esc(a_)} \u2194 {esc(b_)} <span class="eco-via">via {esc(who)}</span></li>')
             A("</ul></div>")
         A("</section>")
 

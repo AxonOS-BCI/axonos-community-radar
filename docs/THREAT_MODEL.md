@@ -1,6 +1,6 @@
 # Threat Model — AxonOS Community Radar
 
-Version: 5.0.4 · Review cadence: with every minor release, or after any security report.
+Version: 5.0.5 · Review cadence: with every minor release, or after any security report.
 
 The radar is a **read-only aggregator of public GitHub metadata** published as a
 static site. It holds no user data, no secrets beyond the ephemeral Actions

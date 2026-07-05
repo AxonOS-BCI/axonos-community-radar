@@ -322,33 +322,57 @@
     });
     host.appendChild(og);
 
-    // cross-repo people (contributors spanning multiple ecosystem repos)
-    if(e.key_people&&e.key_people.length){
-      var kp=el('div','eco-crosspeople');
-      kp.appendChild(el('span','eco-plabel','Building across the stack'));
+    // Cross-repo people: contributors who genuinely span multiple repos.
+    // Only real humans reach here (orgs/owner accounts are filtered upstream),
+    // so if the list is empty the section is simply omitted — no filler.
+    var people=(e.key_people||[]).filter(function(p2){return p2.login&&p2.reach>=2;});
+    if(people.length){
+      var kp=el('div','eco-block');
+      var kh=el('div','eco-bhead');
+      kh.appendChild(el('span','eco-blabel','Building across the stack'));
+      kh.appendChild(el('span','eco-bhint',people.length+(people.length===1?' person spans':' people span')+' multiple repositories'));
+      kp.appendChild(kh);
       var wrap=el('div','eco-kpwrap');
-      e.key_people.forEach(function(p2){
-        var chip=el('span','eco-kp');
-        chip.appendChild(ghUser(p2.login));
-        chip.appendChild(el('span','eco-reach',p2.reach+' repos'));
-        chip.title=p2.repos.join(', ');
-        wrap.appendChild(chip);
+      people.slice(0,12).forEach(function(p2){
+        var card=el('a','eco-personcard');
+        card.href=safeUrl('https://github.com/'+p2.login);card.target='_blank';card.rel='noopener';
+        var av=el('img','eco-av');av.src='https://avatars.githubusercontent.com/'+p2.login+'?s=56';av.alt='';av.width=28;av.height=28;av.loading='lazy';
+        card.appendChild(av);
+        var meta=el('span','eco-pcmeta');
+        meta.appendChild(el('span','eco-pcname',p2.login));
+        meta.appendChild(el('span','eco-pcreach',p2.reach+' repositories'));
+        card.appendChild(meta);
+        card.title=(p2.repos||[]).map(function(r){return r.split('/')[1]||r;}).join(' \u00b7 ');
+        wrap.appendChild(card);
       });
       kp.appendChild(wrap);host.appendChild(kp);
     }
 
-    // shared-maintainer links
-    if(e.links&&e.links.length){
-      var lk=el('div','eco-links');
-      lk.appendChild(el('span','eco-plabel','Shared maintainers'));
-      e.links.slice(0,6).forEach(function(l){
-        var row2=el('div','eco-link-row');
-        row2.appendChild(el('span','eco-lrepo',l.a.split('/')[1]||l.a));
-        var mid=el('span','eco-lmid','\u2194 '+l.weight);mid.title=l.shared.join(', ');row2.appendChild(mid);
-        row2.appendChild(el('span','eco-lrepo',l.b.split('/')[1]||l.b));
-        lk.appendChild(row2);
+    // Shared-maintainer links: only meaningful when a real person maintains
+    // both repos. Since owner/org accounts are filtered out of `shared`, a
+    // link whose shared list is now empty carries no signal — drop it. If
+    // nothing survives, omit the whole section rather than show noise.
+    var links=(e.links||[]).filter(function(l){return l.shared&&l.shared.length;});
+    if(links.length){
+      var lk=el('div','eco-block');
+      var lh=el('div','eco-bhead');
+      lh.appendChild(el('span','eco-blabel','Shared maintainers'));
+      lh.appendChild(el('span','eco-bhint','repositories that share a maintainer'));
+      lk.appendChild(lh);
+      var lwrap=el('div','eco-linkgrid');
+      links.slice(0,8).forEach(function(l){
+        var row2=el('div','eco-linkcard');
+        var pair=el('div','eco-lpair');
+        pair.appendChild(el('span','eco-lrepo',l.a.split('/')[1]||l.a));
+        pair.appendChild(el('span','eco-ljoin','\u2194'));
+        pair.appendChild(el('span','eco-lrepo',l.b.split('/')[1]||l.b));
+        row2.appendChild(pair);
+        var who=el('div','eco-lwho');
+        who.textContent='via '+l.shared.join(', ');
+        row2.appendChild(who);
+        lwrap.appendChild(row2);
       });
-      host.appendChild(lk);
+      lk.appendChild(lwrap);host.appendChild(lk);
     }
   }
   function renderDonate(){

@@ -163,17 +163,27 @@ def org_members(owner, token, limit=8):
              "avatar_url": m.get("avatar_url")} for m in d if m.get("login")][:limit]
 
 
-def repo_contributor_logins(full_name, token, limit=30):
-    """Set of contributor logins for a repo (bots filtered). Used to detect
-    shared-maintainer links between anchor repos."""
+def repo_contributor_logins(full_name, token, limit=30, owner_logins=None):
+    """Set of *human* contributor logins for a repo. Filters out bots AND
+    organisation accounts (an org committing to its own repos is not a
+    'shared maintainer' — that produced a graph where every repo was linked
+    through the AxonOS-BCI account itself). `owner_logins` is the set of
+    ecosystem owner accounts to exclude explicitly."""
+    owner_logins = owner_logins or set()
     status, d = _get(f"{API}/repos/{full_name}/contributors?per_page={limit}", token)
     if status != 200 or not isinstance(d, list):
         return set()
     out = set()
     for c in d:
         login = c.get("login") or ""
-        if login and not login.endswith("[bot]") and c.get("type") != "Bot":
-            out.add(login)
+        ctype = c.get("type") or ""
+        if not login:
+            continue
+        if login.endswith("[bot]") or ctype in ("Bot", "Organization"):
+            continue
+        if login in owner_logins:  # the owning org/user account itself
+            continue
+        out.add(login)
     return out
 
 
@@ -182,6 +192,10 @@ def build_ecosystem_graph(anchor_records, token, log=print):
     links between repos. Returns a dict the report/UI can render as a real map
     of the ecosystem. Fully degradable — partial data is fine, absent is fine.
     """
+    # Owner accounts (orgs/users that own anchor repos) are NOT "maintainers"
+    # of each other's repos — exclude them from the human contributor graph.
+    owner_logins = {rec["full_name"].split("/")[0] for rec in anchor_records}
+
     owners = {}
     contrib_sets = {}
     for rec in anchor_records:
@@ -193,7 +207,7 @@ def build_ecosystem_graph(anchor_records, token, log=print):
                 if prof.get("type") == "Organization":
                     prof["members"] = org_members(owner, token)
                 owners[owner] = prof
-        contrib_sets[fn] = repo_contributor_logins(fn, token)
+        contrib_sets[fn] = repo_contributor_logins(fn, token, owner_logins=owner_logins)
 
     # Shared-maintainer edges between anchor repos (undirected, deduped).
     links = []

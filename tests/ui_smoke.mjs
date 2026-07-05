@@ -160,6 +160,32 @@ assert($("ecosystem").textContent.indexOf("AxonOS ecosystem") >= 0, "ecosystem h
 assert($("ecosystem").textContent.indexOf("Singapore") >= 0, "owner location shown");
 assert($("ecosystem").textContent.indexOf("denis-y") >= 0, "people/members shown");
 assert($("ecosystem").textContent.indexOf("Shared maintainers") >= 0, "shared-maintainer links shown");
+assert($("ecosystem").textContent.indexOf("Building across the stack") >= 0, "cross-repo people block shown");
+assert($("ecosystem").querySelector(".eco-personcard"), "people rendered as structured cards");
+assert($("ecosystem").querySelector(".eco-linkcard"), "links rendered as structured cards");
+
+// Empty-signal gating: when shared lists are only org accounts (filtered to
+// empty) and no cross-repo people, those blocks must be OMITTED, not shown empty.
+{
+  const dom3 = new JSDOM(html, { url: "https://radar.test/", runScripts: "outside-only", pretendToBeVisual: true });
+  const w3 = dom3.window;
+  w3.HTMLCanvasElement.prototype.getContext = () => new Proxy({}, { get: () => noop });
+  const emptyEco = JSON.parse(JSON.stringify(FIXTURE));
+  emptyEco.ecosystem.key_people = [];
+  emptyEco.ecosystem.links = [{ a: "o/a", b: "o/b", weight: 1, shared: [] }];  // org-only → empty
+  w3.fetch = (u) => String(u).includes("weekly")
+    ? Promise.resolve({ ok: true, json: () => Promise.resolve(WEEKLY) })
+    : Promise.resolve({ ok: true, json: () => Promise.resolve(emptyEco) });
+  w3.eval(appJs);
+  await new Promise((r) => setTimeout(r, 60));
+  const e3 = w3.document.getElementById("ecosystem");
+  assert(e3.textContent.indexOf("Building across the stack") < 0,
+         "people block omitted when no cross-repo people");
+  assert(e3.textContent.indexOf("Shared maintainers") < 0,
+         "links block omitted when shared lists are empty");
+  // but the owner constellation still shows
+  assert(e3.textContent.indexOf("AxonOS ecosystem") >= 0, "ecosystem heading still present when blocks empty");
+}
 {
   const ecoCard = [...q("#cards .pc")].find(c => c.textContent.indexOf("axonos-kernel") >= 0);
   assert(ecoCard && ecoCard.classList.contains("eco"), "anchor repo card has .eco class");

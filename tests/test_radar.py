@@ -590,7 +590,7 @@ def test_ecosystem_graph_shared_maintainers(monkeypatch):
                         lambda o, t: {"login": o, "type": "Organization", "name": o})
     monkeypatch.setattr(ecosystem, "org_members", lambda o, t, limit=8: [])
     monkeypatch.setattr(ecosystem, "repo_contributor_logins",
-                        lambda fn, t, limit=30: sets.get(fn, set()))
+                        lambda fn, t, limit=30, owner_logins=None: sets.get(fn, set()))
     recs = [{"full_name": "AxonOS-org/axonos-kernel"},
             {"full_name": "AxonOS-org/axonos-protocol"}]
     g = ecosystem.build_ecosystem_graph(recs, "tok")
@@ -598,6 +598,23 @@ def test_ecosystem_graph_shared_maintainers(monkeypatch):
     assert g["links"][0]["weight"] == 1
     # denis spans 2 repos → key person
     assert any(kp["login"] == "denis" and kp["reach"] == 2 for kp in g["key_people"])
+
+
+def test_contributor_logins_excludes_orgs_and_owner(monkeypatch):
+    """The owning org account and any Organization-type contributor must be
+    filtered out — an org committing to its own repos is not a human
+    maintainer (this is what produced the AxonOS-BCI-links-everything bug)."""
+    import ecosystem
+    payload = [
+        {"login": "AxonOS-BCI", "type": "Organization"},  # the owner org
+        {"login": "some-bot[bot]", "type": "Bot"},
+        {"login": "real-dev", "type": "User"},
+    ]
+    monkeypatch.setattr(ecosystem, "_get", lambda url, tok, accept=None: (200, payload))
+    got = ecosystem.repo_contributor_logins(
+        "AxonOS-BCI/axonos-community-radar", "tok",
+        owner_logins={"AxonOS-BCI", "AxonOS-org"})
+    assert got == {"real-dev"}, f"expected only the human, got {got}"
 
 
 def test_ecosystem_anchors_flagged(monkeypatch):

@@ -1,5 +1,21 @@
 # Changelog
 
+## [5.0.5] — 2026-07-05
+
+### Fixed
+- **Ecosystem "shared maintainers" was nonsense.** The graph counted the
+  owning account (`AxonOS-BCI`) as a contributor, so every repo appeared linked
+  to every other "via AxonOS-BCI", and that org account showed up under
+  "Building across the stack" as a person spanning 6 repos. Organisation and
+  owner accounts are now filtered out of the contributor graph — only real
+  humans count. Links whose shared list becomes empty are dropped.
+
+### Changed
+- **Ecosystem UX redesigned.** "Building across the stack" and "Shared
+  maintainers" are now structured card grids (avatar · name · repo count for
+  people; repo-pair · "via …" for links) instead of a vertical run of
+  "repo ↔ 1 repo" rows. Both blocks are **omitted entirely when they carry no
+  real signal** — no empty filler — while the owner constellation still shows.
 ## [5.0.4] — 2026-07-05
 
 ### Fixed

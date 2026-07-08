@@ -1,5 +1,29 @@
 # Changelog
 
+## [5.1.1] — 2026-07-08
+
+### Fixed
+- **Stale interface after deploy ("two versions at once").** The HTML linked
+  `assets/app.css` / `assets/app.js` with no version query, so GitHub Pages'
+  long-lived asset cache kept serving the previous CSS/JS under freshly deployed
+  markup — the site looked like it was still on the old release. The Pages
+  workflow now stamps every shipped CSS/JS URL with the deploy commit SHA
+  (`app.css?v=<sha>`), so a new build always has new asset URLs and the browser
+  can never show a stale interface again. Source files stay clean; only the
+  deployed copies are stamped.
+
+### Changed
+- **Deploys are now immediate on source pushes, not just scans.** `pages.yml`
+  gained a `push: main` trigger alongside the existing post-scan `workflow_run`.
+  Scan commits carry `[skip ci]` (which suppresses the push trigger), so the two
+  paths never double-fire: scans deploy via `workflow_run`, feature commits
+  deploy via `push` without waiting for the next 3-hourly scan. Queue-only
+  concurrency (`cancel-in-progress: false`) is unchanged, so nothing is ever
+  cancelled.
+- **Public roadmap on the home page.** Added a prominent annotated link to the
+  AxonOS project board (`github.com/users/AxonOS-BCI/projects/1`) so visitors
+  can follow what's shipped, in progress, and next — in the open.
+
 ## [5.1.0] — 2026-07-08
 
 ### Added

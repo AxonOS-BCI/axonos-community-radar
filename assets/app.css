@@ -120,6 +120,26 @@
   .start-steps li::marker{color:var(--faint);font-variant-numeric:tabular-nums;font-weight:600}
   .start-steps b{color:var(--ink);font-weight:600}
   .start-steps a{color:var(--accent);border-bottom:1px solid var(--line)}
+  .ax-board-note{max-width:64ch;margin:0 auto 14px;color:var(--dim);font-size:13.5px;line-height:1.55;text-align:center}
+  .ax-board-note b{color:var(--ink);font-weight:600}
+  .roadmap{display:flex;gap:24px;align-items:center;justify-content:space-between;flex-wrap:wrap;
+    background:linear-gradient(135deg,rgba(45,212,255,.06),rgba(167,139,250,.06));
+    border:1px solid var(--line2);border-radius:20px;padding:26px 28px;text-decoration:none;color:inherit;
+    position:relative;overflow:hidden;transition:border-color .2s,transform .2s}
+  .roadmap::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:linear-gradient(180deg,var(--accent),var(--violet))}
+  .roadmap:hover{border-color:rgba(45,212,255,.4);transform:translateY(-1px)}
+  .roadmap-l{flex:1 1 460px;min-width:0}
+  .roadmap-k{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+  .roadmap-h{margin:6px 0 8px;font-size:20px;font-weight:650;letter-spacing:-0.02em}
+  .roadmap-x{margin:0 0 14px;color:var(--dim);font-size:14px;line-height:1.55;max-width:62ch}
+  .roadmap-cta{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14px;color:var(--accent)}
+  .roadmap-arw{transition:transform .2s}.roadmap:hover .roadmap-arw{transform:translateX(4px)}
+  .roadmap-r{display:flex;flex-direction:column;gap:10px;flex:0 0 auto}
+  .rm-col{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--faint);white-space:nowrap;
+    border:1px solid var(--line2);border-radius:9px;padding:7px 13px;background:rgba(255,255,255,.02)}
+  .rm-dot{width:9px;height:9px;border-radius:999px;flex:0 0 auto}
+  .rm-todo{background:var(--faint)}.rm-prog{background:var(--amber)}.rm-done{background:var(--emerald)}
+  @media(max-width:620px){.roadmap{padding:22px}.roadmap-r{flex-direction:row;flex-wrap:wrap}.roadmap-h{font-size:18px}}
   .card{background:var(--card);border:1px solid var(--line2);border-radius:18px;padding:20px;transition:.16s}
   .card:hover{border-color:var(--line);background:var(--card2)}
   .card h3{margin:0 0 7px;font-size:16px;font-weight:600;letter-spacing:-0.01em}.card p{margin:0;color:var(--dim);font-size:13.5px;line-height:1.5}

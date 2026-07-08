@@ -197,6 +197,13 @@ assert($("ecosystem").querySelector(".eco-linkcard"), "links rendered as structu
 // zero innerHTML statically (belt & braces with the refactor)
 assert(appJs.indexOf("innerHTML") < 0, "app.js contains zero innerHTML");
 
+// public roadmap board link is present and points at the project board
+{
+  const rm = window.document.querySelector('a.roadmap');
+  assert(rm && /github\.com\/users\/AxonOS-BCI\/projects\/1/.test(rm.getAttribute('href') || ''),
+         "roadmap board link present on landing view");
+}
+
 // Ecosystem Health meter renders for a project carrying signals
 {
   const meter = window.document.querySelector(".hlth");

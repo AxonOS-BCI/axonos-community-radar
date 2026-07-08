@@ -1,19 +1,19 @@
 name: Deploy Pages
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SINGLE deploy path. Root cause of the repeated "Canceling Pages deployment /
-# Unable to cancel as it's finished" failures was concurrency.cancel-in-progress
-# combined with multiple triggers: two runs overlapped, the newer tried to
-# cancel the older, the older finished mid-cancel, and the whole run errored.
-#
-# Fix, definitively:
-#   • ONE trigger for automatic deploys: workflow_run after "AxonOS Radar".
-#     No push trigger (site files land via the scan's own commit, which fires
-#     workflow_run anyway) → the two-source overlap cannot happen.
-#   • concurrency cancel-in-progress: FALSE → deploys queue, never cancel each
-#     other. A queued deploy simply waits; nothing errors.
-#   • exactly one deploy-pages step (the old "retry" step spawned a SECOND
-#     deployment inside the same job — another overlap source). Removed.
+# SINGLE queue, never-cancel deploy. Two complementary triggers, chosen so they
+# can never double-fire for the same commit:
+#   • workflow_run after "AxonOS Radar" — deploys every 3-hourly scan. Scan
+#     commits carry "[skip ci]", which suppresses the push trigger below, so
+#     only this path deploys them.
+#   • push to main — deploys source changes (feature commits, which do NOT carry
+#     "[skip ci]") immediately, instead of waiting for the next scan. This is
+#     what fixes "I pushed but the site still shows the old build".
+#   • workflow_dispatch — manual redeploy button.
+# concurrency.cancel-in-progress: FALSE → overlapping deploys queue and wait;
+# nothing is ever cancelled (this was the root of the old "unable to cancel"
+# errors). Assets are stamped with the commit SHA at assemble time, so browsers
+# can never serve a stale app.css/app.js under fresh HTML again.
 #
 # One-time setup: repo Settings → Pages → Source = "GitHub Actions".
 # ─────────────────────────────────────────────────────────────────────────────
@@ -22,6 +22,8 @@ on:
   workflow_run:
     workflows: ["AxonOS Radar"]
     types: [completed]
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -60,6 +62,21 @@ jobs:
           cp data/*.json _site/data/
           touch _site/.nojekyll
           echo "site files: $(find _site -type f | wc -l)"
+
+      - name: Cache-bust asset URLs with the commit SHA
+        # Append ?v=<sha> to every local CSS/JS asset link in the shipped HTML so
+        # a new build always has new asset URLs. Without this, GitHub Pages'
+        # long-lived asset caching serves the previous app.css/app.js under the
+        # new markup — the "two versions at once" bug. Source files stay clean;
+        # only the deployed copies are stamped.
+        run: |
+          SHA="${GITHUB_SHA:0:8}"
+          for f in _site/index.html _site/stats.html _site/report.html; do
+            [ -f "$f" ] || continue
+            sed -i -E "s#((href|src)=\"\.?/?assets/[A-Za-z0-9_.-]+\.(css|js))\"#\1?v=${SHA}\"#g" "$f"
+          done
+          echo "stamped assets with v=${SHA}:"
+          grep -oE "assets/[A-Za-z0-9_.-]+\.(css|js)\?v=[a-f0-9]+" _site/index.html | sort -u
 
       - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d  # v6.0.0
 

@@ -21,6 +21,17 @@
   // the github.com allowlist BEFORE any rendering. esc() remains the second wall.
   function str(v,max){v=(v==null?'':String(v));return v.length>max?v.slice(0,max):v;}
   function num(v){v=Number(v);return isFinite(v)?v:0;}
+  function score100(v){v=Number(v);if(!isFinite(v))return null;return Math.max(0,Math.min(100,Math.round(v)));}
+  var HDIMS=['license','maintenance','momentum','adoption','team','docs'];
+  var HBASIS={'enriched':1,'partial':1,'search-only':1};
+  function sanitizeSignals(s){
+    if(!s||typeof s!=='object')return null;
+    var ov=score100(s.overall);if(ov==null)return null;
+    var out={overall:ov,basis:HBASIS[s.basis]?s.basis:'search-only',
+      badges:(Array.isArray(s.badges)?s.badges:[]).slice(0,6).map(function(b){return str(b,24);})};
+    HDIMS.forEach(function(d){var v=score100(s[d]);if(v!=null)out[d]=v;});
+    return out;
+  }
   function sanitizeProject(p){
     if(!p||typeof p!=='object')return null;
     var q=p.quality_flags&&typeof p.quality_flags==='object'?p.quality_flags:{};
@@ -36,7 +47,7 @@
       ecosystem:!!p.ecosystem,ecosystem_role:str(p.ecosystem_role,80),
       ecosystem_note:str(p.ecosystem_note,200),
       org_domicile:str(p.org_domicile,60),funding_round:str(p.funding_round,40),
-      first_seen:str(p.first_seen,40)};
+      first_seen:str(p.first_seen,40),signals:sanitizeSignals(p.signals)};
   }
   function sanitizeBuilder(b){
     if(!b||typeof b!=='object')return null;
@@ -93,7 +104,9 @@
       if(q){var hay=(p.full_name+' '+(p.description||'')+' '+(p.language||'')+' '+(p.topics||[]).join(' ')).toLowerCase();if(hay.indexOf(q)<0)return false;}
       return true;
     });
+    function hov(p){return (p.signals&&typeof p.signals.overall==='number')?p.signals.overall:-1;}
     arr.sort(state.sort==='stars'?function(a,b){return (b.stars||0)-(a.stars||0);}
+      :state.sort==='health'?function(a,b){return (hov(b)-hov(a))||((b.stars||0)-(a.stars||0));}
       :state.sort==='rising'?function(a,b){return ((b.stars_delta_7d||0)-(a.stars_delta_7d||0))||((b.stars||0)-(a.stars||0));}
       :state.sort==='new'?function(a,b){return String(b.first_seen||'').localeCompare(String(a.first_seen||''));}
       :state.sort==='name'?function(a,b){return a.full_name.toLowerCase().localeCompare(b.full_name.toLowerCase());}
@@ -158,6 +171,29 @@
     var sp=el('span','ev '+e[1],e[0]);sp.title=p.inclusion_reason||t;return sp;}
   function flagBadgeEl(p){var q=p.quality_flags||{};var hit=Array.isArray(q)?q.indexOf('possible_false_positive')>=0:!!q.possible_false_positive;
     if(!hit)return null;var sp=el('span','flag','\u26A0 review');sp.title='Borderline match \u2014 flagged for review';return sp;}
+  // Ecosystem Health meter: a visible 0-100 bar (band-coloured) with the full
+  // per-dimension breakdown in the accessible title, so the card stays a link.
+  var HBAND=[[80,'strong','var(--emerald)'],[60,'solid','var(--accent)'],[40,'developing','var(--amber)'],[0,'early','var(--rose)']];
+  var HLABEL={license:'Licence',maintenance:'Maintenance',momentum:'Momentum',adoption:'Adoption',team:'Team',docs:'Doc signals'};
+  function hband(v){for(var i=0;i<HBAND.length;i++)if(v>=HBAND[i][0])return HBAND[i];return HBAND[HBAND.length-1];}
+  function healthEl(p){
+    var s=p.signals;if(!s)return null;
+    var b=hband(s.overall);
+    var wrap=el('div','hlth');wrap.style.setProperty('--hc',b[2]);
+    var head=el('div','hlth-h');
+    head.appendChild(el('span','hlth-k','Health'));
+    var val=el('span','hlth-v');val.appendChild(document.createTextNode(String(s.overall)));
+    var band=el('span','hlth-band',b[1]);val.appendChild(band);head.appendChild(val);
+    wrap.appendChild(head);
+    var track=el('div','hlth-bar');var fill=el('span','hlth-fill');fill.style.width=s.overall+'%';track.appendChild(fill);wrap.appendChild(track);
+    // breakdown in the title (keyboard/hover accessible, no link break)
+    var parts=[];HDIMS.forEach(function(d){if(s[d]!=null)parts.push(HLABEL[d]+' '+s[d]);});
+    var basis=s.basis==='search-only'?' \u00b7 search-only (momentum/team not measured)':(s.basis==='partial'?' \u00b7 partial data':'');
+    wrap.title='Health '+s.overall+'/100 \u2014 '+parts.join(' \u00b7 ')+basis+
+      (s.badges&&s.badges.length?('\n'+s.badges.join(' \u00b7 ')):'')+
+      '\nComputed from public GitHub signals \u2014 a maturity read-out, not an endorsement.';
+    return wrap;
+  }
   function renderCards(arr){
     var l=$('cards');l.textContent='';
     if(!arr.length){
@@ -186,6 +222,7 @@
       if(p.ecosystem&&p.ecosystem_role){a.appendChild(el('div','ecorole',p.ecosystem_role));}
       a.appendChild(el('p','desc',p.description||(p.ecosystem&&p.ecosystem_note?p.ecosystem_note:'\u2014')));
       var tr=tagRowEl(p);if(tr)a.appendChild(tr);
+      var hl=healthEl(p);if(hl)a.appendChild(hl);
       var foot=el('div','foot');
       var lng=el('span','lng');lng.appendChild(el('span','ld'));lng.appendChild(document.createTextNode(p.language||'n/a'));foot.appendChild(lng);
       var ac=el('span','ac');ac.appendChild(el('span','ad'+(p.active?' on':'')));ac.appendChild(document.createTextNode(fmtAge(p.days_since_push)));foot.appendChild(ac);
@@ -201,7 +238,7 @@
     buildChips();buildTierChips();render();}
   function readHash(){try{var h=(location.hash||'').replace(/^#/,'');if(!h)return;var p={};h.split('&').forEach(function(kv){var i=kv.indexOf('=');if(i>0)p[kv.slice(0,i)]=decodeURIComponent(kv.slice(i+1).replace(/\+/g,' '));});
     if(p.view==='radar'||p.view==='grid')state.view=p.view;
-    if(['activity','stars','rising','new','name'].indexOf(p.sort)>=0)state.sort=p.sort;
+    if(['activity','health','stars','rising','new','name'].indexOf(p.sort)>=0)state.sort=p.sort;
     if(p.lang)state.lang=p.lang; if(p.q)state.q=p.q;
     state.activeOnly=p.active==='1'; state.newOnly=p.new==='1'; state.fallingOnly=p.fall==='1'; state.dens=p.d==='1';
     if(p.cat)p.cat.split(',').forEach(function(c){if(c)state.cats[c]=true;});
@@ -386,10 +423,10 @@
     var pill=document.createElement('span');pill.className='dg-pill';pill.textContent='Dogecoin';h.appendChild(pill);
     body.appendChild(h);
     var tx=document.createElement('div');tx.className='dg-x';
-    tx.textContent='Every scan runs every 3 hours and enrichment burns API budget \u2014 the map, stats and report stay free for everyone, with no paywalled features. A \u0110100 tip keeps it all shipping.';
+    tx.textContent='Every scan runs every 3 hours \u2014 discovery, enrichment and the new per-project health scoring all burn API budget. The map, stats, health signals and report stay free for everyone, with no paywalled features. A \u0110 1000 tip powers a full refresh-and-rescore cycle for the whole field.';
     body.appendChild(tx);
     var row=document.createElement('div');row.className='dg-row';
-    var amt=document.createElement('span');amt.className='dg-amt';amt.textContent='\u0110 100';row.appendChild(amt);
+    var amt=document.createElement('span');amt.className='dg-amt';amt.textContent='\u0110 1000';row.appendChild(amt);
     var ad=document.createElement('code');ad.className='dg-addr';ad.textContent=DONATE_DOGE;ad.title='Dogecoin address';row.appendChild(ad);
     var btn=document.createElement('button');btn.type='button';btn.className='dg-copy';btn.textContent='Copy';
     btn.addEventListener('click',function(){
@@ -438,7 +475,7 @@
   function boot(){
     readHash();
     buildSeg('segView',[{v:'grid',l:'☰ Grid'},{v:'radar',l:'◎ Radar'}],function(){return state.view;},function(v){state.view=v;});
-    buildSeg('segSort',[{v:'activity',l:'Activity'},{v:'stars',l:'Stars'},{v:'rising',l:'Rising'},{v:'new',l:'Newest'},{v:'name',l:'A–Z'}],function(){return state.sort;},function(v){state.sort=v;});
+    buildSeg('segSort',[{v:'activity',l:'Activity'},{v:'health',l:'Health'},{v:'stars',l:'Stars'},{v:'rising',l:'Rising'},{v:'new',l:'Newest'},{v:'name',l:'A–Z'}],function(){return state.sort;},function(v){state.sort=v;});
     buildChips();buildLegend();buildLangs();setStats();reflect();
     $('search').addEventListener('input',function(e){state.q=e.target.value;render();});
     $('langSel').addEventListener('change',function(e){state.lang=e.target.value;render();});

@@ -52,6 +52,56 @@ score = log10(stars + 1) * 10 + max(0, 60 - days_since_push) * 0.5
 
 It favours visible, recently active work. It is a sorting aid, not a verdict.
 
+## Ecosystem Health signals
+
+Every project carries a `signals` block: an overall **Health** score (0–100) and
+a set of 0–100 sub-scores, computed by `scripts/signals.py`. The design rule is
+strict: **score only what public GitHub metadata can verify, and omit — never
+fabricate — everything else.** No extra API calls are made; every input is a
+field the enrichment phase already fetched. AxonOS is scored by the identical
+function as every other repository — there is no identity-based special-casing
+(a unit test asserts two otherwise-identical repos score the same regardless of
+name).
+
+**Sub-scores and their inputs**
+
+| Dimension | Input (all real GitHub signals) | Rule (summary) |
+|:--|:--|:--|
+| `maintenance` | `days_since_push` | ≤7d → 100, ≤30 → 85, ≤90 → 65, ≤180 → 45, ≤365 → 25, else 10 |
+| `momentum` | `commits_52w` (52-week commit total) | `min(100, log10(commits+1) × 40)`; omitted if the histogram was unavailable |
+| `adoption` | `stars`, `releases_count`, `total_downloads` | `min(60, log10(stars+1)×20) + min(20, releases×2) + min(20, log10(dl+1)×5)` |
+| `team` | `contributors` | 1→20, 2→40, 3–4→55, 5–9→70, 10–24→85, 25+→100; omitted if unknown/0 |
+| `license` | SPDX id | OSI-recognised → 100, other named licence → 70, unclassifiable file → 40, none → 0 |
+| `docs` | `description`, `homepage`, licence file | +40 / +30 / +30 — *presence of pointers*, **not** documentation quality |
+
+**Overall**
+
+```
+overall = round( Σ(score_d × weight_d) / Σ(weight_d) )   over measured dimensions d
+weights = maintenance .22, momentum .20, adoption .20, team .16, license .12, docs .10
+```
+
+When a dimension's input is missing for a repo, that dimension is dropped from
+the sum and the remaining weights are renormalised — so an un-enriched repo is
+scored fairly on what is known rather than being pushed down by hard zeros. The
+`basis` field records completeness: `enriched` (commits **and** contributors
+present), `search-only` (neither — momentum and team not measured), or `partial`
+(one of the two).
+
+**Bands** (UI labels): `strong` ≥ 80, `solid` ≥ 60, `developing` ≥ 40, `early`
+below 40.
+
+**Verifiable badges** are derived purely from the same real fields:
+`osi-licensed`, `actively-maintained` (push ≤ 30d), `has-releases`,
+`multi-contributor` (≥ 3). Nothing self-asserted is ever shown.
+
+**Deliberately not scored.** Conformance, security posture, and test quality are
+*not* part of Health. They cannot be read reliably from search metadata, so
+assigning them numbers would be fabrication — the opposite of the point. Health
+is a triage signal to help you find well-maintained, adopted, clearly-licensed
+work; it is **never** a claim that a project is correct, safe, or fit for
+clinical use.
+
 ## Rising
 
 Rising is based on 7-day star velocity from `data/history.json`:

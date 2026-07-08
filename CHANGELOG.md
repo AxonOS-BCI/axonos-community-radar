@@ -1,5 +1,52 @@
 # Changelog
 
+## [5.1.0] — 2026-07-08
+
+### Added
+- **Ecosystem Health signals — the radar's flagship read-out.** Every project
+  now carries a transparent `signals` block: a 0–100 **Health** score plus six
+  sub-scores (Maintenance, Momentum, Adoption, Team, Licence, Doc signals),
+  computed **only from real public GitHub metadata the scan already fetches** —
+  no extra API calls, no surveys, no self-assessment. The overall score is a
+  weighted mean of *only the dimensions that could be measured* for a repo;
+  anything unmeasurable is **left out rather than guessed**, and a repo that was
+  not enriched this cycle is flagged `search-only`. Deliberately **not** scored:
+  conformance, security posture, and test quality — none can be read reliably
+  from search metadata, so scoring them would be fabrication. AxonOS is scored
+  by the exact same rules as every other project (its own repos land in the
+  "developing" band — the score is neutral by construction). New module
+  `scripts/signals.py`, a full published formula in `docs/METHODOLOGY.md`, JSON
+  Schema coverage, validator enforcement, and 13 unit tests.
+- **Health meter in the UI.** Each card shows a band-coloured Health bar with
+  the score and a plain band label (strong / solid / developing / early); the
+  full per-dimension breakdown and verifiable badges (`osi-licensed`,
+  `actively-maintained`, `has-releases`, `multi-contributor`) live in the
+  accessible tooltip. New **Health** sort option, encoded in shareable `#`
+  permalinks. All rendered through DOM-safe code — zero `innerHTML`, strict CSP
+  intact.
+- **"Where to start" onboarding.** A persona-based entry point (Researcher /
+  Engineer & contributor / New to neurotech / Building something), each a short
+  path of real links into the map, the report, Discussions, and the add-project
+  flow. Lowers the barrier for newcomers who don't know which thread to pull.
+- **Field-wide health counts** (`counts.health_strong`, `counts.health_median`)
+  in `radar.json` and `status.json`.
+
+### Fixed
+- **`publish_data.py` no longer fails silently.** A failed Contents-API PUT for
+  a tracked file (radar data, history, feed, report, status) now collects the
+  error and exits non-zero, so a broken token or API outage surfaces as a red
+  step instead of a green no-op.
+- **Dead unreachable code removed** from `validate_payload._is_safe_github_url`
+  (a second `try` after an unconditional `return`), and the validator now
+  enforces the new `signals` block: out-of-range scores or an unknown `basis`
+  are rejected — a fabricated health read-out cannot pass the gate.
+
+### Changed
+- The Dogecoin support suggestion is now **Đ 1000**, framed as powering a full
+  refresh-and-rescore cycle for the whole field. The radar still has **no
+  paywalled features** — funding keeps the map, stats, health signals and
+  report free for everyone.
+
 ## [5.0.5] — 2026-07-05
 
 ### Fixed

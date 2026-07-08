@@ -95,6 +95,13 @@ NORMALIZERS = {"data/radar.json": norm_radar, "data/history.json": norm_json,
                "data/weekly.json": norm_weekly}
 
 
+# Files whose PUT failure must fail the whole step. A missing radar.json /
+# history / feed / report commit is a real publish failure, not a no-op; the
+# old code printed the error but still exited 0, so a broken token or API
+# outage looked green. These are tracked and surfaced as a non-zero exit.
+FAILURES: list[str] = []
+
+
 def put(path, message):
     with open(path, encoding="utf-8") as f:
         local = f.read()
@@ -112,7 +119,9 @@ def put(path, message):
         v = (body.get("commit") or {}).get("verification") or {}
         print(f"  {path}: committed {(body.get('commit') or {}).get('sha','')[:8]} (verified={v.get('verified')})")
         return True
-    print(f"  {path}: FAILED HTTP {code}: {body.get('message')}")
+    msg = f"{path}: FAILED HTTP {code}: {body.get('message')}"
+    print(f"  {msg}")
+    FAILURES.append(msg)
     return False
 
 
@@ -132,6 +141,11 @@ def main():
         put("data/weekly.json", "radar: refresh weekly digest [skip ci]")
     if not (changed or hist_changed or fs_changed or feed_changed or report_changed or status_changed):
         print("No meaningful change — nothing committed.")
+    if FAILURES:
+        print(f"\n{len(FAILURES)} file(s) failed to publish — failing the step:")
+        for m in FAILURES:
+            print(f"  - {m}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

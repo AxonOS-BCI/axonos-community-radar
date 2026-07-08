@@ -31,6 +31,26 @@ jobs:
         run: |
           python3 -c "import json;d=json.load(open('data/radar.json'));assert len(d['projects'])<=120;assert all(p['html_url'].startswith('https://github.com/') for p in d['projects']);print('radar.json ok:',d['counts'])"
           python3 -c "import xml.dom.minidom as m;m.parse('feed.xml');print('feed.xml ok')"
+          python3 - <<'PY'
+          import json
+          d = json.load(open("data/radar.json"))
+          ps = d["projects"]
+          # Every project must carry a well-formed Health block (0..100, known basis).
+          assert ps, "no projects"
+          for p in ps:
+              s = p.get("signals")
+              assert isinstance(s, dict), f"{p['full_name']} missing signals"
+              ov = s.get("overall")
+              assert isinstance(ov, int) and 0 <= ov <= 100, f"{p['full_name']} bad overall {ov!r}"
+              assert s.get("basis") in ("enriched", "partial", "search-only"), f"{p['full_name']} bad basis"
+          c = d.get("counts", {})
+          assert 0 <= c.get("health_median", 0) <= 100, "health_median out of range"
+          assert c.get("health_strong", 0) <= len(ps), "health_strong exceeds project count"
+          print(f"health signals ok: {len(ps)} scored, median={c.get('health_median')}, strong={c.get('health_strong')}")
+          PY
+
+      - name: Contract gate (validate_payload)
+        run: python3 scripts/validate_payload.py data/radar.json
 
       - name: Build the report page (report.html)
         run: python3 scripts/build_report.py

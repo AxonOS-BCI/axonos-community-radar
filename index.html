@@ -114,6 +114,19 @@
     <div class="card mw820">
       <p>Position is a neutral discovery signal: <span class="mono">log₁₀(stars+1) × 10 + recency</span>. <b>Rising</b> reflects real 7-day star velocity from accumulated history. No hand-tuned “hype”, no paid placement, no self-boosting — every project, including AxonOS, is ranked by the same formula.</p>
     </div>
+    <div class="ph mt24"><h2>Ecosystem Health signals</h2><span class="note">a maturity read-out, not an endorsement</span></div>
+    <div class="card mw820">
+      <p>Each card carries a <b>Health</b> score (0–100) computed <b>only from real public GitHub signals</b> the scan already fetches — no extra calls, no surveys, no self-assessment. Six measurable dimensions feed a weighted mean, and any dimension we can’t measure for a repo is <b>left out rather than guessed</b>:</p>
+      <div class="tier-grid">
+        <div class="tier-row"><span class="tg-badge tl3">Maint</span><span class="tg-txt"><b>Maintenance.</b> How recently the repo was pushed to.</span></div>
+        <div class="tier-row"><span class="tg-badge tl2">Mom</span><span class="tg-txt"><b>Momentum.</b> The real 52-week commit total — is development sustained?</span></div>
+        <div class="tier-row"><span class="tg-badge tl2">Adopt</span><span class="tg-txt"><b>Adoption.</b> Stars, published releases and real release download counts.</span></div>
+        <div class="tier-row"><span class="tg-badge tl1">Team</span><span class="tg-txt"><b>Team.</b> Contributor breadth — is it more than a bus-factor of one?</span></div>
+        <div class="tier-row"><span class="tg-badge tl1">Lic</span><span class="tg-txt"><b>Licence.</b> Whether an OSI-recognised licence grants clear reuse rights.</span></div>
+        <div class="tier-row"><span class="tg-badge tl0">Docs</span><span class="tg-txt"><b>Doc signals.</b> Presence of a description, homepage and licence file — pointers we can verify, <b>not</b> a judgement of documentation quality.</span></div>
+      </div>
+      <p class="mt12">We deliberately do <b>not</b> score conformance, security posture or test quality: none can be read reliably from search metadata, so scoring them would be fiction. A card marked <span class="mono">search-only</span> means the repo wasn’t enriched this cycle, so momentum and team were not measured. Health is a signal to help you triage the field — <b>never a guarantee of quality, safety, or clinical fitness</b>, and AxonOS is scored by the exact same rules as everyone else. Full formula: <a href="https://github.com/AxonOS-BCI/axonos-community-radar/blob/main/docs/METHODOLOGY.md">docs/METHODOLOGY.md</a>.</p>
+    </div>
     <div class="ph mt24"><h2>Live data</h2><span class="note">automated, and on demand</span></div>
     <div class="card mw820">
       <p>The dataset refreshes automatically every 3 hours and is published to a single, always-current <b>live stats issue</b>. You can also publish a fresh scan to that issue on demand:</p>
@@ -148,21 +161,62 @@
   </div>
 
   <section class="block">
-    <h2>Help the ecosystem grow</h2>
-    <p class="blk-sub">A discovery map is only as alive as its community. Here's how to plug in.</p>
-    <div class="grid2">
-      <div class="card"><h3>Put a project on the radar</h3><p>Building or using something open in BCI / neurotech? <a href="https://github.com/AxonOS-BCI/axonos-community-radar/issues/new?template=add-project.yml">Open a one-field issue</a> or add a topic via PR to <span class="mono">data/seeds.json</span>. Projects are discovered live, so every link stays real.</p></div>
-      <div class="card"><h3>Follow what's new</h3><p>The <b>New</b> filter and the <a href="./feed.xml">RSS feed</a> surface freshly discovered projects, so you never miss a launch in the field.</p></div>
-      <div class="card"><h3>Talk neurotech</h3><p>Share work, papers and questions in <a href="https://github.com/AxonOS-BCI/axonos-community-radar/discussions">Discussions</a>, and follow build notes on <a href="https://medium.com/@AxonOS">Medium</a>.</p></div>
-      <div class="card"><h3>Build the OS</h3><p>AxonOS is an open, real-time neural OS for BCIs. Explore the engineering at <a href="https://axonos.org">axonos.org</a> and the code on <a href="https://github.com/AxonOS-org">GitHub</a>.</p></div>
+    <h2>Where to start</h2>
+    <p class="blk-sub">The open BCI field is scattered. Pick the path that fits you — every link goes to something real.</p>
+    <div class="start-grid">
+      <div class="start-card">
+        <div class="start-h"><span class="start-i">🔬</span><h3>Researcher</h3></div>
+        <p class="start-lead">You want datasets, decoders and tooling that actually exist.</p>
+        <ol class="start-steps">
+          <li>Sort the grid by <b>Health</b> to see the best-maintained libraries first.</li>
+          <li>Filter to <b>Decoding &amp; ML</b> and <b>Signal Processing</b> for the analysis stack.</li>
+          <li>Read <a href="./report.html">The State of Open BCI</a> for the field at a glance.</li>
+          <li>Follow launches via the <a href="./feed.xml">RSS feed</a>.</li>
+        </ol>
+      </div>
+      <div class="start-card">
+        <div class="start-h"><span class="start-i">⚙️</span><h3>Engineer &amp; contributor</h3></div>
+        <p class="start-lead">You want to build — or find a codebase worth contributing to.</p>
+        <ol class="start-steps">
+          <li>Use the <b>Health</b> meter to spot active, multi-contributor, OSI-licensed repos.</li>
+          <li>Filter to <b>Real-time &amp; Embedded</b> and <b>Protocols &amp; OS</b> for systems work.</li>
+          <li>Explore the AxonOS engineering stack in the <a href="#axonos">AxonOS tab</a>.</li>
+          <li>Talk shop in <a href="https://github.com/AxonOS-BCI/axonos-community-radar/discussions">Discussions</a>.</li>
+        </ol>
+      </div>
+      <div class="start-card">
+        <div class="start-h"><span class="start-i">✦</span><h3>New to neurotech</h3></div>
+        <p class="start-lead">You want one honest map instead of a hundred browser tabs.</p>
+        <ol class="start-steps">
+          <li>Open the <b>Radar</b> view — sectors are what projects <i>do</i>, inner rings are recent.</li>
+          <li>Press <kbd>/</kbd> to search a topic like <span class="mono">eeg</span> or <span class="mono">motor imagery</span>.</li>
+          <li>Every card shows a plain reason it qualifies and a licence status.</li>
+          <li>Read build notes on <a href="https://medium.com/@AxonOS">Medium</a>.</li>
+        </ol>
+      </div>
+      <div class="start-card">
+        <div class="start-h"><span class="start-i">➕</span><h3>Building something</h3></div>
+        <p class="start-lead">You have an open BCI/neuro project the map should know about.</p>
+        <ol class="start-steps">
+          <li><a href="https://github.com/AxonOS-BCI/axonos-community-radar/issues/new?template=add-project.yml">Open a one-field issue</a> — it’s discovered on the next scan.</li>
+          <li>Or add a topic via PR to <span class="mono">data/seeds.json</span>.</li>
+          <li>Once listed, show the <b>On AxonOS Radar</b> badge on your README.</li>
+          <li>Projects are discovered live, so every link stays real.</li>
+        </ol>
+      </div>
     </div>
+  </section>
+
+  <section class="block">
+    <h2>Build the OS</h2>
+    <p class="blk-sub">The radar is the community edge of a larger open project. AxonOS is an open, real-time neural OS for BCIs — explore the engineering at <a href="https://axonos.org">axonos.org</a> and the code on <a href="https://github.com/AxonOS-org">GitHub</a>.</p>
   </section>
 
 </div>
 
 <footer>
   <div class="wrap">
-    © The AxonOS Project / Denis Yermakou &nbsp;·&nbsp; <a href="https://axonos.org">axonos.org</a> &nbsp;·&nbsp; <a href="https://medium.com/@AxonOS">medium.com/@AxonOS</a> &nbsp;·&nbsp; connect@axonos.org &nbsp;·&nbsp; security@axonos.org &nbsp;·&nbsp; <span class="vchip">Radar v5.0.5</span><br>
+    © The AxonOS Project / Denis Yermakou &nbsp;·&nbsp; <a href="https://axonos.org">axonos.org</a> &nbsp;·&nbsp; <a href="https://medium.com/@AxonOS">medium.com/@AxonOS</a> &nbsp;·&nbsp; connect@axonos.org &nbsp;·&nbsp; security@axonos.org &nbsp;·&nbsp; <span class="vchip">Radar v5.1.0</span><br>
     Data: public GitHub search · auto-refreshed every 3h · relevance-filtered · categorisation is opinionated · not an endorsement.
   </div>
 </footer>

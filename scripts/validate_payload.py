@@ -39,11 +39,8 @@ def _is_safe_github_url(url, min_segments=2) -> bool:
         return q.scheme == "https" and q.netloc == "github.com" and len(segs) >= min_segments
     except Exception:
         return False
-    try:
-        q = urllib.parse.urlparse(url)
-        return q.scheme == "https" and q.netloc == "github.com" and q.path.count("/") >= 2
-    except Exception:
-        return False
+
+
 MAX_DESC = 240
 DEFAULT_CAP = 2000
 ALLOWED_TIERS = {
@@ -135,6 +132,24 @@ def validate_payload(payload, cap: int = DEFAULT_CAP):
         fs, snap = r.get("first_seen"), payload.get("snapshot_at")
         if isinstance(fs, str) and isinstance(snap, str) and fs > snap:
             errors.append(f"{tag} first_seen {fs!r} is after snapshot_at {snap!r}")
+
+        # signals block (Ecosystem Health), when present: overall in range,
+        # basis is a known value, sub-scores in 0..100. Fabrication guard: a
+        # health read-out that claims out-of-range numbers is rejected.
+        sig = r.get("signals")
+        if sig is not None:
+            if not isinstance(sig, dict):
+                errors.append(f"{tag} signals must be an object")
+            else:
+                ov = sig.get("overall")
+                if not (isinstance(ov, int) and not isinstance(ov, bool) and 0 <= ov <= 100):
+                    errors.append(f"{tag} signals.overall must be an int 0..100, got {ov!r}")
+                if sig.get("basis") not in ("enriched", "partial", "search-only"):
+                    errors.append(f"{tag} signals.basis unknown: {sig.get('basis')!r}")
+                for dim in ("license", "maintenance", "momentum", "adoption", "team", "docs"):
+                    dv = sig.get(dim)
+                    if dv is not None and not (isinstance(dv, int) and not isinstance(dv, bool) and 0 <= dv <= 100):
+                        errors.append(f"{tag} signals.{dim} must be an int 0..100, got {dv!r}")
 
         # v3-only invariants
         if is_v3:

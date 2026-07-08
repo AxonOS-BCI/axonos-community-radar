@@ -26,7 +26,8 @@ const FIXTURE = {
       stars: 500, forks: 10, days_since_push: 1, active: true, is_new: false,
       rising: true, falling: false, stars_delta_7d: 12,
       evidence_tier: "L3_EXPLICIT_BCI", inclusion_reason: "topic:bci",
-      topics: ["bci"], quality_flags: {}, license: "MIT", has_license: true, first_seen: "2026-06-01" },
+      topics: ["bci"], quality_flags: {}, license: "MIT", has_license: true, first_seen: "2026-06-01",
+      signals: { overall: 84, basis: "enriched", license: 100, maintenance: 100, momentum: 78, adoption: 62, team: 70, docs: 70, badges: ["osi-licensed","actively-maintained"] } },
     { full_name: "acme/faller", html_url: "https://github.com/acme/faller",
       description: "old toolkit", category: "Signal Processing", language: "C",
       stars: 300, forks: 5, days_since_push: 40, active: false, is_new: false,
@@ -136,8 +137,8 @@ assert(window.document.body.textContent.indexOf("ORG") >= 0 &&
        "builders board shows owner type and followers");
 
 // donate card: hidden with empty address (default source)
-assert(!$("donate").classList.contains("hidden") && $("donate").textContent.indexOf("\u0110 100") >= 0,
-       "donate card visible with configured address");
+assert(!$("donate").classList.contains("hidden") && $("donate").textContent.indexOf("\u0110 1000") >= 0,
+       "donate card visible with configured address (\u0110 1000)");
 assert($("donate").querySelector(".dg-inner") && $("donate").querySelector(".dg-copy"),
        "donate card has premium inner wrapper and copy button");
 
@@ -195,5 +196,20 @@ assert($("ecosystem").querySelector(".eco-linkcard"), "links rendered as structu
 
 // zero innerHTML statically (belt & braces with the refactor)
 assert(appJs.indexOf("innerHTML") < 0, "app.js contains zero innerHTML");
+
+// Ecosystem Health meter renders for a project carrying signals
+{
+  const meter = window.document.querySelector(".hlth");
+  assert(meter, "health meter renders for a scored project");
+  assert(meter.querySelector(".hlth-fill"), "health meter has a fill bar");
+  assert(meter.textContent.indexOf("84") >= 0 && meter.textContent.toLowerCase().indexOf("strong") >= 0,
+         "health meter shows the overall score and band");
+  assert((meter.getAttribute("title") || "").toLowerCase().indexOf("momentum") >= 0,
+         "health meter breakdown is in the accessible title");
+  // Health sort option exists in the sort control
+  assert(Array.prototype.some.call(window.document.querySelectorAll("#segSort .seg-opt"),
+         (b) => (b.textContent || "").trim() === "Health"),
+         "Health sort option present");
+}
 
 console.log(`\nui_smoke: ${passed} assertions passed`);

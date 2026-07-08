@@ -160,6 +160,33 @@ def build_body(radar, history, repo):
     if delta:
         L.append("\n" + delta)
 
+    # Ecosystem Health — surface the per-project maturity read-out in the bot's
+    # own output. Numbers come straight from the signals block in radar.json.
+    scored = [x for x in p if isinstance(x.get("signals"), dict)]
+    if scored:
+        hmed = c.get("health_median")
+        if hmed is None:
+            ov = sorted(x["signals"]["overall"] for x in scored)
+            hmed = ov[len(ov) // 2]
+        strong = c.get("health_strong", sum(1 for x in scored if x["signals"]["overall"] >= 80))
+        top = sorted(scored, key=lambda x: -x["signals"]["overall"])[:5]
+        L.append("\n## \U0001FA7A Ecosystem Health \u2014 maturity from public signals\n")
+        L.append(f"_Median Health **{hmed}/100** across {len(scored)} projects \u00b7 **{strong}** in the "
+                 f"strong band (\u2265 80). Computed only from real GitHub signals \u2014 maintenance, "
+                 f"momentum, adoption, team, licence and doc signals. A triage read-out, **not** a "
+                 f"quality, safety, or clinical rating; AxonOS is scored by the same rules as everyone._\n")
+        L.append("| # | Project | Health | Maint | Mom | Adopt | Team |")
+        L.append("|--:|---|--:|--:|--:|--:|--:|")
+        _dash = "\u2014"
+        for i, x in enumerate(top, 1):
+            s = x["signals"]
+            mm = s.get("maintenance", _dash)
+            mo = s.get("momentum", _dash)
+            ad = s.get("adoption", _dash)
+            tm = s.get("team", _dash)
+            L.append(f"| {i} | [{x['full_name']}]({x['html_url']}) | **{s['overall']}** | "
+                     f"{mm} | {mo} | {ad} | {tm} |")
+
     mq = mermaid_quadrant(p)
     if mq:
         L.append("\n## \U0001F9ED Ecosystem quadrant \u2014 reach \u00d7 engagement\n")

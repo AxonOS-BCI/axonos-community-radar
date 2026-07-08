@@ -75,6 +75,15 @@
         "builders": {
           "type": "integer",
           "minimum": 0
+        },
+        "health_strong": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "health_median": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
         }
       }
     },
@@ -263,6 +272,9 @@
         },
         "ecosystem_group": {
           "type": "string"
+        },
+        "signals": {
+          "$ref": "#/$defs/signals"
         }
       }
     },
@@ -318,6 +330,65 @@
         "followers": {
           "type": "integer",
           "minimum": 0
+        }
+      }
+    },
+    "signals": {
+      "type": "object",
+      "description": "Ecosystem Health Signals: 0-100 sub-scores computed only from public GitHub metadata (see docs/METHODOLOGY.md). Dimensions absent from inputs are omitted rather than zeroed.",
+      "required": [
+        "overall",
+        "basis"
+      ],
+      "properties": {
+        "overall": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "basis": {
+          "type": "string",
+          "enum": [
+            "enriched",
+            "partial",
+            "search-only"
+          ]
+        },
+        "license": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "maintenance": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "momentum": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "adoption": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "team": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "docs": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "badges": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     }

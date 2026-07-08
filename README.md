@@ -8,7 +8,7 @@
 
 [![Live](https://img.shields.io/badge/live-axonos--bci.github.io-a78bfa?style=flat-square)](https://axonos-bci.github.io/axonos-community-radar/)
 [![CI](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-5.0.5-0a4a8f?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-5.1.0-0a4a8f?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-475569?style=flat-square)](LICENSE)
 [![Data](https://img.shields.io/badge/data-refreshed%20every%203h-2dd4ff?style=flat-square)](#-how-a-project-gets-on-the-radar)
 [![Runtime deps](https://img.shields.io/badge/runtime%20deps-zero-34d399?style=flat-square)](#-architecture)
@@ -63,6 +63,39 @@ The open BCI field is scattered across hundreds of repositories with no single, 
 | **Builders** | A leaderboard of *owners with 2+ tracked projects* — total stars, active projects, and their focus areas. The people, not just the repos. |
 | **Methodology** | The inclusion rule, the four evidence tiers, and the scoring formula — in the product, not buried in docs. |
 
+## 🩺 &nbsp;New in 5.1 — the field, scored honestly
+
+The radar stops being a list and becomes an **instrument**. Every project now
+carries an **Ecosystem Health** read-out: a single 0–100 score plus six
+sub-scores, computed **only from real public GitHub signals the scan already
+fetches** — no extra API calls, no surveys, no self-assessment.
+
+| Dimension | Measured from |
+|:--|:--|
+| **Maintenance** | How recently the repo was pushed to. |
+| **Momentum** | The real 52-week commit total — is development sustained? |
+| **Adoption** | Stars, published releases, and real release download counts. |
+| **Team** | Contributor breadth — more than a bus-factor of one? |
+| **Licence** | Whether an OSI-recognised licence grants clear reuse rights. |
+| **Doc signals** | Presence of a description, homepage, and licence file. |
+
+The overall score is a weighted mean of **only the dimensions we could measure**
+for a given repo — anything unmeasurable is **left out, not guessed**, and a repo
+that wasn't enriched this cycle is flagged `search-only`. We deliberately do
+**not** score conformance, security posture, or test quality: none can be read
+reliably from search metadata, so scoring them would be fiction. **AxonOS is
+scored by the exact same rules as everyone else** — by construction, not by
+promise (its own repos currently sit in the *developing* band; the score has no
+way to flatter anyone). The full formula is published in
+[`docs/METHODOLOGY.md`](docs/METHODOLOGY.md), enforced by the JSON Schema, and
+covered by unit tests. In the UI it's a band-coloured meter on every card with
+the breakdown in the tooltip, plus a **Health** sort. Newcomers get a new
+persona-based **“Where to start”** entry point.
+
+> **Health is a triage signal, not a verdict.** A high score means a repo looks
+> well-maintained, adopted, and clearly licensed — **never** that it is correct,
+> safe, or fit for clinical use.
+
 ## ✨ &nbsp;New in 5.0.x — the field, in motion
 
 A major release line: the pipeline got faster and fairer, the UI became a
@@ -114,7 +147,7 @@ Everything the UI shows is plain, versioned JSON you can build on:
 
 | File | Contents |
 |:--|:--|
-| [`data/radar.json`](data/radar.json) | The dataset — projects with category, evidence tier, inclusion reason, stars, deltas, `rising`, and a `builders[]` roll-up. Schema: [`radar.schema.json`](data/radar.schema.json). |
+| [`data/radar.json`](data/radar.json) | The dataset — projects with category, evidence tier, inclusion reason, stars, deltas, `rising`, a `signals` health block, and a `builders[]` roll-up. Schema: [`radar.schema.json`](data/radar.schema.json). |
 | [`data/history.json`](data/history.json) | Per-snapshot aggregates (totals, active, new, rising, stars) — the time series behind the growth chart and *Rising*. |
 | [`feed.xml`](feed.xml) | RSS of newly-discovered projects. |
 | [`data/seeds.json`](data/seeds.json) | The topics, keywords, categories, and thresholds that define the scan. |
@@ -137,6 +170,7 @@ axonos-community-radar/
 ├── feed.xml                # generated RSS of newly-discovered projects
 ├── scripts/
 │   ├── radar.py            # discovery → relevance → evidence tier → categorise → score (stdlib only)
+│   ├── signals.py          # Ecosystem Health: transparent 0–100 scores from real GitHub signals
 │   ├── publish_data.py     # commits data via the GitHub API only when it meaningfully changes
 │   ├── publish_stats_issue.py  # upserts ONE living stats issue every scan
 │   └── validate_payload.py # strict, dependency-free dataset validator
@@ -179,7 +213,7 @@ If you reference AxonOS Radar in academic or technical work, please cite it:
   title   = {{AxonOS Radar: a living map of the open brain--computer-interface field}},
   year    = {2026},
   url     = {https://github.com/AxonOS-BCI/axonos-community-radar},
-  version = {5.0.5}
+  version = {5.1.0}
 }
 ```
 

@@ -39,6 +39,7 @@ WEEKLY = os.path.join(ROOT, "data", "weekly.json")
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # local modules win over site-packages
 import enrich  # local module: scripts/enrich.py
 import ecosystem  # local module: scripts/ecosystem.py
+import signals  # local module: scripts/signals.py
 
 TOKEN = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
 SELF_REPO = os.environ.get("GITHUB_REPOSITORY", "AxonOS-BCI/axonos-community-radar").lower()
@@ -564,6 +565,7 @@ def enrich_v3(projects, seeds, snap, history):
         p["falling"] = p["stars_delta_7d"] <= -2
         p["axon_relevance"] = axon_relevance_for(p)
     builders = build_builders(projects)
+    healthy = [p for p in projects if isinstance(p.get("signals"), dict)]
     counts = {
         "total": len(projects),
         "active_30d": sum(1 for p in projects if p.get("active")),
@@ -572,6 +574,11 @@ def enrich_v3(projects, seeds, snap, history):
         "falling": sum(1 for p in projects if p.get("falling")),
         "community_active_30d": sum(1 for p in projects if p.get("community_active")),
         "builders": len(builders),
+        "health_strong": sum(1 for p in healthy if p["signals"].get("overall", 0) >= 80),
+        "health_median": (
+            sorted(p["signals"].get("overall", 0) for p in healthy)[len(healthy) // 2]
+            if healthy else 0
+        ),
     }
     return builders, counts
 
@@ -831,6 +838,11 @@ def main():
     rest = [r for r in candidates if not r.get("ecosystem")]
     eco_keys = {r["full_name"] for r in eco}
     out = eco + [r for r in rest if r["full_name"] not in eco_keys][:max(0, max_projects - len(eco))]
+
+    # Ecosystem Health Signals: a transparent per-project maturity read-out
+    # computed only from the real GitHub signals already fetched above (no extra
+    # API calls). Every project — AxonOS included — is scored by the same rules.
+    signals.annotate(out)
 
     history = load_history()
     builders, counts = enrich_v3(out, seeds, snap, history)

@@ -523,6 +523,32 @@
 
   function bindToggle(id,key){$(id).addEventListener('click',function(){state[key]=!state[key];this.classList.toggle('on',state[key]);this.setAttribute('aria-pressed',String(state[key]));render();});}
 
+  // ── v6.0.1 HTML self-heal ──────────────────────────────────────────────
+  // ?v= stamping covers assets; the HTML DOCUMENT itself can still be served
+  // stale (mobile session-restore, Pages max-age). The deploy publishes
+  // data/build.json and injects <meta name="radar-build"> into every page;
+  // on mismatch we navigate ONCE per build per session to ?b=<build> — a
+  // document URL the cache has never seen — so a stale shell cannot survive
+  // a launch. No meta (dev / pre-6.0.1 build) → do nothing.
+  window.__radarNav = window.__radarNav || function(u){try{location.replace(u);}catch(e){}};
+  function selfHeal(){
+    try{
+      var m=document.querySelector('meta[name="radar-build"]');
+      if(!m||!m.getAttribute('content'))return;
+      var mine=m.getAttribute('content');
+      fetch('./data/build.json',{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){
+        var live=j&&typeof j.build==='string'?j.build:'';
+        if(!live||live===mine)return;
+        var KEY='radar_heal_'+live;
+        try{if(sessionStorage.getItem(KEY))return;sessionStorage.setItem(KEY,'1');}catch(e){}
+        var q=(location.search||'').replace(/^\?/,'').split('&').filter(function(kv){return kv&&kv.indexOf('b=')!==0;});
+        q.push('b='+encodeURIComponent(live));
+        window.__radarNav(location.pathname+'?'+q.join('&')+(location.hash||''));
+      }).catch(function(){});
+    }catch(e){}
+  }
+  selfHeal();
+
   function boot(){
     readHash();
     buildSeg('segView',[{v:'grid',l:'☰ Grid'},{v:'radar',l:'◎ Radar'}],function(){return state.view;},function(v){state.view=v;});

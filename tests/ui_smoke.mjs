@@ -94,6 +94,8 @@ window.fetch = (url) => {
   if (u.indexOf("weekly.json") >= 0) return Promise.resolve({ ok: true, json: () => Promise.resolve(WEEKLY) });
   return Promise.resolve({ ok: false, json: () => Promise.reject(new Error("404")) });
 };
+window.__healNavCalls = [];
+window.__radarNav = (u) => window.__healNavCalls.push(u);
 window.eval(appJs);
 await new Promise((r) => setTimeout(r, 60));   // let fetch microtasks flush
 
@@ -242,6 +244,43 @@ assert(!$("iopChips").classList.contains("hidden"), "interop facet visible when 
   assert(window.location.hash.indexOf("sort=foundation") >= 0, "foundation sort in permalink");
   sortBtns[0].dispatchEvent(new window.Event("click", { bubbles: true }));   // back to Activity
 }
+
+// ── v6.0.1 HTML self-heal ──
+assert(window.__healNavCalls.length === 0,
+       "no radar-build meta (source build) -> self-heal stays silent");
+async function healCase(name, meta, buildJson, expectNav) {
+  const h2 = meta
+    ? html.replace('<meta charset="utf-8">', '<meta charset="utf-8"><meta name="radar-build" content="' + meta + '">')
+    : html;
+  const d = new JSDOM(h2, { url: "https://radar.test/?q=x#sort=health", runScripts: "outside-only", pretendToBeVisual: true });
+  const w = d.window;
+  w.HTMLCanvasElement.prototype.getContext = () => new Proxy({}, { get: () => noop });
+  const calls = [];
+  w.__radarNav = (u) => calls.push(u);
+  w.fetch = (url) => {
+    const u = String(url);
+    if (u.indexOf("build.json") >= 0) {
+      if (buildJson === null) return Promise.resolve({ ok: false, json: () => Promise.reject(new Error("404")) });
+      return Promise.resolve({ ok: true, json: () => Promise.resolve(buildJson) });
+    }
+    if (u.indexOf("radar.json") >= 0) return Promise.resolve({ ok: true, json: () => Promise.resolve(FIXTURE) });
+    return Promise.resolve({ ok: false, json: () => Promise.reject(new Error("404")) });
+  };
+  w.eval(appJs);
+  await new Promise((r) => setTimeout(r, 60));
+  if (expectNav) {
+    assert(calls.length === 1, name + ": navigates exactly once");
+    assert(calls[0].indexOf("b=" + buildJson.build) >= 0 && calls[0].indexOf("q=x") >= 0 && calls[0].indexOf("#sort=health") >= 0,
+           name + ": ?b=<build> appended, existing query and hash preserved");
+    assert(w.sessionStorage.getItem("radar_heal_" + buildJson.build) === "1",
+           name + ": session guard set (no reload loops)");
+  } else {
+    assert(calls.length === 0, name + ": no navigation");
+  }
+}
+await healCase("stale shell", "oldsha00", { build: "newsha11" }, true);
+await healCase("fresh shell", "same1234", { build: "same1234" }, false);
+await healCase("build.json missing", "some1234", null, false);
 
 // public roadmap board link is present and points at the project board
 {

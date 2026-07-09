@@ -90,6 +90,27 @@ jobs:
           echo "stamped assets with v=${SHA}:"
           grep -oE "assets/[A-Za-z0-9_.-]+\.(css|js)\?v=[a-f0-9]+" _site/index.html | sort -u
 
+      - name: Publish the build fingerprint (HTML self-heal)
+        # The one caching layer ?v= stamping cannot cover is the HTML DOCUMENT
+        # itself: browsers (especially mobile session-restore) happily show a
+        # cached index.html whose footer still says the previous version. Fix:
+        #   1. every deployed HTML copy gets <meta name="radar-build" ...>;
+        #   2. data/build.json carries the same fingerprint, always fetched
+        #      no-store by app.js;
+        #   3. on mismatch app.js navigates ONCE (session-guarded) to
+        #      ?b=<build> — a new document URL the cache has never seen —
+        #      so a stale shell can never survive a launch. Source files stay
+        #      clean; only deployed copies are stamped.
+        run: |
+          SHA="${GITHUB_SHA:0:8}"
+          printf '{"build":"%s","deployed_at":"%s"}\n' "$SHA" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > _site/data/build.json
+          for f in _site/index.html _site/stats.html _site/report.html _site/support.html; do
+            [ -f "$f" ] || continue
+            sed -i "s#<meta charset=\"utf-8\">#<meta charset=\"utf-8\"><meta name=\"radar-build\" content=\"${SHA}\">#" "$f"
+          done
+          grep -q "radar-build" _site/index.html || { echo "meta injection failed"; exit 1; }
+          echo "build fingerprint: $SHA -> data/build.json + <meta radar-build> in every page"
+
       - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d  # v6.0.0
 
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9  # v5.0.0

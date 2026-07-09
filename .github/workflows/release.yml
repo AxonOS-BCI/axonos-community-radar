@@ -1,0 +1,91 @@
+name: Release
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Tags become Release objects AUTOMATICALLY. This closes a recurring failure
+# class: git tags were pushed for 5.1.0, 5.1.1, 5.2.0 and 6.0.0, but the repo
+# sidebar kept showing "v5.0.5 · Latest" because GitHub's sidebar shows the
+# latest *Release object*, not the latest tag — and creating those objects
+# depended on a human remembering to run a token-bearing curl. No more:
+#   • push a v* tag            → the Release is created in the same minute;
+#   • workflow_dispatch (tag)  → token-free backfill for already-pushed tags,
+#                                straight from the Actions tab in the app.
+# "Latest" is only claimed when the tag matches the committed VERSION file, so
+# a backfilled historical tag can never steal the Latest badge.
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to (back)release, e.g. v5.2.0"
+        required: true
+        type: string
+
+permissions:
+  contents: write   # gh release create
+
+concurrency:
+  group: release-${{ github.event.inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Publish GitHub Release from tag
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Resolve tag and checkout its tree
+        id: tag
+        run: |
+          TAG="${{ github.event.inputs.tag || github.ref_name }}"
+          git rev-parse -q --verify "refs/tags/$TAG" >/dev/null || { echo "no such tag: $TAG"; exit 1; }
+          git checkout -q "refs/tags/$TAG"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "releasing $TAG ($(git rev-parse --short HEAD))"
+
+      - name: Build release body from CHANGELOG
+        run: |
+          python3 - "${{ steps.tag.outputs.tag }}" <<'PY'
+          import re, sys
+          tag = sys.argv[1]
+          ver = tag.lstrip("v")
+          text = open("CHANGELOG.md", encoding="utf-8").read()
+          m = re.search(rf"^## \[{re.escape(ver)}\][^\n]*\n(.*?)(?=^## \[|\Z)",
+                        text, re.M | re.S)
+          body = (m.group(1).strip() if m else
+                  f"Release {tag}. See CHANGELOG.md for details.")
+          open("RELEASE_BODY.md", "w", encoding="utf-8").write(body + "\n")
+          print(f"body: {len(body)} chars "
+                f"({'from CHANGELOG' if m else 'fallback'})")
+          PY
+
+      - name: Create the Release (idempotent; Latest only for current VERSION)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${{ steps.tag.outputs.tag }}"
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "release $TAG already exists — nothing to do"; exit 0
+          fi
+          CURRENT="v$(tr -d '[:space:]' < VERSION)"
+          LATEST=$([ "$TAG" = "$CURRENT" ] && echo "--latest" || echo "--latest=false")
+          gh release create "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "AxonOS Radar $(echo "$TAG" | sed 's/^v//') " \
+            --notes-file RELEASE_BODY.md \
+            $LATEST
+          echo "✓ release $TAG created ($LATEST)"
+
+      - name: Verify the Release exists (the gate this class was missing)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${{ steps.tag.outputs.tag }}"
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json tagName,isLatest \
+            --jq '"verified: " + .tagName + " latest=" + (.isLatest|tostring)'

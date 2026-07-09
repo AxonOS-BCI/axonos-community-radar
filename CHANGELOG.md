@@ -1,5 +1,27 @@
 # Changelog
 
+## [6.0.1] — 2026-07-10 — the last mile, instrumented
+
+### Added
+- **Release workflow** (`.github/workflows/release.yml`): pushing a `v*` tag
+  now creates the GitHub Release automatically — body extracted from the
+  matching CHANGELOG section, and the **Latest** badge is claimed only when
+  the tag matches the committed `VERSION`, so backfilling a historical tag
+  (token-free, via *Run workflow* in the Actions tab) can never steal it.
+  Closes the recurring "sidebar still says v5.0.5" class at the mechanism
+  level: the sidebar shows Release *objects*, and until now creating them
+  depended on a human remembering a token-bearing curl.
+- **HTML self-heal**: the deploy now publishes `data/build.json` and injects
+  `<meta name="radar-build">` into every deployed page; on boot `app.js`
+  compares the two (no-store) and, on mismatch, navigates once per build per
+  session to `?b=<build>` — a document URL the cache has never seen. This
+  closes the one caching layer `?v=` asset stamping could not cover: the
+  HTML document itself surviving in mobile session-restore and showing an
+  old footer version over fresh data.
+
+### Notes
+- No data-model changes; payload contract stays v4.
+
 ## [6.0.0] — 2026-07-10 — "Solid Ground"
 
 ### Added

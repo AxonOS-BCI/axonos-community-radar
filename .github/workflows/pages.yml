@@ -42,10 +42,18 @@ jobs:
     name: Build and deploy site artifact
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # Automatic runs deploy only after a green scan; manual dispatch always does.
+    # push and manual dispatch ALWAYS deploy; scan-triggered runs deploy only
+    # after a green scan (workflow_run fires on failed scans too — those must
+    # not ship a site). NOTE: this guard once listed only dispatch+workflow_run,
+    # which silently SKIPPED every push-triggered deploy while the on:-block
+    # comment promised immediate deploys — the root cause of every
+    # "pushed but the site is stale" episode. Any edit here must keep all
+    # three event names explicit.
     if: >
+      github.event_name == 'push' ||
       github.event_name == 'workflow_dispatch' ||
-      github.event.workflow_run.conclusion == 'success'
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success')
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

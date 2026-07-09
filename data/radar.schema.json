@@ -15,7 +15,8 @@
       "type": "integer",
       "enum": [
         2,
-        3
+        3,
+        4
       ]
     },
     "generated_at": {
@@ -84,6 +85,14 @@
           "type": "integer",
           "minimum": 0,
           "maximum": 100
+        },
+        "interop_tagged": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "foundation_checked": {
+          "type": "integer",
+          "minimum": 0
         }
       }
     },
@@ -275,6 +284,65 @@
         },
         "signals": {
           "$ref": "#/$defs/signals"
+        },
+        "interop": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]{0,23}$"
+          },
+          "description": "Interop tags detected from topics/description/homepage against data/interop-vocab.json (heuristic; v6)."
+        },
+        "foundation": {
+          "type": "object",
+          "description": "Foundation signals (v6): checkable repo facts only — community profile files, root CITATION.cff, root SECURITY.md, CI workflows.",
+          "required": [
+            "license_file",
+            "readme",
+            "contributing",
+            "code_of_conduct",
+            "citation",
+            "security_policy",
+            "ci",
+            "count"
+          ],
+          "properties": {
+            "license_file": {
+              "type": "boolean"
+            },
+            "readme": {
+              "type": "boolean"
+            },
+            "contributing": {
+              "type": "boolean"
+            },
+            "code_of_conduct": {
+              "type": "boolean"
+            },
+            "citation": {
+              "type": "boolean"
+            },
+            "security_policy": {
+              "type": "boolean"
+            },
+            "ci": {
+              "type": "boolean"
+            },
+            "health_pct": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 100
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 7
+            }
+          }
         }
       }
     },

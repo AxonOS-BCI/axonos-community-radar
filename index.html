@@ -74,6 +74,7 @@
     <div class="ctl-row">
       <div class="chips" id="chips"></div>
       <div class="chips tiers" id="tierChips" aria-label="Evidence tier filter"></div>
+      <div class="chips iops hidden" id="iopChips" aria-label="Interop filter"></div>
       <select class="sel" id="langSel" aria-label="Filter by language"><option value="">All languages</option></select>
       <div class="tg act" id="tAct" role="button" tabindex="0" aria-pressed="false">● Active 30d</div>
       <div class="tg new" id="tNew" role="button" tabindex="0" aria-pressed="false">✦ New</div>
@@ -136,6 +137,41 @@
         <a class="data-btn" href="https://github.com/AxonOS-BCI/axonos-community-radar/issues?q=is%3Aissue%20is%3Aopen%20label%3Aradar-stats" target="_blank" rel="noopener">📋 Open the live stats issue</a>
       </div>
       <span class="data-note">Maintainers: the button opens the scan workflow — click <b>Run workflow</b> to rescan GitHub, refresh the data, and rewrite the live stats issue in place.</span>
+    </div>
+
+    <div class="ph mt24"><h2>Foundation signals</h2><span class="note">can you build on it? — checkable facts only</span></div>
+    <div class="card mw820">
+      <p>The question the field actually asks before adopting a dependency is not "how many stars" but <b>"can I build on this?"</b> — will it cite, will it take a vulnerability report, does anything verify it? The <b>Foundation</b> read-out on each card answers with <b>seven checkable repository facts</b> — files and workflows that either exist or don't. It is <b>not</b> a quality score and it never guesses:</p>
+      <div class="tier-grid">
+        <div class="tier-row"><span class="tg-badge tl3">Lic</span><span class="tg-txt"><b>Licence file.</b> A licence file GitHub's community profile recognises — reuse rights are stated, not assumed.</span></div>
+        <div class="tier-row"><span class="tg-badge tl3">Doc</span><span class="tg-txt"><b>README.</b> The repository explains itself at the front door.</span></div>
+        <div class="tier-row"><span class="tg-badge tl2">Contrib</span><span class="tg-txt"><b>CONTRIBUTING.</b> A stated path for outside work — the difference between "open source" and "source visible".</span></div>
+        <div class="tier-row"><span class="tg-badge tl2">CoC</span><span class="tg-txt"><b>Code of conduct.</b> Community ground rules exist.</span></div>
+        <div class="tier-row"><span class="tg-badge tl1">Cite</span><span class="tg-txt"><b>CITATION.cff</b> at the repository root — the file that lets papers cite software properly. Reproducibility starts with citability.</span></div>
+        <div class="tier-row"><span class="tg-badge tl1">Sec</span><span class="tg-txt"><b>SECURITY.md</b> at the repository root — a private channel for vulnerability reports. For software that touches neural data, this is table stakes.</span></div>
+        <div class="tier-row"><span class="tg-badge tl0">CI</span><span class="tg-txt"><b>CI workflows.</b> At least one GitHub Actions workflow exists — <i>something</i> runs against every change.</span></div>
+      </div>
+      <p class="mt12">Honest limits, stated plainly: we check the <b>root-level</b> SECURITY.md and the exact <span class="mono">CITATION.cff</span> filename (GitHub's own citation mechanism); the first four facts come from GitHub's <b>community profile</b>. When the evidence is indeterminate this cycle — a rate limit, a transient error — the card simply shows <b>no Foundation read-out</b> rather than a fabricated zero. And a missing file says a file is missing — <b>it says nothing about code quality</b>.</p>
+    </div>
+
+    <div class="ph mt24"><h2>Interop — who speaks to what</h2><span class="note">the field's fragmentation, made filterable</span></div>
+    <div class="card mw820">
+      <p>Open BCI's most expensive pain is <b>integration guesswork</b>: every stack has its own transport and format, and finding "everything that speaks LSL" means an afternoon of tab-hopping. The radar now detects <b>interop tags</b> from each project's topics, description and homepage against a committed vocabulary — <a href="https://github.com/AxonOS-BCI/axonos-community-radar/blob/main/data/interop-vocab.json"><span class="mono">data/interop-vocab.json</span></a> — and makes them a one-tap filter ("Speaks") above the grid.</p>
+      <p class="mt12">The vocabulary covers protocols (<b>LSL</b>, <b>BrainFlow</b>), data formats (<b>BIDS</b>, <b>EDF</b>), analysis toolkits (<b>MNE</b>, <b>EEGLAB</b>, <b>OpenViBE</b>, <b>Timeflux</b>), hardware families (<b>OpenBCI</b>, <b>Emotiv</b>, <b>Neurosity</b>, <b>g.tec</b>, <b>Muse</b>, <b>ADS1299</b>, <b>FreeEEG</b>) and runtimes (<b>ROS</b>, <b>Unity</b>, <b>Arduino</b>, <b>ESP32</b>, <b>BLE</b>).</p>
+      <p class="mt12">Detection is deliberately conservative: <b>word-boundary matching only</b>, so <span class="mono">unity</span> never fires inside <span class="mono">community</span> and <span class="mono">mne</span> never fires inside <span class="mono">mnemonic</span>; collision-prone words require qualified forms (<span class="mono">ros2</span>, <span class="mono">muse-lsl</span>). It is <b>heuristic</b> — it reads what maintainers wrote, so a project that never mentions its protocol won't be tagged. Tags mean "this project references the ecosystem", <b>not</b> "certified compatible".</p>
+    </div>
+
+    <div class="ph mt24"><h2>The radar as a data product</h2><span class="note">stable endpoints, versioned contract, verified writes</span></div>
+    <div class="card mw820">
+      <p>Everything on this page is backed by public, machine-readable endpoints you can build on — same origin, CORS-friendly, refreshed with every scan or deploy:</p>
+      <div class="tier-grid">
+        <div class="tier-row"><span class="tg-badge tl3">JSON</span><span class="tg-txt"><span class="mono">data/radar.json</span> — the full dataset: every project, signal, delta and count. The contract is <span class="mono">data/radar.schema.json</span> (JSON Schema, validated in CI on every commit).</span></div>
+        <div class="tier-row"><span class="tg-badge tl3">NDJSON</span><span class="tg-txt"><span class="mono">data/projects.ndjson</span> — one project per line, key-sorted, built at deploy time. Loads straight into <span class="mono">pandas</span>/<span class="mono">jq</span>/<span class="mono">DuckDB</span> with zero unwrapping.</span></div>
+        <div class="tier-row"><span class="tg-badge tl2">Manifest</span><span class="tg-txt"><span class="mono">data/ecosystem.json</span> — the AxonOS organism manifest; <span class="mono">data/badge-ecosystem.json</span> — a shields.io live-pulse endpoint any README can embed.</span></div>
+        <div class="tier-row"><span class="tg-badge tl1">Vocab</span><span class="tg-txt"><span class="mono">data/interop-vocab.json</span> — the interop vocabulary itself: the exact patterns behind every tag, open to review and PRs.</span></div>
+        <div class="tier-row"><span class="tg-badge tl1">Feed</span><span class="tg-txt"><span class="mono">feed.xml</span> — RSS of new arrivals, for readers and bots alike.</span></div>
+      </div>
+      <p class="mt12">Provenance you can verify: the scan bot writes data through the GitHub API, so every data commit carries GitHub's <b>Verified</b> signature; the payload passes a fabrication-guarding validator and the published JSON Schema in CI; and a <b>documentation-coverage gate</b> fails the build if any shipped signal, tag or endpoint is missing from this very page. Nothing on a card is unexplained.</p>
     </div>
   </div>
 
@@ -236,7 +272,7 @@
 
 <footer>
   <div class="wrap">
-    © The AxonOS Project / Denis Yermakou &nbsp;·&nbsp; <a href="https://axonos.org">axonos.org</a> &nbsp;·&nbsp; <a href="https://medium.com/@AxonOS">medium.com/@AxonOS</a> &nbsp;·&nbsp; connect@axonos.org &nbsp;·&nbsp; security@axonos.org &nbsp;·&nbsp; <span class="vchip">Radar v5.2.0</span><br>
+    © The AxonOS Project / Denis Yermakou &nbsp;·&nbsp; <a href="https://axonos.org">axonos.org</a> &nbsp;·&nbsp; <a href="https://medium.com/@AxonOS">medium.com/@AxonOS</a> &nbsp;·&nbsp; connect@axonos.org &nbsp;·&nbsp; security@axonos.org &nbsp;·&nbsp; <span class="vchip">Radar v6.0.0</span><br>
     Data: public GitHub search · auto-refreshed every 3h · relevance-filtered · categorisation is opinionated · not an endorsement.
   </div>
 </footer>

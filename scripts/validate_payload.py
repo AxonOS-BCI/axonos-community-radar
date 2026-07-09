@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import json
 import urllib.parse
+from pathlib import Path
 import sys
 
 GITHUB_PREFIX = "https://github.com/"
@@ -56,6 +57,22 @@ def _is_nonneg_int(v) -> bool:
     return isinstance(v, int) and not isinstance(v, bool) and v >= 0
 
 
+_FOUNDATION_KEYS = ("license_file", "readme", "contributing", "code_of_conduct",
+                    "citation", "security_policy", "ci")
+
+def _load_known_interop():
+    """The vocabulary is the contract. If it cannot be loaded (partial
+    checkout), fall back to shape-only checks rather than fail open."""
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import interop as _iop
+        return _iop.known_tags()
+    except Exception:  # noqa: BLE001
+        return None
+
+_KNOWN_INTEROP = _load_known_interop()
+
+
 def validate_payload(payload, cap: int = DEFAULT_CAP):
     """Return a list of error strings. Empty list == valid."""
     errors: list[str] = []
@@ -75,7 +92,7 @@ def validate_payload(payload, cap: int = DEFAULT_CAP):
         if isinstance(total, int) and total < 0:
             errors.append("counts.total is negative")
 
-    is_v3 = payload.get("version") == 3
+    is_v3 = payload.get("version") in (3, 4)   # v4 keeps every v3 invariant
     seen: set[str] = set()
 
     for i, r in enumerate(projects):
@@ -151,6 +168,39 @@ def validate_payload(payload, cap: int = DEFAULT_CAP):
                     if dv is not None and not (isinstance(dv, int) and not isinstance(dv, bool) and 0 <= dv <= 100):
                         errors.append(f"{tag} signals.{dim} must be an int 0..100, got {dv!r}")
 
+        # interop tags (v4), when present: a short list of known lowercase
+        # slugs. Fabrication guard: an unknown tag is rejected, so the UI can
+        # never show a "compatibility" the vocabulary does not define.
+        iop = r.get("interop")
+        if iop is not None:
+            if not isinstance(iop, list) or len(iop) > 8:
+                errors.append(f"{tag} interop must be a list of <= 8 tags")
+            else:
+                for t in iop:
+                    if not (isinstance(t, str) and 0 < len(t) <= 24 and t == t.lower()):
+                        errors.append(f"{tag} interop tag malformed: {t!r}")
+                    elif _KNOWN_INTEROP is not None and t not in _KNOWN_INTEROP:
+                        errors.append(f"{tag} interop tag not in vocabulary: {t!r}")
+
+        # foundation block (v4), when present: seven booleans, a consistent
+        # count, and an in-range health percentage. Fabrication guard: a
+        # count that disagrees with its own booleans is rejected.
+        fnd = r.get("foundation")
+        if fnd is not None:
+            if not isinstance(fnd, dict):
+                errors.append(f"{tag} foundation must be an object")
+            else:
+                for key in _FOUNDATION_KEYS:
+                    if not isinstance(fnd.get(key), bool):
+                        errors.append(f"{tag} foundation.{key} must be a boolean")
+                hp = fnd.get("health_pct")
+                if hp is not None and not (isinstance(hp, int) and not isinstance(hp, bool) and 0 <= hp <= 100):
+                    errors.append(f"{tag} foundation.health_pct must be an int 0..100 or null")
+                cnt = fnd.get("count")
+                real = sum(1 for key in _FOUNDATION_KEYS if fnd.get(key) is True)
+                if not (isinstance(cnt, int) and not isinstance(cnt, bool) and cnt == real):
+                    errors.append(f"{tag} foundation.count ({cnt!r}) != true booleans ({real})")
+
         # v3-only invariants
         if is_v3:
             tier = r.get("evidence_tier")
@@ -169,6 +219,12 @@ def validate_payload(payload, cap: int = DEFAULT_CAP):
             if counts.get("total") is not None and counts["total"] != n:
                 errors.append(f"counts.total ({counts['total']}) != number of projects ({n})")
             rising_n = sum(1 for r in projects if isinstance(r, dict) and r.get("rising"))
+            iop_n = sum(1 for r in projects if isinstance(r, dict) and r.get("interop"))
+            if counts.get("interop_tagged") is not None and counts["interop_tagged"] != iop_n:
+                errors.append(f"counts.interop_tagged ({counts['interop_tagged']}) != projects with interop tags ({iop_n})")
+            fnd_n = sum(1 for r in projects if isinstance(r, dict) and isinstance(r.get("foundation"), dict))
+            if counts.get("foundation_checked") is not None and counts["foundation_checked"] != fnd_n:
+                errors.append(f"counts.foundation_checked ({counts['foundation_checked']}) != projects with foundation ({fnd_n})")
             if counts.get("rising") is not None and counts["rising"] != rising_n:
                 errors.append(f"counts.rising ({counts['rising']}) != projects with rising=true ({rising_n})")
             if isinstance(builders, list) and counts.get("builders") is not None and counts["builders"] != len(builders):

@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "comment": "Interop vocabulary for the AxonOS Radar. Each tag names a protocol, data format, hardware family or runtime that BCI projects integrate with. Detection is word-boundary matching of `patterns` against a project's topics, description and homepage — heuristic by design, and documented in the Methodology tab. Tags are lowercase slugs; labels are display names.",
+  "tags": [
+    { "tag": "lsl",       "label": "LSL",        "group": "protocol", "patterns": ["lsl", "labstreaminglayer", "lab-streaming-layer", "liblsl", "pylsl"] },
+    { "tag": "brainflow", "label": "BrainFlow",  "group": "protocol", "patterns": ["brainflow"] },
+    { "tag": "bids",      "label": "BIDS",       "group": "format",   "patterns": ["bids", "eeg-bids", "bids-validator"] },
+    { "tag": "edf",       "label": "EDF",        "group": "format",   "patterns": ["edf", "edf\\+", "european-data-format", "bdf"] },
+    { "tag": "mne",       "label": "MNE",        "group": "toolkit",  "patterns": ["mne", "mne-python"] },
+    { "tag": "eeglab",    "label": "EEGLAB",     "group": "toolkit",  "patterns": ["eeglab"] },
+    { "tag": "openvibe",  "label": "OpenViBE",   "group": "toolkit",  "patterns": ["openvibe"] },
+    { "tag": "timeflux",  "label": "Timeflux",   "group": "toolkit",  "patterns": ["timeflux"] },
+    { "tag": "openbci",   "label": "OpenBCI",    "group": "hardware", "patterns": ["openbci", "cyton", "ganglion"] },
+    { "tag": "emotiv",    "label": "Emotiv",     "group": "hardware", "patterns": ["emotiv", "epoc"] },
+    { "tag": "neurosity", "label": "Neurosity",  "group": "hardware", "patterns": ["neurosity"] },
+    { "tag": "gtec",      "label": "g.tec",      "group": "hardware", "patterns": ["gtec", "g\\.tec", "unicorn-hybrid", "unicorn-bci"] },
+    { "tag": "muse",      "label": "Muse",       "group": "hardware", "patterns": ["muse-lsl", "muselsl", "interaxon", "muse-headband", "muse-eeg", "muse2", "muse-s"] },
+    { "tag": "ads1299",   "label": "ADS1299",    "group": "hardware", "patterns": ["ads1299", "ads-1299"] },
+    { "tag": "freeeeg",   "label": "FreeEEG",    "group": "hardware", "patterns": ["freeeeg", "freeeeg32", "freeeeg128"] },
+    { "tag": "ros",       "label": "ROS",        "group": "runtime",  "patterns": ["ros2", "ros-noetic", "ros-humble", "robot-operating-system"] },
+    { "tag": "unity",     "label": "Unity",      "group": "runtime",  "patterns": ["unity", "unity3d"] },
+    { "tag": "arduino",   "label": "Arduino",    "group": "runtime",  "patterns": ["arduino"] },
+    { "tag": "esp32",     "label": "ESP32",      "group": "runtime",  "patterns": ["esp32", "esp-32"] },
+    { "tag": "ble",       "label": "BLE",        "group": "runtime",  "patterns": ["ble", "bluetooth-le", "bluetooth-low-energy"] }
+  ]
+}

@@ -8,7 +8,7 @@
 
 [![Live](https://img.shields.io/badge/live-axonos--bci.github.io-a78bfa?style=flat-square)](https://axonos-bci.github.io/axonos-community-radar/)
 [![CI](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-5.2.0-0a4a8f?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-6.0.0-0a4a8f?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-475569?style=flat-square)](LICENSE)
 [![Data](https://img.shields.io/badge/data-refreshed%20every%203h-2dd4ff?style=flat-square)](#-how-a-project-gets-on-the-radar)
 [![Runtime deps](https://img.shields.io/badge/runtime%20deps-zero-34d399?style=flat-square)](#-architecture)
@@ -38,6 +38,19 @@ The open BCI field is scattered across hundreds of repositories with no single, 
 
 > **The anti-hype contract.** Every link is real. Every project is discovered live from public data. The score is `log₁₀(stars+1) × 10 + recency` — published, neutral, and applied to all. *Rising* reflects measured 7-day star velocity, not opinion.
 
+## 🩹 &nbsp;The pains this radar closes
+
+Open BCI has real, recurring pains. v6 maps each one to a mechanism you can verify — not a promise:
+
+| The field's pain | What the radar does about it |
+|:--|:--|
+| **Fragmentation.** Hundreds of scattered repos, no single map. | The live radar + card grid, refreshed every 3 hours, with a published inclusion rule and an evidence tier on every entry. |
+| **Abandonment blindness.** Projects die quietly; people build on corpses. | **Health** (recency, 52-week commits, team breadth) + **Rising/Falling** from measured star velocity — decay is visible before you depend on it. |
+| **The trust question: *"can I build on this?"*** | **Foundation signals** — seven checkable facts per repo (licence file, README, CONTRIBUTING, code of conduct, `CITATION.cff`, `SECURITY.md`, CI workflows). Facts, not vibes; absence of evidence shows as absence, never as a fabricated zero. |
+| **Integration guesswork.** Every stack speaks its own protocol. | **Interop tags** — "who speaks LSL / BrainFlow / BIDS / OpenBCI…" detected from a committed vocabulary, filterable in one tap. |
+| **Reproducibility friction.** Getting field data into a notebook is an afternoon. | Stable endpoints incl. **`data/projects.ndjson`** (one project per line — pandas/jq/DuckDB-ready) and a CI-validated JSON Schema. |
+| **Opaque rankings.** Most "top BCI" lists are editorial. | Every formula is published, every signal is documented, and a **documentation-coverage gate fails CI** if any shipped signal, tag or endpoint is unexplained. |
+
 ## ⚡ &nbsp;Quick start — use it in 30 seconds
 
 | You want to… | Do this |
@@ -61,7 +74,17 @@ The open BCI field is scattered across hundreds of repositories with no single, 
 |:--|:--|
 | **Projects** | The interactive radar (categories as sectors, recency as distance, stars as size) and a searchable, filterable card grid. Each card carries its real GitHub topics, an **evidence tier**, and a **Rising** or **Falling** badge when it's moving either way. |
 | **Builders** | A leaderboard of *owners with 2+ tracked projects* — total stars, active projects, and their focus areas. The people, not just the repos. |
-| **Methodology** | The inclusion rule, the four evidence tiers, and the scoring formula — in the product, not buried in docs. |
+| **Methodology** | The inclusion rule, evidence tiers, scoring, **Foundation signals**, **interop detection** and the full **data-endpoints contract** — in the product, not buried in docs. |
+
+## 🧱 &nbsp;New in 6.0 — Solid Ground
+
+Two new honest axes on every card, and the radar grows into a **data product**:
+
+- **Foundation `n/7`** — seven checkable repository facts (community profile, root `CITATION.cff`, root `SECURITY.md`, CI workflows). The tooltip lists every ✓/✗; the UI recomputes the count locally and never trusts a shipped number. Sort the whole field by Foundation from the sort bar.
+- **"Speaks" interop pills** — 20 protocols/formats/toolkits/hardware/runtimes detected word-boundary-strictly from topics & descriptions against a reviewable vocabulary ([`data/interop-vocab.json`](data/interop-vocab.json)). One tap filters the field to *everything that speaks LSL*.
+- **`data/projects.ndjson`** — the dataset, one project per line, built at deploy time.
+- **A documentation-coverage CI gate** — nothing on a card ships unexplained, mechanically.
+- Payload contract → **v4**, fully backward-compatible; fabrication guards extended (unknown interop tags and inconsistent foundation counts are rejected). Health scoring unchanged, so historical series stay comparable.
 
 ## 🩺 &nbsp;New in 5.1 — the field, scored honestly
 
@@ -149,6 +172,8 @@ Everything the UI shows is plain, versioned JSON you can build on:
 |:--|:--|
 | [`data/radar.json`](data/radar.json) | The dataset — projects with category, evidence tier, inclusion reason, stars, deltas, `rising`, a `signals` health block, and a `builders[]` roll-up. Schema: [`radar.schema.json`](data/radar.schema.json). |
 | [`data/history.json`](data/history.json) | Per-snapshot aggregates (totals, active, new, rising, stars) — the time series behind the growth chart and *Rising*. |
+| [`data/projects.ndjson`](https://axonos-bci.github.io/axonos-community-radar/data/projects.ndjson) | **New in 6.0** — one project per line, key-sorted, built at deploy time. `pd.read_json(url, lines=True)` and you're done. |
+| [`data/interop-vocab.json`](data/interop-vocab.json) | **New in 6.0** — the interop vocabulary: the exact word-boundary patterns behind every "Speaks" tag. Open to review and PRs. |
 | [`feed.xml`](feed.xml) | RSS of newly-discovered projects. |
 | [`data/seeds.json`](data/seeds.json) | The topics, keywords, categories, and thresholds that define the scan. |
 | [`data/ecosystem.json`](https://axonos-bci.github.io/axonos-community-radar/data/ecosystem.json) | **New in 5.2** — the AxonOS *organism manifest*: every AxonOS account and repository with its role, live Health signals for radar-tracked repos, and the canonical voluntary-support block. Built at deploy time from [`data/ecosystem-registry.json`](data/ecosystem-registry.json) + the live scan. |
@@ -230,7 +255,7 @@ If you reference AxonOS Radar in academic or technical work, please cite it:
   title   = {{AxonOS Radar: a living map of the open brain--computer-interface field}},
   year    = {2026},
   url     = {https://github.com/AxonOS-BCI/axonos-community-radar},
-  version = {5.2.0}
+  version = {6.0.0}
 }
 ```
 

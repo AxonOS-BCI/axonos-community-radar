@@ -1,5 +1,45 @@
 # Changelog
 
+## [6.0.0] — 2026-07-10 — "Solid Ground"
+
+### Added
+- **Foundation signals.** Seven checkable repository facts per project —
+  licence file, README, CONTRIBUTING, code of conduct, root `CITATION.cff`,
+  root `SECURITY.md`, and CI workflows — sourced from GitHub's community
+  profile, contents and workflows APIs. Shown as an `n/7` chip with a full
+  per-check breakdown; **honest-absence rule**: indeterminate evidence means
+  no read-out at all, never a fabricated zero. The UI recomputes the count
+  locally and never trusts a shipped number.
+- **Interop tags — "who speaks to what".** Word-boundary detection of 20
+  protocols, formats, toolkits, hardware families and runtimes (LSL,
+  BrainFlow, BIDS, EDF, MNE, EEGLAB, OpenViBE, Timeflux, OpenBCI, Emotiv,
+  Neurosity, g.tec, Muse, ADS1299, FreeEEG, ROS, Unity, Arduino, ESP32, BLE)
+  from topics/description/homepage against a committed, reviewable vocabulary
+  (`data/interop-vocab.json`). Zero extra API calls; one-tap "Speaks" facet
+  filter; a Foundation sort joins the sort bar; both join the permalink hash.
+- **The radar as a data product.** New deploy-time `data/projects.ndjson`
+  (one project per line, key-sorted — pandas/jq/DuckDB-ready), an endpoints
+  table in the Methodology view, and the JSON Schema extended to the new
+  fields.
+- **Documentation-coverage gate.** `scripts/check_methodology.py` fails CI if
+  any shipped signal, interop tag or endpoint is missing from the Methodology
+  view, `docs/METHODOLOGY.md`, or the UI label map — "nothing on a card is
+  unexplained" is now enforced mechanically.
+
+### Changed
+- Payload contract bumped to **version 4** (fully backward-compatible: every
+  new field is optional; version 3 payloads still validate). The validator
+  gains fabrication guards for interop (unknown tags rejected) and foundation
+  (count must equal its own booleans); `counts` gains `interop_tagged` and
+  `foundation_checked` with cross-checked consistency.
+- Enrichment performs four additional polite API calls per repo (community
+  profile, `CITATION.cff`, `SECURITY.md`, workflows) inside the same shared
+  rate-limit budget and headroom reserve.
+
+### Notes
+- Health scoring is deliberately **unchanged** — Foundation is a separate,
+  factual axis, so historical health series remain comparable.
+
 ## [5.2.0] — 2026-07-09
 
 ### Added

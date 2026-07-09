@@ -211,3 +211,72 @@ identical numbers.
 **Builders owner data.** For the small Builders list only, the scanner reads
 each owner's public profile once (`type`, `followers`). This is display
 context, not a ranking input — builder ordering is unchanged.
+
+## Foundation signals (v6)
+
+The practical trust question — *"can I build on this?"* — is answered with
+**seven checkable repository facts**, never with a guess:
+
+| Signal | What is checked | Source |
+|---|---|---|
+| Licence file | a licence file GitHub recognises | community profile |
+| README | a README exists | community profile |
+| CONTRIBUTING | contribution guidelines exist | community profile |
+| Code of conduct | a code of conduct exists | community profile |
+| CITATION.cff | the exact `CITATION.cff` filename at the repository root — GitHub's citation mechanism | contents API |
+| SECURITY.md | a **root-level** `SECURITY.md` — a private channel for vulnerability reports | contents API |
+| CI workflows | at least one GitHub Actions workflow is defined | workflows API |
+
+`foundation.count` is the number of true checks (0–7). The community-profile
+`health_percentage` is carried as `foundation.health_pct` when GitHub reports
+one. **Honest-absence rule:** if any piece of evidence is indeterminate this
+cycle (rate limit, transient error, missing profile), the project carries **no
+`foundation` field at all** — the UI shows nothing rather than a fabricated
+zero. A missing file means a file is missing; it says **nothing** about code
+quality. The validator rejects any payload whose `foundation.count` disagrees
+with its own booleans.
+
+## Interop tags (v6)
+
+Integration guesswork is the field's most expensive pain, so the radar
+detects **interop tags** — protocols, formats, toolkits, hardware families
+and runtimes a project references — from its topics, description and
+homepage, matched **word-boundary only** against the committed vocabulary
+[`data/interop-vocab.json`](../data/interop-vocab.json):
+
+- **Protocols:** LSL, BrainFlow
+- **Formats:** BIDS, EDF
+- **Toolkits:** MNE, EEGLAB, OpenViBE, Timeflux
+- **Hardware:** OpenBCI, Emotiv, Neurosity, g.tec, Muse, ADS1299, FreeEEG
+- **Runtimes:** ROS, Unity, Arduino, ESP32, BLE
+
+Word boundaries keep the false-positive traps shut (`unity` never fires
+inside `community`; `mne` never inside `mnemonic`), and collision-prone words
+require qualified forms (`ros2`, `muse-lsl`, `interaxon`). Detection is
+heuristic — it reads what maintainers wrote. A tag means *"this project
+references the ecosystem"*, **not** *"certified compatible"*. Unknown tags
+are rejected by the payload validator, so the UI can never display a
+compatibility the vocabulary does not define. The vocabulary is versioned and
+open to review and pull requests.
+
+## Data endpoints (v6)
+
+Every surface is backed by public, same-origin, machine-readable endpoints:
+
+| Endpoint | Contents |
+|---|---|
+| `data/radar.json` | the full dataset — projects, signals, deltas, counts |
+| `data/radar.schema.json` | the JSON Schema contract, validated in CI on every commit |
+| `data/projects.ndjson` | one project per line, key-sorted, built at deploy time — loads straight into pandas / jq / DuckDB |
+| `data/ecosystem.json` | the AxonOS organism manifest (deploy-time) |
+| `data/badge-ecosystem.json` | shields.io live-pulse endpoint for READMEs |
+| `data/interop-vocab.json` | the interop vocabulary — the exact patterns behind every tag |
+| `feed.xml` | RSS of new arrivals |
+
+Provenance: the scan bot writes through the GitHub API, so every data commit
+carries GitHub's **Verified** signature; `scripts/validate_payload.py` is a
+fabrication-guarding validator (out-of-range health, impossible star jumps,
+unknown interop tags and inconsistent foundation counts are all rejected);
+and `scripts/check_methodology.py` fails CI if any shipped signal, tag or
+endpoint is missing from the documentation — the promise that *nothing on a
+card is unexplained* is enforced mechanically, not editorially.

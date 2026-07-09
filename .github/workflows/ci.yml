@@ -70,12 +70,21 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
 
       - name: Python syntax
-        run: python3 -m py_compile scripts/radar.py scripts/enrich.py scripts/build_report.py scripts/publish_data.py scripts/validate_payload.py scripts/publish_stats_issue.py scripts/health_check.py scripts/ecosystem.py scripts/signals.py scripts/build_ecosystem_manifest.py
+        run: python3 -m py_compile scripts/radar.py scripts/enrich.py scripts/build_report.py scripts/publish_data.py scripts/validate_payload.py scripts/publish_stats_issue.py scripts/health_check.py scripts/ecosystem.py scripts/signals.py scripts/build_ecosystem_manifest.py scripts/interop.py scripts/build_exports.py scripts/check_methodology.py
 
       - name: Unit tests
         run: |
           pip install -r requirements-ci.txt --quiet
           python3 -m pytest tests/ -q
+
+      - name: Documentation-coverage gate (v6)
+        # Every shipped signal, interop tag and endpoint must be explained in
+        # the Methodology view and docs/METHODOLOGY.md, and every tag must
+        # exist in the UI label map. A signal without its explanation fails CI.
+        run: python3 scripts/check_methodology.py
+
+      - name: Interop vocabulary self-check
+        run: python3 scripts/interop.py
 
   frontend:
     name: Frontend integrity
@@ -172,7 +181,7 @@ jobs:
 
       - name: Required files
         run: |
-          for f in README.md LICENSE VERSION index.html report.html assets/app.js assets/app.css assets/report.css assets/stats.js stats.html scripts/build_report.py scripts/enrich.py scripts/health_check.py feed.xml og-image.png CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md CITATION.cff data/seeds.json data/radar.schema.json data/curated.json docs/METHODOLOGY.md docs/DATA_MODEL.md docs/THREAT_MODEL.md docs/INCIDENT_RESPONSE.md docs/RETENTION.md docs/SBOM.md .github/dependabot.yml .github/workflows/health.yml .github/workflows/pages.yml .nojekyll tests/ui_smoke.mjs scripts/radar.py scripts/publish_data.py scripts/validate_payload.py scripts/publish_stats_issue.py scripts/ecosystem.py scripts/signals.py data/curated.json tests/test_radar.py tests/test_signals.py support.html assets/support.css assets/support.js assets/doge-qr.svg data/ecosystem-registry.json scripts/build_ecosystem_manifest.py tests/test_ecosystem_manifest.py .github/FUNDING.yml; do
+          for f in README.md LICENSE VERSION index.html report.html assets/app.js assets/app.css assets/report.css assets/stats.js stats.html scripts/build_report.py scripts/enrich.py scripts/health_check.py feed.xml og-image.png CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md CITATION.cff data/seeds.json data/radar.schema.json data/curated.json docs/METHODOLOGY.md docs/DATA_MODEL.md docs/THREAT_MODEL.md docs/INCIDENT_RESPONSE.md docs/RETENTION.md docs/SBOM.md .github/dependabot.yml .github/workflows/health.yml .github/workflows/pages.yml .nojekyll tests/ui_smoke.mjs scripts/radar.py scripts/publish_data.py scripts/validate_payload.py scripts/publish_stats_issue.py scripts/ecosystem.py scripts/signals.py data/curated.json tests/test_radar.py tests/test_signals.py support.html assets/support.css assets/support.js assets/doge-qr.svg data/ecosystem-registry.json scripts/build_ecosystem_manifest.py tests/test_ecosystem_manifest.py .github/FUNDING.yml scripts/interop.py data/interop-vocab.json scripts/build_exports.py scripts/check_methodology.py tests/test_interop.py tests/test_foundation.py tests/test_exports.py; do
             test -f "$f" || { echo "missing $f"; exit 1; }
           done
           echo "all required files present"

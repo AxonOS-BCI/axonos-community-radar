@@ -27,13 +27,19 @@ const FIXTURE = {
       rising: true, falling: false, stars_delta_7d: 12,
       evidence_tier: "L3_EXPLICIT_BCI", inclusion_reason: "topic:bci",
       topics: ["bci"], quality_flags: {}, license: "MIT", has_license: true, first_seen: "2026-06-01",
+      interop: ["lsl","brainflow"],
+      foundation: { license_file: true, readme: true, contributing: true, code_of_conduct: false,
+                    citation: true, security_policy: true, ci: true, health_pct: 88, count: 6 },
       signals: { overall: 84, basis: "enriched", license: 100, maintenance: 100, momentum: 78, adoption: 62, team: 70, docs: 70, badges: ["osi-licensed","actively-maintained"] } },
     { full_name: "acme/faller", html_url: "https://github.com/acme/faller",
       description: "old toolkit", category: "Signal Processing", language: "C",
       stars: 300, forks: 5, days_since_push: 40, active: false, is_new: false,
       rising: false, falling: true, stars_delta_7d: -4,
       evidence_tier: "L2_NEURAL_SIGNAL", inclusion_reason: "keyword:eeg",
-      topics: ["eeg"], quality_flags: {}, license: "Apache-2.0", has_license: true, first_seen: "2026-05-01" },
+      topics: ["eeg"], quality_flags: {}, license: "Apache-2.0", has_license: true, first_seen: "2026-05-01",
+      interop: ["ads1299"],
+      foundation: { license_file: true, readme: true, contributing: false, code_of_conduct: false,
+                    citation: false, security_policy: false, ci: false, health_pct: 20, count: 2 } },
     { full_name: "solo/unlicensed", html_url: "https://github.com/solo/unlicensed",
       description: "no licence repo", category: "Protocols & OS", language: "Rust",
       stars: 50, forks: 1, days_since_push: 3, active: true, is_new: true,
@@ -46,7 +52,10 @@ const FIXTURE = {
       rising: false, falling: false, stars_delta_7d: 1,
       evidence_tier: "L0_WEAK_ADJACENT", inclusion_reason: "weak",
       topics: ["privacy"], quality_flags: { possible_false_positive: true },
-      license: "NOASSERTION", has_license: false, first_seen: "2026-06-20" },
+      license: "NOASSERTION", has_license: false, first_seen: "2026-06-20",
+      interop: ["notatag","lsl"],
+      foundation: { license_file: true, readme: false, contributing: false, code_of_conduct: false,
+                    citation: false, security_policy: false, ci: false, health_pct: 999, count: 7 } },
   ],
   ecosystem: {
     owners: { "AxonOS-org": { login: "AxonOS-org", type: "Organization", name: "AxonOS",
@@ -196,6 +205,43 @@ assert($("ecosystem").querySelector(".eco-linkcard"), "links rendered as structu
 
 // zero innerHTML statically (belt & braces with the refactor)
 assert(appJs.indexOf("innerHTML") < 0, "app.js contains zero innerHTML");
+
+// ── v6 "Solid Ground": interop pills, foundation chip, facet, sort ──
+assert(q("#cards .pc .iop").length >= 3, "interop pills render on cards");
+{
+  const rc = [...q("#cards .pc")].find(c => c.textContent.indexOf("acme/rising") >= 0);
+  assert(rc && rc.textContent.indexOf("LSL") >= 0 && rc.textContent.indexOf("BrainFlow") >= 0,
+         "rising card shows LSL + BrainFlow pills");
+  assert(rc.textContent.indexOf("6/7") >= 0, "foundation chip shows 6/7 on rising card");
+  const uc = [...q("#cards .pc")].find(c => c.textContent.indexOf("solo/unlicensed") >= 0);
+  assert(uc && uc.querySelectorAll(".fnd").length === 0,
+         "no foundation chip when the field is absent (honest absence)");
+  const xc = [...q("#cards .pc")].find(c => c.textContent.indexOf("solo/unclear") >= 0);
+  assert(xc && xc.textContent.indexOf("1/7") >= 0,
+         "shipped foundation.count=7 is recomputed locally to 1/7 (never trusted)");
+  assert(xc.textContent.indexOf("notatag") < 0, "unknown interop tag is dropped by sanitize");
+}
+assert(!$("iopChips").classList.contains("hidden"), "interop facet visible when tags exist");
+{
+  const iopChips = q("#iopChips .chip");
+  assert(iopChips.length === 3, "three interop facet chips built (lsl, brainflow, ads1299)");
+  const lslChip = [...iopChips].find(c => c.textContent.indexOf("LSL") >= 0);
+  lslChip.dispatchEvent(new window.Event("click", { bubbles: true }));
+  const shown = q("#cards .pc");
+  assert(shown.length === 2, "LSL facet narrows to the two LSL-tagged projects");
+  assert(window.location.hash.indexOf("iop=lsl") >= 0, "interop filter written to permalink hash");
+  lslChip.dispatchEvent(new window.Event("click", { bubbles: true }));   // off
+}
+{
+  const sortBtns = [...q("#segSort .seg-opt")];
+  const fBtn = sortBtns.find(b => b.textContent === "Foundation");
+  assert(!!fBtn, "Foundation sort option present");
+  fBtn.dispatchEvent(new window.Event("click", { bubbles: true }));
+  assert(q("#cards .pc")[0].textContent.indexOf("acme/rising") >= 0,
+         "Foundation sort puts the 6/7 project first");
+  assert(window.location.hash.indexOf("sort=foundation") >= 0, "foundation sort in permalink");
+  sortBtns[0].dispatchEvent(new window.Event("click", { bubbles: true }));   // back to Activity
+}
 
 // public roadmap board link is present and points at the project board
 {

@@ -23,6 +23,7 @@ import sys
 import time
 import math
 import urllib.parse
+import interop
 import urllib.request
 import urllib.error
 from xml.sax.saxutils import escape as _xescape
@@ -564,6 +565,7 @@ def enrich_v3(projects, seeds, snap, history):
         p["rising"] = p["stars_delta_7d"] >= max(2, math.ceil(stars * 0.05))
         p["falling"] = p["stars_delta_7d"] <= -2
         p["axon_relevance"] = axon_relevance_for(p)
+    interop_tagged = interop.annotate_interop(projects)
     builders = build_builders(projects)
     healthy = [p for p in projects if isinstance(p.get("signals"), dict)]
     counts = {
@@ -575,6 +577,9 @@ def enrich_v3(projects, seeds, snap, history):
         "community_active_30d": sum(1 for p in projects if p.get("community_active")),
         "builders": len(builders),
         "health_strong": sum(1 for p in healthy if p["signals"].get("overall", 0) >= 80),
+        "interop_tagged": interop_tagged,
+        "foundation_checked": sum(1 for p in projects
+                                  if isinstance(p.get("foundation"), dict)),
         "health_median": (
             sorted(p["signals"].get("overall", 0) for p in healthy)[len(healthy) // 2]
             if healthy else 0
@@ -863,7 +868,7 @@ def main():
                 break
 
     payload = {
-        "version": 3, "generated_at": now.replace(microsecond=0).isoformat(),
+        "version": 4, "generated_at": now.replace(microsecond=0).isoformat(),
         "snapshot_at": snap_iso, "source": "GitHub topic search (public)",
         "criteria": ("Public, non-archived, non-fork repositories that carry a core BCI/neuro "
                      "topic, or a context topic plus a neuro keyword. Ranked by recency (from the "
@@ -871,6 +876,7 @@ def main():
         "refresh": "every 3 hours via GitHub Actions", "min_stars": min_stars,
         "topics_failed": len(failed), "topics": topics,
         "methodology": {"scoring_version": "4.0", "category_version": "3.0",
+                        "interop_version": "1.0", "foundation_version": "1.0",
                         "evidence_version": "3.0", "docs": "docs/METHODOLOGY.md",
                         "note": ("Inclusion is not endorsement; AxonOS is scored by the same "
                                  "formula as every project. Enriched signals (team, downloads, "

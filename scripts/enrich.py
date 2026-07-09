@@ -193,6 +193,83 @@ def _https_only(val):
         return ""
 
 
+# ── Foundation signals (v6) ─────────────────────────────────────────────────
+# Answers the field's most practical trust question — "can I build on this?" —
+# with checkable facts only: community-profile files, a root CITATION.cff, a
+# root SECURITY.md, and whether CI workflows exist. Absence of evidence is
+# recorded as absence (no `foundation` field), never as a fabricated zero.
+
+FOUNDATION_KEYS = ("license_file", "readme", "contributing", "code_of_conduct",
+                   "citation", "security_policy", "ci")
+
+
+def _parse_community_profile(data) -> dict | None:
+    """Booleans from GET /repos/{fn}/community/profile."""
+    if not isinstance(data, dict):
+        return None
+    files = data.get("files") or {}
+    hp = data.get("health_percentage")
+    return {
+        # API contract: each entry is an object when the file exists, null
+        # when it does not — so presence is `is not None`, not truthiness.
+        "license_file": files.get("license") is not None,
+        "readme": files.get("readme") is not None,
+        "contributing": files.get("contributing") is not None,
+        "code_of_conduct": files.get("code_of_conduct") is not None,
+        "health_pct": int(hp) if isinstance(hp, int) and 0 <= hp <= 100 else None,
+    }
+
+
+def _foundation_assemble(profile: dict, citation: bool, security: bool,
+                         ci: bool) -> dict:
+    out = dict(profile)
+    out["citation"] = bool(citation)
+    out["security_policy"] = bool(security)
+    out["ci"] = bool(ci)
+    out["count"] = sum(1 for k in FOUNDATION_KEYS if out.get(k))
+    return out
+
+
+def _exists_at(fn, path, token):
+    """(exists: bool | None, limited). None = indeterminate (network/5xx) —
+    the caller then skips the whole foundation block rather than guess."""
+    code, _, _ = gh_get(f"{API}/repos/{fn}/contents/{path}", token)
+    if code == 429:
+        return None, True
+    if code == 200:
+        return True, False
+    if code == 404:
+        return False, False
+    return None, False
+
+
+def foundation(fn, token):
+    """Foundation dict for one repo, or (None, limited) when it cannot be
+    established honestly this cycle."""
+    code, data, _ = gh_get(f"{API}/repos/{fn}/community/profile", token)
+    if code == 429:
+        return None, True
+    profile = _parse_community_profile(data) if code == 200 else None
+    if profile is None:
+        return None, False
+    citation, limited = _exists_at(fn, "CITATION.cff", token)
+    if limited:
+        return None, True
+    security, limited = _exists_at(fn, "SECURITY.md", token)
+    if limited:
+        return None, True
+    code, wf, _ = gh_get(f"{API}/repos/{fn}/actions/workflows", token)
+    if code == 429:
+        return None, True
+    if code != 200 or not isinstance(wf, dict):
+        ci = None
+    else:
+        ci = int(wf.get("total_count") or 0) > 0
+    if citation is None or security is None or ci is None:
+        return None, False
+    return _foundation_assemble(profile, citation, security, ci), False
+
+
 def repo_extra(fn, token):
     code, data, _ = gh_get(f"{API}/repos/{fn}", token)
     if code == 429:
@@ -241,6 +318,11 @@ def _enrich_one(p, token):
     if limited:
         return False, True
     p.update(extra)
+    fnd, limited = foundation(fn, token)
+    if limited:
+        return False, True
+    if fnd is not None:
+        p["foundation"] = fnd
     p["enriched"] = True
     return True, False
 
@@ -292,7 +374,7 @@ def enrich_repos(projects, token, max_enrich=200, keep_headroom=200, log=print,
                 elif ok:
                     state["enriched"] += 1
                 if state["remaining"] is not None:
-                    state["remaining"] -= 5
+                    state["remaining"] -= 9   # v6: +community profile, CITATION, SECURITY, workflows
         except Exception as exc:  # noqa: BLE001  (never fail the whole scan)
             with lock:
                 state["errors"] += 1

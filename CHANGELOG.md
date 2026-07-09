@@ -1,5 +1,35 @@
 # Changelog
 
+## [5.2.0] — 2026-07-09
+
+### Added
+- **One organism: the ecosystem manifest.** A hand-maintained canonical registry
+  (`data/ecosystem-registry.json`) now describes every AxonOS account and
+  repository — the radar, the Neural Boundary Game, the profile front door, and
+  the seven AxonOS-org engineering repos — with its role and stage. At every
+  deploy, `scripts/build_ecosystem_manifest.py` joins the registry with the
+  live scan and publishes `data/ecosystem.json`: roles, links, live Health
+  signals for radar-tracked repos, and the canonical voluntary-support block.
+  Deploy-time generation means the manifest is always in sync with the deployed
+  dataset and costs zero bot commits.
+- **The live pulse badge.** `data/badge-ecosystem.json` is a shields.io
+  endpoint document regenerated at every deploy ("120 projects · health 79").
+  Any repository in the ecosystem can embed one line of Markdown and carry the
+  organism's live heartbeat.
+- **Support page (`support.html`).** A first-class voluntary-support surface:
+  the canonical Dogecoin address with copy button, wallet-URI link, QR code,
+  on-chain explorer link — and the plain terms mirrored verbatim from
+  `CRYPTO_PAYMENT_TERMS.md` (voluntary, no entitlements, irreversible,
+  commercial licensing stays a written-agreement/fiat channel). Linked from the
+  landing and stats navigation and from a new README section.
+- **Sponsor button.** `.github/FUNDING.yml` points the repo's Sponsor button at
+  the support page.
+- **Funding-consistency CI gate.** One DOGE address, single-sourced from the
+  registry, must appear byte-identical in `app.js`, `support.html` and
+  `FUNDING.yml`, must pass Base58Check (version 0x1E), and no foreign D-address
+  may appear on any of those surfaces. A typo'd or swapped address can no
+  longer ship.
+
 ## [5.1.1] — 2026-07-08
 
 ### Fixed

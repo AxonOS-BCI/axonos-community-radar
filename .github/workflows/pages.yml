@@ -57,11 +57,18 @@ jobs:
       - name: Assemble site (public files only — never .git or tooling)
         run: |
           mkdir -p _site/data _site/assets
-          cp index.html stats.html report.html feed.xml og-image.png _site/
+          cp index.html stats.html report.html support.html feed.xml og-image.png _site/
           cp -r assets/. _site/assets/
           cp data/*.json _site/data/
           touch _site/.nojekyll
           echo "site files: $(find _site -type f | wc -l)"
+
+      - name: Build ecosystem manifest + live badge (deploy-time, zero commits)
+        # Derives data/ecosystem.json (the organism manifest) and
+        # data/badge-ecosystem.json (shields.io endpoint) from the committed
+        # registry + the current radar.json, straight into the artifact. Always
+        # in sync with the deployed data, never a bot commit.
+        run: python3 scripts/build_ecosystem_manifest.py --out _site/data
 
       - name: Cache-bust asset URLs with the commit SHA
         # Append ?v=<sha> to every local CSS/JS asset link in the shipped HTML so
@@ -71,7 +78,7 @@ jobs:
         # only the deployed copies are stamped.
         run: |
           SHA="${GITHUB_SHA:0:8}"
-          for f in _site/index.html _site/stats.html _site/report.html; do
+          for f in _site/index.html _site/stats.html _site/report.html _site/support.html; do
             [ -f "$f" ] || continue
             sed -i -E "s#((href|src)=\"\.?/?assets/[A-Za-z0-9_.-]+\.(css|js))\"#\1?v=${SHA}\"#g" "$f"
           done

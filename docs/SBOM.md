@@ -1,7 +1,7 @@
 # Software Bill of Materials (SBOM) — AxonOS Community Radar
 
 Format: human-readable inventory (SPDX-lite spirit). Regenerated with every
-release; this file corresponds to **v5.1.1**.
+release; this file corresponds to **v5.2.0**.
 
 The design goal is a supply chain small enough to list by hand.
 
@@ -18,7 +18,7 @@ urllib, xml.sax.saxutils, datetime, email.utils, html, collections`.
 
 | Component | Version | License | Role |
 |---|---|---|---|
-| Vanilla JS / HTML / CSS (this repo) | v5.1.1 | MIT | `assets/app.js`, `assets/stats.js`, styles — no frameworks, no CDN imports |
+| Vanilla JS / HTML / CSS (this repo) | v5.2.0 | MIT | `assets/app.js`, `assets/stats.js`, styles — no frameworks, no CDN imports |
 
 The site loads **no external scripts, styles, or fonts**. The strict CSP
 (`script-src 'self'; style-src 'self'`, no `unsafe-inline`) makes that a

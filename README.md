@@ -8,7 +8,7 @@
 
 [![Live](https://img.shields.io/badge/live-axonos--bci.github.io-a78bfa?style=flat-square)](https://axonos-bci.github.io/axonos-community-radar/)
 [![CI](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-5.1.1-0a4a8f?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-5.2.0-0a4a8f?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-475569?style=flat-square)](LICENSE)
 [![Data](https://img.shields.io/badge/data-refreshed%20every%203h-2dd4ff?style=flat-square)](#-how-a-project-gets-on-the-radar)
 [![Runtime deps](https://img.shields.io/badge/runtime%20deps-zero-34d399?style=flat-square)](#-architecture)
@@ -151,6 +151,8 @@ Everything the UI shows is plain, versioned JSON you can build on:
 | [`data/history.json`](data/history.json) | Per-snapshot aggregates (totals, active, new, rising, stars) — the time series behind the growth chart and *Rising*. |
 | [`feed.xml`](feed.xml) | RSS of newly-discovered projects. |
 | [`data/seeds.json`](data/seeds.json) | The topics, keywords, categories, and thresholds that define the scan. |
+| [`data/ecosystem.json`](https://axonos-bci.github.io/axonos-community-radar/data/ecosystem.json) | **New in 5.2** — the AxonOS *organism manifest*: every AxonOS account and repository with its role, live Health signals for radar-tracked repos, and the canonical voluntary-support block. Built at deploy time from [`data/ecosystem-registry.json`](data/ecosystem-registry.json) + the live scan. |
+| [`data/badge-ecosystem.json`](https://axonos-bci.github.io/axonos-community-radar/data/badge-ecosystem.json) | **New in 5.2** — a [shields.io endpoint](https://shields.io/badges/endpoint-badge) carrying the ecosystem's live pulse. Embed anywhere: `![AxonOS ecosystem](https://img.shields.io/endpoint?url=https%3A%2F%2Faxonos-bci.github.io%2Faxonos-community-radar%2Fdata%2Fbadge-ecosystem.json)` |
 
 ## 🏗️ &nbsp;Architecture
 
@@ -203,7 +205,22 @@ The Radar is the community-facing edge of a larger open project. As of 5.0.3 the
 | [`axonos-standard`](https://github.com/AxonOS-org/axonos-standard) | The normative AxonOS Standard and claims catalogue. |
 | [`axonos-e2e-demo`](https://github.com/AxonOS-org/axonos-e2e-demo) | Synthetic signal → typed intent, bit-for-bit reproducible. |
 
+## 💛 &nbsp;Support the organism
+
+Everything in the AxonOS ecosystem — this radar, the [Neural Boundary Game](https://github.com/AxonOS-BCI/neural-boundary-game), the [open-source neural OS](https://github.com/AxonOS-org) — is free and open: **no paywalls, no ads, no tracking, no tokens**. If it's useful to you, a voluntary Dogecoin tip is the direct way to fuel the work:
+
+<div align="center">
+
+**[💛 Support page — one ecosystem, one address](https://axonos-bci.github.io/axonos-community-radar/support.html)**
+
+`DMwHAhqVNWf7dyEznukxCufNS5rjuP5MTp` &nbsp;·&nbsp; [verify on-chain](https://dogechain.info/address/DMwHAhqVNWf7dyEznukxCufNS5rjuP5MTp)
+
+</div>
+
+Contributions are voluntary — not purchases, not investments, and no product entitlement is granted (everything is already free). Commercial licensing is a separate written-agreement channel: [connect@axonos.org](mailto:connect@axonos.org).
+
 ## 📑 &nbsp;Citation
+
 
 If you reference AxonOS Radar in academic or technical work, please cite it:
 
@@ -213,7 +230,7 @@ If you reference AxonOS Radar in academic or technical work, please cite it:
   title   = {{AxonOS Radar: a living map of the open brain--computer-interface field}},
   year    = {2026},
   url     = {https://github.com/AxonOS-BCI/axonos-community-radar},
-  version = {5.1.1}
+  version = {5.2.0}
 }
 ```
 

@@ -70,7 +70,7 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
 
       - name: Python syntax
-        run: python3 -m py_compile scripts/radar.py scripts/enrich.py scripts/build_report.py scripts/publish_data.py scripts/validate_payload.py scripts/publish_stats_issue.py scripts/health_check.py scripts/ecosystem.py scripts/signals.py
+        run: python3 -m py_compile scripts/radar.py scripts/enrich.py scripts/build_report.py scripts/publish_data.py scripts/validate_payload.py scripts/publish_stats_issue.py scripts/health_check.py scripts/ecosystem.py scripts/signals.py scripts/build_ecosystem_manifest.py
 
       - name: Unit tests
         run: |
@@ -172,10 +172,36 @@ jobs:
 
       - name: Required files
         run: |
-          for f in README.md LICENSE VERSION index.html report.html assets/app.js assets/app.css assets/report.css assets/stats.js stats.html scripts/build_report.py scripts/enrich.py scripts/health_check.py feed.xml og-image.png CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md CITATION.cff data/seeds.json data/radar.schema.json data/curated.json docs/METHODOLOGY.md docs/DATA_MODEL.md docs/THREAT_MODEL.md docs/INCIDENT_RESPONSE.md docs/RETENTION.md docs/SBOM.md .github/dependabot.yml .github/workflows/health.yml .github/workflows/pages.yml .nojekyll tests/ui_smoke.mjs scripts/radar.py scripts/publish_data.py scripts/validate_payload.py scripts/publish_stats_issue.py scripts/ecosystem.py scripts/signals.py data/curated.json tests/test_radar.py tests/test_signals.py; do
+          for f in README.md LICENSE VERSION index.html report.html assets/app.js assets/app.css assets/report.css assets/stats.js stats.html scripts/build_report.py scripts/enrich.py scripts/health_check.py feed.xml og-image.png CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md CITATION.cff data/seeds.json data/radar.schema.json data/curated.json docs/METHODOLOGY.md docs/DATA_MODEL.md docs/THREAT_MODEL.md docs/INCIDENT_RESPONSE.md docs/RETENTION.md docs/SBOM.md .github/dependabot.yml .github/workflows/health.yml .github/workflows/pages.yml .nojekyll tests/ui_smoke.mjs scripts/radar.py scripts/publish_data.py scripts/validate_payload.py scripts/publish_stats_issue.py scripts/ecosystem.py scripts/signals.py data/curated.json tests/test_radar.py tests/test_signals.py support.html assets/support.css assets/support.js assets/doge-qr.svg data/ecosystem-registry.json scripts/build_ecosystem_manifest.py tests/test_ecosystem_manifest.py .github/FUNDING.yml; do
             test -f "$f" || { echo "missing $f"; exit 1; }
           done
           echo "all required files present"
+
+      - name: Funding consistency (ONE DOGE address, checksum-verified, everywhere)
+        # The single-source rule for the support address. Guards against a
+        # typo'd or swapped address ever shipping on any surface: the registry
+        # is canonical; app.js, support.html, FUNDING.yml and the QR alt-text
+        # must all carry exactly it — and it must pass Base58Check (0x1E).
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, re
+          ALPH='123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+          def b58check(s):
+              n=0
+              for ch in s: n=n*58+ALPH.index(ch)
+              raw=n.to_bytes(25,'big')
+              return raw[0]==0x1E and hashlib.sha256(hashlib.sha256(raw[:-4]).digest()).digest()[:4]==raw[-4:]
+          reg=json.load(open('data/ecosystem-registry.json'))['funding']
+          addr=reg['address']
+          assert b58check(addr), 'registry DOGE address fails Base58Check'
+          assert reg['uri']==f'dogecoin:{addr}' and addr in reg['explorer']
+          for path in ('assets/app.js','support.html','.github/FUNDING.yml'):
+              body=open(path,encoding='utf-8').read()
+              assert addr in body, f'{path} missing canonical address'
+              others=set(re.findall(r'\bD[1-9A-HJ-NP-Za-km-z]{25,40}\b',body))-{addr}
+              assert not others, f'{path} carries a FOREIGN D-address: {others}'
+          print(f'funding consistency ok: {addr} (Base58Check valid, single-source)')
+          PY
 
       - name: Version consistency (VERSION == badge == CITATION == bibtex == CHANGELOG)
         run: |

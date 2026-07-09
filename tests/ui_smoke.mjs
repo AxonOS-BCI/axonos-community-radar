@@ -204,6 +204,21 @@ assert(appJs.indexOf("innerHTML") < 0, "app.js contains zero innerHTML");
          "roadmap board link present on landing view");
 }
 
+// support surface: nav link, canonical DOGE address single-sourced, zero innerHTML
+{
+  const navSupport = [...window.document.querySelectorAll('a.nav-link')]
+    .some(a => (a.getAttribute('href') || '').includes('support.html'));
+  assert(navSupport, "Support link present in the landing nav");
+  const supportHtml = readFileSync(new URL('../support.html', import.meta.url), 'utf8');
+  const registry = JSON.parse(readFileSync(new URL('../data/ecosystem-registry.json', import.meta.url), 'utf8'));
+  const addr = registry.funding.address;
+  assert(supportHtml.includes(addr), "support.html carries the canonical DOGE address");
+  assert(appJs.includes(addr), "app.js donate card uses the same canonical DOGE address");
+  const supportJs = readFileSync(new URL('../assets/support.js', import.meta.url), 'utf8');
+  assert(supportJs.indexOf('innerHTML') < 0, "support.js contains zero innerHTML");
+  assert(supportHtml.includes('assets/support.js'), "support.html wires assets/support.js");
+}
+
 // Ecosystem Health meter renders for a project carrying signals
 {
   const meter = window.document.querySelector(".hlth");

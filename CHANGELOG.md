@@ -1,5 +1,44 @@
 # Changelog
 
+## [7.0.0] — 2026-07-11 — "The Relevance Engine"
+
+A major release that changes *what the radar is*: from a broad discovery list
+that leaked generic ML, to a scored, auditable map of the BCI ecosystem as a
+connected system.
+
+### Added
+- **BCI Relevance Engine** (`scripts/relevance.py`): a scored, auditable
+  inclusion gate — the **BCI Relevance Score (BRS, 0–100)** — built from a
+  *signed evidence ledger*. Every positive and negative signal is recorded with
+  its points and a plain-language reason. The decisive idea is *disambiguation
+  by anchor*: `neural` counts as neuroscience only next to a neuro anchor
+  (interface/signal/decoding/implant…); `neural network` with no anchor is
+  negative evidence. Each project now carries `brs`, `relevance_tier`, and
+  `relevance_ledger`. Unit tested in `tests/test_relevance.py`.
+- **Domain intelligence** (`scripts/domain.py`): per-repo `facets`
+  (modality / paradigm / signal-chain stage / standards) plus two ecosystem
+  views published in `radar.json` — `coverage_matrix` (modality × pipeline-stage
+  grid, exposing coverage deserts) and `standards_graph` (each standard, the
+  repos that speak it, and the count of interoperability edges). Unit tested in
+  `tests/test_domain.py`.
+- **Map tab** in the UI: a coverage heatmap and a standards-interoperability
+  view — the field's shape and its connective tissue, computed from evidence.
+
+### Changed
+- Inclusion is now decided by the BRS gate instead of the old boolean topic +
+  keyword test. Generic ML — even ML that says "neural" — is filtered out, with
+  the reason recorded per rejected repo.
+- `radar.json` schema bumped to **version 5** (adds `brs`, `relevance_tier`,
+  `relevance_ledger`, `facets`, `coverage_matrix`, `standards_graph`).
+- `docs/METHODOLOGY.md` rewritten around the Relevance Engine and Domain
+  Intelligence; legacy evidence fields documented as superseded but retained.
+
+### Fixed
+- A committed data purge removed 58 off-topic repositories (PyTorch, TensorFlow,
+  Keras, spiking-NN ML libraries, neuroimaging pipelines, an AI-agent memory
+  project, and other generic-ML noise) that the old boolean had admitted,
+  leaving ~62 genuine BCI/neuro projects.
+
 ## [6.0.1] — 2026-07-10 — the last mile, instrumented
 
 ### Added

@@ -359,3 +359,36 @@ body.loading .stats .stat b{color:transparent;background:linear-gradient(90deg,#
 .fnd b{font-size:11px;font-weight:800;color:var(--dim);font-variant-numeric:tabular-nums}
 .pc:hover .fnd{color:var(--dim);border-color:rgba(255,255,255,.22)}
 @media (max-width:560px){.fnd{display:none}}
+
+/* ── v7 Ecosystem Map: coverage heatmap + standards graph ── */
+.map-host{max-width:960px;margin:0 auto;padding:4px 0 40px}
+.map-intro{font-size:15px;line-height:1.55;color:var(--fg,#cfe);opacity:.9;margin:6px 0 22px}
+.map-h{font-size:18px;margin:26px 0 4px;letter-spacing:.2px}
+.map-sub{font-size:13px;opacity:.7;margin:0 0 14px;line-height:1.5}
+.map-empty{opacity:.7;padding:30px 0;text-align:center}
+table.cov{border-collapse:separate;border-spacing:3px;width:100%;margin:0 0 6px}
+table.cov th{font-size:11px;font-weight:600;opacity:.75;padding:4px 6px;text-align:center;white-space:nowrap}
+table.cov th.cov-mod{text-align:right;padding-right:10px;opacity:.9;font-weight:700}
+table.cov th.cov-corner{width:96px}
+.cov-cell{width:15%;height:44px;text-align:center;vertical-align:middle;font-size:13px;font-weight:700;color:#eafcff;border-radius:7px;transition:transform .08s}
+.cov-cell:hover{transform:scale(1.06)}
+.cov-cell.cov-zero{color:rgba(150,170,185,.35);font-weight:400}
+.cov-tot{text-align:center;font-size:12px;font-weight:700;opacity:.6;padding:0 4px}
+tr.cov-foot th,tr.cov-foot td{opacity:.55;font-size:11px;padding-top:6px}
+.map-desert{font-size:13px;margin:10px 0 0;color:#ffd08a}
+.map-desert b{color:#ffb84d}
+.map-stats{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 18px}
+.map-stat{background:rgba(70,208,224,.08);border:1px solid rgba(70,208,224,.22);border-radius:9px;padding:7px 13px;font-size:13px}
+.map-stat b{font-size:16px;color:#6fe6f2;margin-right:2px}
+.std-wrap{display:flex;flex-direction:column;gap:14px}
+.std-row{background:rgba(120,140,160,.05);border:1px solid rgba(120,140,160,.13);border-radius:11px;padding:12px 14px}
+.std-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:7px}
+.std-name{font-weight:700;font-size:15px;letter-spacing:.3px}
+.std-count{font-size:13px;opacity:.6;font-variant-numeric:tabular-nums}
+.std-bar{height:5px;background:rgba(120,140,160,.14);border-radius:3px;overflow:hidden;margin-bottom:10px}
+.std-fill{display:block;height:100%;background:linear-gradient(90deg,#3aa9bd,#6fe6f2);border-radius:3px}
+.std-repos{display:flex;flex-wrap:wrap;gap:6px}
+.std-repo{font-size:11.5px;background:rgba(70,208,224,.1);border:1px solid rgba(70,208,224,.2);color:#bff3fa;border-radius:6px;padding:2px 8px;text-decoration:none;transition:background .1s}
+.std-repo:hover{background:rgba(70,208,224,.22)}
+.std-more{font-size:11.5px;opacity:.5;padding:2px 4px}
+.map-foot{font-size:12px;opacity:.6;line-height:1.55;margin:28px 0 0;border-top:1px solid rgba(120,140,160,.12);padding-top:14px}

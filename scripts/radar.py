@@ -41,6 +41,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # local modules 
 import enrich  # local module: scripts/enrich.py
 import ecosystem  # local module: scripts/ecosystem.py
 import signals  # local module: scripts/signals.py
+import relevance  # v7 local module: scripts/relevance.py — BRS scored inclusion
+import domain  # v7 local module: scripts/domain.py — modality/paradigm/chain/standards
 
 TOKEN = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
 SELF_REPO = os.environ.get("GITHUB_REPOSITORY", "AxonOS-BCI/axonos-community-radar").lower()
@@ -685,7 +687,17 @@ def main():
             return False
         if int(item.get("stargazers_count") or 0) < min_stars:
             return False
-        if not is_relevant(item, core, context, keywords):
+        # v7 relevance engine: a scored, auditable BCI Relevance gate replaces
+        # the old boolean. Generic ML — even ML that says "neural" — is rejected
+        # here with a signed evidence ledger explaining exactly why.
+        rec = {
+            "full_name": fn, "html_url": item.get("html_url"),
+            "description": (item.get("description") or "").strip()[:240],
+            "topics": (item.get("topics") or [])[:12],
+            "homepage": item.get("homepage") or "",
+        }
+        rel = relevance.score(rec)
+        if rel["decision"] != "keep":
             dropped += 1
             return False
         repos[fn] = {
@@ -700,6 +712,9 @@ def main():
             "license": (item.get("license") or {}).get("spdx_id"),
             "has_license": bool((item.get("license") or {}).get("spdx_id")
                                 and (item.get("license") or {}).get("spdx_id") != "NOASSERTION"),
+            "brs": rel["brs"], "relevance_tier": rel["tier"],
+            "relevance_ledger": rel["ledger"],
+            "facets": domain.facets(rec),
         }
         return True
     per_page = 100  # GitHub search returns <=100/page and caps at 1000 results per query
@@ -867,25 +882,35 @@ def main():
             except Exception:  # noqa: BLE001
                 break
 
+    # v7 domain intelligence — the map nobody else publishes, computed from the
+    # per-repo facets attached at ingest.
+    coverage = domain.coverage_matrix(out)
+    stdgraph = domain.standards_graph(out)
+
     payload = {
-        "version": 4, "generated_at": now.replace(microsecond=0).isoformat(),
+        "version": 5, "generated_at": now.replace(microsecond=0).isoformat(),
         "snapshot_at": snap_iso, "source": "GitHub topic search (public)",
-        "criteria": ("Public, non-archived, non-fork repositories that carry a core BCI/neuro "
-                     "topic, or a context topic plus a neuro keyword. Ranked by recency (from the "
-                     "6-hour snapshot slot) and stars. Categorisation and evidence tiers are heuristic."),
+        "criteria": ("Public, non-archived, non-fork repositories that clear the BCI Relevance "
+                     "Engine (v7): a scored, auditable gate that keeps a repo only when the weight "
+                     "of BCI-specific evidence — acquisition modality, field standard, named "
+                     "hardware, explicit BCI topic or paradigm — exceeds generic-ML signals. Each "
+                     "kept repo carries its signed evidence ledger. Ranked by recency and stars."),
         "refresh": "every 3 hours via GitHub Actions", "min_stars": min_stars,
         "topics_failed": len(failed), "topics": topics,
         "methodology": {"scoring_version": "4.0", "category_version": "3.0",
                         "interop_version": "1.0", "foundation_version": "1.0",
-                        "evidence_version": "3.0", "docs": "docs/METHODOLOGY.md",
+                        "evidence_version": "3.0", "relevance_version": "7.0",
+                        "domain_version": "7.0", "docs": "docs/METHODOLOGY.md",
                         "note": ("Inclusion is not endorsement; AxonOS is scored by the same "
-                                 "formula as every project. Enriched signals (team, downloads, "
-                                 "activity, funding channels) are real GitHub data; money-raised "
-                                 "and legal domicile, when shown, are hand-curated and source-cited.")},
+                                 "formula as every project. The BRS gate and domain facets are "
+                                 "deterministic and auditable; enriched signals are real GitHub "
+                                 "data; money-raised and legal domicile, when shown, are curated.")},
         "enrichment": estats,
         "counts": counts,
         "ecosystem": eco_graph,
         "ecosystem_count": sum(1 for r in out if r.get("ecosystem")),
+        "coverage_matrix": coverage,
+        "standards_graph": stdgraph,
         "projects": out,
         "builders": builders,
     }

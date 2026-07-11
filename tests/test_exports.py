@@ -46,5 +46,5 @@ def test_real_payload_exports_cleanly(tmp_path):
     rc = build_exports.main(["--out", str(tmp_path)])
     assert rc == 0
     lines = (tmp_path / "projects.ndjson").read_text(encoding="utf-8").strip().split("\n")
-    assert len(lines) >= 100          # текущий датасет ~120 проектов
+    assert len(lines) >= 40           # v7 relevance-gated dataset (junk purged: ~62 real BCI repos)
     json.loads(lines[0]); json.loads(lines[-1])

@@ -24,23 +24,84 @@ repository name and URL, description, topics, stars, forks, language, license
 metadata, and last-push time. No emails, no profiles, no analytics, no cookies,
 no third-party trackers.
 
-## Inclusion rules
+## Inclusion — the BCI Relevance Engine (v7)
 
-A repository is included only if it has a relevant topic **and** an anchored
-neuro keyword in its metadata (word-boundary matched, so `midi` does not match
-`mi`). Generic adjacency alone is not enough. The exact signals that caused
-inclusion are recorded per project as `matched_topics` and `matched_keywords`.
+Earlier versions used a boolean test: keep a repo if it carried a relevant
+topic **and** an anchored neuro keyword. That let generic machine-learning in,
+because the single most ambiguous word in the field — `neural` — was treated as
+neuroscience. "dynamic **neural** networks" (PyTorch) was indistinguishable, to
+a membership test, from "**neural** interface".
 
-## Evidence tiers
+v7 replaces the boolean with a scored, auditable gate: the **BCI Relevance
+Score (BRS, 0–100)**, built from a *signed evidence ledger*. Every positive and
+negative signal is recorded with its points and a plain-language reason, so
+inclusion is transparent rather than opaque; the ledger travels with each
+project as `relevance_ledger`, the score as `brs`, and a summary label as
+`relevance_tier`. A repo is kept only when its raw score reaches the gate
+(currently 40).
 
-Each project is labelled with why it qualifies:
+The decisive idea is **disambiguation by anchor**. The word `neural` counts as
+neuroscience only when it sits next to a neuro anchor (interface, signal,
+decoding, implant, recording, prosthetic…). `neural network` / `neural net` /
+`deep learning` with no unambiguous neuro anchor is *negative* evidence — it is
+generic ML and is penalised, not rewarded.
 
-- `L3_EXPLICIT_BCI` — an explicit BCI/BMI/brain-computer-interface topic.
-- `L2_NEURAL_SIGNAL` — EEG/ECoG/MEG/neural-signal/neurofeedback signal.
-- `L1_CONTEXT_PLUS_NEURO` — a context topic (signal-processing, embedded,
-  real-time, privacy) plus an anchored neuro keyword.
-- `L0_WEAK_ADJACENT` — weak adjacency; included only with multiple weak signals
-  and flagged as a possible false positive.
+**Positive evidence** (each unambiguous signal clears the gate on its own):
+an explicit BCI topic (bci, brain-computer-interface, neuroprosthetic); an
+acquisition modality (EEG, ECoG, EMG, fNIRS, MEG, EOG, spikes/LFP); a field
+standard (LSL, BIDS, EDF-family, FIF/MNE, OpenBCI, BrainFlow, NWB); named BCI
+hardware (OpenBCI, Muse, Emotiv, Neuralink, Blackrock, ADS1299…); or a BCI
+paradigm (P300, SSVEP, motor-imagery, ERP, neurofeedback). Weaker neuro terms
+(electrophysiology, cortical) score lower and need a genuine neural context to
+pass, because `electrophysiology` is shared with cardiology.
+
+**Negative evidence** (the anti-PyTorch disambiguation): generic ML-framework
+identity (pytorch/tensorflow/keras/…) with no BCI anchor; generic ML vocabulary
+with no anchor; neuromorphic / spiking-NN ML with no acquisition anchor;
+neuroimaging (MRI/fMRI/PET) with no electrophysiology anchor; cardiac
+electrophysiology; and AI-agent / LLM tooling. A broad self-label like
+`neurotechnology` scores well but does **not** shield a repo from the
+neuromorphic penalty — only a concrete acquisition/standard/hardware/paradigm
+signal (or a specific `brain-computer-interface` topic) does.
+
+`relevance_tier` summarises the strongest signal: `L4_EXPLICIT_BCI`,
+`L3_STANDARD_OR_HARDWARE`, `L3_MODALITY_OR_PARADIGM`, `L2_NEURO_TERM`,
+`L1_WEAK_KEEP`, or `L0_REJECTED`. The engine is pure, deterministic, and unit
+tested (`tests/test_relevance.py`) against the real ML repos that used to leak
+in and the real BCI tools that must stay.
+
+## Domain intelligence — the ecosystem map (v7)
+
+A filtered list is still something you could assemble by hand. v7 also reads the
+ecosystem as a **connected system**. For every kept repo it extracts four
+structured, deterministic facets (stored as `facets`):
+
+- `modality` — biosignals worked with (EEG/ECoG/EMG/fNIRS/MEG/EOG/spikes-LFP)
+- `paradigm` — BCI paradigms (P300/SSVEP/motor-imagery/neurofeedback/ERP)
+- `signal_chain` — pipeline stages covered (Acquisition → Preprocessing →
+  Feature extraction → Decoding → Application)
+- `standards` — field standards spoken (the interoperability tissue)
+
+From those it builds two views published in `radar.json` and shown under the
+**Map** tab:
+
+- `coverage_matrix` — a modality × pipeline-stage grid. It makes the field's
+  shape legible: where projects cluster, and where a stage is a desert (an
+  opening).
+- `standards_graph` — each standard and the repos that speak it, plus a count of
+  interoperability edges (repo pairs sharing at least one standard). Two repos
+  that share a standard can pipe into each other; the edges are computed from
+  evidence, not asserted.
+
+Both are pure and unit tested (`tests/test_domain.py`). Vocabularies are shared
+with the relevance engine so the two always agree on what a term means.
+
+## Legacy evidence fields
+
+For continuity, each project still carries the older `evidence_tier`,
+`inclusion_reason`, `matched_topics`, and `matched_keywords` fields. These are
+superseded by `brs` / `relevance_tier` / `relevance_ledger` and retained only so
+existing consumers do not break.
 
 ## Scoring
 
@@ -51,6 +112,7 @@ score = log10(stars + 1) * 10 + max(0, 60 - days_since_push) * 0.5
 ```
 
 It favours visible, recently active work. It is a sorting aid, not a verdict.
+It is independent of the BRS, which decides *inclusion*, not rank.
 
 ## Ecosystem Health signals
 

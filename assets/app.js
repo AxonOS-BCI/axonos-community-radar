@@ -95,13 +95,38 @@
           repos:(Array.isArray(kp.repos)?kp.repos:[]).slice(0,10).map(function(x){return str(x,140);})};}),
       repo_count:num(e.repo_count)};
   }
+  function sanitizeMap(cm,sg){
+    var out={coverage_matrix:null,standards_graph:null};
+    if(cm&&typeof cm==='object'&&Array.isArray(cm.stages)&&Array.isArray(cm.grid)){
+      out.coverage_matrix={
+        stages:cm.stages.map(function(s){return str(s,40);}),
+        modalities:(Array.isArray(cm.modalities)?cm.modalities:[]).map(function(s){return str(s,40);}),
+        grid:cm.grid.map(function(r){return {modality:str(r&&r.modality,40),
+          cells:(Array.isArray(r&&r.cells)?r.cells:[]).map(function(n){return Math.max(0,parseInt(n,10)||0);}),
+          total:Math.max(0,parseInt(r&&r.total,10)||0)};}),
+        stage_totals:(Array.isArray(cm.stage_totals)?cm.stage_totals:[]).map(function(n){return Math.max(0,parseInt(n,10)||0);}),
+        n_projects:Math.max(0,parseInt(cm.n_projects,10)||0)};
+    }
+    if(sg&&typeof sg==='object'&&Array.isArray(sg.standards)){
+      out.standards_graph={
+        standards:sg.standards.map(function(s){return {standard:str(s&&s.standard,40),
+          count:Math.max(0,parseInt(s&&s.count,10)||0),
+          repos:(Array.isArray(s&&s.repos)?s.repos:[]).slice(0,40).map(function(r){return str(r,120);})};}),
+        n_standards:Math.max(0,parseInt(sg.n_standards,10)||0),
+        n_repos_with_standards:Math.max(0,parseInt(sg.n_repos_with_standards,10)||0),
+        interop_edges:Math.max(0,parseInt(sg.interop_edges,10)||0)};
+    }
+    return out;
+  }
   function sanitizeData(j){
     if(!j||typeof j!=='object')return DATA;
     var ps=(Array.isArray(j.projects)?j.projects:[]).map(sanitizeProject).filter(Boolean);
     var bs=(Array.isArray(j.builders)?j.builders:[]).map(sanitizeBuilder).filter(Boolean);
     var eco=sanitizeEcosystem(j.ecosystem);
+    var mp=sanitizeMap(j.coverage_matrix,j.standards_graph);
     return {projects:ps,builders:bs,ecosystem:eco,generated_at:str(j.generated_at,40)||null,
-      counts:(j.counts&&typeof j.counts==='object')?j.counts:{total:ps.length}};
+      counts:(j.counts&&typeof j.counts==='object')?j.counts:{total:ps.length},
+      coverage_matrix:mp.coverage_matrix,standards_graph:mp.standards_graph};
   }
   // Dogecoin support address. Empty string = the card stays hidden.
   // Set at publish time; keeps the radar's scans, enrichment budget and
@@ -596,11 +621,116 @@
       mx.appendChild(document.createTextNode(' \u2605 \u00b7 '+(x.active_projects_30d||0)+' active'));a.appendChild(mx);
       el.appendChild(a);});
   }
+  function heatColor(v,max){
+    if(!v)return 'rgba(120,140,160,.06)';
+    var t=max>0?v/max:0;                       // 0..1
+    // teal ramp: dark → bright AxonOS cyan
+    var a=(0.12+t*0.78).toFixed(3);
+    return 'rgba(70,208,224,'+a+')';
+  }
+  function renderMap(){
+    var host=$('mapHost');if(!host||host.dataset.done)return;
+    var cm=DATA.coverage_matrix,sg=DATA.standards_graph;
+    host.textContent='';
+    if(!cm&&!sg){var e=document.createElement('p');e.className='map-empty';e.textContent='Ecosystem map data is not available in this snapshot.';host.appendChild(e);return;}
+
+    // ── intro line: what this is and why GitHub can't show it ──
+    var intro=document.createElement('p');intro.className='map-intro';
+    intro.textContent='The ecosystem as a connected system — not a list you could assemble yourself, but the field\u2019s shape and its connective tissue, computed from evidence and refreshed automatically.';
+    host.appendChild(intro);
+
+    // ── Signal-chain coverage matrix ──
+    if(cm&&cm.grid&&cm.grid.length){
+      var h1=document.createElement('h3');h1.className='map-h';h1.textContent='Signal-chain coverage';host.appendChild(h1);
+      var sub=document.createElement('p');sub.className='map-sub';
+      sub.textContent='How many projects cover each biosignal \u00d7 pipeline stage. Bright cells are crowded; empty cells are where the ecosystem is thin \u2014 an opening.';
+      host.appendChild(sub);
+      var max=0;cm.grid.forEach(function(r){r.cells.forEach(function(c){if(c>max)max=c;});});
+      var tbl=document.createElement('table');tbl.className='cov';
+      var thead=document.createElement('thead');var htr=document.createElement('tr');
+      var corner=document.createElement('th');corner.className='cov-corner';corner.textContent='';htr.appendChild(corner);
+      cm.stages.forEach(function(s){var th=document.createElement('th');th.textContent=s;htr.appendChild(th);});
+      var thT=document.createElement('th');thT.className='cov-tot';thT.textContent='\u03a3';htr.appendChild(thT);
+      thead.appendChild(htr);tbl.appendChild(thead);
+      var tb=document.createElement('tbody');
+      cm.grid.forEach(function(r){
+        var tr=document.createElement('tr');
+        var rh=document.createElement('th');rh.className='cov-mod';rh.textContent=r.modality;tr.appendChild(rh);
+        r.cells.forEach(function(c){
+          var td=document.createElement('td');td.className='cov-cell'+(c?'':' cov-zero');
+          td.style.background=heatColor(c,max);
+          td.textContent=c?String(c):'\u00b7';
+          td.title=r.modality+' \u00b7 '+c+' project'+(c===1?'':'s');
+          tr.appendChild(td);
+        });
+        var tt=document.createElement('td');tt.className='cov-tot';tt.textContent=String(r.total);tr.appendChild(tt);
+        tb.appendChild(tr);
+      });
+      // stage totals row
+      var ftr=document.createElement('tr');ftr.className='cov-foot';
+      var fh=document.createElement('th');fh.className='cov-mod';fh.textContent='\u03a3';ftr.appendChild(fh);
+      (cm.stage_totals||[]).forEach(function(n){var td=document.createElement('td');td.className='cov-tot';td.textContent=String(n);ftr.appendChild(td);});
+      var blank=document.createElement('td');blank.className='cov-tot';ftr.appendChild(blank);
+      tb.appendChild(ftr);
+      tbl.appendChild(tb);host.appendChild(tbl);
+
+      // desert callouts — modalities with zero coverage among the canonical set
+      var canon=['EEG','ECoG','EMG','fNIRS','MEG','EOG','spikes/LFP'];
+      var present={};cm.grid.forEach(function(r){if(r.total>0)present[r.modality]=1;});
+      var deserts=canon.filter(function(m){return !present[m];});
+      if(deserts.length){
+        var dz=document.createElement('p');dz.className='map-desert';
+        dz.appendChild(document.createTextNode('Deserts (zero coverage): '));
+        var b=document.createElement('b');b.textContent=deserts.join(', ');dz.appendChild(b);
+        host.appendChild(dz);
+      }
+    }
+
+    // ── Standards interoperability graph ──
+    if(sg&&sg.standards&&sg.standards.length){
+      var h2=document.createElement('h3');h2.className='map-h';h2.textContent='Standards \u0026 interoperability';host.appendChild(h2);
+      var sub2=document.createElement('p');sub2.className='map-sub';
+      sub2.textContent='The connective tissue: each field standard and the projects that speak it. Two projects sharing a standard can pipe into each other.';
+      host.appendChild(sub2);
+      var stat=document.createElement('div');stat.className='map-stats';
+      function chip(n,l){var d=document.createElement('div');d.className='map-stat';var b=document.createElement('b');b.textContent=String(n);d.appendChild(b);d.appendChild(document.createTextNode(' '+l));return d;}
+      stat.appendChild(chip(sg.n_standards,'standards'));
+      stat.appendChild(chip(sg.n_repos_with_standards,'projects wired'));
+      stat.appendChild(chip(sg.interop_edges,'interop links'));
+      host.appendChild(stat);
+      var maxc=sg.standards[0]?sg.standards[0].count:1;
+      var wrap=document.createElement('div');wrap.className='std-wrap';
+      sg.standards.forEach(function(s){
+        var row=document.createElement('div');row.className='std-row';
+        var head=document.createElement('div');head.className='std-head';
+        var nm=document.createElement('span');nm.className='std-name';nm.textContent=s.standard;head.appendChild(nm);
+        var ct=document.createElement('span');ct.className='std-count';ct.textContent='\u00d7'+s.count;head.appendChild(ct);
+        row.appendChild(head);
+        var bar=document.createElement('div');bar.className='std-bar';
+        var fill=document.createElement('span');fill.className='std-fill';fill.style.width=(maxc>0?(s.count/maxc*100):0).toFixed(1)+'%';bar.appendChild(fill);
+        row.appendChild(bar);
+        var reps=document.createElement('div');reps.className='std-repos';
+        s.repos.slice(0,10).forEach(function(r){
+          var a=document.createElement('a');a.className='std-repo';a.href='https://github.com/'+r;a.target='_blank';a.rel='noopener';a.textContent=r.split('/').pop();reps.appendChild(a);
+        });
+        if(s.repos.length>10){var more=document.createElement('span');more.className='std-more';more.textContent='+'+(s.repos.length-10);reps.appendChild(more);}
+        row.appendChild(reps);
+        wrap.appendChild(row);
+      });
+      host.appendChild(wrap);
+    }
+
+    var foot=document.createElement('p');foot.className='map-foot';
+    foot.textContent='Each project passes the BCI Relevance Engine (v7): a scored, auditable gate that keeps a repo only when BCI-specific evidence outweighs generic-ML signals. Generic ML \u2014 even ML that says \u201cneural\u201d \u2014 is filtered out.';
+    host.appendChild(foot);
+    host.dataset.done='1';
+  }
   function switchView(v){
-    ['projects','builders','methodology','axonos'].forEach(function(name){var el=$('view-'+name);if(el)el.hidden=(name!==v);});
+    ['projects','builders','methodology','axonos','map'].forEach(function(name){var el=$('view-'+name);if(el)el.hidden=(name!==v);});
     var tabs=document.querySelectorAll('#tabs .tab');
     for(var i=0;i<tabs.length;i++){tabs[i].classList.toggle('on',tabs[i].getAttribute('data-view')===v);}
     if(v==='builders')renderBuilders();
+    if(v==='map')renderMap();
     try{location.hash=v==='projects'?'':('#'+v);}catch(e){}
   }
   function stageRank(c){var s=c.querySelector('.ax-stage');var o=['shipped','beta','alpha','design','planned'];for(var i=0;i<o.length;i++){if(s&&s.classList.contains('st-'+o[i]))return i;}return 9;}
@@ -610,7 +740,7 @@
   (function(){var tabs=document.querySelectorAll('#tabs .tab');
     for(var i=0;i<tabs.length;i++){tabs[i].addEventListener('click',function(){switchView(this.getAttribute('data-view'));});}
     var h=(location.hash||'').replace('#','');
-    if(h==='builders'||h==='methodology'||h==='axonos')switchView(h);
+    if(h==='builders'||h==='methodology'||h==='axonos'||h==='map')switchView(h);
     orderAxCards();renderAxProgress();var dl=document.getElementById('dlBtn');if(dl)dl.addEventListener('click',downloadData);
   })();
 

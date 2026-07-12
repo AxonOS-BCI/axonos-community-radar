@@ -1,5 +1,39 @@
 # Changelog
 
+## [7.1.0] — 2026-07-13 — "Legible"
+
+Makes the v7 engine's transparency visible, opens the ecosystem to contributors,
+and completes the open-core split — the engine now runs privately and publishes
+only its output to this showcase.
+
+### Added
+- **Per-card BRS badge + inline evidence ledger** — every project card carries
+  its BCI Relevance Score; tapping it unfolds the *signed evidence ledger* (each
+  `+`/`−` signal with its plain-language reason) without leaving the card.
+  Keyboard-accessible, valid nesting, `aria-expanded` wired. The transparency
+  differentiator, made tangible.
+- **Relevance (BRS) sort** in the sort bar.
+- **BCI Ecosystem Intelligence dashboard** — a dense, investor-grade one-page
+  read-out rendered entirely from radar data (relevance distribution, signal-
+  chain coverage, standards & interoperability, health, momentum, players,
+  composition, builders), embedded in the README.
+- **Public roadmap scaffold** — `ROADMAP.md` mirroring the board, structured
+  issue templates (feature/bug with Area/Priority auto-labels), a label-taxonomy
+  script, and the v7.2 dashboard reference images.
+- **Grande-Standard README** — rebuilt and updated for the v7 engine: full
+  capability coverage, the badge/VC-diligence funnel, and the roadmap to v17.
+
+### Changed
+- **Open-core cutover** — the private engine (`axonos-radar-core`) is now the
+  **sole scanner**; this repo's own scan workflow is retired, ending a two-writer
+  race on `main`. The weekly digest keeps updating via `stats-issue.yml`.
+- `sanitizeData`/`sanitizeProject` now carry `brs`, `relevance_tier`, and
+  `relevance_ledger` through to the UI.
+
+### Fixed
+- The scheduled pipeline persists state via the Contents API (Verified commits)
+  so it satisfies the signed-commit ruleset and history accumulates correctly.
+
 ## [7.0.0] — 2026-07-11 — "The Relevance Engine"
 
 A major release that changes *what the radar is*: from a broad discovery list

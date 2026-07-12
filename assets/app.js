@@ -58,6 +58,9 @@
       days_since_push:num(p.days_since_push),active:!!p.active,is_new:!!p.is_new,
       rising:!!p.rising,falling:!!p.falling,stars_delta_7d:num(p.stars_delta_7d),
       evidence_tier:str(p.evidence_tier,40),inclusion_reason:str(p.inclusion_reason,200),
+      brs:num(p.brs),relevance_tier:str(p.relevance_tier,40),
+      relevance_ledger:(Array.isArray(p.relevance_ledger)?p.relevance_ledger:[]).slice(0,24).map(function(e){
+        return {points:num(e&&e.points),kind:str(e&&e.kind,20),reason:str(e&&e.reason,160)};}),
       topics:(Array.isArray(p.topics)?p.topics:[]).slice(0,12).map(function(t){return str(t,50);}),
       license:str(p.license,40),has_license:!!p.has_license,
       quality_flags:{possible_false_positive:!!q.possible_false_positive},
@@ -152,6 +155,7 @@
     });
     function hov(p){return (p.signals&&typeof p.signals.overall==='number')?p.signals.overall:-1;}
     arr.sort(state.sort==='stars'?function(a,b){return (b.stars||0)-(a.stars||0);}
+      :state.sort==='relevance'?function(a,b){function bs(p){return typeof p.brs==='number'?p.brs:-1;}return (bs(b)-bs(a))||((b.stars||0)-(a.stars||0));}
       :state.sort==='health'?function(a,b){return (hov(b)-hov(a))||((b.stars||0)-(a.stars||0));}
       :state.sort==='rising'?function(a,b){return ((b.stars_delta_7d||0)-(a.stars_delta_7d||0))||((b.stars||0)-(a.stars||0));}
       :state.sort==='foundation'?function(a,b){function fc(p){return p.foundation?p.foundation.count:-1;}return (fc(b)-fc(a))||(hov(b)-hov(a))||((b.stars||0)-(a.stars||0));}
@@ -216,6 +220,57 @@
     if(!t.length)return null;var d=el('div','tags');t.forEach(function(x){d.appendChild(el('span','tag',x));});return d;}
   function evBadgeEl(p){var t=p.evidence_tier;if(!t)return null;var e=TIER[t]||['\u2022','tl0'];
     var sp=el('span','ev '+e[1],e[0]);sp.title=p.inclusion_reason||t;return sp;}
+  // v7.1 "Legible": the BCI Relevance Score, and the signed evidence ledger that
+  // produced it — the "why included" that no other radar shows. The badge is a
+  // real control on an otherwise-link card: clicking it reveals the ledger
+  // inline instead of navigating.
+  var RTIER={L4_EXPLICIT_BCI:'Explicit BCI',L3_STANDARD_OR_HARDWARE:'Standard / hardware',
+    L3_MODALITY_OR_PARADIGM:'Modality / paradigm',L2_NEURO_TERM:'Neuro term',
+    L1_WEAK_KEEP:'Weak keep',L0_REJECTED:'Rejected'};
+  function brsClass(v){return v>=80?'brs-hi':(v>=55?'brs-md':'brs-lo');}
+  function brsBadgeEl(p,panel){
+    if(p.brs==null||!(p.relevance_ledger&&p.relevance_ledger.length))return evBadgeEl(p);
+    var b=el('span','brs '+brsClass(p.brs));
+    b.setAttribute('role','button');b.setAttribute('tabindex','0');
+    b.appendChild(el('span','brs-k','BRS'));
+    b.appendChild(el('span','brs-v',String(p.brs)));
+    var tierTxt=RTIER[p.relevance_tier]||p.relevance_tier||'';
+    b.setAttribute('aria-label','BCI Relevance Score '+p.brs+(tierTxt?(' \u2014 '+tierTxt):'')+'. Show why it\u2019s included.');
+    b.title='BCI Relevance Score '+p.brs+'/100'+(tierTxt?(' \u00b7 '+tierTxt):'')+' \u2014 tap for the evidence';
+    b.setAttribute('aria-expanded','false');
+    function toggle(ev){
+      ev.preventDefault();ev.stopPropagation();
+      if(!panel)return;
+      var open=panel.classList.toggle('open');
+      b.setAttribute('aria-expanded',String(open));
+    }
+    b.addEventListener('click',toggle);
+    b.addEventListener('keydown',function(ev){
+      if(ev.key==='Enter'||ev.key===' '||ev.key==='Spacebar'||ev.keyCode===13||ev.keyCode===32)toggle(ev);
+    });
+    return b;
+  }
+  function ledgerPanelEl(p){
+    if(p.brs==null||!(p.relevance_ledger&&p.relevance_ledger.length))return null;
+    var wrap=el('div','ledger');
+    var head=el('div','ledger-h');
+    head.appendChild(el('span','ledger-title','Why it\u2019s included'));
+    var tierTxt=RTIER[p.relevance_tier]||'';
+    if(tierTxt)head.appendChild(el('span','ledger-tier',tierTxt));
+    wrap.appendChild(head);
+    p.relevance_ledger.forEach(function(e){
+      var neg=e.points<0;
+      var row=el('div','lg-row'+(neg?' neg':' pos'));
+      var pts=el('span','lg-pts',(neg?'':'+')+e.points);
+      row.appendChild(pts);
+      row.appendChild(el('span','lg-reason',e.reason));
+      wrap.appendChild(row);
+    });
+    var foot=el('div','ledger-f');
+    foot.appendChild(document.createTextNode('Score '+p.brs+'/100. A repo is kept only when BCI-specific evidence outweighs generic-ML signals.'));
+    wrap.appendChild(foot);
+    return wrap;
+  }
   function flagBadgeEl(p){var q=p.quality_flags||{};var hit=Array.isArray(q)?q.indexOf('possible_false_positive')>=0:!!q.possible_false_positive;
     if(!hit)return null;var sp=el('span','flag','\u26A0 review');sp.title='Borderline match \u2014 flagged for review';return sp;}
   // Ecosystem Health meter: a visible 0-100 bar (band-coloured) with the full
@@ -269,7 +324,8 @@
       var top=el('div','top');
       if(p.ecosystem){var eb=el('span','ecobadge','\u25C8 AxonOS');eb.title='AxonOS ecosystem project';top.appendChild(eb);}
       top.appendChild(el('span','pill',p.category));
-      var ev=evBadgeEl(p);if(ev)top.appendChild(ev);
+      var lpanel=ledgerPanelEl(p);
+      var ev=brsBadgeEl(p,lpanel);if(ev)top.appendChild(ev);
       var fl=flagBadgeEl(p);if(fl)top.appendChild(fl);
       if(p.rising){top.appendChild(el('span','rise','\u2191 '+(p.stars_delta_7d>0?('+'+p.stars_delta_7d+'/7d'):'rising')));}
       else if(p.falling){top.appendChild(el('span','fallb','\u2193 '+p.stars_delta_7d+'/7d'));}
@@ -283,6 +339,7 @@
       a.appendChild(el('p','desc',p.description||(p.ecosystem&&p.ecosystem_note?p.ecosystem_note:'\u2014')));
       var tr=tagRowEl(p);if(tr)a.appendChild(tr);
       var ir=iopRowEl(p);if(ir)a.appendChild(ir);
+      if(lpanel)a.appendChild(lpanel);
       var hl=healthEl(p);if(hl)a.appendChild(hl);
       var foot=el('div','foot');
       var lng=el('span','lng');lng.appendChild(el('span','ld'));lng.appendChild(document.createTextNode(p.language||'n/a'));foot.appendChild(lng);
@@ -300,7 +357,7 @@
     buildChips();buildTierChips();buildIopChips();render();}
   function readHash(){try{var h=(location.hash||'').replace(/^#/,'');if(!h)return;var p={};h.split('&').forEach(function(kv){var i=kv.indexOf('=');if(i>0)p[kv.slice(0,i)]=decodeURIComponent(kv.slice(i+1).replace(/\+/g,' '));});
     if(p.view==='radar'||p.view==='grid')state.view=p.view;
-    if(['activity','health','stars','rising','foundation','new','name'].indexOf(p.sort)>=0)state.sort=p.sort;
+    if(['activity','relevance','health','stars','rising','foundation','new','name'].indexOf(p.sort)>=0)state.sort=p.sort;
     if(p.lang)state.lang=p.lang; if(p.q)state.q=p.q;
     state.activeOnly=p.active==='1'; state.newOnly=p.new==='1'; state.fallingOnly=p.fall==='1'; state.dens=p.d==='1';
     if(p.cat)p.cat.split(',').forEach(function(c){if(c)state.cats[c]=true;});
@@ -577,7 +634,7 @@
   function boot(){
     readHash();
     buildSeg('segView',[{v:'grid',l:'☰ Grid'},{v:'radar',l:'◎ Radar'}],function(){return state.view;},function(v){state.view=v;});
-    buildSeg('segSort',[{v:'activity',l:'Activity'},{v:'health',l:'Health'},{v:'stars',l:'Stars'},{v:'rising',l:'Rising'},{v:'foundation',l:'Foundation'},{v:'new',l:'Newest'},{v:'name',l:'A–Z'}],function(){return state.sort;},function(v){state.sort=v;});
+    buildSeg('segSort',[{v:'activity',l:'Activity'},{v:'relevance',l:'Relevance'},{v:'health',l:'Health'},{v:'stars',l:'Stars'},{v:'rising',l:'Rising'},{v:'foundation',l:'Foundation'},{v:'new',l:'Newest'},{v:'name',l:'A–Z'}],function(){return state.sort;},function(v){state.sort=v;});
     buildChips();buildLegend();buildLangs();setStats();reflect();
     $('search').addEventListener('input',function(e){state.q=e.target.value;render();});
     $('langSel').addEventListener('change',function(e){state.lang=e.target.value;render();});

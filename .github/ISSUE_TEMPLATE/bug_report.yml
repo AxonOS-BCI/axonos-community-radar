@@ -1,0 +1,54 @@
+name: 🐞 Bug report
+description: Something on the radar is wrong — a mis-scored repo, a broken view, a data error.
+title: "[bug] <short summary>"
+labels: ["type:bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Precise reports get fixed fast. If a repository is mis-included or
+        mis-excluded, tell us which one — the engine records its reasoning, so
+        we can check the ledger.
+  - type: textarea
+    id: what
+    attributes:
+      label: What's wrong?
+      description: What did you see, and what did you expect?
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - engine (a repo scored wrong / bad inclusion)
+        - ui (site, map, cards, charts render wrong)
+        - data (stale / incorrect enrichment or history)
+        - infra (CI/CD, hosting, feed)
+        - docs
+        - not sure
+    validations:
+      required: true
+  - type: input
+    id: repo
+    attributes:
+      label: Repository involved (if a scoring issue)
+      placeholder: owner/repo
+    validations:
+      required: false
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce / where you saw it
+      placeholder: |
+        1. Open the Map tab
+        2. …
+    validations:
+      required: false
+  - type: input
+    id: env
+    attributes:
+      label: Browser / device (for UI bugs)
+      placeholder: e.g. Chrome 126 on Android
+    validations:
+      required: false

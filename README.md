@@ -7,6 +7,7 @@
 #### A living, momentum-first map of open BCI — discovered live from public GitHub, refreshed every three hours.
 
 [![Live](https://img.shields.io/badge/live-axonos--bci.github.io-a78bfa?style=flat-square)](https://axonos-bci.github.io/axonos-community-radar/)
+[![Roadmap](https://img.shields.io/badge/roadmap-public%20board-f59e0b?style=flat-square)](https://github.com/users/AxonOS-BCI/projects/1)
 [![CI](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml)
 [![Version](https://img.shields.io/badge/version-7.0.0-0a4a8f?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-475569?style=flat-square)](LICENSE)
@@ -73,8 +74,18 @@ Open BCI has real, recurring pains. v6 maps each one to a mechanism you can veri
 | View | What it shows |
 |:--|:--|
 | **Projects** | The interactive radar (categories as sectors, recency as distance, stars as size) and a searchable, filterable card grid. Each card carries its real GitHub topics, an **evidence tier**, and a **Rising** or **Falling** badge when it's moving either way. |
+| **Map** | The ecosystem as a connected system — a modality × pipeline-stage **coverage heatmap** (with desert callouts) and a **standards-interoperability** view. The field's shape and its connective tissue, computed from evidence. |
 | **Builders** | A leaderboard of *owners with 2+ tracked projects* — total stars, active projects, and their focus areas. The people, not just the repos. |
 | **Methodology** | The inclusion rule, evidence tiers, scoring, **Foundation signals**, **interop detection** and the full **data-endpoints contract** — in the product, not buried in docs. |
+
+## 🗺️ &nbsp;Roadmap
+
+The public plan lives on the [Roadmap board](https://github.com/users/AxonOS-BCI/projects/1)
+and in [`ROADMAP.md`](ROADMAP.md). Next up: **v7.1 "Legible"** (surface the
+per-card BRS ledger), then **v7.2 "Dashboards"** — rich, live per-project and
+ecosystem analytics built entirely from radar data. Propose something with the
+**Feature request** / **Bug report** issue templates; triaged items land on the
+board automatically.
 
 ## 🧱 &nbsp;New in 6.0 — Solid Ground
 

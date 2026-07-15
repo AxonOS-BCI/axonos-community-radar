@@ -1,5 +1,31 @@
 # Changelog
 
+## [8.0.1] — 2026-07-15 — "Open-core, fixed"
+
+Fixes a regression introduced by the 8.0.0 slimming: three **showcase** scripts
+were removed along with the engine, breaking the site deploy.
+
+### Fixed
+- **Site deploy was broken.** `pages.yml` calls `build_ecosystem_manifest.py`
+  and `build_exports.py` at deploy time, and `health.yml` calls
+  `health_check.py` — all three were deleted in 8.0.0, so Deploy Pages failed
+  and the live site could not update. They are restored: they are showcase
+  utilities, not scoring IP — they only transform data that is already public
+  (the live badge, the `projects.ndjson` export) or monitor the published
+  pipeline. The slimming line is now drawn by *what a script does*, not by what
+  its name resembles.
+- **The health monitor could spawn duplicate alert issues.** `find_alert()` read
+  any non-200 (e.g. a 403 from a rate-limited token) as "no alert exists" and
+  opened another one — the same class of bug just fixed in the stats digest.
+  Now any failed lookup skips the bookkeeping instead of duplicating; the
+  diagnosis is still printed.
+
+### Added
+- **CI gate: workflows may only reference files that exist.** 8.0.0 passed CI
+  while the deploy broke, because CI only ran what CI itself listed. Every
+  `scripts/*` referenced by an active workflow is now checked to exist — this
+  exact failure would have been caught before merge.
+
 ## [8.0.0] — 2026-07-13 — "Open-core"
 
 Completes the open-core split. The scoring/discovery engine now lives **solely**

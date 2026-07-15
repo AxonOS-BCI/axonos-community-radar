@@ -1,5 +1,30 @@
 # Changelog
 
+## [8.0.0] — 2026-07-13 — "Open-core"
+
+Completes the open-core split. The scoring/discovery engine now lives **solely**
+in the private repository; this showcase is the open map, its data, and its UI.
+
+### Changed
+- **The relevance/scoring engine is removed from this repository.** All scoring,
+  discovery, enrichment, and report-generation code (`relevance`, `domain`,
+  `radar`, `enrich`, `signals`, `ecosystem`, `build_*`) now lives only in the
+  private engine and is proprietary. This repo is a pure showcase: the
+  interactive radar, the ecosystem map, the published dataset, and the open
+  interop vocabulary.
+- **Licensing is now unambiguous.** The MIT licence covers exactly what remains
+  (UI, published data, open utilities) and no longer overlaps the proprietary
+  engine. The engine's history remains in git — MIT is not retroactively
+  revoked — but future engine development is private-only.
+- **CI slimmed to the showcase.** Engine unit tests and the report-build job are
+  retired; frontend, data-integrity, security, and release-hygiene gates remain.
+
+### Kept open (transparency)
+- The interop vocabulary (`data/interop-vocab.json`) and its matcher
+  (`scripts/interop.py`), the seed config (`data/seeds.json`), the data schema,
+  and every published dataset remain open. The evidence ledger on every project
+  stays fully public — transparency is the moat, not obscurity.
+
 ## [7.1.0] — 2026-07-13 — "Legible"
 
 Makes the v7 engine's transparency visible, opens the ecosystem to contributors,

@@ -1,14 +1,16 @@
 name: Deploy Pages
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SINGLE queue, never-cancel deploy. Two complementary triggers, chosen so they
-# can never double-fire for the same commit:
-#   • workflow_run after "AxonOS Radar" — deploys every 3-hourly scan. Scan
-#     commits carry "[skip ci]", which suppresses the push trigger below, so
-#     only this path deploys them.
+# SINGLE queue, never-cancel deploy.
+#   • schedule — deploys the data the private engine publishes. The engine scans
+#     at :17 every 3h and commits via the Contents API with "[skip ci]", which
+#     deliberately suppresses the push trigger below; so without this cron the
+#     site would never pick up a scan. (It replaces a workflow_run trigger on
+#     "AxonOS Radar" — that workflow lived in THIS repo and was retired in the
+#     open-core cutover, leaving the trigger dead and the site frozen. Cross-repo
+#     workflow_run is not possible, hence a clock.)
 #   • push to main — deploys source changes (feature commits, which do NOT carry
-#     "[skip ci]") immediately, instead of waiting for the next scan. This is
-#     what fixes "I pushed but the site still shows the old build".
+#     "[skip ci]") immediately, instead of waiting for the next tick.
 #   • workflow_dispatch — manual redeploy button.
 # concurrency.cancel-in-progress: FALSE → overlapping deploys queue and wait;
 # nothing is ever cancelled (this was the root of the old "unable to cancel"
@@ -19,9 +21,8 @@ name: Deploy Pages
 # ─────────────────────────────────────────────────────────────────────────────
 
 on:
-  workflow_run:
-    workflows: ["AxonOS Radar"]
-    types: [completed]
+  schedule:
+    - cron: "47 */3 * * *"   # ~30 min after the engine's :17 scan lands
   push:
     branches: [main]
   workflow_dispatch:

@@ -1,5 +1,38 @@
 # Changelog
 
+## [8.1.0] — 2026-07-16 — "Dashboards, live"
+
+The Stats page becomes the live dashboard the generated report already was — and
+the site can deploy the engine's data again.
+
+### Fixed
+- **The site never deployed the engine's scans.** `pages.yml` waited on
+  `workflow_run` from "AxonOS Radar" — a workflow that lives in *this* repo and
+  was retired in the 8.0 open-core cutover, so the trigger could never fire
+  again. Data commits carry `[skip ci]`, which deliberately suppresses the push
+  trigger, so nothing deployed them: the engine published, the site stayed
+  frozen. Cross-repo `workflow_run` is not possible, so deploys now run on a
+  clock (`47 */3 * * *`, ~30 min after the engine's scan lands), alongside the
+  existing push and manual triggers.
+
+### Added
+- **The Stats page is a live dashboard** — rendered client-side from the
+  published `radar.json`, zero dependencies, matching the generated report:
+  - **Signal-chain coverage** — modality × stage heatmap, empty cells (the
+    field's openings) counted and called out.
+  - **Relevance distribution** — the BRS histogram with the gate at 40 and the
+    mean.
+  - **Standards & interoperability** — which standards win, how many projects are
+    wired to each, with the interop-link count.
+  - **Ecosystem health** — maturity bands and the median.
+  Until now the Stats page used none of the v7 engine's output — no BRS, no
+  coverage matrix, no standards graph — so it showed a pre-v7 view of a v8 map.
+
+### Changed
+- **ROADMAP.md rewritten to reality** — it still announced v7.1 as "next" and
+  v8.0 as "under discussion", both long shipped. It now carries the full arc to
+  v17 with honest status, and the README roadmap marks 7.2 / 8.0 / 8.1 shipped.
+
 ## [8.0.1] — 2026-07-15 — "Open-core, fixed"
 
 Fixes a regression introduced by the 8.0.0 slimming: three **showcase** scripts

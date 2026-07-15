@@ -10,8 +10,8 @@
 [![Roadmap](https://img.shields.io/badge/roadmap-to%20v17-f59e0b?style=flat-square)](https://github.com/users/AxonOS-BCI/projects/1)
 [![CI](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml)
 [![Pages](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml)
-[![Version](https://img.shields.io/badge/version-8.0.1-0a4a8f?style=flat-square)](CHANGELOG.md)
-[![Release](https://img.shields.io/badge/release-Open--core-6fe6f2?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-8.1.0-0a4a8f?style=flat-square)](CHANGELOG.md)
+[![Release](https://img.shields.io/badge/release-Dashboards%2C%20live-6fe6f2?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-475569?style=flat-square)](LICENSE)
 
 [![Engine](https://img.shields.io/badge/inclusion-scored%20·%20BRS%200–100-46d0e0?style=flat-square)](#-the-relevance-engine--scored-inclusion-not-a-curated-list)
@@ -28,7 +28,7 @@
 
 ---
 
-**AxonOS Radar** is the continuously-updated, public map of the open brain–computer-interface world — and, since v7, an **intelligence engine** rather than a directory. On a schedule it scans **public GitHub metadata**, decides whether each candidate is *genuinely* a BCI/neuro project through a scored relevance engine (not generic ML that merely says "neural"), records the exact evidence for every decision, maps the field's modalities, standards and signal-chain coverage, tracks momentum and health, and renders all of it as an interactive radar, an ecosystem map, a statistics dashboard, a self-updating GitHub issue, and a weekly investor-grade intelligence report.
+**AxonOS Radar** is the continuously-updated, public map of the open brain–computer-interface world — and, since v7, an **intelligence engine** rather than a directory (now on the v8 open-core line). On a schedule it scans **public GitHub metadata**, decides whether each candidate is *genuinely* a BCI/neuro project through a scored relevance engine (not generic ML that merely says "neural"), records the exact evidence for every decision, maps the field's modalities, standards and signal-chain coverage, tracks momentum and health, and renders all of it as an interactive radar, an ecosystem map, a statistics dashboard, a self-updating GitHub issue, and a weekly investor-grade intelligence report.
 
 The BCI field is scattered across hundreds of GitHub repositories with no map. AxonOS
 Radar is that map — but it doesn't just *list* projects, it **scores** them. A purpose-built
@@ -297,8 +297,9 @@ The radar is early. Here's the arc from today to the canonical neurotech intelli
 |:--:|:--|:--|
 | **7.0** | The Relevance Engine | ✅ Scored inclusion (BRS) · signed evidence ledger · domain intelligence · ecosystem map |
 | **7.1** | Legible | ✅ Per-card BRS badge · inline "why included" ledger · Relevance sort |
-| **7.2** | Dashboards | Interactive + generated **BCI Ecosystem Intelligence** dashboards |
-| **8.0** | Open-core | Premium enrichment behind the free, transparent map |
+| **7.2** | Dashboards | ✅ Generated **BCI Ecosystem Intelligence** dashboard (embedded above) |
+| **8.0** | Open-core | ✅ Scoring engine moved fully private; showcase is UI + open data |
+| **8.1** | Dashboards, live | ✅ The Stats page is now a live dashboard — coverage matrix, BRS distribution, standards, health |
 | **9.0** | Signals | Watchlists & alerts — "new BCI repo", "BRS jump", weekly digests |
 | **10.0** | Feed | Dataset-as-a-service — the live map as a licensed API |
 | **11.0** | Trajectory | Historical analytics — BRS-over-time, cohorts, momentum trends |
@@ -352,7 +353,7 @@ If you reference AxonOS Radar in academic or technical work, please cite it:
   title   = {{AxonOS Radar: a scored, evidence-backed map of the open brain--computer-interface field}},
   year    = {2026},
   url     = {https://github.com/AxonOS-BCI/axonos-community-radar},
-  version = {8.0.1}
+  version = {8.1.0}
 }
 ```
 

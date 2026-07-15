@@ -171,7 +171,104 @@
       li.appendChild(el('span','st','\u2605 '+(p.stars||0)));host.appendChild(li);});
   }
 
-  function renderAll(){setMetrics();drawGrowth();drawMomentum();setCats();setTiers();setBuilders();setLangs();setRising();}
+  // ── v8.1 "Dashboards": the field's shape, from the engine's own output ──
+  // Everything here is computed from data the radar already publishes
+  // (coverage_matrix, standards_graph, brs, signals) — no new inputs, no
+  // hand-entered figures.
+  function heat(v,max){                    // viridis-ish ramp, dark → bright
+    if(!v)return 'rgba(120,140,160,.07)';
+    var t=Math.min(1,v/(max||1));
+    var s=[[38,20,72],[45,90,140],[35,160,140],[130,200,80],[250,230,60]];
+    var i=Math.min(s.length-2,Math.floor(t*(s.length-1))),f=t*(s.length-1)-i;
+    var c=s[i].map(function(x,j){return Math.round(x+(s[i+1][j]-x)*f);});
+    return 'rgb('+c[0]+','+c[1]+','+c[2]+')';
+  }
+  function drawCoverage(){
+    var host=$('coverage'); if(!host)return;
+    var cm=DATA.coverage_matrix;
+    if(!cm||!cm.grid||!cm.grid.length){muted(host,'Coverage matrix appears once the engine publishes a v7+ payload.');$('covNote')&&($('covNote').textContent='');return;}
+    var stages=cm.stages||[],grid=cm.grid;
+    var max=0;grid.forEach(function(r){(r.cells||[]).forEach(function(c){if(c>max)max=c;});});
+    var deserts=0;
+    host.textContent='';
+    host.style.setProperty('--cols',String(stages.length));
+    host.appendChild(el('div','cov-c cov-h',''));           // corner
+    stages.forEach(function(s){host.appendChild(el('div','cov-c cov-h',s));});
+    grid.forEach(function(row){
+      host.appendChild(el('div','cov-c cov-m',row.modality));
+      (row.cells||[]).forEach(function(v,i){
+        var c=el('div','cov-c cov-v'+(v?'':' cov-0'),v?String(v):'·');
+        c.style.background=heat(v,max);
+        if(v>max*0.55)c.style.color='#08131a';
+        c.title=row.modality+' · '+(stages[i]||'')+': '+(v||0)+' project'+(v===1?'':'s')+(v?'':' — an opening');
+        if(!v)deserts++;
+        host.appendChild(c);
+      });
+    });
+    var n=$('covNote'); if(n)n.textContent=deserts+' empty cells — where the field is thin, and open';
+  }
+  function drawBrs(){
+    var svg=$('brs'); if(!svg)return;
+    var vals=DATA.projects.map(function(p){return p.brs;}).filter(function(v){return typeof v==='number';});
+    var note=$('brsNote');
+    if(!vals.length){svg.textContent='';if(note)note.textContent='Appears once the engine publishes scored projects.';return;}
+    var lo=40,hi=100,bins=10,step=(hi-lo)/bins,cnt=new Array(bins).fill(0);
+    vals.forEach(function(v){var i=Math.min(bins-1,Math.max(0,Math.floor((v-lo)/step)));cnt[i]++;});
+    var maxc=Math.max.apply(null,cnt)||1,W=960,H=200,pad=26,bw=(W-pad*2)/bins;
+    svg.textContent='';
+    cnt.forEach(function(c,i){
+      var h=Math.round((H-pad*2)*(c/maxc)),x=pad+i*bw,y=H-pad-h;
+      svg.appendChild(svgEl('rect',{x:x+2,y:y,width:bw-4,height:Math.max(h,c?2:0),rx:3,fill:'#2dd4ff','fill-opacity':'.85'}));
+      if(c){var t=svgEl('text',{x:x+bw/2,y:y-5,'text-anchor':'middle',fill:'#8a97a6','font-size':'11'});t.textContent=String(c);svg.appendChild(t);}
+      var lb=svgEl('text',{x:x+bw/2,y:H-8,'text-anchor':'middle',fill:'#8a97a6','font-size':'10'});
+      lb.textContent=String(Math.round(lo+i*step));svg.appendChild(lb);
+    });
+    var mean=vals.reduce(function(a,b){return a+b;},0)/vals.length;
+    var mx=pad+((mean-lo)/(hi-lo))*(W-pad*2);
+    svg.appendChild(svgEl('line',{x1:mx,y1:pad-8,x2:mx,y2:H-pad,stroke:'#fbbf24','stroke-width':'1.5','stroke-dasharray':'5 4'}));
+    var mt=svgEl('text',{x:mx+6,y:pad-1,fill:'#fbbf24','font-size':'11'});mt.textContent='mean '+mean.toFixed(0);svg.appendChild(mt);
+    if(note)note.textContent='BRS 0\u2013100 \u00b7 gate at 40 \u00b7 '+vals.length+' scored projects';
+  }
+  function hbars(host,rows,note,noteTxt,empty){
+    if(!host)return;
+    if(!rows.length){muted(host,empty);if(note)note.textContent='';return;}
+    var max=Math.max.apply(null,rows.map(function(r){return r.v;}))||1;
+    host.textContent='';
+    rows.forEach(function(r){
+      var row=el('div','hb');
+      row.appendChild(el('span','hb-l',r.l));
+      var track=el('div','hb-t'),fill=el('div','hb-f');
+      fill.style.width=Math.max(2,Math.round(r.v/max*100))+'%';
+      if(r.c)fill.style.background=r.c;
+      track.appendChild(fill);row.appendChild(track);
+      row.appendChild(el('span','hb-v',String(r.v)));
+      if(r.t)row.title=r.t;
+      host.appendChild(row);
+    });
+    if(note)note.textContent=noteTxt;
+  }
+  function drawStandards(){
+    var sg=DATA.standards_graph;
+    var rows=(sg&&sg.standards?sg.standards:[]).slice(0,8).map(function(s){
+      return {l:s.standard,v:s.count,c:'#a78bfa',t:s.count+' project'+(s.count===1?'':'s')+' speak '+s.standard};});
+    hbars($('standards'),rows,$('stdNote'),
+      (sg?((sg.n_standards||0)+' standards \u00b7 '+(sg.n_repos_with_standards||0)+' projects wired \u00b7 '+(sg.interop_edges||0)+' interop links'):''),
+      'Standards graph appears once the engine publishes a v7+ payload.');
+  }
+  function drawHealth(){
+    var hv=DATA.projects.map(function(p){return p.signals&&typeof p.signals.overall==='number'?p.signals.overall:null;})
+                        .filter(function(v){return v!==null;});
+    var bandsDef=[[80,101,'Strong','#34d399'],[60,80,'Solid','#2dd4ff'],[40,60,'Developing','#fbbf24'],[0,40,'Early','#fb7185']];
+    var rows=bandsDef.map(function(b){
+      var n=hv.filter(function(v){return v>=b[0]&&v<b[1];}).length;
+      return {l:b[2]+' \u00b7 '+b[0]+'\u2013'+(b[1]>100?100:b[1]-1),v:n,c:b[3],
+              t:n+' project'+(n===1?'':'s')+' scored '+b[0]+'\u2013'+(b[1]>100?100:b[1]-1)};});
+    var med=hv.length?hv.slice().sort(function(a,b){return a-b;})[Math.floor(hv.length/2)]:0;
+    hbars($('health'),rows,$('healthNote'),'median health '+med+' \u00b7 a triage signal, never a verdict',
+      'Health bands appear once the engine publishes signals.');
+  }
+
+  function renderAll(){setMetrics();drawCoverage();drawBrs();drawStandards();drawHealth();drawGrowth();drawMomentum();setCats();setTiers();setBuilders();setLangs();setRising();}
 
   function load(url){return fetch(url,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});}
   renderAll();

@@ -101,3 +101,25 @@
 .dp.flat{color:var(--dim);background:rgba(154,163,184,.12)}
 .who .ob{margin-left:7px;font-size:9px;font-weight:800;letter-spacing:.08em;color:#8fd0ff;border:1px solid rgba(143,208,255,.4);border-radius:5px;padding:1px 5px;vertical-align:2px}
 .vchip{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#8fd0ff;border:1px solid rgba(143,208,255,.35);border-radius:999px;padding:1.5px 8px}
+
+/* ── v8.1 "Dashboards": coverage heatmap + horizontal bar panels ── */
+.cov{display:grid;grid-template-columns:minmax(84px,auto) repeat(var(--cols,5),1fr);gap:3px}
+.cov-c{padding:7px 6px;border-radius:5px;font-size:12px;line-height:1.25;text-align:center}
+.cov-h{color:var(--muted,#8a97a6);font-size:10.5px;font-weight:600;letter-spacing:.2px;background:none;
+  align-self:end;text-transform:uppercase}
+.cov-m{color:var(--fg,#e8eef4);font-weight:600;text-align:left;background:rgba(120,140,160,.06);font-size:11.5px}
+.cov-v{font-weight:700;color:#e8eef4;cursor:default;transition:transform .08s}
+.cov-v:hover{transform:scale(1.06)}
+.cov-0{color:var(--muted,#8a97a6);font-weight:400;opacity:.5}
+.hbars{display:flex;flex-direction:column;gap:7px}
+.hb{display:grid;grid-template-columns:minmax(96px,148px) 1fr 42px;align-items:center;gap:10px}
+.hb-l{font-size:12px;color:var(--fg,#e8eef4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hb-t{height:9px;border-radius:5px;background:rgba(120,140,160,.1);overflow:hidden}
+.hb-f{height:100%;border-radius:5px;background:#2dd4ff;transition:width .3s ease}
+.hb-v{font-size:12px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;color:var(--fg,#e8eef4)}
+@media (max-width:640px){
+  .cov{grid-template-columns:minmax(64px,auto) repeat(var(--cols,5),1fr);gap:2px}
+  .cov-c{padding:5px 3px;font-size:10.5px}
+  .cov-h{font-size:8.5px}
+  .hb{grid-template-columns:minmax(76px,110px) 1fr 34px;gap:7px}
+}

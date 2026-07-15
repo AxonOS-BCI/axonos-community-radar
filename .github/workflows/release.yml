@@ -87,5 +87,26 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           TAG="${{ steps.tag.outputs.tag }}"
-          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json tagName,isLatest \
-            --jq '"verified: " + .tagName + " latest=" + (.isLatest|tostring)'
+          # `gh release view --json` has no isLatest field — that one lives on
+          # `gh release list`. Asking view for it failed the gate ("Unknown JSON
+          # field") while the Release itself had been created fine: a red run
+          # over a green release. Verify existence with fields that exist, and
+          # ask the API which release actually wears the Latest badge — which is
+          # the invariant this workflow exists to protect (the sidebar must show
+          # the committed VERSION), not a field name.
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" \
+            --json tagName,isDraft,isPrerelease \
+            --jq '"verified: " + .tagName + " (draft=" + (.isDraft|tostring) + ", prerelease=" + (.isPrerelease|tostring) + ")"'
+
+          if [ "$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft)" = "true" ]; then
+            echo "::error::release $TAG is a draft — it is not public"; exit 1
+          fi
+
+          CURRENT="v$(tr -d '[:space:]' < VERSION)"
+          LATEST_TAG="$(gh api "repos/$GITHUB_REPOSITORY/releases/latest" --jq .tag_name 2>/dev/null || true)"
+          echo "sidebar Latest = ${LATEST_TAG:-<none>} · committed VERSION = $CURRENT"
+          if [ "$TAG" = "$CURRENT" ] && [ "$LATEST_TAG" != "$TAG" ]; then
+            echo "::error::$TAG matches the committed VERSION but the sidebar Latest is '${LATEST_TAG:-<none>}'"
+            exit 1
+          fi
+          echo "✓ release $TAG verified"

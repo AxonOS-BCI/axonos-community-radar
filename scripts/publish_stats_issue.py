@@ -267,25 +267,44 @@ def build_body(radar, history, repo):
 
 
 def find_issue():
-    try:
-        issues = _api("GET", f"/repos/{REPO}/issues?state=open&per_page=100")
-    except urllib.error.HTTPError as e:
-        # On a server-side outage, do NOT fall through to "create" — that would
-        # spawn a duplicate living issue. Signal the caller to skip this run.
-        if e.code in (500, 502, 503, 504):
+    """Find the living stats issue, or return "RETRY" if we could not look.
+
+    The ONLY safe reason to create a new issue is a *successful* enumeration
+    that found no marker. Any failure to enumerate must NOT fall through to
+    "create", or a failed lookup spawns a duplicate living digest that then
+    updates forever alongside the original. The previous version guarded only
+    5xx and returned None on everything else — so a 403 (rate-limited or
+    under-scoped token), a 401, or a network blip silently created a duplicate.
+    403 is by far the likeliest failure here, which made the guard miss the
+    common case.
+
+    Also pages through all open issues (a marker past the first 100 would
+    otherwise be missed and duplicated), and when several markers already exist
+    adopts the OLDEST — so any duplicates converge instead of multiplying.
+    """
+    found = []
+    page = 1
+    while page <= 10:
+        try:
+            batch = _api("GET", f"/repos/{REPO}/issues?state=open&per_page=100&page={page}")
+        except Exception:  # noqa: BLE001
+            return "RETRY"          # never create on an unverified listing
+        if not isinstance(batch, list):
             return "RETRY"
-        return None
-    except Exception:  # noqa: BLE001
-        return None
-    for it in issues:
-        if "pull_request" in it:
-            continue
-        author = ((it.get("user") or {}).get("login") or "")
-        if author not in ("github-actions[bot]", "github-actions"):
-            continue   # marker collision defense: only trust the Actions bot
-        if MARKER in (it.get("body") or ""):
-            return it
-    return None
+        for it in batch:
+            if "pull_request" in it:
+                continue
+            author = ((it.get("user") or {}).get("login") or "")
+            if author not in ("github-actions[bot]", "github-actions"):
+                continue   # marker collision defense: only trust the Actions bot
+            if MARKER in (it.get("body") or ""):
+                found.append(it)
+        if len(batch) < 100:
+            break
+        page += 1
+    if not found:
+        return None                  # listing complete and clean → safe to create
+    return min(found, key=lambda it: it.get("number") or (1 << 30))
 
 
 def main():

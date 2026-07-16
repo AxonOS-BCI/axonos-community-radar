@@ -179,6 +179,8 @@
         <div class="tier-row"><span class="tg-badge tl1">Feed</span><span class="tg-txt"><span class="mono">feed.xml</span> — RSS of new arrivals, for readers and bots alike.</span></div>
         <div class="tier-row"><span class="tg-badge tl3">Signals</span><span class="tg-txt"><span class="mono">data/signals.json</span> — what changed this week: <em>new</em>, <em>rising</em>, <em>cooling</em>, each with the measured evidence behind it (7-day star velocity, first-seen date). Ids are stable for the week, so a reader never sees the same alert twice.</span></div>
         <div class="tier-row"><span class="tg-badge tl2">Feeds</span><span class="tg-txt"><span class="mono">feeds/signals.xml</span> — every signal; <span class="mono">feeds/new.xml</span> — newly discovered BCI projects only; <span class="mono">feeds/rising.xml</span> — momentum only. Subscribe to the slice you care about.</span></div>
+        <div class="tier-row"><span class="tg-badge tl3">API</span><span class="tg-txt"><span class="mono">data/api.json</span> — the machine-readable front door: every endpoint with its kind, stability, schema pointer, the freshness contract, and the licensing terms. Built by walking the deployed artifact, so it can never list what isn't there.</span></div>
+        <div class="tier-row"><span class="tg-badge tl2">CSV</span><span class="tg-txt"><span class="mono">data/projects.csv</span> — the map's core columns, flat, for spreadsheets and BI; <span class="mono">data/signals.schema.json</span> — JSON Schema for the signals feed.</span></div>
       </div>
       <p class="mt12">Provenance you can verify: the scan bot writes data through the GitHub API, so every data commit carries GitHub's <b>Verified</b> signature; the payload passes a fabrication-guarding validator and the published JSON Schema in CI; and a <b>documentation-coverage gate</b> fails the build if any shipped signal, tag or endpoint is missing from this very page. Nothing on a card is unexplained.</p>
     </div>
@@ -281,7 +283,7 @@
 
 <footer>
   <div class="wrap">
-    © The AxonOS Project / Denis Yermakou &nbsp;·&nbsp; <a href="https://axonos.org">axonos.org</a> &nbsp;·&nbsp; <a href="https://medium.com/@AxonOS">medium.com/@AxonOS</a> &nbsp;·&nbsp; connect@axonos.org &nbsp;·&nbsp; security@axonos.org &nbsp;·&nbsp; <span class="vchip">Radar v9.0.0</span><br>
+    © The AxonOS Project / Denis Yermakou &nbsp;·&nbsp; <a href="https://axonos.org">axonos.org</a> &nbsp;·&nbsp; <a href="https://medium.com/@AxonOS">medium.com/@AxonOS</a> &nbsp;·&nbsp; connect@axonos.org &nbsp;·&nbsp; security@axonos.org &nbsp;·&nbsp; <span class="vchip">Radar v10.0.0</span><br>
     Data: public GitHub search · auto-refreshed every 3h · relevance-filtered · categorisation is opinionated · not an endorsement.
   </div>
 </footer>

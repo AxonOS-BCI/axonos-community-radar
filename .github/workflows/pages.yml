@@ -90,6 +90,12 @@ jobs:
         # in sync with the deployed radar.json, never a bot commit.
         run: python3 scripts/build_exports.py --out _site/data
 
+      - name: Build the API index (deploy-time, zero commits)
+        # Walks the ASSEMBLED artifact and lists only what exists — the front
+        # door that cannot promise what the deploy does not carry. Must run
+        # after every other builder.
+        run: python3 scripts/build_api_index.py --out _site
+
       - name: Cache-bust asset URLs with the commit SHA
         # Append ?v=<sha> to every local CSS/JS asset link in the shipped HTML so
         # a new build always has new asset URLs. Without this, GitHub Pages'

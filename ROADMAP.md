@@ -9,9 +9,9 @@ Every item carries an **Area** (`engine` · `ui` · `data` · `infra` · `docs`)
 **Priority**, and a **Target** milestone. Open work is tracked as issues with the
 matching labels (see `.github/ISSUE_TEMPLATE/` and `scripts/setup_labels.sh`).
 
-**Where we are — v9.0:** the map is scored, the evidence behind every call is
-public, the Stats page is a live dashboard, and the field's changes arrive as
-signals and feeds instead of waiting to be looked at.
+**Where we are — v10.0:** the map is scored, its changes arrive as signals and
+feeds, and the whole dataset is a documented, schema'd Data API with a front
+door that lists only what the deploy carries.
 
 ---
 
@@ -25,8 +25,8 @@ signals and feeds instead of waiting to be looked at.
 | **8.0** | Open-core | ✅ shipped |
 | **8.1** | Dashboards, live | ✅ shipped |
 | **9.0** | Signals | ✅ shipped |
-| **10.0** | Feed | next |
-| **11.0** | Trajectory | planned |
+| **10.0** | Feed | ✅ shipped |
+| **11.0** | Trajectory | next |
 | **12.0** | Badges | planned |
 | **13.0** | Talent | planned |
 | **14.0** | Capital | planned |
@@ -117,13 +117,23 @@ The map stops waiting to be looked at.
 - **One digest, always** (`data`) — a janitor closes duplicates and retires
   orphaned bot issues, never a human's and never the monitor's alert.
 
-## Next — v10.0 · "Feed" — dataset-as-a-service (Area: infra)
+## Shipped — v10.0 · "Feed"
 
-The engine's *output* — the live, scored map — as a licensed feed for scouts,
-labs, and investors. The free map and its transparency stay free; this is the
-higher-effort value built beside it, never a gate on the public tier.
+The map, as data anyone can build on — with the front door that cannot lie.
 
-## v11.0 · "Trajectory" — historical analytics (Area: data)
+- **`data/api.json`** (`infra`) — the machine-readable index: every endpoint
+  with kind, stability, schema pointer, byte size; the freshness contract; the
+  licensing terms. Rebuilt each deploy by walking the artifact, so it lists
+  only what the deploy carries.
+- **Schemas** (`data`) — `signals.schema.json` joins `radar.schema.json`; the
+  live payload is validated against it in CI.
+- **CSV export** (`data`) — `projects.csv`: the core columns, flat, for
+  spreadsheets and BI, beside the NDJSON stream.
+- **The human contract** (`docs`) — `docs/API.md`: endpoints, freshness,
+  CORS/caching conventions, stability policy, quick starts (curl / pandas /
+  fetch), licensing. Free with attribution; licensed feeds for funds and labs.
+
+## Next — v11.0 · "Trajectory" — historical analytics (Area: data)
 
 - **BRS-over-time** — recompute BRS per historical snapshot and plot the arc.
 - **Stars sparkline** and a **52-week commit-activity strip** — from the snapshots

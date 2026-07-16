@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axonos-bci.github.io/axonos-community-radar/data/signals.schema.json",
+  "title": "AxonOS Radar — Signals",
+  "description": "What changed this week on the map: new / rising / cooling, each with the measured evidence that produced it. Ids are stable per (kind, project, ISO week).",
+  "type": "object",
+  "required": ["version", "generated_at", "week", "counts", "signals"],
+  "properties": {
+    "version": { "const": 1 },
+    "generated_at": { "type": "string" },
+    "week": { "type": "string", "pattern": "^[0-9]{4}-W[0-9]{2}$" },
+    "counts": {
+      "type": "object",
+      "required": ["new", "rising", "cooling"],
+      "properties": {
+        "new": { "type": "integer", "minimum": 0 },
+        "rising": { "type": "integer", "minimum": 0 },
+        "cooling": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "signals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "project", "evidence", "detected_at"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[0-9a-f]{16}$" },
+          "kind": { "enum": ["new", "rising", "cooling"] },
+          "project": {
+            "type": "object",
+            "required": ["full_name", "url"],
+            "properties": {
+              "full_name": { "type": "string", "minLength": 1 },
+              "url": { "type": "string", "pattern": "^https://github\\.com/" },
+              "brs": { "type": ["number", "null"] },
+              "relevance_tier": { "type": ["string", "null"] },
+              "category": { "type": ["string", "null"] },
+              "modality": { "type": "array", "items": { "type": "string" } },
+              "stars": { "type": ["integer", "null"] }
+            }
+          },
+          "evidence": {
+            "type": "object",
+            "properties": {
+              "stars_delta_7d": { "type": ["integer", "null"] },
+              "first_seen": { "type": ["string", "null"] }
+            },
+            "additionalProperties": false
+          },
+          "detected_at": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

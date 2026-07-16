@@ -338,6 +338,9 @@ Every surface is backed by public, same-origin, machine-readable endpoints:
 | `feeds/signals.xml` | RSS — every signal |
 | `feeds/new.xml` | RSS — newly discovered BCI projects only |
 | `feeds/rising.xml` | RSS — projects gaining measured 7-day momentum |
+| `data/api.json` | the machine-readable front door — every endpoint, its stability, schema, freshness contract, licensing; lists only what the deploy carries |
+| `data/projects.csv` | the map's core columns, flat — spreadsheets and BI tools |
+| `data/signals.schema.json` | JSON Schema for the signals feed |
 
 Provenance: the scan bot writes through the GitHub API, so every data commit
 carries GitHub's **Verified** signature; `scripts/validate_payload.py` is a

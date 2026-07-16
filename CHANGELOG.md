@@ -1,5 +1,26 @@
 # Changelog
 
+## [10.0.0] — 2026-07-16 — "Feed"
+
+The map becomes a Data API anyone can build on — with a front door that cannot
+promise what the deploy does not carry.
+
+### Added
+- **`data/api.json`** — the machine-readable index of everything the radar
+  publishes: every endpoint with its kind, stability grade, schema pointer, and
+  byte size; the freshness contract (engine cron → sync → deploy); CORS and
+  caching conventions; the licensing terms. Built at deploy time by walking the
+  assembled artifact, so an endpoint is listed only if the file exists.
+- **`data/signals.schema.json`** — JSON Schema for the signals feed, beside the
+  existing `radar.schema.json`; the live payload validates against it in CI.
+- **`data/projects.csv`** — the map's core columns, flat (RFC 4180), for
+  spreadsheets and BI, beside the NDJSON stream. Column order is part of the
+  contract.
+- **`docs/API.md`** — the human contract: endpoints, freshness, conventions,
+  stability policy, quick starts (curl / pandas / fetch), licensing. The free
+  tier is free with attribution; licensed feeds, SLAs, and custom slices for
+  funds and labs via connect@axonos.org.
+
 ## [9.0.0] — 2026-07-16 — "Signals"
 
 The map stops waiting to be looked at, and starts being able to reach the reader.

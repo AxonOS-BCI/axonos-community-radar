@@ -123,3 +123,33 @@
   .cov-h{font-size:8.5px}
   .hb{grid-template-columns:minmax(76px,110px) 1fr 34px;gap:7px}
 }
+
+/* ── v9.0 "Signals": what changed, with a client-side watchlist ── */
+.sig-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{background:rgba(120,140,160,.1);border:1px solid rgba(120,140,160,.25);color:var(--muted,#8a97a6);
+  border-radius:999px;padding:4px 11px;font-size:12px;cursor:pointer;font:inherit;font-size:12px;
+  transition:background .12s,color .12s,border-color .12s}
+.chip:hover{color:var(--fg,#e8eef4);border-color:rgba(120,140,160,.5)}
+.chip.on{background:rgba(45,212,255,.16);border-color:#2dd4ff;color:#2dd4ff;font-weight:600}
+.sig-sel select{background:rgba(120,140,160,.1);border:1px solid rgba(120,140,160,.25);
+  color:var(--fg,#e8eef4);border-radius:7px;padding:4px 9px;font:inherit;font-size:12px}
+.sig-list{display:flex;flex-direction:column;gap:5px}
+.sig{display:grid;grid-template-columns:64px 1fr auto auto;gap:9px;align-items:center;
+  padding:6px 8px;border-radius:6px;background:rgba(120,140,160,.05)}
+.sig:hover{background:rgba(120,140,160,.1)}
+.sig-k{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;
+  border:1px solid;border-radius:999px;padding:2px 0;text-align:center}
+.sig-n{color:var(--fg,#e8eef4);text-decoration:none;font-size:12.5px;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.sig-n:hover{text-decoration:underline}
+.sig-w{color:var(--muted,#8a97a6);font-size:11.5px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.sig-b{color:var(--muted,#8a97a6);font-size:11px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.sig-feeds{margin-top:10px;font-size:11.5px;color:var(--muted,#8a97a6)}
+.sig-feeds a{color:#2dd4ff;text-decoration:none}
+.sig-feeds a:hover{text-decoration:underline}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media (max-width:640px){
+  .sig{grid-template-columns:56px 1fr auto;gap:6px}
+  .sig-b{display:none}
+}

@@ -32,6 +32,8 @@ from datetime import datetime, timezone
 TOKEN = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
 REPO = os.environ.get("GITHUB_REPOSITORY")  # "owner/name"
 MARKER = "<!-- axonos-radar-stats -->"
+# The health monitor owns its own alert issue; the janitor must never close it.
+HEALTH_MARKER = "<!-- axonos-radar-health-alert f3a91c2e -->"
 TITLE = "\U0001F4E1 AxonOS Radar \u2014 The State of Open BCI"
 API = "https://api.github.com"
 
@@ -307,6 +309,81 @@ def find_issue():
     return min(found, key=lambda it: it.get("number") or (1 << 30))
 
 
+
+def _list_open_bot_issues():
+    """Every open issue authored by the Actions bot, or "RETRY" if we could not
+    enumerate. Same discipline as find_issue(): never act on an unverified list."""
+    out, page = [], 1
+    while page <= 10:
+        try:
+            batch = _api("GET", f"/repos/{REPO}/issues?state=open&per_page=100&page={page}")
+        except Exception:  # noqa: BLE001
+            return "RETRY"
+        if not isinstance(batch, list):
+            return "RETRY"
+        for it in batch:
+            if "pull_request" in it:
+                continue
+            author = ((it.get("user") or {}).get("login") or "")
+            if author in ("github-actions[bot]", "github-actions"):
+                out.append(it)
+        if len(batch) < 100:
+            break
+        page += 1
+    return out
+
+
+def _close(number, why):
+    """Close one issue with a reason. Never deletes — a closed issue keeps its
+    history and can be reopened; deletion is irreversible and stays manual."""
+    try:
+        _api("POST", f"/repos/{REPO}/issues/{number}/comments", {"body": why})
+        _api("PATCH", f"/repos/{REPO}/issues/{number}", {"state": "closed"})
+        print(f"publish_stats_issue: closed #{number}")
+        return True
+    except Exception as e:  # noqa: BLE001
+        print(f"publish_stats_issue: could not close #{number}: {e}")
+        return False
+
+
+def janitor(keep_number):
+    """Keep exactly one living digest, and retire the bot's abandoned ones.
+
+    Two kinds of litter accumulate on a repo whose digest is a living issue:
+      1. duplicates of the current digest (a failed lookup once created a
+         second one), and
+      2. issues from an older digest format, orphaned when the marker changed —
+         they can never be updated again, so they sit at the top of the Issues
+         tab showing numbers from weeks ago, which is worse than showing none.
+
+    Both get closed with an explanation and a pointer to the live one. Only the
+    Actions bot's own issues are ever touched: a human's issue is never closed
+    by a bot, and the health monitor's alert is left to the monitor.
+    """
+    issues = _list_open_bot_issues()
+    if issues == "RETRY":
+        print("publish_stats_issue: cannot enumerate issues; skipping cleanup")
+        return
+    closed = 0
+    for it in issues:
+        n = it.get("number")
+        if n == keep_number:
+            continue
+        body = it.get("body") or ""
+        title = it.get("title") or ""
+        if HEALTH_MARKER in body:
+            continue                      # the monitor owns its own alert
+        if MARKER in body:
+            closed += _close(n, f"Superseded — the live digest is #{keep_number}. "
+                                f"Closing this duplicate so the radar keeps exactly one.")
+        elif "axonos" in title.lower():
+            closed += _close(n, f"Retired — this issue was published by an older digest "
+                                f"format and can no longer be updated, so its numbers are "
+                                f"frozen in the past. The live digest is #{keep_number}.")
+    if closed:
+        print(f"publish_stats_issue: retired {closed} stale bot issue(s)")
+
+
 def main():
     if not TOKEN or not REPO:
         print("publish_stats_issue: missing GITHUB_TOKEN / GITHUB_REPOSITORY")
@@ -329,9 +406,11 @@ def main():
     if existing:
         if (existing.get("body") or "").strip() == body.strip():
             print("publish_stats_issue: no change, issue", existing["number"])
+            janitor(existing["number"])
             return 0
         _api("PATCH", f"/repos/{REPO}/issues/{existing['number']}", {"title": TITLE, "body": body})
         print("publish_stats_issue: updated issue", existing["number"])
+        janitor(existing["number"])
     else:
         try:
             created = _api("POST", f"/repos/{REPO}/issues",
@@ -339,6 +418,8 @@ def main():
         except urllib.error.HTTPError:
             created = _api("POST", f"/repos/{REPO}/issues", {"title": TITLE, "body": body})
         print("publish_stats_issue: created issue", created.get("number"))
+        if created.get("number"):
+            janitor(created["number"])
     return 0
 
 

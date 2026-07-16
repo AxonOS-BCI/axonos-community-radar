@@ -39,6 +39,20 @@
   <div class="weekly hidden" id="wkline" aria-label="This week"></div>
 
   <section class="panel">
+    <div class="ph"><h2>Signals</h2><span class="note" id="sigNote"></span></div>
+    <div class="sig-bar">
+      <div class="chips" id="sigChips" role="group" aria-label="Filter signals by kind"></div>
+      <label class="sig-sel"><span class="sr-only">Filter by modality</span>
+        <select id="sigMod" aria-label="Filter signals by modality"><option value="">All modalities</option></select>
+      </label>
+    </div>
+    <div id="signals" class="sig-list"></div>
+    <div class="sig-feeds">
+      Subscribe: <a href="./feeds/signals.xml">all</a> · <a href="./feeds/new.xml">new</a> · <a href="./feeds/rising.xml">rising</a> · <a href="./data/signals.json">JSON</a>
+    </div>
+  </section>
+
+  <section class="panel">
     <div class="ph"><h2>Signal-chain coverage</h2><span class="note" id="covNote"></span></div>
     <div id="coverage" class="cov"></div>
   </section>
@@ -100,7 +114,7 @@
   </div>
 
   <footer>
-    <div><b class="dim">AxonOS Radar</b> <span class="vchip">v8.1.0</span> — an <a href="https://axonos.org">AxonOS</a> community project · derived from public GitHub metadata</div>
+    <div><b class="dim">AxonOS Radar</b> <span class="vchip">v9.0.0</span> — an <a href="https://axonos.org">AxonOS</a> community project · derived from public GitHub metadata</div>
     <div class="mt8">Inclusion is not endorsement. Scores are discovery signals, not quality, safety, or clinical ratings · <a href="https://github.com/AxonOS-BCI/axonos-community-radar/blob/main/docs/METHODOLOGY.md">Methodology</a></div>
   </footer>
 </div>

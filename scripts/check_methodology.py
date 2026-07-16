@@ -23,7 +23,8 @@ FOUNDATION_KEYS = ("license_file", "readme", "contributing", "code_of_conduct",
                    "citation", "security_policy", "ci")
 ENDPOINTS = ("data/radar.json", "data/radar.schema.json", "data/ecosystem.json",
              "data/badge-ecosystem.json", "data/projects.ndjson", "feed.xml",
-             "data/interop-vocab.json")
+             "data/interop-vocab.json",
+             "data/signals.json", "feeds/signals.xml", "feeds/new.xml", "feeds/rising.xml")
 
 
 def _read(p: Path) -> str:

@@ -1,5 +1,43 @@
 # Changelog
 
+## [9.0.0] — 2026-07-16 — "Signals"
+
+The map stops waiting to be looked at, and starts being able to reach the reader.
+And the pipeline that feeds it no longer depends on a single credential.
+
+### Fixed
+- **The map had been frozen for four days while everything looked busy.** Every
+  scheduled scan produced good data; the engine's run then failed on one step —
+  the cross-repo publish — and the *next* step, which persists the engine's own
+  state and needs no token at all, was skipped by the implicit `if: success()`.
+  So a single broken credential froze both copies at once and nothing said why.
+  The engine now persists its state **before** the cross-repo hop, and this repo
+  **pulls** the engine's published data on its own schedule with its own
+  `GITHUB_TOKEN` (`scripts/sync_engine_data.py`, `sync.yml`) — a path that has
+  no cross-repo credential to expire or mis-scope. Both paths may run; whichever
+  lands first wins and the other skips on identical content.
+- **Scheduled runs get dropped.** GitHub silently skips schedules under load, and
+  a single tick can vanish. Sync runs on two staggered ticks; a redundant tick
+  costs one conditional GET when the data is already current.
+
+### Added
+- **Signals** (`data/signals.json`) — what changed this week: **new**, **rising**,
+  **cooling**, each carrying the measured evidence that produced it (7-day star
+  velocity, first-seen date). Ids are derived from kind + project + ISO week, so
+  a fact keeps one identity for the week it is true and a reader is never
+  re-alerted on the same thing.
+- **Feeds per slice** — `feeds/signals.xml` (everything), `feeds/new.xml` (new
+  BCI projects only), `feeds/rising.xml` (momentum only). RSS 2.0, stable guids.
+- **A watchlist on the Stats page** — the Signals panel filters by kind and by
+  modality, entirely client-side, and links every slice's feed.
+- **The digest keeps exactly one issue.** A janitor closes duplicate digests and
+  retires bot issues from an older format whose numbers are frozen in the past,
+  each with an explanation and a pointer to the live one. It never touches a
+  human's issue, and never the health monitor's alert.
+- **The publish token now says why.** A preflight (in the engine) identifies the
+  token, whether it can see the target, whether it has push, and whether a branch
+  ruleset would refuse the write — turning an opaque `403` into an instruction.
+
 ## [8.1.0] — 2026-07-16 — "Dashboards, live"
 
 The Stats page becomes the live dashboard the generated report already was — and

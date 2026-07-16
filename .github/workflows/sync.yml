@@ -1,0 +1,65 @@
+name: Sync data from the engine
+
+# ─────────────────────────────────────────────────────────────────────────────
+# The map's liveness, without a cross-repo credential.
+#
+# The scored dataset is produced by the engine repository. It also *pushes* the
+# data here with a token (PUBLISH_PAT). That push is a single point of failure:
+# when the token broke, every scheduled scan kept producing good data and none
+# of it arrived — the map sat frozen for days while both repositories looked
+# busy and the engine's run log said "failure" into the void.
+#
+# This is the pull side of the same hop and needs no cross-repo credential: it
+# reads the engine's published files over plain HTTPS and commits them here with
+# this workflow's own GITHUB_TOKEN, which cannot expire and cannot be
+# mis-scoped. Commits go through the Contents API, so they are GitHub-signed
+# (Verified) and pass the signed-commit ruleset.
+#
+# Both paths may run; whichever arrives first wins and the other skips on
+# identical content. If the engine's files are not publicly readable, this exits
+# clean and the push path remains the fallback.
+#
+# Two staggered ticks: GitHub drops scheduled runs under load, and a single
+# nightly-style cron can silently miss. The second tick costs seconds when the
+# data is already current (a conditional GET and an exit).
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  schedule:
+    - cron: "37 */3 * * *"   # ~20 min after the engine's :17 scan lands
+    - cron: "7 */6 * * *"    # backstop tick, offset — survives a dropped run
+  workflow_dispatch:
+
+permissions:
+  contents: write            # commits the engine's output into this repo
+  actions: write             # dispatches the redeploy (gh workflow run pages.yml)
+
+concurrency:
+  group: radar-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Pull the engine's published data
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+
+      - name: Pull published data from the engine (no PAT)
+        env:
+          ENGINE_REPO: AxonOS-BCI/axonos-radar-core
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 scripts/sync_engine_data.py
+
+      - name: Redeploy the site with whatever arrived
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Data commits carry [skip ci], which suppresses the push trigger by
+          # design; without this the site would wait for the pages cron.
+          if gh workflow run pages.yml --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "✓ redeploy dispatched"
+          else
+            echo "· could not dispatch pages.yml — it still runs on its own cron"
+          fi

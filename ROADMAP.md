@@ -9,8 +9,9 @@ Every item carries an **Area** (`engine` · `ui` · `data` · `infra` · `docs`)
 **Priority**, and a **Target** milestone. Open work is tracked as issues with the
 matching labels (see `.github/ISSUE_TEMPLATE/` and `scripts/setup_labels.sh`).
 
-**Where we are — v8.1:** the map is scored, the evidence behind every call is
-public, the engine is private, and the Stats page is a live dashboard.
+**Where we are — v9.0:** the map is scored, the evidence behind every call is
+public, the Stats page is a live dashboard, and the field's changes arrive as
+signals and feeds instead of waiting to be looked at.
 
 ---
 
@@ -23,8 +24,8 @@ public, the engine is private, and the Stats page is a live dashboard.
 | **7.2** | Dashboards (generated) | ✅ shipped |
 | **8.0** | Open-core | ✅ shipped |
 | **8.1** | Dashboards, live | ✅ shipped |
-| **9.0** | Signals | next |
-| **10.0** | Feed | planned |
+| **9.0** | Signals | ✅ shipped |
+| **10.0** | Feed | next |
 | **11.0** | Trajectory | planned |
 | **12.0** | Badges | planned |
 | **13.0** | Talent | planned |
@@ -96,19 +97,27 @@ public, the engine is private, and the Stats page is a live dashboard.
 
 ---
 
-## Next — v9.0 · "Signals" (Area: data, infra)
+## Shipped — v9.0 · "Signals"
 
-Turn the map into an instrument that tells *you* when something changes, instead
-of asking you to come and look.
+The map stops waiting to be looked at.
 
-- **Watchlists** (`data`, high) — follow a modality, a standard, an owner, or a
-  BRS band.
-- **Alerts** (`data`, high) — "a new BCI repo appeared", "a project's BRS
-  jumped", "a tracked project is cooling".
-- **Weekly ecosystem digest** (`data`, med) — the living issue, delivered.
-- **Feeds per slice** (`infra`, med) — an RSS/JSON feed per watchlist.
+- **Signals** (`data`) — `data/signals.json`: what changed this week — **new**,
+  **rising**, **cooling** — each carrying the measured evidence that produced it
+  (7-day star velocity, first-seen date). Ids derive from kind + project + ISO
+  week, so a fact keeps one identity for the week it is true and a reader is
+  never re-alerted on the same thing.
+- **Feeds per slice** (`infra`) — `feeds/signals.xml`, `feeds/new.xml`,
+  `feeds/rising.xml`. Subscribe to the slice you care about.
+- **Watchlist** (`ui`) — the Signals panel on the Stats page filters by kind and
+  modality, client-side, and links every feed.
+- **A pipeline that cannot be frozen by one credential** (`infra`) — the engine
+  persists its own state before the cross-repo hop, and this repo pulls the
+  engine's published data with its own `GITHUB_TOKEN`. Nothing in the liveness
+  path can expire.
+- **One digest, always** (`data`) — a janitor closes duplicates and retires
+  orphaned bot issues, never a human's and never the monitor's alert.
 
-## v10.0 · "Feed" — dataset-as-a-service (Area: infra)
+## Next — v10.0 · "Feed" — dataset-as-a-service (Area: infra)
 
 The engine's *output* — the live, scored map — as a licensed feed for scouts,
 labs, and investors. The free map and its transparency stay free; this is the

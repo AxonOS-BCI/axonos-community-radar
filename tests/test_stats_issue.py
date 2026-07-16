@@ -98,3 +98,73 @@ def test_marker_beyond_first_page_is_found(monkeypatch):
     _stub_api(monkeypatch, paged)
     got = psi.find_issue()
     assert got and got["number"] == 3
+
+
+# ── v9.0: the issue janitor ──
+# The digest keeps exactly ONE living issue. Two kinds of litter accumulate:
+# duplicates (a failed lookup once created a second one) and orphans from an
+# older digest format whose marker no longer matches — frozen numbers at the
+# top of the Issues tab. Both get closed; a human's issue and the health
+# monitor's alert never do.
+
+def _bot(number, title="\U0001F4E1 AxonOS Radar \u2014 The State of Open BCI",
+         marked=True, author=BOT, health=False):
+    body = (psi.MARKER if marked else "") + (psi.HEALTH_MARKER if health else "") + "\nbody"
+    return {"number": number, "title": title, "user": author, "body": body}
+
+
+def _capture(monkeypatch, listing):
+    """Run the janitor against a canned listing; return what it closed."""
+    closed = []
+
+    def fake(method, path, payload=None):
+        if method == "GET" and "issues?state=open" in path:
+            return listing if "page=1" in path or "page=" not in path else []
+        if method == "PATCH" and "/issues/" in path and (payload or {}).get("state") == "closed":
+            closed.append(int(path.rsplit("/", 1)[1]))
+        return {}
+
+    monkeypatch.setattr(psi, "_api", fake)
+    psi.janitor(7)
+    return closed
+
+
+def test_janitor_closes_duplicate_digests(monkeypatch):
+    closed = _capture(monkeypatch, [_bot(7), _bot(9), _bot(11)])
+    assert sorted(closed) == [9, 11]
+
+
+def test_janitor_keeps_the_living_issue(monkeypatch):
+    assert _capture(monkeypatch, [_bot(7)]) == []
+
+
+def test_janitor_retires_orphaned_old_format(monkeypatch):
+    """The pre-v7 relic: bot-authored, AxonOS-titled, no current marker."""
+    orphan = _bot(1, title="AxonOS Community Radar", marked=False)
+    assert _capture(monkeypatch, [_bot(7), orphan]) == [1]
+
+
+def test_janitor_never_touches_the_health_alert(monkeypatch):
+    alert = _bot(4, title="\u26a0\ufe0f AxonOS Radar pipeline health", marked=False, health=True)
+    assert _capture(monkeypatch, [_bot(7), alert]) == []
+
+
+def test_janitor_never_touches_a_human_issue(monkeypatch):
+    human = _bot(5, title="AxonOS Radar: please add my project", marked=False,
+                 author={"login": "a-real-person"})
+    assert _capture(monkeypatch, [_bot(7), human]) == []
+
+
+def test_janitor_ignores_unrelated_bot_issues(monkeypatch):
+    other = _bot(6, title="Dependency update", marked=False)
+    assert _capture(monkeypatch, [_bot(7), other]) == []
+
+
+def test_janitor_skips_when_listing_fails(monkeypatch):
+    """An unverified list must never trigger closures."""
+    def boom(method, path, payload=None):
+        if method == "GET":
+            raise urllib.error.HTTPError("u", 403, "rate limited", {}, None)
+        raise AssertionError("janitor acted on an unverified listing")
+    monkeypatch.setattr(psi, "_api", boom)
+    psi.janitor(7)

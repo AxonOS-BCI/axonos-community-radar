@@ -79,6 +79,12 @@ jobs:
         # in sync with the deployed data, never a bot commit.
         run: python3 scripts/build_ecosystem_manifest.py --out _site/data
 
+      - name: Build Signals + feeds (deploy-time, zero commits)
+        # Turns the engine's new/rising/cooling flags into data/signals.json and
+        # feeds/{signals,new,rising}.xml, straight into the artifact. Pure read
+        # of the published dataset; commits nothing.
+        run: python3 scripts/build_signals.py --out _site
+
       - name: Build data exports (deploy-time, zero commits)
         # projects.ndjson — one project per line for pandas/jq/DuckDB, always
         # in sync with the deployed radar.json, never a bot commit.

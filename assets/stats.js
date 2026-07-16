@@ -268,15 +268,74 @@
       'Health bands appear once the engine publishes signals.');
   }
 
-  function renderAll(){setMetrics();drawCoverage();drawBrs();drawStandards();drawHealth();drawGrowth();drawMomentum();setCats();setTiers();setBuilders();setLangs();setRising();}
+  // ── v9.0 "Signals": what changed, and a client-side watchlist over it ──
+  var SIG = null, sigKind = "all", sigMod = "";
+  var KINDH = { "new": ["New", "#2dd4ff"], rising: ["Rising", "#34d399"], cooling: ["Cooling", "#fb7185"] };
+  function sigRows(){
+    if (!SIG || !SIG.signals) return [];
+    return SIG.signals.filter(function(s){
+      if (sigKind !== "all" && s.kind !== sigKind) return false;
+      if (sigMod && (s.project.modality || []).indexOf(sigMod) < 0) return false;
+      return true;
+    });
+  }
+  function drawSignals(){
+    var host = $("signals"); if (!host) return;
+    var note = $("sigNote");
+    if (!SIG) { muted(host, "Signals appear once the engine publishes a scan."); if (note) note.textContent = ""; return; }
+    var rows = sigRows();
+    host.textContent = "";
+    if (!rows.length) { muted(host, "No signals match this filter."); }
+    rows.slice(0, 40).forEach(function(s){
+      var p = s.project, meta = KINDH[s.kind] || ["?", "#8a97a6"];
+      var row = el("div", "sig");
+      var tag = el("span", "sig-k", meta[0]); tag.style.color = meta[1]; tag.style.borderColor = meta[1];
+      row.appendChild(tag);
+      var a = document.createElement("a"); a.className = "sig-n"; a.href = safeUrl(p.url); a.target = "_blank";
+      a.rel = "noopener noreferrer"; a.textContent = p.full_name; row.appendChild(a);
+      var ev = s.evidence || {}, why = "";
+      if (typeof ev.stars_delta_7d === "number" && ev.stars_delta_7d) why = (ev.stars_delta_7d > 0 ? "+" : "") + ev.stars_delta_7d + "★/7d";
+      else if (ev.first_seen) why = "first seen " + String(ev.first_seen).slice(0, 10);
+      row.appendChild(el("span", "sig-w", why));
+      row.appendChild(el("span", "sig-b", typeof p.brs === "number" ? "BRS " + p.brs : ""));
+      host.appendChild(row);
+    });
+    if (note) {
+      var c = SIG.counts || {};
+      note.textContent = (c["new"] || 0) + " new · " + (c.rising || 0) + " rising · " + (c.cooling || 0) + " cooling · week " + (SIG.week || "");
+    }
+  }
+  function buildSigControls(){
+    var chips = $("sigChips"); if (!chips || !SIG) return;
+    chips.textContent = "";
+    [["all", "All"], ["new", "New"], ["rising", "Rising"], ["cooling", "Cooling"]].forEach(function(k){
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "chip" + (sigKind === k[0] ? " on" : "");
+      b.textContent = k[1];
+      b.addEventListener("click", function(){ sigKind = k[0]; buildSigControls(); drawSignals(); });
+      chips.appendChild(b);
+    });
+    var sel = $("sigMod");
+    if (sel && !sel.dataset.built) {
+      sel.dataset.built = "1";
+      var mods = {};
+      (SIG.signals || []).forEach(function(s){ (s.project.modality || []).forEach(function(m){ mods[m] = 1; }); });
+      Object.keys(mods).sort().forEach(function(m){
+        var o = document.createElement("option"); o.value = m; o.textContent = m; sel.appendChild(o);
+      });
+      sel.addEventListener("change", function(){ sigMod = sel.value; drawSignals(); });
+    }
+  }
+  function renderAll(){setMetrics();drawSignals();drawCoverage();drawBrs();drawStandards();drawHealth();drawGrowth();drawMomentum();setCats();setTiers();setBuilders();setLangs();setRising();}
 
   function load(url){return fetch(url,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});}
   renderAll();
   if(window.__RADAR_DATA__){DATA=window.__RADAR_DATA__;}
   if(window.__RADAR_HISTORY__){HIST=window.__RADAR_HISTORY__;}
   if(window.__RADAR_DATA__||window.__RADAR_HISTORY__){renderAll();}
-  else Promise.all([load('./data/radar.json'),load('./data/history.json'),load('./data/weekly.json')]).then(function(res){
+  else Promise.all([load('./data/radar.json'),load('./data/history.json'),load('./data/weekly.json'),load('./data/signals.json')]).then(function(res){
     if(res[0])DATA=res[0]; if(res[1])HIST=res[1]; if(res[2])WEEK=res[2];
+    if(res[3]&&res[3].signals){SIG=res[3];buildSigControls();}
     if(!DATA.projects)DATA.projects=[];
     renderAll();
   });

@@ -334,6 +334,10 @@ Every surface is backed by public, same-origin, machine-readable endpoints:
 | `data/badge-ecosystem.json` | shields.io live-pulse endpoint for READMEs |
 | `data/interop-vocab.json` | the interop vocabulary — the exact patterns behind every tag |
 | `feed.xml` | RSS of new arrivals |
+| `data/signals.json` | what changed this week — new / rising / cooling, each with its measured evidence; ids stable per ISO week |
+| `feeds/signals.xml` | RSS — every signal |
+| `feeds/new.xml` | RSS — newly discovered BCI projects only |
+| `feeds/rising.xml` | RSS — projects gaining measured 7-day momentum |
 
 Provenance: the scan bot writes through the GitHub API, so every data commit
 carries GitHub's **Verified** signature; `scripts/validate_payload.py` is a

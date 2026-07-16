@@ -10,8 +10,8 @@
 [![Roadmap](https://img.shields.io/badge/roadmap-to%20v17-f59e0b?style=flat-square)](https://github.com/users/AxonOS-BCI/projects/1)
 [![CI](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml)
 [![Pages](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml)
-[![Version](https://img.shields.io/badge/version-8.1.0-0a4a8f?style=flat-square)](CHANGELOG.md)
-[![Release](https://img.shields.io/badge/release-Dashboards%2C%20live-6fe6f2?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-9.0.0-0a4a8f?style=flat-square)](CHANGELOG.md)
+[![Release](https://img.shields.io/badge/release-Signals-6fe6f2?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-475569?style=flat-square)](LICENSE)
 
 [![Engine](https://img.shields.io/badge/inclusion-scored%20·%20BRS%200–100-46d0e0?style=flat-square)](#-the-relevance-engine--scored-inclusion-not-a-curated-list)
@@ -300,7 +300,7 @@ The radar is early. Here's the arc from today to the canonical neurotech intelli
 | **7.2** | Dashboards | ✅ Generated **BCI Ecosystem Intelligence** dashboard (embedded above) |
 | **8.0** | Open-core | ✅ Scoring engine moved fully private; showcase is UI + open data |
 | **8.1** | Dashboards, live | ✅ The Stats page is now a live dashboard — coverage matrix, BRS distribution, standards, health |
-| **9.0** | Signals | Watchlists & alerts — "new BCI repo", "BRS jump", weekly digests |
+| **9.0** | Signals | ✅ `signals.json` + RSS feeds per slice · watchlist on Stats · token-free data path |
 | **10.0** | Feed | Dataset-as-a-service — the live map as a licensed API |
 | **11.0** | Trajectory | Historical analytics — BRS-over-time, cohorts, momentum trends |
 | **12.0** | **Badges** | Verified, embeddable per-project badges — the due-diligence marker |
@@ -353,7 +353,7 @@ If you reference AxonOS Radar in academic or technical work, please cite it:
   title   = {{AxonOS Radar: a scored, evidence-backed map of the open brain--computer-interface field}},
   year    = {2026},
   url     = {https://github.com/AxonOS-BCI/axonos-community-radar},
-  version = {8.1.0}
+  version = {9.0.0}
 }
 ```
 

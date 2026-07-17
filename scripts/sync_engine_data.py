@@ -49,6 +49,7 @@ FILES = [
     ("data/status.json", "radar: update status [skip ci]"),
     ("data/last_run.json", "radar: record run outcome [skip ci]"),
     ("data/weekly.json", "radar: refresh weekly digest [skip ci]"),
+    ("data/trajectory.json", "radar: extend trajectory series [skip ci]"),
     ("feed.xml", "radar: refresh feed [skip ci]"),
     ("report.html", "radar: refresh report page [skip ci]"),
 ]

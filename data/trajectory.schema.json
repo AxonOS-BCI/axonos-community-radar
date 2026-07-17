@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axonos-bci.github.io/axonos-community-radar/data/trajectory.schema.json",
+  "title": "AxonOS Radar — Trajectory",
+  "description": "Per-project time series: one point per engine scan — [timestamp, BRS, stars, health]. Accruing since 2026-07-16; nothing is backfilled. At most 96 points per project (rolling window); a project silent for 45 days is pruned.",
+  "type": "object",
+  "additionalProperties": {
+    "type": "array",
+    "maxItems": 96,
+    "items": {
+      "type": "array",
+      "prefixItems": [
+        { "type": "string", "description": "snapshot timestamp, ISO 8601" },
+        { "type": ["number", "null"], "description": "BRS 0-100" },
+        { "type": ["integer", "null"], "description": "stars" },
+        { "type": ["number", "null"], "description": "health overall 0-100" }
+      ],
+      "minItems": 4,
+      "maxItems": 4
+    }
+  }
+}

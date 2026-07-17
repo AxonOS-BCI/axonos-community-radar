@@ -43,18 +43,14 @@ jobs:
     name: Build and deploy site artifact
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # push and manual dispatch ALWAYS deploy; scan-triggered runs deploy only
-    # after a green scan (workflow_run fires on failed scans too — those must
-    # not ship a site). NOTE: this guard once listed only dispatch+workflow_run,
-    # which silently SKIPPED every push-triggered deploy while the on:-block
-    # comment promised immediate deploys — the root cause of every
-    # "pushed but the site is stale" episode. Any edit here must keep all
-    # three event names explicit.
+    # Every trigger this workflow declares must be listed here explicitly —
+    # a guard that names fewer events than the on: block silently skips the
+    # rest. Current triggers: schedule (the safety clock), push (source
+    # changes), workflow_dispatch (manual + sync's redeploy).
     if: >
+      github.event_name == 'schedule' ||
       github.event_name == 'push' ||
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'workflow_run' &&
-       github.event.workflow_run.conclusion == 'success')
+      github.event_name == 'workflow_dispatch'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -89,6 +85,9 @@ jobs:
         # projects.ndjson — one project per line for pandas/jq/DuckDB, always
         # in sync with the deployed radar.json, never a bot commit.
         run: python3 scripts/build_exports.py --out _site/data
+
+      - name: Build per-project badges (deploy-time, zero commits)
+        run: python3 scripts/build_badges.py --out _site
 
       - name: Build the API index (deploy-time, zero commits)
         # Walks the ASSEMBLED artifact and lists only what exists — the front

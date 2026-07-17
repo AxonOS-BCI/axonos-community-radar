@@ -72,6 +72,14 @@ CATALOG = {
     "data/interop-vocab.json": (
         "vocabulary", "stable", None,
         "The open interop vocabulary: 20 tags, 52 patterns — the matcher is open too."),
+    "badges/index.json": (
+        "index", "stable", None,
+        "Per-project scored badges — shields.io endpoints derived from the last "
+        "scan, with ready-to-paste embed markdown per project."),
+    "data/trajectory.json": (
+        "dataset", "stable", "data/trajectory.schema.json",
+        "Per-project time series (BRS, stars, health) — accruing since 2026-07-16; "
+        "the honest foundation for Trajectory analytics."),
     "feed.xml": (
         "feed", "stable", None,
         "RSS of new arrivals on the map."),

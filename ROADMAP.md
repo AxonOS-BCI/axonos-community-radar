@@ -26,8 +26,8 @@ door that lists only what the deploy carries.
 | **8.1** | Dashboards, live | ✅ shipped |
 | **9.0** | Signals | ✅ shipped |
 | **10.0** | Feed | ✅ shipped |
-| **11.0** | Trajectory | next |
-| **12.0** | Badges | planned |
+| **11.0** | Trajectory | next — history accruing since 2026-07-16 |
+| **12.0** | Badges | ✅ shipped |
 | **13.0** | Talent | planned |
 | **14.0** | Capital | planned |
 | **15.0** | Standards | planned |
@@ -140,12 +140,18 @@ The map, as data anyone can build on — with the front door that cannot lie.
   and signals already kept.
 - **Cohorts** — how projects that appeared together go on to fare.
 
-## v12.0 · "Badges" — the due-diligence marker (Area: ui, infra)
+## Shipped — v12.0 · "Badges"
 
-- **Scored badge** — `AxonOS Radar · BRS 95 · Explicit BCI`, embeddable, live.
-- **Verified badge** — a reviewed quality signal projects apply for.
-- The two-sided flywheel: projects want the badge; investors read it as an
-  independent, evidence-backed diligence signal.
+Ships ahead of 11.0, whose per-project history is accruing since 2026-07-16.
+
+- **A live scored badge per project** (`data`) — `badges/<owner>/<repo>.json`,
+  a shields.io endpoint carrying BRS + relevance tier, derived from the last
+  scan. Never hand-granted; updates when the map updates.
+- **The catalog** (`infra`) — `badges/index.json`: every badge with
+  ready-to-paste Markdown; listed in the API front door.
+- **One tap on the map** (`ui`) — every evidence ledger carries **Copy badge**.
+- **The guide** (`docs`) — [docs/BADGES.md](docs/BADGES.md): embed, colour
+  bands, freshness, integrity.
 
 ## v13.0 "Talent" · v14.0 "Capital" · v15.0 "Standards"
 

@@ -341,6 +341,7 @@ Every surface is backed by public, same-origin, machine-readable endpoints:
 | `data/api.json` | the machine-readable front door — every endpoint, its stability, schema, freshness contract, licensing; lists only what the deploy carries |
 | `data/projects.csv` | the map's core columns, flat — spreadsheets and BI tools |
 | `data/signals.schema.json` | JSON Schema for the signals feed |
+| `badges/index.json` | per-project scored badges — shields.io endpoints derived from the last scan, with ready-to-paste embed markdown; never hand-granted |
 
 Provenance: the scan bot writes through the GitHub API, so every data commit
 carries GitHub's **Verified** signature; `scripts/validate_payload.py` is a

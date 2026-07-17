@@ -1,5 +1,27 @@
 # Changelog
 
+## [12.0.0] — 2026-07-16 — "Badges"
+
+### Added
+- **A live scored badge for every project** — `badges/<owner>/<repo>.json`,
+  a shields.io endpoint carrying the project's BRS and relevance tier, derived
+  from the engine's last scan. Never hand-granted; refreshes with the map
+  (`cacheSeconds: 10800`). `badges/index.json` catalogs every badge with
+  ready-to-paste Markdown; **Copy badge** on each evidence ledger does the same
+  in one tap. Guide: [docs/BADGES.md](docs/BADGES.md).
+- **Trajectory groundwork** — the engine now persists per-project time series
+  (`data/trajectory.json`: BRS, stars, health per scan; 96-point window,
+  45-day retention), schema'd and pre-cataloged in the API front door. History
+  accrues from 2026-07-16; nothing is backfilled.
+- The README's Ecosystem Intelligence dashboard re-rendered from the current
+  dataset.
+
+### Fixed
+- Scheduled site deploys were inert (the deploy job's event guard predated the
+  schedule trigger); the safety clock now deploys.
+- The publish-token preflight gained a write probe (an unreferenced git blob),
+  catching read-only fine-grained tokens before the publish step reports 403s.
+
 ## [10.0.0] — 2026-07-16 — "Feed"
 
 The map becomes a Data API anyone can build on — with a front door that cannot

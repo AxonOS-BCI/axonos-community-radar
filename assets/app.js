@@ -269,6 +269,31 @@
     var foot=el('div','ledger-f');
     foot.appendChild(document.createTextNode('Score '+p.brs+'/100. A repo is kept only when BCI-specific evidence outweighs generic-ML signals.'));
     wrap.appendChild(foot);
+    // v12 "Badges": the scored badge, ready to paste. Derived from the last
+    // scan — the engine writes it, nobody grants it.
+    if(p.full_name&&/^[A-Za-z0-9._-]+\/[A-Za-z0-9._-]+$/.test(p.full_name)){
+      var SITE='https://axonos-bci.github.io/axonos-community-radar';
+      var md='[![AxonOS Radar](https://img.shields.io/endpoint?url='+encodeURIComponent(SITE+'/badges/'+p.full_name+'.json')+')]('+SITE+'/)';
+      var bd=el('div','ledger-badge');
+      var btn=document.createElement('button');
+      btn.type='button';btn.className='badge-copy';btn.textContent='Copy badge';
+      btn.title='Copy the embeddable scored badge (Markdown) for '+p.full_name;
+      btn.setAttribute('aria-label','Copy the embeddable scored badge markdown for '+p.full_name);
+      btn.addEventListener('click',function(ev){
+        ev.preventDefault();ev.stopPropagation();
+        function ok(){btn.textContent='Copied \u2713';btn.classList.add('done');
+          setTimeout(function(){btn.textContent='Copy badge';btn.classList.remove('done');},1600);}
+        function fallback(){var ta=document.createElement('textarea');ta.value=md;
+          ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);
+          ta.select();try{document.execCommand('copy');ok();}catch(e){}document.body.removeChild(ta);}
+        if(navigator.clipboard&&navigator.clipboard.writeText){
+          navigator.clipboard.writeText(md).then(ok,fallback);
+        }else{fallback();}
+      });
+      bd.appendChild(btn);
+      bd.appendChild(el('span','badge-hint','embeddable \u00b7 live \u00b7 scored by the engine'));
+      wrap.appendChild(bd);
+    }
     return wrap;
   }
   function flagBadgeEl(p){var q=p.quality_flags||{};var hit=Array.isArray(q)?q.indexOf('possible_false_positive')>=0:!!q.possible_false_positive;

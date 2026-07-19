@@ -92,7 +92,18 @@ def validate_payload(payload, cap: int = DEFAULT_CAP):
         if isinstance(total, int) and total < 0:
             errors.append("counts.total is negative")
 
-    is_v3 = payload.get("version") in (3, 4)   # v4 keeps every v3 invariant
+    # v4 and v5 both keep every v3 invariant — verified against live production
+    # data (120/120 projects carry evidence_tier + inclusion_reason; all four
+    # counts.* fields reconcile against the actual project list) on 2026-07-19.
+    KNOWN_VERSIONS = (3, 4, 5)
+    version = payload.get("version")
+    if version is not None and version not in KNOWN_VERSIONS:
+        errors.append(
+            f"unrecognized payload version {version!r} (validator knows "
+            f"{KNOWN_VERSIONS}) — update validate_payload.py before trusting "
+            f"this payload; invariant checks below are being skipped blind"
+        )
+    is_v3 = version in KNOWN_VERSIONS
     seen: set[str] = set()
 
     for i, r in enumerate(projects):

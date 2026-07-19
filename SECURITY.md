@@ -11,19 +11,24 @@ and to coordinate disclosure within 90 days.
 
 ## Scope
 
-- `index.html` — XSS, CSP bypass, unsafe link handling.
+- `index.html`, `assets/app.js` / `assets/stats.js` — XSS, CSP bypass, unsafe link handling.
 - `data/radar.json` / `feed.xml` — data poisoning or injection via auto-discovered repos.
-- `scripts/radar.py` — API abuse, token handling, rate-limit safety.
+- `scripts/sync_engine_data.py` — cross-repo data pull, token handling, rate-limit safety.
+- `scripts/validate_payload.py` — payload validation gate (this is what CI and the sync
+  step both run before any data is trusted).
 
 ## Hardening already in place
 
-- All repository-derived text is HTML-escaped before rendering; links are restricted
-  to `https://github.com/…` via an allowlist check.
+- All repository-derived text is rendered via `textContent`, never `innerHTML` — zero
+  HTML-interpretation of repo-derived strings; links are restricted to
+  `https://github.com/…` via an exact-host allowlist (`safeUrl()` / `_is_safe_github_url()`),
+  which also rejects look-alike hosts such as `github.com.evil.com`.
 - A Content-Security-Policy meta restricts sources (`default-src 'self'`, images only
   from shields.io / contrib.rocks / avatars, no framing, no form actions).
-- `scripts/radar.py` validates its own output (field presence, project cap, and an
-  `https://github.com/` URL allowlist) and refuses to write a malformed data file, so
-  CI never commits poisoned data.
+- `scripts/validate_payload.py` validates the published payload (required fields, a
+  project cap, description-length cap, an `https://github.com/` URL allowlist, and
+  range checks on every score/signal) and CI fails the build on any violation, so a
+  malformed or poisoned data file is never published.
 
 ## Supported versions
 

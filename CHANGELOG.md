@@ -1,5 +1,35 @@
 # Changelog
 
+## [12.0.1] — 2026-07-19 — "the documentation catches up"
+
+Four fixes, none of them architectural — the pattern common to all four is
+that the code had already moved on and the prose describing it hadn't.
+
+### Fixed
+- `SECURITY.md`'s Scope and Hardening sections still named `scripts/radar.py`,
+  removed at the 8.0.0 open-core cutover; both now name the files that
+  actually do the work today (`sync_engine_data.py`, `validate_payload.py`).
+- `docs/THREAT_MODEL.md`'s Accepted Risks still described `assets/app.js` as
+  rendering card content via `innerHTML` from escaped strings. That was true
+  once; the codebase has carried zero `innerHTML` calls (all `textContent`)
+  for several releases. The stale entry is removed rather than corrected in
+  place, since the risk it described no longer exists.
+- CI's schema validation step checked `data/radar.json` against
+  `data/radar.schema.json` and stopped there — `data/signals.schema.json`
+  and `data/trajectory.schema.json` are shipped and advertised in the API
+  index, but nothing ever validated live data against either. Both are now
+  actually enforced, not just pointed to.
+- `validate_payload.py`'s invariant gate was hardcoded to payload versions
+  `(3, 4)`. The live payload has been on version 5 for some time, which means
+  every v3/v4 invariant — required `evidence_tier`/`inclusion_reason`, and
+  all four `counts.*` reconciliation checks — has been silently skipped on
+  every run, with no warning and a green check mark throughout. Verified
+  directly against live production data before extending the known-version
+  set: 120/120 projects still carry both legacy fields, and all four counts
+  reconcile, so version 5 is added to the known set rather than exempted from
+  checking. Any future unrecognized version now fails the build loudly
+  instead of silently skipping the invariants it doesn't know how to check.
+
 ## [12.0.0] — 2026-07-16 — "Badges"
 
 ### Added

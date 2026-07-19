@@ -43,9 +43,23 @@ jobs:
           PY
 
       - name: Schema validation
+        # Every dataset that ships a schema file must be checked against it here —
+        # a schema that only ever gets *pointed to* (by build_api_index.py) and
+        # never actually enforced is a promise CI cannot back up.
         run: |
           pip install -r requirements-ci.txt --quiet
-          python3 -c "import json,jsonschema; jsonschema.validate(json.load(open('data/radar.json')), json.load(open('data/radar.schema.json'))); print('schema ok')"
+          python3 -c "import json,jsonschema; jsonschema.validate(json.load(open('data/radar.json')), json.load(open('data/radar.schema.json'))); print('radar.json schema ok')"
+          python3 -c "
+          import json, jsonschema, pathlib
+          for name in ('signals', 'trajectory'):
+              data = pathlib.Path(f'data/{name}.json')
+              schema = pathlib.Path(f'data/{name}.schema.json')
+              if data.exists() and schema.exists():
+                  jsonschema.validate(json.loads(data.read_text()), json.loads(schema.read_text()))
+                  print(f'{name}.json schema ok')
+              else:
+                  print(f'{name}.json or its schema not present yet — skip (not an error pre-publish)')
+          "
 
       - name: Feed is well-formed
         run: python3 -c "import xml.dom.minidom as m;m.parse('feed.xml');print('feed.xml ok')"

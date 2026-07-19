@@ -64,10 +64,6 @@ library plus pinned actions.
 
 ## Accepted risks
 
-* `assets/app.js` still assembles the card list with `innerHTML` from
-  **escaped** strings. With ingress validation + `esc()` this is
-  defense-in-depth × 2; a full `createElement` refactor is tracked but not a
-  release blocker. The tooltip (hover path) already uses `textContent`.
 * GitHub Search caps any query at 1 000 results; the radar additionally caps
   per-topic pulls by design. Saturated topics are **counted and published**
   (`search_saturated_topics`) instead of pretending exhaustiveness — see

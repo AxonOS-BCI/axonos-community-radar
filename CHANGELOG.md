@@ -1,5 +1,16 @@
 # Changelog
 
+## [12.0.2] — 2026-07-19 — "the second click"
+
+### Fixed
+- In-page tab links (the "Where to start" cards' `#axonos`/`#builders`/etc.
+  anchors) only worked on a fresh page load. `location.hash` was read once,
+  at load time, with no `hashchange` listener — so clicking one of these
+  links after the page was already open changed the URL but never called
+  `switchView()`, and the target tab silently stayed hidden. The read is now
+  wrapped in `applyHash()` and re-run on every `hashchange`, so the same
+  links work whether they're the first thing you click or the tenth.
+
 ## [12.0.1] — 2026-07-19 — "the documentation catches up"
 
 Four fixes, none of them architectural — the pattern common to all four is

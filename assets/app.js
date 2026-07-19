@@ -821,8 +821,10 @@
   function downloadData(){try{var blob=new Blob([JSON.stringify(DATA,null,2)],{type:'application/json'});var u=URL.createObjectURL(blob);var a=document.createElement('a');a.href=u;a.download='axonos-radar.json';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u);},1000);}catch(e){}}
   (function(){var tabs=document.querySelectorAll('#tabs .tab');
     for(var i=0;i<tabs.length;i++){tabs[i].addEventListener('click',function(){switchView(this.getAttribute('data-view'));});}
-    var h=(location.hash||'').replace('#','');
-    if(h==='builders'||h==='methodology'||h==='axonos'||h==='map')switchView(h);
+    function applyHash(){var h=(location.hash||'').replace('#','');
+      if(h==='builders'||h==='methodology'||h==='axonos'||h==='map')switchView(h);}
+    applyHash();
+    window.addEventListener('hashchange',applyHash);
     orderAxCards();renderAxProgress();var dl=document.getElementById('dlBtn');if(dl)dl.addEventListener('click',downloadData);
   })();
 

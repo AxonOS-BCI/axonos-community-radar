@@ -1,5 +1,22 @@
 # Changelog
 
+## [12.0.3] — 2026-07-20 — "check what you actually ship"
+
+### Fixed
+- The pipeline-health alert linked to `actions/workflows/radar.yml`, which
+  hasn't existed since the 8.0.0 open-core cutover (only `radar.yml.disabled`
+  remains) — a broken link inside the exact message meant to help diagnose a
+  broken pipeline. Now points at `sync.yml`, the workflow that's actually
+  live in this repo, with a note to check `axonos-radar-core`'s own Actions
+  if the engine itself is the silent one.
+- CI's schema check for `data/signals.json` looked for that file in the
+  checkout and always found nothing — `build_signals.py` is explicit that
+  it's "deploy-time and pure ... commits nothing," so the file never exists
+  there. The check always printed "skip" and never actually validated
+  anything. CI now builds signals.json the same way the real deploy does
+  and validates that output, matching the coverage `trajectory.json` (which
+  *is* committed) already had for real.
+
 ## [12.0.2] — 2026-07-19 — "the second click"
 
 ### Fixed

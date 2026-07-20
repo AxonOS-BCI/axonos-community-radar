@@ -49,17 +49,21 @@ jobs:
         run: |
           pip install -r requirements-ci.txt --quiet
           python3 -c "import json,jsonschema; jsonschema.validate(json.load(open('data/radar.json')), json.load(open('data/radar.schema.json'))); print('radar.json schema ok')"
-          python3 -c "
-          import json, jsonschema, pathlib
-          for name in ('signals', 'trajectory'):
-              data = pathlib.Path(f'data/{name}.json')
-              schema = pathlib.Path(f'data/{name}.schema.json')
-              if data.exists() and schema.exists():
-                  jsonschema.validate(json.loads(data.read_text()), json.loads(schema.read_text()))
-                  print(f'{name}.json schema ok')
-              else:
-                  print(f'{name}.json or its schema not present yet — skip (not an error pre-publish)')
-          "
+          if [ -f data/trajectory.json ] && [ -f data/trajectory.schema.json ]; then
+            python3 -c "import json,jsonschema; jsonschema.validate(json.load(open('data/trajectory.json')), json.load(open('data/trajectory.schema.json'))); print('trajectory.json schema ok')"
+          else
+            echo "trajectory.json or its schema not present yet — skip (not an error pre-publish)"
+          fi
+
+      - name: Build and validate deploy-time-only datasets
+        # signals.json never exists in the checkout (build_signals.py's own
+        # docstring: "Deploy-time and pure ... commits nothing") — a check
+        # that only looks for a pre-existing data/signals.json always skips
+        # and never actually enforces anything. Build it the same way the
+        # real deploy does, then validate that real output.
+        run: |
+          python3 scripts/build_signals.py --out /tmp/_site_check --radar data/radar.json --first-seen data/first_seen.json
+          python3 -c "import json,jsonschema; jsonschema.validate(json.load(open('/tmp/_site_check/data/signals.json')), json.load(open('data/signals.schema.json'))); print('signals.json (built fresh, same as deploy) schema ok')"
 
       - name: Feed is well-formed
         run: python3 -c "import xml.dom.minidom as m;m.parse('feed.xml');print('feed.xml ok')"

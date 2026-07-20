@@ -138,7 +138,8 @@ def main():
             "## \u26a0\ufe0f Radar pipeline health alert", "",
             f"Automated check at `{now}` found:", "",
             *[f"- {p}" for p in problems], "",
-            f"Runs: https://github.com/{REPO}/actions/workflows/radar.yml",
+            f"Runs: https://github.com/{REPO}/actions/workflows/sync.yml "
+            f"(if the engine itself is silent, check axonos-radar-core's own Actions too)",
             "",
             "_This issue is maintained automatically by the health monitor: it updates "
             "in place while the problem persists and closes itself on recovery._",

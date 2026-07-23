@@ -130,6 +130,26 @@ def main() -> int:
         if body is None:
             print(f"  {path}: not published by the engine — skip")
             continue
+        if path == "report.html":
+            # The engine's report template points "Live map" / "Dashboard" /
+            # "GitHub" at axonos-radar-core (the private engine's own repo,
+            # which has no public Pages site) instead of this repo. A one-off
+            # patch to the committed file gets silently overwritten by the
+            # next sync, so the correction lives here instead — applied every
+            # sync, on the fetched body, before it's ever compared or
+            # committed. Once the engine's own template is fixed upstream,
+            # this string simply won't be found and becomes a no-op; nothing
+            # to remember to undo.
+            fixed = body.replace(
+                "axonos-bci.github.io/axonos-radar-core",
+                "axonos-bci.github.io/axonos-community-radar",
+            ).replace(
+                "github.com/AxonOS-BCI/axonos-radar-core",
+                "github.com/AxonOS-BCI/axonos-community-radar",
+            )
+            if fixed != body:
+                print("  report.html: corrected axonos-radar-core links from the engine template")
+            body = fixed
         code, cur = api("GET", f"{API}{path}?ref={BRANCH}")
         sha = cur.get("sha") if code == 200 else None
         if code == 200 and "content" in cur:

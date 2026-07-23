@@ -16,18 +16,28 @@ Keep additions on-topic (BCI / neurotech / real-time / privacy / signal-processi
 ## Good first issues
 
 - Add a missing topic or category keyword.
-- Improve a project's categorisation heuristic in `scripts/radar.py`.
+- Spot a miscategorized project? Open an issue — the ledger behind every score
+  is public, so pointing at exactly which signal is wrong is fast; the scoring
+  logic itself now lives in the private engine, so a fix has to land there, but
+  a clear report is most of the work.
 - Polish the radar UI (`index.html`) — accessibility, mobile, legend.
 - Improve docs.
 
 ## Local development
 
 ```bash
-python3 -m http.server 8080            # preview the page at http://127.0.0.1:8080
-GH_TOKEN=… python3 scripts/radar.py    # refresh data/radar.json locally
+python3 -m http.server 8080   # preview the page at http://127.0.0.1:8080,
+                               # against the data/radar.json already committed
+pip install -r requirements-ci.txt --break-system-packages
+python3 -m pytest tests/      # run the test suite
+python3 scripts/validate_payload.py data/radar.json   # check the current data
 ```
 
-`index.html` is a single self-contained file (no build, no dependencies). `scripts/radar.py` uses only the Python standard library.
+`index.html` is a single self-contained file (no build, no dependencies).
+Discovery and scoring run entirely inside the private engine (`axonos-radar-core`)
+on its own schedule — there's no local equivalent to "refresh the data" here;
+everything under `scripts/` in *this* repo is the showcase and sync tooling
+(badges, signals, exports, API index, validation), not the scanner itself.
 
 ## Engagement policy (please follow)
 

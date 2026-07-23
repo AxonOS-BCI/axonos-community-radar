@@ -10,10 +10,10 @@ has no analytics, no cookies, no tracking.
 | Store | Contents | Retention | Enforced by |
 |---|---|---|---|
 | `data/radar.json` | Current snapshot of tracked projects | Latest only (overwritten each scan) | pipeline |
-| `data/history.json` | Per-snapshot star counts for the top 200 + field totals | **45 days** rolling | `HISTORY_RETENTION_DAYS` in `scripts/radar.py` |
-| `data/first_seen.json` | First-discovery timestamps | While a repo is on the radar, plus **400 days** after it leaves | `FIRST_SEEN_TTL_DAYS` in `scripts/radar.py` |
+| `data/history.json` | Per-snapshot star counts for the top 200 + field totals | **45 days** rolling | `HISTORY_RETENTION_DAYS`, enforced inside the private engine |
+| `data/first_seen.json` | First-discovery timestamps | While a repo is on the radar, plus **400 days** after it leaves | `FIRST_SEEN_TTL_DAYS`, enforced inside the private engine |
 | `data/status.json`, `data/last_run.json` | Last pipeline run's stats / outcome | Latest only (overwritten) | pipeline |
-| Workflow artifacts (`radar-data-*`) | Disaster-recovery data snapshots | **90 days** | `retention-days` in `radar.yml` |
+| Workflow artifacts (`radar-data-*`) | Disaster-recovery data snapshots | **90 days** | `retention-days`, set inside the private engine's own scan workflow |
 | Git history | Every published change to the above | Indefinite (it *is* the audit trail) | git |
 
 The prune rules run automatically inside every scan — retention is code, not

@@ -9,9 +9,10 @@ Every item carries an **Area** (`engine` · `ui` · `data` · `infra` · `docs`)
 **Priority**, and a **Target** milestone. Open work is tracked as issues with the
 matching labels (see `.github/ISSUE_TEMPLATE/` and `scripts/setup_labels.sh`).
 
-**Where we are — v10.0:** the map is scored, its changes arrive as signals and
-feeds, and the whole dataset is a documented, schema'd Data API with a front
-door that lists only what the deploy carries.
+**Where we are — v12.0:** the map is scored, its changes arrive as signals and
+feeds, every project carries a live embeddable badge, and the whole dataset is
+a documented, schema'd Data API with a front door that lists only what the
+deploy carries.
 
 ---
 

@@ -1,5 +1,29 @@
 # Changelog
 
+## [12.0.4] — 2026-07-22 — "the front door, permanently"
+
+### Fixed
+- `report.html`'s "Live map" / "Dashboard" / "GitHub" links pointed at
+  `axonos-radar-core` (the private engine, no public Pages site) instead of
+  this repo — the same bug patched once before and silently overwritten by
+  the next engine sync, because the fix lived in the wrong place. The
+  correction now lives in `sync_engine_data.py` itself, applied to the
+  fetched body on every sync before it's ever committed — it survives every
+  future sync instead of being undone by it, and becomes a no-op
+  automatically once the engine's own template is corrected upstream.
+- `CONTRIBUTING.md` told a new contributor to run
+  `GH_TOKEN=… python3 scripts/radar.py` to refresh data locally — that file
+  was deleted at the 8.0.0 open-core cutover, so this was a guaranteed
+  `FileNotFoundError` on the first thing the guide asked anyone to try.
+  Replaced with what's actually runnable now (preview, tests, validator)
+  and an honest note that discovery/scoring has no local equivalent anymore.
+- `docs/RETENTION.md` attributed retention constants to `scripts/radar.py`
+  (deleted) and `radar.yml` (disabled) in three separate table rows — all
+  three now correctly say the private engine.
+- `ROADMAP.md`'s "Where we are" line still said v10.0 while the table two
+  lines below it already correctly showed v12.0 shipped — updated the
+  summary to match the table it was supposed to summarize.
+
 ## [12.0.3] — 2026-07-20 — "check what you actually ship"
 
 ### Fixed

@@ -203,6 +203,35 @@ jobs:
           [ "$missing" = "0" ] && echo "every script referenced by an active workflow exists"
           exit "$missing"
 
+      - name: Docs don't reference things the 8.0.0 cutover deleted
+        # Regression gate for a pattern that recurred six separate times across
+        # four audit passes (report.html's header AND footer, SECURITY.md,
+        # THREAT_MODEL.md, CONTRIBUTING.md, docs/RETENTION.md, index.html's live
+        # "publish" button, docs/SBOM.md) before this check existed: prose,
+        # tables and hrefs kept citing scripts/radar.py and workflows/radar.yml
+        # — both retired at the open-core cutover — or linking the engine's
+        # nonexistent Pages site, long after the code had moved on. CHANGELOG.md
+        # is exempt: it's a historical record and those mentions were true when
+        # written. sync_engine_data.py is exempt: it's the one place these exact
+        # strings are supposed to appear, as the literal pattern its own
+        # self-healing report.html correction searches for.
+        run: |
+          bad=0
+          hits=$(grep -rn 'scripts/radar\.py' --include='*.md' --include='*.html' . \
+                 | grep -v '^\./CHANGELOG.md' || true)
+          [ -n "$hits" ] && { echo "$hits" | sed 's/^/DEAD REFERENCE (deleted at 8.0.0): /'; bad=1; }
+
+          hits=$(grep -rn 'workflows/radar\.yml' --include='*.md' --include='*.html' . \
+                 | grep -v '^\./CHANGELOG.md' | grep -v 'disabled' || true)
+          [ -n "$hits" ] && { echo "$hits" | sed 's/^/DEAD WORKFLOW REFERENCE (retired at 8.0.0, only radar.yml.disabled remains): /'; bad=1; }
+
+          hits=$(grep -rln 'axonos-bci\.github\.io/axonos-radar-core' --include='*.md' --include='*.html' . \
+                 | grep -v '^\./CHANGELOG.md' || true)
+          [ -n "$hits" ] && { echo "$hits" | sed 's/^/WRONG PAGES URL (axonos-radar-core has no public site): /'; bad=1; }
+
+          [ "$bad" = "0" ] && echo "no dead post-cutover references found"
+          exit "$bad"
+
       - name: Funding consistency (ONE DOGE address, checksum-verified, everywhere)
         # The single-source rule for the support address. Guards against a
         # typo'd or swapped address ever shipping on any surface: the registry

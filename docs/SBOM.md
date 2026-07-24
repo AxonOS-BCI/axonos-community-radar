@@ -1,7 +1,11 @@
 # Software Bill of Materials (SBOM) — AxonOS Community Radar
 
-Format: human-readable inventory (SPDX-lite spirit). Regenerated with every
-release; this file corresponds to **v7.0.0**.
+Format: human-readable inventory (SPDX-lite spirit). Meant to be regenerated
+with every release; this file had drifted to v7.0.0's state for five
+releases before this correction — verified by hand against v12.0.4 rather
+than assumed current. If it's stale again, that promise still isn't being
+kept mechanically; see the CI check below meant to at least catch the
+sharpest-edged version of that drift.
 
 The design goal is a supply chain small enough to list by hand.
 
@@ -11,14 +15,15 @@ The design goal is a supply chain small enough to list by hand.
 |---|---|---|---|
 | CPython standard library | `python3` as provided by `ubuntu-latest` (3.12.x) | PSF-2.0 | Entire pipeline runtime — **zero third-party runtime packages** |
 
-`scripts/*.py` import only: `base64, json, os, re, functools, sys, time, math,
-urllib, xml.sax.saxutils, datetime, email.utils, html, collections`.
+`scripts/*.py` import only: `argparse, base64, csv, datetime, hashlib, io,
+json, math, os, pathlib, re, sys, time, urllib.error, urllib.parse,
+urllib.request, xml.sax.saxutils`.
 
 ## Frontend (the published site)
 
 | Component | Version | License | Role |
 |---|---|---|---|
-| Vanilla JS / HTML / CSS (this repo) | v7.0.0 | MIT | `assets/app.js`, `assets/stats.js`, styles — no frameworks, no CDN imports |
+| Vanilla JS / HTML / CSS (this repo) | v12.0.4 | MIT | `assets/app.js`, `assets/stats.js`, `assets/support.js`, styles — no frameworks, no CDN imports |
 
 The site loads **no external scripts, styles, or fonts**. The strict CSP
 (`script-src 'self'; style-src 'self'`, no `unsafe-inline`) makes that a
@@ -28,11 +33,15 @@ verified property, not a promise.
 
 | Action | Pinned SHA | Tag | Used in |
 |---|---|---|---|
-| `actions/checkout` | `9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0` | v7.0.0 | ci.yml, radar.yml, health.yml, pages.yml |
-| `actions/upload-artifact` | `043fb46d1a93c77aae656e7c1c64a875d1fc6a0a` | v7.0.1 | radar.yml (data snapshots) |
-| `actions/configure-pages` | `45bfe0192ca1faeb007ade9deae92b16b8254a0d` | v7.0.0 | pages.yml |
+| `actions/checkout` | `9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0` | v7.0.0 | ci.yml, sync.yml, health.yml, pages.yml, stats-issue.yml, release.yml |
+| `actions/configure-pages` | `45bfe0192ca1faeb007ade9deae92b16b8254a0d` | v6.0.0 | pages.yml |
 | `actions/upload-pages-artifact` | `fc324d3547104276b827a68afc52ff2a11cc49c9` | v5.0.0 | pages.yml |
 | `actions/deploy-pages` | `cd2ce8fcbc39b97be8ca5fce6e763baed58fa128` | v5.0.0 | pages.yml |
+
+`radar.yml` and the `actions/upload-artifact` pin both belonged to this
+repo's own scan workflow, retired at the 8.0.0 open-core cutover — scanning,
+and whatever artifact retention it uses, now happens entirely inside the
+private engine and isn't part of this repo's own SBOM.
 
 CI-only Python packages (never shipped, used for tests/validation only) are
 pinned in `requirements-ci.txt` (`pytest==8.3.4`, `jsonschema==4.23.0`) and their

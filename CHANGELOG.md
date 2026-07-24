@@ -1,5 +1,36 @@
 # Changelog
 
+## [12.0.5] — 2026-07-22 — "the guardrail, not the instance"
+
+Two more live instances of the same recurring class, found while mapping out
+false positives for a new CI check meant to end the pattern — not a seventh
+manual audit pass finding a seventh manual fix.
+
+### Fixed
+- `index.html`'s "↻ Publish fresh data to the issue" button — a real,
+  clickable button on the main page — linked to `workflows/radar.yml`,
+  retired at the 8.0.0 cutover. Points at `stats-issue.yml`, the workflow
+  that actually publishes it, now.
+- `docs/SBOM.md` had drifted to describing v7.0.0 (five releases, ten days)
+  despite its own header promising regeneration every release: stale version
+  labels, an import list four modules wrong in each direction, an
+  `actions/upload-artifact` pin for an action this repo's workflows don't
+  even use anymore, and the same dead `radar.yml` references as everywhere
+  else. Corrected by hand against the real current tree.
+
+### Added
+- A CI check — `Docs don't reference things the 8.0.0 cutover deleted` —
+  that greps every tracked `.md`/`.html` file for `scripts/radar.py`, an
+  active (non-`.disabled`) `workflows/radar.yml` reference, or the engine's
+  nonexistent Pages URL, and fails the build if any turn up outside
+  CHANGELOG.md's legitimate historical mentions. This exact pattern has now
+  recurred six separate times across four audit passes — SECURITY.md,
+  THREAT_MODEL.md, CONTRIBUTING.md, docs/RETENTION.md, report.html (twice),
+  index.html, docs/SBOM.md — each caught by re-reading files by hand. This
+  makes a seventh instance a build failure instead of something that needs
+  another audit to notice. Adversarially tested against all three patterns
+  plus the legitimate `.disabled` exemption before shipping.
+
 ## [12.0.4] — 2026-07-22 — "the front door, permanently"
 
 ### Fixed

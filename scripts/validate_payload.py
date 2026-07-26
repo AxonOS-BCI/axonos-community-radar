@@ -22,11 +22,14 @@ Usage:
 from __future__ import annotations
 
 import json
+import re
 import urllib.parse
 from pathlib import Path
 import sys
 
 GITHUB_PREFIX = "https://github.com/"
+
+RELEVANCE_TIER_RE = re.compile(r"^L[0-4]_[A-Z_]+$")
 
 
 def _is_safe_github_url(url, min_segments=2) -> bool:
@@ -221,6 +224,39 @@ def validate_payload(payload, cap: int = DEFAULT_CAP):
                 errors.append(f"{tag} unknown evidence_tier {tier!r}")
             if not r.get("inclusion_reason"):
                 errors.append(f"{tag} missing inclusion_reason (required at version 3)")
+
+        # brs / relevance_tier / relevance_ledger: the current (v5+) primary
+        # scoring system. Optional, not required — ecosystem-manifest entries
+        # (force-included AxonOS repos, see the changelog's v5.0.3) never go
+        # through BRS discovery and legitimately have none of these fields;
+        # verified against live data (116/120 current projects carry brs, the
+        # 4 without it are exactly the ecosystem-manifest set) before choosing
+        # optional over required. If present, format and range ARE enforced —
+        # this was previously unvalidated anywhere in the pipeline.
+        if "brs" in r:
+            brs = r["brs"]
+            if not isinstance(brs, (int, float)) or isinstance(brs, bool) or not (0 <= brs <= 100):
+                errors.append(f"{tag} brs must be a number 0..100, got {brs!r}")
+        if "relevance_tier" in r:
+            rt = r["relevance_tier"]
+            if not isinstance(rt, str) or not RELEVANCE_TIER_RE.match(rt):
+                errors.append(f"{tag} relevance_tier malformed (want L0-L4_UPPER_SNAKE): {rt!r}")
+        if "relevance_ledger" in r:
+            ledger = r["relevance_ledger"]
+            if not isinstance(ledger, list):
+                errors.append(f"{tag} relevance_ledger must be a list, got {type(ledger).__name__}")
+            else:
+                for i, entry in enumerate(ledger):
+                    if not isinstance(entry, dict):
+                        errors.append(f"{tag} relevance_ledger[{i}] is not an object")
+                        continue
+                    pts = entry.get("points")
+                    if not isinstance(pts, (int, float)) or isinstance(pts, bool):
+                        errors.append(f"{tag} relevance_ledger[{i}].points must be a number, got {pts!r}")
+                    if not entry.get("kind"):
+                        errors.append(f"{tag} relevance_ledger[{i}] missing kind")
+                    if not entry.get("reason"):
+                        errors.append(f"{tag} relevance_ledger[{i}] missing reason")
 
     # v3 consistency: counts and builders must agree with the data
     builders = payload.get("builders")

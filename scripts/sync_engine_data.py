@@ -41,7 +41,9 @@ API = f"https://api.github.com/repos/{REPO}/contents/"
 
 # The engine's *output* only. Never engine source — this repo is the showcase.
 # report.html and the badge are rendered by the engine; ecosystem.json and the
-# exports are built here at deploy time and must not be synced.
+# exports are built here at deploy time and must not be synced. report.html
+# is handled separately by sync_report_html() below, not in this list — see
+# that function's docstring for why.
 FILES = [
     ("data/radar.json", "radar: refresh ecosystem data [skip ci]"),
     ("data/history.json", "radar: update star history [skip ci]"),
@@ -51,7 +53,6 @@ FILES = [
     ("data/weekly.json", "radar: refresh weekly digest [skip ci]"),
     ("data/trajectory.json", "radar: extend trajectory series [skip ci]"),
     ("feed.xml", "radar: refresh feed [skip ci]"),
-    ("report.html", "radar: refresh report page [skip ci]"),
 ]
 
 
@@ -94,10 +95,60 @@ def generated_at(txt: str):
         return None
 
 
+def sync_report_html() -> None:
+    """Fetch, correct, and (if needed) commit report.html — unconditionally,
+    every run, independent of whether data/radar.json itself is newer.
+
+    v12.0.4 first tried this correction inside the main FILES loop, gated
+    behind the same "is the engine's data newer than what we have" check as
+    everything else. That never actually fired in production: the push path
+    (the engine's own direct commit, with no correction) routinely lands
+    data/radar.json and the uncorrected report.html in the same scan, so by
+    the time this script runs, r_at <= l_at is already true and main()
+    returns before the FILES loop is ever reached. The correction was
+    correct; it was simply unreachable. This function has no such gate — it
+    runs first, every invocation, so within one sync interval (worst case
+    ~20 minutes, per pages.yml's own comment on the offset between the
+    engine's scan and this script's schedule) any wrong link the push path
+    just committed gets corrected, rather than staying wrong indefinitely.
+    """
+    body = fetch_raw("report.html")
+    if body is None:
+        print("· report.html: not published by the engine — skip")
+        return
+    fixed = body.replace(
+        "axonos-bci.github.io/axonos-radar-core",
+        "axonos-bci.github.io/axonos-community-radar",
+    ).replace(
+        "github.com/AxonOS-BCI/axonos-radar-core",
+        "github.com/AxonOS-BCI/axonos-community-radar",
+    )
+    if fixed != body:
+        print("· report.html: corrected axonos-radar-core links from the engine template")
+    code, cur = api("GET", f"{API}report.html?ref={BRANCH}")
+    sha = cur.get("sha") if code == 200 else None
+    if code == 200 and "content" in cur:
+        if base64.b64decode(cur["content"]).decode("utf-8") == fixed:
+            print("· report.html: identical — skip")
+            return
+    payload = {"message": "radar: refresh report page [skip ci]", "branch": BRANCH,
+               "content": base64.b64encode(fixed.encode()).decode()}
+    if sha:
+        payload["sha"] = sha
+    code, res = api("PUT", f"{API}report.html", payload)
+    if code in (200, 201):
+        v = ((res.get("commit") or {}).get("verification") or {}).get("verified")
+        print(f"· report.html: committed (verified={v})")
+    else:
+        print(f"· report.html: PUT failed ({code})")
+
+
 def main() -> int:
     if not TOKEN or not REPO:
         print("missing GITHUB_TOKEN / GITHUB_REPOSITORY")
         return 1
+
+    sync_report_html()
 
     remote_radar = fetch_raw("data/radar.json")
     if remote_radar is None:
@@ -130,26 +181,6 @@ def main() -> int:
         if body is None:
             print(f"  {path}: not published by the engine — skip")
             continue
-        if path == "report.html":
-            # The engine's report template points "Live map" / "Dashboard" /
-            # "GitHub" at axonos-radar-core (the private engine's own repo,
-            # which has no public Pages site) instead of this repo. A one-off
-            # patch to the committed file gets silently overwritten by the
-            # next sync, so the correction lives here instead — applied every
-            # sync, on the fetched body, before it's ever compared or
-            # committed. Once the engine's own template is fixed upstream,
-            # this string simply won't be found and becomes a no-op; nothing
-            # to remember to undo.
-            fixed = body.replace(
-                "axonos-bci.github.io/axonos-radar-core",
-                "axonos-bci.github.io/axonos-community-radar",
-            ).replace(
-                "github.com/AxonOS-BCI/axonos-radar-core",
-                "github.com/AxonOS-BCI/axonos-community-radar",
-            )
-            if fixed != body:
-                print("  report.html: corrected axonos-radar-core links from the engine template")
-            body = fixed
         code, cur = api("GET", f"{API}{path}?ref={BRANCH}")
         sha = cur.get("sha") if code == 200 else None
         if code == 200 and "content" in cur:

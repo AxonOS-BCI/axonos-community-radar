@@ -17,13 +17,14 @@ a discovery signal, not a quality, safety, or clinical rating. See
 
 | field | type | notes |
 |---|---|---|
-| `version` | integer | `2` for the current dataset; `3` for the ecosystem-intelligence schema. |
+| `version` | integer | schema version. Current: `5`. `2`–`4` remain valid and are still validated (`scripts/validate_payload.py`'s `KNOWN_VERSIONS`). |
 | `generated_at` | string (ISO-8601) | when the file was produced. |
 | `snapshot_at` | string (ISO-8601) | the 6-hour slot the scan is aligned to. |
 | `min_stars` | integer | minimum stars for inclusion. |
-| `counts` | object | `total`, and (v3) `active_30d`, `new`, `rising`, `builders`. |
+| `counts` | object | `total`, `active_30d`, `new`, `rising`, `builders`, `health_strong`, `health_median`, `interop_tagged`, `foundation_checked`. |
 | `projects` | array | the project objects below. |
-| `builders` | array | (v3) owner-aggregated objects. |
+| `builders` | array | owner-aggregated objects (2+ tracked projects). |
+| `coverage_matrix`, `standards_graph` | object | modality×stage and interoperability-standard read-outs — see `docs/METHODOLOGY.md`. |
 
 ## Project object
 
@@ -40,21 +41,48 @@ Guaranteed invariants (validated in CI):
 - `stars_delta_7d` / `stars_delta_30d` — when present, never exceed the current
   `stars` (an impossible jump fails validation).
 
-### v3 additions
+### Relevance scoring (BRS) — the current primary system
 
-At `version: 3` every project additionally carries:
+Every project discovered through the normal scan carries:
+
+- `brs` — integer **0–100**, the BCI Relevance Score. The inclusion gate is
+  40; nothing below it is published. Validated in CI to be a number in range.
+- `relevance_tier` — a string matching `L[0-4]_UPPER_SNAKE_NAME` (for
+  example `L4_EXPLICIT_BCI`, `L3_STANDARD_OR_HARDWARE`,
+  `L3_MODALITY_OR_PARADIGM`, `L2_NEURO_TERM`). The exact tier vocabulary is
+  intentionally not enumerated here — new tiers are additive — but the shape
+  is enforced.
+- `relevance_ledger` — an array of `{points, kind, reason}` objects, one per
+  signal that contributed to `brs` (`kind` is currently one of `core`,
+  `neuro`, `modality`, `paradigm`, `standard`, `hardware`, additive over
+  time). Every point in `brs` traces to a ledger line with a plain-language
+  `reason` — this is what "tap a score and the ledger unfolds" on the live
+  radar is reading.
+
+`brs`/`relevance_tier`/`relevance_ledger` are **not** present on
+ecosystem-manifest entries — AxonOS's own repositories that are force-included
+by name rather than discovered (see `CHANGELOG.md`'s `5.0.3` entry) never run
+through BRS discovery at all. Consumers should treat their absence as "not
+discovered, deliberately catalogued" rather than a missing value.
+
+### Legacy fields (v3, retained for continuity)
+
+Superseded by the BRS system above but still present and still validated,
+purely so existing consumers built against the v3 shape don't break:
 
 - `evidence_tier` — one of `L3_EXPLICIT_BCI`, `L2_NEURAL_SIGNAL`,
-  `L1_CONTEXT_PLUS_NEURO`, `L0_WEAK_ADJACENT` (why the repo qualifies).
-- `inclusion_reason` — a human-readable sentence.
-- `matched_topics`, `matched_keywords` — the exact signals that matched.
+  `L1_CONTEXT_PLUS_NEURO`, `L0_WEAK_ADJACENT` — **required at `version: 3`
+  and above**. Note this is a fixed four-value enum distinct from the newer
+  `relevance_tier`'s open `L0`–`L4` vocabulary; the two are not
+  interchangeable despite the similar names.
+- `inclusion_reason` — a human-readable sentence, required alongside it.
 - `quality_flags` — `possible_false_positive`, `low_metadata`,
   `missing_license`, `no_recent_activity`.
 - `owner`, `repo`, `license`, `has_license`, `has_release`, `rising`,
-  `axon_relevance` — see the v3 specification.
+  `axon_relevance`.
 
 Consumers should treat unknown fields as forward-compatible additions and must
-not assume the absence of a v3 field in a v2 payload.
+not assume the absence of a field from a lower schema version.
 
 ## Stability
 

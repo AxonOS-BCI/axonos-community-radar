@@ -1,5 +1,51 @@
 # Changelog
 
+## [12.0.6] — 2026-07-24 — "the fix that couldn't run"
+
+The most consequential findings from a full architecture/security/CI pass —
+one is a correction to a fix from two releases ago that turned out not to
+work in production, and one is a validation gap in the product's actual
+primary output.
+
+### Fixed
+- **v12.0.4's report.html correction never actually ran.** It was correct
+  code, gated behind the same "is the engine's data newer" check as
+  everything else in the sync loop — but the push path routinely commits
+  `data/radar.json` and the uncorrected `report.html` in the same scan, so
+  by the time this script runs, that gate is already true and `main()`
+  returns before the FILES loop is ever reached. `sync_report_html()` is
+  now a separate function that runs first, unconditionally, every
+  invocation — independent of whether the rest of the data is "new." Worst
+  case it's briefly wrong for the ~20-minute offset between the engine's
+  scan and this script's schedule, not indefinitely.
+- **`brs`, `relevance_tier`, and `relevance_ledger` — the current, primary
+  scoring system, the entire point of this project — had zero validation
+  anywhere in the pipeline.** Not in the JSON Schema, not in
+  `validate_payload.py`. Only the legacy v3 `evidence_tier` fields were
+  checked. A malformed score (out of range, wrong type, malformed tier
+  string, broken ledger entry) could have shipped to the live map
+  undetected. Now validated: `brs` must be a number 0–100; `relevance_tier`
+  must match `L[0-4]_UPPER_SNAKE`; `relevance_ledger` entries must carry
+  `points` (number), `kind`, and `reason`. Adversarially tested against
+  seven corruption cases (out-of-range, negative, wrong type, bool-as-int,
+  malformed tier, out-of-range tier number, missing ledger fields) before
+  shipping — each one confirmed caught, and the real 120-project payload
+  confirmed to still validate clean.
+- `docs/DATA_MODEL.md` described the v2/v3 schema only — the primary v5
+  fields above weren't documented at all, only the legacy ones. Rewritten
+  against the actual schema and live data, legacy fields kept and clearly
+  marked as superseded-but-still-valid.
+- `docs/INCIDENT_RESPONSE.md`'s containment step pointed at disabling a
+  workflow ("AxonOS Radar") that's been disabled since the 8.0.0 cutover —
+  scanning happens in the private engine now; this repo's own containment
+  lever is `sync.yml`.
+
+### Added
+- `tests/test_validate_payload.py` — 22 tests. This script had none before,
+  despite being described as "the executable half of the public data
+  contract" and despite every other script under `scripts/` having
+  dedicated coverage.
+
 ## [12.0.5] — 2026-07-22 — "the guardrail, not the instance"
 
 Two more live instances of the same recurring class, found while mapping out

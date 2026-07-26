@@ -17,10 +17,12 @@ This plan covers the radar pipeline and its published site.
 1. **Confirm & classify.** Reproduce from the published site (not just the
    checkout). Check `data/last_run.json`, `data/status.json`, the Actions run
    log, and the health-monitor issue.
-2. **Contain (P1/P2).** Disable the schedule if the pipeline itself is the
-   vector (`Actions → AxonOS Radar → ⋯ → Disable workflow`). For a poisoned
-   site, roll back first (below) — a wrong-but-safe snapshot beats a live
-   exploit.
+2. **Contain (P1/P2).** If the vector is bad data arriving from the engine,
+   disable `sync.yml` here (`Actions → sync.yml → ⋯ → Disable workflow`) to
+   stop pulling it in, and flag `axonos-radar-core` — that's where scanning
+   actually happens now; there's nothing to disable in this repo for the
+   scan itself. For a poisoned site, roll back first (below) — a
+   wrong-but-safe snapshot beats a live exploit.
 3. **Roll back.** All data is in git and every scan keeps a 90-day artifact:
    * `git revert <bad commit(s)>` on `main` (data commits are individual
      API-signed commits, so reverts are surgical), or

@@ -50,7 +50,27 @@ jobs:
         env:
           ENGINE_REPO: AxonOS-BCI/axonos-radar-core
           GITHUB_TOKEN: ${{ github.token }}
+          ENGINE_READ_TOKEN: ${{ secrets.ENGINE_READ_TOKEN }}  # optional; restores the pull path for a private engine (fine-grained, engine repo only, Contents: Read)
         run: python3 scripts/sync_engine_data.py
+
+      - name: Contract gate on whatever landed
+        # The pull path validates BEFORE committing; the push path (the
+        # engine's PAT) does not go through this repo's checks at all, and
+        # every data commit carries [skip ci]. This step is the net under
+        # both: whatever is in the working tree right now — pulled a moment
+        # ago or pushed by the engine before this run — must satisfy the
+        # public contract, or this run goes red.
+        run: |
+          pip install -r requirements-ci.txt --quiet
+          python3 scripts/validate_payload.py data/radar.json
+          python3 - <<'GATE'
+          import json, jsonschema
+          jsonschema.validate(json.load(open("data/radar.json")),
+                              json.load(open("data/radar.schema.json")))
+          import xml.dom.minidom as m
+          m.parse("feed.xml")
+          print("contract gate: schema + feed well-formed")
+          GATE
 
       - name: Redeploy the site with whatever arrived
         env:

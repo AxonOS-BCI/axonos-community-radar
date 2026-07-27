@@ -1,5 +1,57 @@
 # Changelog
 
+## [13.0.0] — 2026-07-27 — "Trajectory + Talent"
+
+Two roadmap features land together — 11.0's history had been accruing since
+mid-July and is now deep enough to draw honestly — plus the remaining findings
+from the July architecture/security audit.
+
+### Added
+- **Trajectory (roadmap 11.0)** — a measured sparkline on every card: the
+  star arc since 2026-06-26 and the BRS delta once the engine's series
+  (accruing since 2026-07-16) has two points. `data/trajectory.json` merges
+  both sources into one schema'd endpoint — nothing backfilled, nothing
+  interpolated, at most 96 points per project. Cohorts (arrivals by ISO week,
+  from the discovery log) join the Stats page.
+- **Talent (roadmap 13.0)** — `data/talent.json`: per-owner aggregates
+  (projects, stars, best BRS, median health, modality/category/language
+  spread) and field-level modality clusters, rendered as a builders board on
+  Stats. Builder-level by design; the payload states its own scope.
+- **A contract gate on the sync path** — the pull path now refuses wholesale
+  (nothing committed, red run) any engine payload that fails `validate_payload`
+  or the published JSON Schema; a post-sync workflow step re-checks whatever
+  is in the tree, covering the push path too. Six new tests drive the gate
+  with corrupt payloads.
+- `ENGINE_READ_TOKEN` (optional secret) — restores the pull path when the
+  engine repository is private: fine-grained, engine-repo-only, Contents:
+  Read. The sync log now distinguishes "engine unreadable" from "transient
+  upstream error".
+
+### Fixed
+- **`report.html` — the front door from the AxonOS org profile — carried two
+  links to the engine's nonexistent Pages site and a stale version.** The
+  root cause was upstream: the engine's report template derived its links
+  from `GITHUB_REPOSITORY`, which inside the engine's own Actions names a
+  private repository. The template now pins the public site; the committed
+  report is re-rendered clean; CI fails the build if engine links or a stale
+  version ever reach it again.
+- CSV formula injection in `data/projects.csv` — string cells beginning with
+  `=` `+` `@` `-` or control characters are prefixed with `'` (numeric
+  columns, including real negative deltas, untouched).
+- `docs/METHODOLOGY.md` claimed "the radar excludes its own repository" —
+  it does not, and should not: the radar appears on its own map, scored by
+  the same engine, evidence ledger public. The text now says exactly that.
+- Avatars in the ecosystem strip were blocked by the page's own CSP
+  (`img-src` lacked `avatars.githubusercontent.com`); allowed on all three
+  pages. A frame-buster now guards every interactive page — GitHub Pages
+  cannot send `frame-ancestors`, and the `<meta>` variant is ignored by spec
+  (documented in the threat model).
+- Committed `data/badge-ecosystem.json` had been frozen at the 62-project
+  era; refreshed, and added to the sync set so it stays current.
+- `weekly.json` gains an independent CI plausibility gate, and the schema
+  caps `projects` at 2,000 — the engine's own hard cap.
+- CI dependency pins: `bandit==1.8.6`, `jsdom@26`.
+
 ## [12.0.6] — 2026-07-24 — "the fix that couldn't run"
 
 The most consequential findings from a full architecture/security/CI pass —

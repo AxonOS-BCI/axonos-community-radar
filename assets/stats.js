@@ -1,3 +1,8 @@
+// Clickjacking guard: GitHub Pages cannot send frame-ancestors/X-Frame-Options
+// headers and the <meta> CSP variant of frame-ancestors is ignored by spec —
+// so the page defends itself. Inside a hostile frame it breaks out (or blanks
+// itself when the framer blocks navigation).
+(function(){if(top!==self){try{top.location.replace(self.location.href);}catch(e){document.documentElement.style.display='none';}}})();
 (function(){
   "use strict";
   function $(id){return document.getElementById(id);}
@@ -326,16 +331,78 @@
       sel.addEventListener("change", function(){ sigMod = sel.value; drawSignals(); });
     }
   }
-  function renderAll(){setMetrics();drawSignals();drawCoverage();drawBrs();drawStandards();drawHealth();drawGrowth();drawMomentum();setCats();setTiers();setBuilders();setLangs();setRising();}
+  // ── v13 "Talent" + v11 cohorts ──
+  var TAL=null, FSEEN=null;
+  function drawTalent(){
+    var host=$("talent"); if(!host)return;
+    host.textContent="";
+    if(!TAL||!TAL.builders||!TAL.builders.length){muted(host,"Talent view builds at deploy time.");return;}
+    TAL.builders.slice(0,12).forEach(function(b){
+      var row=el("div","tal");
+      var a=document.createElement("a");a.className="tal-o";a.href=safeUrl(b.url);a.target="_blank";a.rel="noopener noreferrer";a.textContent=b.owner;row.appendChild(a);
+      row.appendChild(el("span","tal-n",b.project_count+" proj"));
+      row.appendChild(el("span","tal-s","\u2605"+b.total_stars));
+      row.appendChild(el("span","tal-b",b.best_brs!=null?("BRS "+b.best_brs):""));
+      row.appendChild(el("span","tal-h",b.median_health!=null?("health "+b.median_health):""));
+      var mods=Object.keys(b.modalities||{}).slice(0,3).join(" \u00b7 ");
+      row.appendChild(el("span","tal-m",mods));
+      host.appendChild(row);
+    });
+    var note=$("talNote");
+    if(note)note.textContent=TAL.count+" builders \u00b7 builder-level (owners of kept projects)";
+    var ch=$("clusters"); if(!ch)return; ch.textContent="";
+    var cl=TAL.clusters||{}; var maxP=1;
+    Object.keys(cl).forEach(function(k){if(cl[k].projects>maxP)maxP=cl[k].projects;});
+    Object.keys(cl).forEach(function(k){
+      var c=cl[k];
+      var row=el("div","clu");
+      row.appendChild(el("span","clu-k",k));
+      var bar=el("div","clu-bar");var fill=el("span","clu-fill");
+      fill.style.width=Math.max(3,Math.round(c.projects/maxP*100))+"%";
+      bar.appendChild(fill);row.appendChild(bar);
+      row.appendChild(el("span","clu-v",c.builders+" \u00b7 "+c.projects));
+      ch.appendChild(row);
+    });
+  }
+  function drawCohorts(){
+    var host=$("cohorts"); if(!host)return;
+    host.textContent="";
+    if(!FSEEN){muted(host,"Discovery log loads with the data.");return;}
+    var weeks={};
+    Object.keys(FSEEN).forEach(function(n){
+      var d=new Date(FSEEN[n]); if(isNaN(d))return;
+      var y=d.getUTCFullYear();
+      var onejan=new Date(Date.UTC(y,0,1));
+      var w=Math.ceil((((d-onejan)/86400000)+onejan.getUTCDay()+1)/7);
+      var key=y+"-W"+(w<10?"0":"")+w;
+      weeks[key]=(weeks[key]||0)+1;
+    });
+    var keys=Object.keys(weeks).sort();
+    var maxV=1;keys.forEach(function(k){if(weeks[k]>maxV)maxV=weeks[k];});
+    keys.forEach(function(k){
+      var row=el("div","coh");
+      row.appendChild(el("span","coh-k",k));
+      var bar=el("div","coh-bar");var fill=el("span","coh-fill");
+      fill.style.width=Math.max(3,Math.round(weeks[k]/maxV*100))+"%";
+      bar.appendChild(fill);row.appendChild(bar);
+      row.appendChild(el("span","coh-v",String(weeks[k])));
+      host.appendChild(row);
+    });
+    var note=$("cohNote");
+    if(note)note.textContent=Object.keys(FSEEN).length+" discoveries logged since "+(keys[0]||"");
+  }
+  function renderAll(){setMetrics();drawSignals();drawTalent();drawCohorts();drawCoverage();drawBrs();drawStandards();drawHealth();drawGrowth();drawMomentum();setCats();setTiers();setBuilders();setLangs();setRising();}
 
   function load(url){return fetch(url,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});}
   renderAll();
   if(window.__RADAR_DATA__){DATA=window.__RADAR_DATA__;}
   if(window.__RADAR_HISTORY__){HIST=window.__RADAR_HISTORY__;}
   if(window.__RADAR_DATA__||window.__RADAR_HISTORY__){renderAll();}
-  else Promise.all([load('./data/radar.json'),load('./data/history.json'),load('./data/weekly.json'),load('./data/signals.json')]).then(function(res){
+  else Promise.all([load('./data/radar.json'),load('./data/history.json'),load('./data/weekly.json'),load('./data/signals.json'),load('./data/talent.json'),load('./data/first_seen.json')]).then(function(res){
     if(res[0])DATA=res[0]; if(res[1])HIST=res[1]; if(res[2])WEEK=res[2];
     if(res[3]&&res[3].signals){SIG=res[3];buildSigControls();}
+    if(res[4]&&res[4].builders)TAL=res[4];
+    if(res[5])FSEEN=res[5];
     if(!DATA.projects)DATA.projects=[];
     renderAll();
   });

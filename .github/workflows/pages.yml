@@ -86,6 +86,11 @@ jobs:
         # in sync with the deployed radar.json, never a bot commit.
         run: python3 scripts/build_exports.py --out _site/data
 
+      - name: Build trajectories + talent (deploy-time, zero commits)
+        run: |
+          python3 scripts/build_trajectory.py --out _site
+          python3 scripts/build_talent.py --out _site
+
       - name: Build per-project badges (deploy-time, zero commits)
         run: python3 scripts/build_badges.py --out _site
 

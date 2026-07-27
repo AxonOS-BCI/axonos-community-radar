@@ -13,7 +13,10 @@ result is auditable rather than asserted.
 - **Scores are discovery signals, not quality, safety, or clinical ratings.**
 - **GitHub topics are self-declared** by repository maintainers.
 - **AxonOS projects are not boosted.** They are ranked by the same formula as
-  everyone else, and the radar excludes its own repository.
+  everyone else — including this radar's own repository, which appears on the
+  map and is scored by the same engine, with its evidence ledger public like
+  every other card. Where an AxonOS repository shows no BRS, none has been
+  assigned; the card says so rather than inventing a number.
 
 ## Source data
 
@@ -342,6 +345,9 @@ Every surface is backed by public, same-origin, machine-readable endpoints:
 | `data/projects.csv` | the map's core columns, flat — spreadsheets and BI tools |
 | `data/signals.schema.json` | JSON Schema for the signals feed |
 | `badges/index.json` | per-project scored badges — shields.io endpoints derived from the last scan, with ready-to-paste embed markdown; never hand-granted |
+| `data/trajectory.json` | per-project time series [timestamp, BRS, stars, health] — star points measured since 2026-06-26, BRS/health accruing since 2026-07-16; nothing backfilled |
+| `data/talent.json` | who builds across the field — per-owner aggregates and modality clusters, builder-level by design |
+| `data/talent.schema.json` | JSON Schema for the talent view |
 
 Provenance: the scan bot writes through the GitHub API, so every data commit
 carries GitHub's **Verified** signature; `scripts/validate_payload.py` is a

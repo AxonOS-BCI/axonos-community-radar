@@ -26,7 +26,8 @@ ENDPOINTS = ("data/radar.json", "data/radar.schema.json", "data/ecosystem.json",
              "data/interop-vocab.json",
              "data/signals.json", "feeds/signals.xml", "feeds/new.xml", "feeds/rising.xml",
              "data/api.json", "data/projects.csv", "data/signals.schema.json",
-             "badges/index.json")
+             "badges/index.json",
+             "data/trajectory.json", "data/talent.json", "data/talent.schema.json")
 
 
 def _read(p: Path) -> str:

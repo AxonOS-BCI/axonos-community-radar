@@ -27,9 +27,9 @@ deploy carries.
 | **8.1** | Dashboards, live | ✅ shipped |
 | **9.0** | Signals | ✅ shipped |
 | **10.0** | Feed | ✅ shipped |
-| **11.0** | Trajectory | next — history accruing since 2026-07-16 |
+| **11.0** | Trajectory | ✅ shipped |
 | **12.0** | Badges | ✅ shipped |
-| **13.0** | Talent | planned |
+| **13.0** | Talent | ✅ shipped |
 | **14.0** | Capital | planned |
 | **15.0** | Standards | planned |
 | **16.0** | Frontier | planned |
@@ -134,12 +134,22 @@ The map, as data anyone can build on — with the front door that cannot lie.
   CORS/caching conventions, stability policy, quick starts (curl / pandas /
   fetch), licensing. Free with attribution; licensed feeds for funds and labs.
 
-## Next — v11.0 · "Trajectory" — historical analytics (Area: data)
+## Shipped — v11.0 · "Trajectory" (in the 13.0.0 release)
 
-- **BRS-over-time** — recompute BRS per historical snapshot and plot the arc.
-- **Stars sparkline** and a **52-week commit-activity strip** — from the snapshots
-  and signals already kept.
-- **Cohorts** — how projects that appeared together go on to fare.
+- **Per-card sparkline** (`ui`) — the star arc from measured scans, BRS delta
+  once the engine series carries two points; tooltip states the scan count and
+  the no-interpolation rule.
+- **`data/trajectory.json`** (`data`) — merged series per project: star points
+  measured since 2026-06-26 (the history log), BRS/health accruing since
+  2026-07-16 (the engine's persistence). Schema'd, in the API front door.
+- **Cohorts** (`ui`) — arrivals by ISO week on Stats, from the discovery log.
+
+## Shipped — v13.0 · "Talent" (in the 13.0.0 release)
+
+- **`data/talent.json`** (`data`) — per-owner aggregates: projects, stars,
+  best BRS, median health, modality/category/language spread; plus field-level
+  modality clusters. Builder-level by design — the file says so itself.
+- **Builders board + expertise clusters** (`ui`) — on Stats, above Signals.
 
 ## Shipped — v12.0 · "Badges"
 

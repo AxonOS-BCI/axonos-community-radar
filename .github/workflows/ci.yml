@@ -28,6 +28,38 @@ jobs:
       - name: Validate published radar.json
         run: python3 scripts/validate_payload.py data/radar.json
 
+      - name: weekly.json deltas are plausible
+        # A delta computed across a composition seam once put "Stars −551 183"
+        # on the live digest with a straight face. The engine now refuses to
+        # cross that seam (baseline_reset); this is the independent net.
+        run: |
+          python3 - <<'PY'
+          import json
+          w = json.load(open("data/weekly.json", encoding="utf-8"))
+          now, delta = w.get("now", {}), w.get("delta", {})
+          if w.get("baseline_reset"):
+              assert all(v == 0 for v in delta.values()), "reset digest must carry zero deltas"
+              print("weekly: baseline_reset — zero deltas, honest")
+          else:
+              for k, dv in delta.items():
+                  base = now.get(k)
+                  if isinstance(base, (int, float)) and isinstance(dv, (int, float)):
+                      assert abs(dv) <= max(abs(base) * 10, 1000), \
+                          f"weekly delta {k}={dv} implausible vs now={base}"
+              print("weekly deltas plausible")
+          PY
+
+      - name: report.html carries no engine links and the release version
+        # The report is rendered by the engine and lands via BOTH transports.
+        # Its public home is this repo — a link to the private engine's
+        # nonexistent Pages is a dead front door. VERSION here moves in
+        # lockstep with the engine's by release convention (8.0→13.0 all
+        # bumped in pairs); if this line ever fails on a version, bump both.
+        run: |
+          ! grep -q "axonos-radar-core" report.html || { echo "::error::report.html leaks engine links"; exit 1; }
+          grep -q "Radar v$(cat VERSION)" report.html || { echo "::error::report.html version differs from VERSION"; exit 1; }
+          echo "report.html: links clean, version v$(cat VERSION)"
+
       - name: Validate history.json
         run: |
           python3 - <<'PY'
@@ -88,7 +120,7 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
 
       - name: Python syntax
-        run: python3 -m py_compile scripts/validate_payload.py scripts/publish_stats_issue.py scripts/health_check.py scripts/build_ecosystem_manifest.py scripts/build_exports.py scripts/build_signals.py scripts/build_api_index.py scripts/build_badges.py scripts/sync_engine_data.py scripts/interop.py scripts/check_methodology.py
+        run: python3 -m py_compile scripts/validate_payload.py scripts/publish_stats_issue.py scripts/health_check.py scripts/build_ecosystem_manifest.py scripts/build_exports.py scripts/build_signals.py scripts/build_api_index.py scripts/build_badges.py scripts/sync_engine_data.py scripts/interop.py scripts/check_methodology.py scripts/build_trajectory.py scripts/build_talent.py
 
       - name: Unit tests
         run: |
@@ -134,7 +166,7 @@ jobs:
 
       - name: Functional UI smoke (jsdom)
         run: |
-          npm install --no-save --silent jsdom
+          npm install --no-save --silent jsdom@26
           node tests/ui_smoke.mjs
 
   security:
@@ -153,7 +185,7 @@ jobs:
 
       - name: SAST (bandit)
         run: |
-          pip install bandit --quiet
+          pip install -r requirements-ci.txt --quiet
           # Skips are deliberate design, each reviewed in docs/THREAT_MODEL.md:
           #   B101 assert            — validate() gates data with asserts, CI-enforced
           #   B110/B112 try/except   — resilience: a bad snapshot/entry must never kill the pipeline
@@ -184,7 +216,7 @@ jobs:
 
       - name: Required files
         run: |
-          for f in README.md LICENSE VERSION index.html report.html assets/app.js assets/app.css assets/report.css assets/stats.js stats.html feed.xml og-image.png CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md CITATION.cff data/seeds.json data/radar.schema.json data/curated.json docs/METHODOLOGY.md docs/DATA_MODEL.md docs/THREAT_MODEL.md docs/INCIDENT_RESPONSE.md docs/RETENTION.md docs/SBOM.md .github/dependabot.yml .github/workflows/health.yml .github/workflows/pages.yml .nojekyll tests/ui_smoke.mjs scripts/validate_payload.py scripts/publish_stats_issue.py scripts/health_check.py scripts/build_ecosystem_manifest.py scripts/build_exports.py data/curated.json support.html assets/support.css assets/support.js assets/doge-qr.svg data/ecosystem-registry.json .github/FUNDING.yml scripts/interop.py data/interop-vocab.json scripts/check_methodology.py tests/test_interop.py tests/test_ecosystem_manifest.py tests/test_exports.py tests/test_stats_issue.py tests/test_signals.py tests/test_api_index.py tests/test_badges.py scripts/build_signals.py scripts/build_api_index.py scripts/sync_engine_data.py docs/API.md docs/BADGES.md data/signals.schema.json data/trajectory.schema.json .github/workflows/sync.yml scripts/build_badges.py; do
+          for f in README.md LICENSE VERSION index.html report.html assets/app.js assets/app.css assets/report.css assets/stats.js stats.html feed.xml og-image.png CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md CITATION.cff data/seeds.json data/radar.schema.json data/curated.json docs/METHODOLOGY.md docs/DATA_MODEL.md docs/THREAT_MODEL.md docs/INCIDENT_RESPONSE.md docs/RETENTION.md docs/SBOM.md .github/dependabot.yml .github/workflows/health.yml .github/workflows/pages.yml .nojekyll tests/ui_smoke.mjs scripts/validate_payload.py scripts/publish_stats_issue.py scripts/health_check.py scripts/build_ecosystem_manifest.py scripts/build_exports.py data/curated.json support.html assets/support.css assets/support.js assets/doge-qr.svg data/ecosystem-registry.json .github/FUNDING.yml scripts/interop.py data/interop-vocab.json scripts/check_methodology.py tests/test_interop.py tests/test_ecosystem_manifest.py tests/test_exports.py tests/test_stats_issue.py tests/test_signals.py tests/test_api_index.py tests/test_badges.py scripts/build_signals.py scripts/build_api_index.py scripts/sync_engine_data.py docs/API.md docs/BADGES.md data/signals.schema.json data/trajectory.schema.json .github/workflows/sync.yml scripts/build_badges.py scripts/build_trajectory.py scripts/build_talent.py tests/test_trajectory_build.py tests/test_talent.py tests/test_sync_gate.py data/talent.schema.json; do
             test -f "$f" || { echo "missing $f"; exit 1; }
           done
           echo "all required files present"
@@ -208,8 +240,8 @@ jobs:
         # four audit passes (report.html's header AND footer, SECURITY.md,
         # THREAT_MODEL.md, CONTRIBUTING.md, docs/RETENTION.md, index.html's live
         # "publish" button, docs/SBOM.md) before this check existed: prose,
-        # tables and hrefs kept citing scripts/radar.py and workflows/radar.yml
-        # — both retired at the open-core cutover — or linking the engine's
+        # tables and hrefs kept citing the pre-cutover scanner script and its
+        # workflow — both retired at the open-core cutover — or linking the engine's
         # nonexistent Pages site, long after the code had moved on. CHANGELOG.md
         # is exempt: it's a historical record and those mentions were true when
         # written. sync_engine_data.py is exempt: it's the one place these exact

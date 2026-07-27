@@ -39,7 +39,7 @@ The latest `main` is supported. This project is an ecosystem map, not a medical 
 The radar lists public repositories discovered by topic. To remove one, add its
 `owner/name` to `exclude_repos` (or the owner to `exclude_owners`) in
 `data/seeds.json` via a pull request, or open an issue — it drops on the next
-6-hour refresh. This is the project's lightweight moderation/takedown valve; there
+3-hour refresh. This is the project's lightweight moderation/takedown valve; there
 is no manual approval gate, by design, so the map stays live.
 
 ## Privacy

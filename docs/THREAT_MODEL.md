@@ -76,3 +76,13 @@ library plus pinned actions.
 Visitor authentication (there are no accounts), server-side attacks (there is
 no server), and the security of the listed third-party projects themselves —
 **inclusion is not endorsement**.
+
+## Clickjacking (accepted-with-mitigation)
+
+GitHub Pages serves no response headers we control, and the `<meta>` form of
+CSP explicitly ignores `frame-ancestors` — so header-level frame protection is
+not available on this host. Mitigation shipped in v13.0.0: a first-statement
+frame-buster in `assets/app.js` and `assets/stats.js` (break out of any
+enclosing frame; blank the document if the framer blocks navigation). Residual
+risk: a framer that sandboxes scripts entirely also cannot execute our UI, so
+the interactive surface an attacker could overlay is inert.

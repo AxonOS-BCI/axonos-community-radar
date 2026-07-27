@@ -101,7 +101,7 @@ def diagnose():
     else:
         gen = status.get("generated_at") or ""
         try:
-            dt = datetime.fromisoformat(gen)
+            dt = datetime.fromisoformat(str(gen).replace("Z", "+00:00"))
             if dt.tzinfo is None:
                 dt = dt.replace(tzinfo=timezone.utc)
             age_h = (datetime.now(timezone.utc) - dt).total_seconds() / 3600

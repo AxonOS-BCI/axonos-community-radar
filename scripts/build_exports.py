@@ -63,7 +63,16 @@ def _cell(p, col):
     if col in ("rising", "falling", "is_new"):
         return 1 if p.get(col) else 0
     v = p.get(col)
-    return "" if v is None else v
+    if v is None:
+        return ""
+    # CSV formula-injection guard: a cell beginning with = + @ tab or CR is
+    # executed by spreadsheet apps on open. Only strings can smuggle these in
+    # (numeric columns stay numeric — a real negative delta like -5 is an int
+    # and passes through untouched); a leading apostrophe makes spreadsheets
+    # render the text inert without changing what pandas/jq read.
+    if isinstance(v, str) and v[:1] in ("=", "+", "@", "\t", "\r", "-"):
+        return "'" + v
+    return v
 
 
 def build_csv(payload: dict) -> str:

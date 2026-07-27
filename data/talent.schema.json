@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axonos-bci.github.io/axonos-community-radar/data/talent.schema.json",
+  "title": "AxonOS Radar — Talent",
+  "description": "Who builds across the open BCI field. Builder-level (owners of kept projects) by design; every number is derived from the scored map.",
+  "type": "object",
+  "required": ["version", "generated_at", "scope", "count", "builders", "clusters"],
+  "properties": {
+    "version": { "const": 1 },
+    "generated_at": { "type": ["string", "null"] },
+    "scope": { "type": "string" },
+    "count": { "type": "integer", "minimum": 0 },
+    "builders": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["owner", "url", "project_count", "total_stars", "projects"],
+        "properties": {
+          "owner": { "type": "string", "minLength": 1 },
+          "url": { "type": "string", "pattern": "^https://github\\.com/" },
+          "owner_type": { "type": ["string", "null"] },
+          "followers": { "type": ["integer", "null"] },
+          "project_count": { "type": "integer", "minimum": 1 },
+          "total_stars": { "type": "integer", "minimum": 0 },
+          "active_projects_30d": { "type": ["integer", "null"] },
+          "best_brs": { "type": ["number", "null"] },
+          "median_health": { "type": ["number", "null"] },
+          "modalities": { "type": "object", "additionalProperties": { "type": "integer" } },
+          "categories": { "type": "array", "items": { "type": "string" } },
+          "languages": { "type": "array", "items": { "type": "string" } },
+          "projects": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": false
+      }
+    },
+    "clusters": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["builders", "projects", "stars"],
+        "properties": {
+          "builders": { "type": "integer", "minimum": 0 },
+          "projects": { "type": "integer", "minimum": 0 },
+          "stars": { "type": "integer", "minimum": 0 }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -10,8 +10,8 @@
 [![Roadmap](https://img.shields.io/badge/roadmap-to%20v17-f59e0b?style=flat-square)](https://github.com/users/AxonOS-BCI/projects/1)
 [![CI](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml)
 [![Pages](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml)
-[![Version](https://img.shields.io/badge/version-12.0.6-0a4a8f?style=flat-square)](CHANGELOG.md)
-[![Release](https://img.shields.io/badge/release-Badges-6fe6f2?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-13.0.0-0a4a8f?style=flat-square)](CHANGELOG.md)
+[![Release](https://img.shields.io/badge/release-Trajectory%20%2B%20Talent-6fe6f2?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-475569?style=flat-square)](LICENSE)
 
 [![Engine](https://img.shields.io/badge/inclusion-scored%20·%20BRS%200–100-46d0e0?style=flat-square)](#-the-relevance-engine--scored-inclusion-not-a-curated-list)
@@ -85,6 +85,16 @@ tier, straight from the engine's last scan:
 Open your project's evidence ledger on the map and press **Copy badge**, or take
 the Markdown from [`badges/index.json`](https://axonos-bci.github.io/axonos-community-radar/badges/index.json).
 Derived, never granted; updates every ~3 hours. [How it works →](docs/BADGES.md)
+
+## 📈 Trajectory & 🧠 Talent — the map now moves, and has faces
+
+Every card carries a **measured sparkline** — its star arc since 2026-06-26,
+with the BRS delta once the engine's series (accruing since 2026-07-16) has two
+points. Hover it: the tooltip states exactly how many scans it shows and that
+nothing is interpolated. The [Stats page](https://axonos-bci.github.io/axonos-community-radar/stats.html)
+adds **Talent** — who builds across the field, with expertise clusters by
+modality — and **Cohorts**, arrivals by week from the discovery log
+(1,200+ repositories logged). All three ship as documented API endpoints.
 
 | Panel | What it answers |
 |:--|:--|
@@ -263,6 +273,8 @@ No key, no signup. Everything the UI shows is plain, versioned JSON you can buil
 | [`data/signals.json`](https://axonos-bci.github.io/axonos-community-radar/data/signals.json) | What changed this week — **new / rising / cooling** with measured evidence. Schema: [`signals.schema.json`](data/signals.schema.json). Feeds: [all](https://axonos-bci.github.io/axonos-community-radar/feeds/signals.xml) · [new](https://axonos-bci.github.io/axonos-community-radar/feeds/new.xml) · [rising](https://axonos-bci.github.io/axonos-community-radar/feeds/rising.xml). |
 | [`data/projects.ndjson`](https://axonos-bci.github.io/axonos-community-radar/data/projects.ndjson) · [`data/projects.csv`](https://axonos-bci.github.io/axonos-community-radar/data/projects.csv) | One project per line for pandas/jq/DuckDB, and the core columns flat for spreadsheets and BI. |
 | [`badges/index.json`](https://axonos-bci.github.io/axonos-community-radar/badges/index.json) | **A live scored badge for every project** — shields.io endpoints with ready-to-paste Markdown. Derived from the last scan, never hand-granted ([how to embed](docs/BADGES.md)). |
+| [`data/trajectory.json`](https://axonos-bci.github.io/axonos-community-radar/data/trajectory.json) | **Per-project time series** `[timestamp, BRS, stars, health]` — stars measured since 2026-06-26, BRS/health accruing since 2026-07-16. Nothing backfilled, nothing interpolated ([schema](https://axonos-bci.github.io/axonos-community-radar/data/trajectory.schema.json)). |
+| [`data/talent.json`](https://axonos-bci.github.io/axonos-community-radar/data/talent.json) | **Who builds the field** — per-owner aggregates (projects, stars, best BRS, median health, modality spread) and modality clusters. Builder-level by design ([schema](https://axonos-bci.github.io/axonos-community-radar/data/talent.schema.json)). |
 
 Full reference, freshness contract, and quick starts: **[docs/API.md](docs/API.md)**. Free with attribution — licensed feeds, SLAs, and custom slices for funds and labs: [connect@axonos.org](mailto:connect@axonos.org).
 
@@ -319,9 +331,9 @@ The radar is early. Here's the arc from today to the canonical neurotech intelli
 | **8.1** | Dashboards, live | ✅ The Stats page is now a live dashboard — coverage matrix, BRS distribution, standards, health |
 | **9.0** | Signals | ✅ `signals.json` + RSS feeds per slice · watchlist on Stats · token-free data path |
 | **10.0** | Feed | ✅ Data API — `api.json` front door · signals feeds & schema · CSV export · [docs/API.md](docs/API.md) |
-| **11.0** | Trajectory | BRS-over-time & star arcs — per-project history accruing since 2026-07-16 |
+| **11.0** | Trajectory | ✅ Sparkline on every card + `data/trajectory.json` — stars measured since 2026-06-26, BRS since 2026-07-16 |
 | **12.0** | **Badges** | ✅ Live scored badge per project — [docs/BADGES.md](docs/BADGES.md) · `badges/index.json` |
-| **13.0** | Talent | Contributor & builder graph — the neurotech talent map |
+| **13.0** | **Talent** | ✅ Who builds the field — `data/talent.json`, builders board & expertise clusters on [Stats](https://axonos-bci.github.io/axonos-community-radar/stats.html) |
 | **14.0** | Capital | Funding & domicile signals — who raised, where, and when |
 | **15.0** | Standards | Compliance tracking — LSL/BIDS/NWB conformance, clinical readiness |
 | **16.0** | Frontier | Adjacent domains — neuromodulation, neuroprosthetics, spatial compute |
@@ -370,7 +382,7 @@ If you reference AxonOS Radar in academic or technical work, please cite it:
   title   = {{AxonOS Radar: a scored, evidence-backed map of the open brain--computer-interface field}},
   year    = {2026},
   url     = {https://github.com/AxonOS-BCI/axonos-community-radar},
-  version = {12.0.6}
+  version = {13.0.0}
 }
 ```
 

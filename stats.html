@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https://avatars.githubusercontent.com; style-src 'self'; script-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
 <meta name="theme-color" content="#06070b">
 <meta name="description" content="AxonOS Radar — live statistics of the open brain–computer-interface field. Refreshed every 3 hours.">
 <meta property="og:type" content="website">
@@ -37,6 +37,18 @@
 
   <div class="metrics" id="metrics"></div>
   <div class="weekly hidden" id="wkline" aria-label="This week"></div>
+
+  <section class="panel">
+    <div class="ph"><h2>Talent — who builds the field</h2><span class="note" id="talNote"></span></div>
+    <div id="talent" class="tal-list"></div>
+    <div class="ph" style="margin-top:14px"><h3 class="sub">Expertise clusters</h3><span class="note">builders · projects per modality</span></div>
+    <div id="clusters" class="clu-list"></div>
+  </section>
+
+  <section class="panel">
+    <div class="ph"><h2>Cohorts — arrivals by week</h2><span class="note" id="cohNote"></span></div>
+    <div id="cohorts" class="coh-list"></div>
+  </section>
 
   <section class="panel">
     <div class="ph"><h2>Signals</h2><span class="note" id="sigNote"></span></div>
@@ -114,7 +126,7 @@
   </div>
 
   <footer>
-    <div><b class="dim">AxonOS Radar</b> <span class="vchip">v12.0.6</span> — an <a href="https://axonos.org">AxonOS</a> community project · derived from public GitHub metadata</div>
+    <div><b class="dim">AxonOS Radar</b> <span class="vchip">v13.0.0</span> — an <a href="https://axonos.org">AxonOS</a> community project · derived from public GitHub metadata</div>
     <div class="mt8">Inclusion is not endorsement. Scores are discovery signals, not quality, safety, or clinical ratings · <a href="https://github.com/AxonOS-BCI/axonos-community-radar/blob/main/docs/METHODOLOGY.md">Methodology</a></div>
   </footer>
 </div>

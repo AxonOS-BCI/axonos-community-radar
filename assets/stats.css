@@ -153,3 +153,22 @@
   .sig{grid-template-columns:56px 1fr auto;gap:6px}
   .sig-b{display:none}
 }
+
+/* ── v13 "Talent" + v11 cohorts ── */
+.sub{font-size:13px;margin:0;color:var(--fg,#e8eef4)}
+.tal{display:grid;grid-template-columns:minmax(120px,1.4fr) 60px 76px 66px 88px 1fr;gap:8px;align-items:center;padding:5px 8px;border-radius:6px;background:rgba(120,140,160,.05);font-size:12px}
+.tal:hover{background:rgba(120,140,160,.1)}
+.tal-o{color:var(--fg,#e8eef4);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tal-o:hover{text-decoration:underline}
+.tal-n,.tal-s,.tal-b,.tal-h{color:var(--muted,#8a97a6);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tal-s{color:#fbbf24}
+.tal-m{color:#2dd4ff;font-size:10.5px;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tal-list{display:flex;flex-direction:column;gap:4px}
+.clu-list,.coh-list{display:flex;flex-direction:column;gap:4px;margin-top:4px}
+.clu,.coh{display:grid;grid-template-columns:86px 1fr 64px;gap:9px;align-items:center;font-size:11.5px}
+.clu-k,.coh-k{color:var(--muted,#8a97a6);white-space:nowrap}
+.clu-bar,.coh-bar{height:9px;border-radius:5px;background:rgba(120,140,160,.12);overflow:hidden}
+.clu-fill{display:block;height:100%;background:#2dd4ff;border-radius:5px}
+.coh-fill{display:block;height:100%;background:#34d399;border-radius:5px}
+.clu-v,.coh-v{color:var(--muted,#8a97a6);font-variant-numeric:tabular-nums;text-align:right}
+@media (max-width:640px){.tal{grid-template-columns:minmax(100px,1.2fr) 52px 70px 1fr}.tal-h,.tal-m{display:none}}

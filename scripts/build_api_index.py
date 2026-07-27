@@ -76,6 +76,17 @@ CATALOG = {
         "index", "stable", None,
         "Per-project scored badges — shields.io endpoints derived from the last "
         "scan, with ready-to-paste embed markdown per project."),
+    "data/talent.json": (
+        "dataset", "stable", "data/talent.schema.json",
+        "Who builds across the field — per-owner aggregates (projects, stars, "
+        "best BRS, median health, modality spread) and modality clusters. "
+        "Builder-level by design."),
+    "data/talent.schema.json": (
+        "schema", "stable", None,
+        "JSON Schema for data/talent.json."),
+    "data/trajectory.schema.json": (
+        "schema", "stable", None,
+        "JSON Schema for data/trajectory.json."),
     "data/trajectory.json": (
         "dataset", "stable", "data/trajectory.schema.json",
         "Per-project time series (BRS, stars, health) — accruing since 2026-07-16; "

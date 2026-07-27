@@ -48,3 +48,24 @@ def test_real_payload_exports_cleanly(tmp_path):
     lines = (tmp_path / "projects.ndjson").read_text(encoding="utf-8").strip().split("\n")
     assert len(lines) >= 40           # v7 relevance-gated dataset (junk purged: ~62 real BCI repos)
     json.loads(lines[0]); json.loads(lines[-1])
+
+
+def test_csv_formula_injection_is_neutralised():
+    """A hostile description must not execute on spreadsheet open."""
+    payload = {"projects": [{
+        "full_name": "evil/repo", "description": "=2+5+cmd|' /C calc'!A0",
+        "stars": 10, "stars_delta_7d": -5,
+    }]}
+    csv_text = build_exports.build_csv(payload)
+    assert "'=2+5" in csv_text                      # neutralised, still readable
+    assert ",-5," in csv_text                       # real negative int untouched
+
+
+def test_csv_leading_dash_string_is_escaped_numbers_are_not():
+    payload = {"projects": [{
+        "full_name": "a/b", "description": "-looks like a flag",
+        "stars": 1, "stars_delta_7d": -12,
+    }]}
+    csv_text = build_exports.build_csv(payload)
+    assert "'-looks like a flag" in csv_text
+    assert ",-12," in csv_text

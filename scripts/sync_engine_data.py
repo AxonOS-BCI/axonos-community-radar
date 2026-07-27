@@ -51,20 +51,53 @@ FILES = [
     ("data/status.json", "radar: update status [skip ci]"),
     ("data/last_run.json", "radar: record run outcome [skip ci]"),
     ("data/weekly.json", "radar: refresh weekly digest [skip ci]"),
+    ("data/badge-ecosystem.json", "radar: refresh ecosystem badge [skip ci]"),
     ("data/trajectory.json", "radar: extend trajectory series [skip ci]"),
     ("feed.xml", "radar: refresh feed [skip ci]"),
 ]
 
 
+ENGINE_READ_TOKEN = os.environ.get("ENGINE_READ_TOKEN") or ""
+
+# Why the last fetch returned nothing — "absent" (404/403: private engine or
+# unpublished file) reads very differently from "transient" (5xx, timeout):
+# the first is a configuration state, the second just means try again in 3h.
+# Conflating them once produced the misleading "engine is private" message
+# during a plain upstream hiccup.
+FETCH_ERR = {"kind": None}
+
+
 def fetch_raw(path: str):
+    """Read one engine file. Public raw first; if the engine is private and an
+    ENGINE_READ_TOKEN is provided (fine-grained, engine repo only, Contents:
+    Read), fall back to the authenticated Contents API. Read-only by
+    construction: this token cannot write anywhere even if leaked."""
+    FETCH_ERR["kind"] = None
     try:
         req = urllib.request.Request(RAW + path, headers={"User-Agent": "radar-sync"})
         with urllib.request.urlopen(req, timeout=30) as r:
             return r.read().decode("utf-8")
     except urllib.error.HTTPError as e:
-        return None if e.code in (403, 404) else None
+        FETCH_ERR["kind"] = "absent" if e.code in (403, 404) else "transient"
     except Exception:  # noqa: BLE001
+        FETCH_ERR["kind"] = "transient"
+    if not ENGINE_READ_TOKEN:
         return None
+    try:
+        req = urllib.request.Request(
+            f"https://api.github.com/repos/{ENGINE_REPO}/contents/{path}?ref={ENGINE_BRANCH}",
+            headers={"User-Agent": "radar-sync",
+                     "Accept": "application/vnd.github.raw+json",
+                     "Authorization": f"Bearer {ENGINE_READ_TOKEN}",
+                     "X-GitHub-Api-Version": "2022-11-28"})
+        with urllib.request.urlopen(req, timeout=30) as r:
+            FETCH_ERR["kind"] = None
+            return r.read().decode("utf-8")
+    except urllib.error.HTTPError as e:
+        FETCH_ERR["kind"] = "absent" if e.code in (403, 404) else "transient"
+    except Exception:  # noqa: BLE001
+        FETCH_ERR["kind"] = "transient"
+    return None
 
 
 def api(method: str, url: str, payload=None):
@@ -152,20 +185,35 @@ def main() -> int:
 
     remote_radar = fetch_raw("data/radar.json")
     if remote_radar is None:
-        print(f"· {ENGINE_REPO} does not serve data/radar.json publicly — nothing to pull.")
-        print("  (Expected if the engine repository is private; the push path still applies.)")
+        if FETCH_ERR["kind"] == "transient":
+            print(f"· {ENGINE_REPO}: transient upstream error — leaving data as-is; "
+                  "the next tick retries.")
+        else:
+            print(f"· {ENGINE_REPO} is not readable (private without ENGINE_READ_TOKEN, "
+                  "or the file is unpublished) — nothing to pull.")
+            print("  The push path still applies. To restore the pull path for a private "
+                  "engine, add the ENGINE_READ_TOKEN secret: a fine-grained PAT on the "
+                  "engine repo only, Contents: Read.")
         return 0
 
-    r_at = generated_at(remote_radar)
+    # Parse FIRST, loudly. Garbage from the engine is an incident, not a
+    # quiet no-op: a red run here is the only signal anyone will get, because
+    # every commit below carries [skip ci].
+    try:
+        payload = json.loads(remote_radar)
+    except ValueError as e:
+        print(f"::error::engine radar.json is not JSON: {e}")
+        return 1
+    try:
+        r_at = datetime.fromisoformat(str(payload.get("generated_at")).replace("Z", "+00:00"))
+    except Exception:  # noqa: BLE001
+        print("::error::engine radar.json carries no parsable generated_at — contract broken.")
+        return 1
     try:
         with open("data/radar.json", encoding="utf-8") as f:
             l_at = generated_at(f.read())
     except OSError:
         l_at = None
-
-    if r_at is None:
-        print("· engine radar.json has no generated_at — refusing to sync blind.")
-        return 0
     if l_at is not None and r_at <= l_at:
         age = (datetime.now(timezone.utc) - l_at).total_seconds() / 3600
         print(f"· already current: engine {r_at.isoformat()} <= here {l_at.isoformat()} "
@@ -175,12 +223,55 @@ def main() -> int:
     print(f"· engine data is newer: {r_at.isoformat()} > "
           f"{l_at.isoformat() if l_at else '<none>'} — syncing.")
 
+    # ── Contract gate. This script is a WRITE PATH into main: whatever it
+    # commits deploys to the public site on the next pages tick, and its
+    # commits carry [skip ci], so no later check ever looks at them. That
+    # combination means validation must happen HERE, before the first PUT —
+    # an invalid payload is refused wholesale (no partial syncs), the run
+    # goes red with the reasons, the previous data stays live, and the
+    # health monitor flags staleness if the engine keeps misbehaving. ──
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from validate_payload import validate_payload  # noqa: E402
+    errs = validate_payload(payload)
+    if errs:
+        print(f"::error::engine payload rejected by the contract gate "
+              f"({len(errs)} issue(s)) — nothing committed:")
+        for e in errs[:20]:
+            print(f"  - {e}")
+        return 1
+    try:
+        import jsonschema
+        with open("data/radar.schema.json", encoding="utf-8") as fh:
+            jsonschema.validate(payload, json.load(fh))
+    except ImportError:
+        print("· jsonschema unavailable — invariant gate above still enforced")
+    except Exception as e:  # noqa: BLE001
+        print(f"::error::engine payload fails the published schema: {str(e)[:200]}")
+        return 1
+    print(f"· contract gate passed: {len(payload.get('projects') or [])} projects, "
+          "invariants + schema clean")
+
     committed = 0
     for path, message in FILES:
         body = fetch_raw(path)
         if body is None:
             print(f"  {path}: not published by the engine — skip")
             continue
+        if path.endswith(".xml"):
+            try:
+                import xml.dom.minidom as _m
+                _m.parseString(body)
+            except Exception as e:  # noqa: BLE001
+                print(f"::warning::{path}: engine served malformed XML ({str(e)[:80]}) "
+                      "— keeping the previous copy this round")
+                continue
+        elif path.endswith(".json"):
+            try:
+                json.loads(body)
+            except ValueError:
+                print(f"::warning::{path}: engine served malformed JSON — "
+                      "keeping the previous copy this round")
+                continue
         code, cur = api("GET", f"{API}{path}?ref={BRANCH}")
         sha = cur.get("sha") if code == 200 else None
         if code == 200 and "content" in cur:

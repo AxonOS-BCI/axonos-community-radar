@@ -1,3 +1,8 @@
+// Clickjacking guard: GitHub Pages cannot send frame-ancestors/X-Frame-Options
+// headers and the <meta> CSP variant of frame-ancestors is ignored by spec —
+// so the page defends itself. Inside a hostile frame it breaks out (or blanks
+// itself when the framer blocks navigation).
+(function(){if(top!==self){try{top.location.replace(self.location.href);}catch(e){document.documentElement.style.display='none';}}})();
 (function(){
   'use strict';
   function __showErr(msg){try{var d=document.getElementById('__err__');if(!d){d=document.createElement('div');d.id='__err__';d.className='radar-fatal';document.body.appendChild(d);}d.textContent='Radar error — please screenshot:\n'+msg;}catch(_){}}
@@ -303,6 +308,70 @@
   var HBAND=[[80,'strong','var(--emerald)'],[60,'solid','var(--accent)'],[40,'developing','var(--amber)'],[0,'early','var(--rose)']];
   var HLABEL={license:'Licence',maintenance:'Maintenance',momentum:'Momentum',adoption:'Adoption',team:'Team',docs:'Doc signals'};
   function hband(v){for(var i=0;i<HBAND.length;i++)if(v>=HBAND[i][0])return HBAND[i];return HBAND[HBAND.length-1];}
+  // ── v11 "Trajectory": per-card sparkline from measured series ──
+  // Stars are real points since 2026-06-26 (one per engine scan); BRS/health
+  // points accrue since 2026-07-16. Absent file -> no spark, zero errors.
+  var TRAJ=null;
+  function sparkEl(p){
+    if(!TRAJ)return null;
+    var pts=TRAJ[p.full_name];
+    if(!pts||pts.length<2)return null;
+    var stars=[],brs=[];
+    for(var i=0;i<pts.length;i++){
+      if(typeof pts[i][2]==='number')stars.push(pts[i][2]);
+      if(typeof pts[i][1]==='number')brs.push(pts[i][1]);
+    }
+    if(stars.length<2)return null;
+    var W=92,H=22,min=Math.min.apply(null,stars),max=Math.max.apply(null,stars);
+    var span=(max-min)||1;
+    var path='';
+    for(var j=0;j<stars.length;j++){
+      var x=(j/(stars.length-1))*W;
+      var y=H-2-((stars[j]-min)/span)*(H-5);
+      path+=(j?'L':'M')+x.toFixed(1)+' '+y.toFixed(1);
+    }
+    var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('viewBox','0 0 '+W+' '+H);svg.setAttribute('class','spark');
+    svg.setAttribute('aria-hidden','true');
+    var pl=document.createElementNS('http://www.w3.org/2000/svg','path');
+    pl.setAttribute('d',path);pl.setAttribute('fill','none');
+    pl.setAttribute('stroke','currentColor');pl.setAttribute('stroke-width','1.6');
+    pl.setAttribute('stroke-linejoin','round');pl.setAttribute('stroke-linecap','round');
+    svg.appendChild(pl);
+    var wrap=el('div','trend');
+    wrap.appendChild(svg);
+    var d=stars[stars.length-1]-stars[0];
+    var lbl=el('span','trend-d',(d>0?'+':'')+d+'\u2605');
+    if(d>0)lbl.classList.add('up');else if(d<0)lbl.classList.add('down');
+    wrap.appendChild(lbl);
+    if(brs.length>=2){
+      var bd=brs[brs.length-1]-brs[0];
+      var bl=el('span','trend-b','BRS '+(bd>0?'+':'')+bd);
+      if(bd>0)bl.classList.add('up');else if(bd<0)bl.classList.add('down');
+      wrap.appendChild(bl);
+    }
+    wrap.title='Star trajectory: '+stars[0]+' \u2192 '+stars[stars.length-1]+' over '+stars.length+
+      ' scans since '+String(pts[0][0]).slice(0,10)+
+      (brs.length>=2?('. BRS series: '+brs.length+' points (accruing since 2026-07-16).'):
+       '. BRS series accruing since 2026-07-16.')+
+      ' Measured points only \u2014 nothing interpolated.';
+    wrap.setAttribute('aria-label','Star trajectory over '+stars.length+' scans');
+    return wrap;
+  }
+  function loadTrajectory(){
+    fetch('./data/trajectory.json',{cache:'no-store'})
+      .then(function(r){return r.ok?r.json():null;})
+      .then(function(d){
+        if(!d)return;
+        TRAJ=d;
+        document.querySelectorAll('.card').forEach(function(card){
+          var name=card.getAttribute('data-name');
+          if(!name||card.querySelector('.trend'))return;
+          var sp=sparkEl({full_name:name});
+          if(sp){var h=card.querySelector('.hlth');(h&&h.parentNode?h.parentNode:card).insertBefore(sp,h?h.nextSibling:null);}
+        });
+      }).catch(function(){});
+  }
   function healthEl(p){
     var s=p.signals;if(!s)return null;
     var b=hband(s.overall);
@@ -365,7 +434,9 @@
       var tr=tagRowEl(p);if(tr)a.appendChild(tr);
       var ir=iopRowEl(p);if(ir)a.appendChild(ir);
       if(lpanel)a.appendChild(lpanel);
+      a.setAttribute('data-name',p.full_name||'');a.classList.add('card');
       var hl=healthEl(p);if(hl)a.appendChild(hl);
+      var sp0=sparkEl(p);if(sp0)a.appendChild(sp0);
       var foot=el('div','foot');
       var lng=el('span','lng');lng.appendChild(el('span','ld'));lng.appendChild(document.createTextNode(p.language||'n/a'));foot.appendChild(lng);
       var ac=el('span','ac');ac.appendChild(el('span','ad'+(p.active?' on':'')));ac.appendChild(document.createTextNode(fmtAge(p.days_since_push)));foot.appendChild(ac);
@@ -678,7 +749,7 @@
     window.addEventListener('resize',function(){drawRadar(filtered());});
     document.body.classList.add('loading');
     render();
-    fetch('./data/radar.json',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){DATA=sanitizeData(j);document.body.classList.remove('loading');buildChips();buildTierChips();buildIopChips();buildLangs();setStats();renderEcosystem();render();}).catch(function(err){console.log('radar data not loaded:',err);document.body.classList.remove('loading');setStats();render();});
+    fetch('./data/radar.json',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){DATA=sanitizeData(j);document.body.classList.remove('loading');buildChips();buildTierChips();buildIopChips();buildLangs();setStats();renderEcosystem();render();loadTrajectory();}).catch(function(err){console.log('radar data not loaded:',err);document.body.classList.remove('loading');setStats();render();});
     renderDonate();
     fetch('./data/weekly.json',{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(renderWeekly).catch(function(){});
   }

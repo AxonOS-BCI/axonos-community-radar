@@ -1,5 +1,39 @@
 # Changelog
 
+## [13.0.1] — 2026-07-28 — "the gate that caught its own author"
+
+### Fixed
+- **CI's security gate went red on 13.0.0's own code.** The per-file XML
+  well-formedness check added to the sync path used `xml.dom.minidom`, which
+  bandit flags (B408/B318) as unsafe against XML entity attacks. The finding
+  was correct and the release battery missed it: the local bandit invocation
+  swallowed its exit code and printed a success line unconditionally. Both
+  are fixed — the check now refuses any document carrying a DOCTYPE or ENTITY
+  declaration *before* a parser sees it and caps the input size, so the
+  billion-laughs, quadratic-blowup and XXE vectors cannot reach the parser at
+  all; the two remaining suppressions are scoped, documented, and earned by
+  that guard rather than asserted. Six tests drive it, including a real
+  entity bomb and an external-entity declaration. `sync.yml`'s contract gate
+  now calls the same tested function instead of parsing inline.
+- The `report.html` version gate pinned the full patch version, which would
+  have failed every showcase-only patch release: the report is rendered by
+  the engine, whose patch level moves independently. It now checks the
+  feature release (`major.minor`), still catching a report left behind by an
+  older feature release.
+- Two README defects introduced in 12.0.0/13.0.0: the Badges and
+  Trajectory sections had been inserted *inside* the dashboard section,
+  orphaning its panel table from its heading, and a second Badges section
+  with the same title sat further down carrying two stale "🛠 v12" rows for
+  work that has shipped. Restructured into one section; the report's refresh
+  cadence corrected from "weekly" to every scan.
+
+### Added
+- README: **Who it's for** — eight roles, the question each is stuck on, the
+  mechanism that answers it, and where to start; **What makes it different**,
+  including an explicit *What it is not*; and **What people build on it**.
+- Dependabot now watches `requirements-ci.txt` (pip), grouped weekly like the
+  actions — the pins that gate this repository were previously unwatched.
+
 ## [13.0.0] — 2026-07-27 — "Trajectory + Talent"
 
 Two roadmap features land together — 11.0's history had been accruing since

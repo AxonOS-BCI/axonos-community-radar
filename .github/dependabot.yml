@@ -19,3 +19,19 @@ updates:
       github-actions:
         patterns:
           - "*"
+
+  # requirements-ci.txt pins the CI toolchain (pytest, jsonschema, bandit).
+  # Those pins went stale silently before this entry existed: nothing watched
+  # them, so a security fix in the very tools that gate this repo could sit
+  # unnoticed indefinitely. Same grouping discipline as the actions above.
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    commit-message:
+      prefix: "ci"
+    groups:
+      ci-toolchain:
+        patterns:
+          - "*"

@@ -64,11 +64,15 @@ jobs:
           pip install -r requirements-ci.txt --quiet
           python3 scripts/validate_payload.py data/radar.json
           python3 - <<'GATE'
-          import json, jsonschema
+          import json, sys
+          import jsonschema
           jsonschema.validate(json.load(open("data/radar.json")),
                               json.load(open("data/radar.schema.json")))
-          import xml.dom.minidom as m
-          m.parse("feed.xml")
+          sys.path.insert(0, "scripts")
+          from sync_engine_data import feed_is_well_formed
+          ok, why = feed_is_well_formed(open("feed.xml", encoding="utf-8").read())
+          if not ok:
+              raise SystemExit(f"::error::feed.xml is unusable: {why}")
           print("contract gate: schema + feed well-formed")
           GATE
 

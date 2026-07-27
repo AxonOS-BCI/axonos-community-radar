@@ -50,15 +50,20 @@ jobs:
           PY
 
       - name: report.html carries no engine links and the release version
-        # The report is rendered by the engine and lands via BOTH transports.
-        # Its public home is this repo — a link to the private engine's
-        # nonexistent Pages is a dead front door. VERSION here moves in
-        # lockstep with the engine's by release convention (8.0→13.0 all
-        # bumped in pairs); if this line ever fails on a version, bump both.
+        # The report is rendered by the ENGINE and lands via both transports;
+        # its public home is this repo, so a link to the private engine's
+        # nonexistent Pages is a dead front door. The version is checked at
+        # major.minor only, on purpose: feature releases move both repos in
+        # lockstep (8.0 → 13.0 all bumped in pairs), while a patch on either
+        # side moves independently — pinning the patch digit here would make
+        # every showcase-only fix fail on a report the engine has no reason
+        # to re-render. A stale report from an older feature release still
+        # fails, which is what this gate is for.
         run: |
           ! grep -q "axonos-radar-core" report.html || { echo "::error::report.html leaks engine links"; exit 1; }
-          grep -q "Radar v$(cat VERSION)" report.html || { echo "::error::report.html version differs from VERSION"; exit 1; }
-          echo "report.html: links clean, version v$(cat VERSION)"
+          MM="$(cut -d. -f1,2 VERSION)"
+          grep -q "Radar v${MM}" report.html || { echo "::error::report.html is from a different feature release than VERSION (${MM}.x expected)"; exit 1; }
+          echo "report.html: links clean, feature release v${MM}.x"
 
       - name: Validate history.json
         run: |

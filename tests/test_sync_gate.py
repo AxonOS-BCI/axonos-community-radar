@@ -101,3 +101,46 @@ def test_private_engine_names_the_remedy(monkeypatch, capsys):
     monkeypatch.setattr(S, "REPO", "x/y")
     assert S.main() == 0
     assert "ENGINE_READ_TOKEN" in capsys.readouterr().out
+
+
+# ── the XML guard on engine-served feeds ──
+
+def test_well_formed_feed_passes():
+    ok, why = S.feed_is_well_formed(
+        '<?xml version="1.0"?><feed xmlns="http://www.w3.org/2005/Atom">'
+        "<title>Radar</title></feed>")
+    assert ok and why == ""
+
+
+def test_billion_laughs_is_refused_before_parsing():
+    bomb = ('<?xml version="1.0"?>\n'
+            '<!DOCTYPE lolz [<!ENTITY lol "lol">'
+            '<!ENTITY lol2 "&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;">]>'
+            "<lolz>&lol2;</lolz>")
+    ok, why = S.feed_is_well_formed(bomb)
+    assert not ok and "entity" in why.lower()
+
+
+def test_external_entity_declaration_is_refused():
+    xxe = ('<?xml version="1.0"?>'
+           '<!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///etc/passwd">]>'
+           "<foo>&xxe;</foo>")
+    ok, why = S.feed_is_well_formed(xxe)
+    assert not ok
+
+
+def test_oversized_feed_is_refused():
+    ok, why = S.feed_is_well_formed("<a>" + "x" * (S.MAX_FEED_BYTES + 1) + "</a>")
+    assert not ok and "MB" in why
+
+
+def test_malformed_xml_is_refused_with_a_reason():
+    ok, why = S.feed_is_well_formed("<feed><unclosed></feed>")
+    assert not ok and why
+
+
+def test_a_feed_mentioning_doctype_in_text_still_parses():
+    """The guard must not be so blunt that ordinary content trips it."""
+    ok, _ = S.feed_is_well_formed(
+        "<feed><entry><summary>a post about DOCTYPE handling</summary></entry></feed>")
+    assert ok

@@ -176,6 +176,39 @@ def sync_report_html() -> None:
         print(f"· report.html: PUT failed ({code})")
 
 
+MAX_FEED_BYTES = 5 * 1024 * 1024
+
+
+def feed_is_well_formed(body: str):
+    """Well-formedness check for engine-served XML, hardened at the input.
+
+    Returns (ok, reason). The classic attacks against a stdlib XML parser all
+    arrive through the document prologue: billion-laughs and quadratic-blowup
+    need an internal DTD with entity declarations, and XXE needs an external
+    one. Rather than trusting a parser to survive them, this refuses any
+    document carrying a DOCTYPE or ENTITY declaration outright — a syndication
+    feed has no legitimate reason to declare either — and caps the size before
+    parsing. What reaches the parser therefore cannot contain the constructs
+    the parser is warned about. (External entity expansion is off by default
+    in CPython's expat bindings since 3.7.1; this guard closes the internal
+    ones too.) stdlib only, per this repository's dependency posture.
+    """
+    if len(body.encode("utf-8", "ignore")) > MAX_FEED_BYTES:
+        return False, f"larger than {MAX_FEED_BYTES // 1024 // 1024} MB"
+    head = body[:4096].upper()
+    if "<!DOCTYPE" in head or "<!ENTITY" in body.upper():
+        return False, "carries a DTD or entity declaration (refused before parsing)"
+    try:
+        # The two suppressions below are earned by the guard above, not
+        # asserted: nothing reaching this parser can carry a DTD or an entity
+        # declaration, and its size is capped.
+        import xml.dom.minidom as _m  # nosec B408
+        _m.parseString(body)  # nosec B318
+    except Exception as e:  # noqa: BLE001
+        return False, str(e)[:120]
+    return True, ""
+
+
 def main() -> int:
     if not TOKEN or not REPO:
         print("missing GITHUB_TOKEN / GITHUB_REPOSITORY")
@@ -258,11 +291,9 @@ def main() -> int:
             print(f"  {path}: not published by the engine — skip")
             continue
         if path.endswith(".xml"):
-            try:
-                import xml.dom.minidom as _m
-                _m.parseString(body)
-            except Exception as e:  # noqa: BLE001
-                print(f"::warning::{path}: engine served malformed XML ({str(e)[:80]}) "
+            ok, why = feed_is_well_formed(body)
+            if not ok:
+                print(f"::warning::{path}: engine served unusable XML ({why}) "
                       "— keeping the previous copy this round")
                 continue
         elif path.endswith(".json"):

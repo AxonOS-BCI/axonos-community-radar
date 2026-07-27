@@ -10,7 +10,7 @@
 [![Roadmap](https://img.shields.io/badge/roadmap-to%20v17-f59e0b?style=flat-square)](https://github.com/users/AxonOS-BCI/projects/1)
 [![CI](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml)
 [![Pages](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml)
-[![Version](https://img.shields.io/badge/version-13.0.1-0a4a8f?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-13.1.0-0a4a8f?style=flat-square)](CHANGELOG.md)
 [![Release](https://img.shields.io/badge/release-Trajectory%20%2B%20Talent-6fe6f2?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-475569?style=flat-square)](LICENSE)
 
@@ -393,6 +393,33 @@ Full reference, freshness contract, and quick starts: **[docs/API.md](docs/API.m
 
 ---
 
+## 🔏 &nbsp;Provenance & independent audit
+
+This repository publishes judgements about other people's projects, so its own
+history is built to be checked rather than trusted:
+
+- **Automated commits are signed by GitHub.** The sync workflow writes through
+  the Contents API with its own Actions identity, which GitHub signs — the
+  `Verified` badge on those commits is not self-applied. Release commits are
+  signed on the maintainer's device. Which writer produced which commit, and
+  how to verify any of it yourself in one command, is documented in
+  [docs/PROVENANCE.md](docs/PROVENANCE.md); the health workflow measures the
+  signed share on a schedule so drift surfaces on its own.
+- **Old commits are not retroactively signed.** Backdating signatures onto
+  history would fabricate a provenance claim, which is exactly what a
+  supply-chain record must not do.
+- **The repository submits to an outside auditor.** [OpenSSF
+  Scorecard](https://github.com/ossf/scorecard) — the Open Source Security
+  Foundation's automated checker — runs weekly and publishes its findings to a
+  public dataset and to this repository's Security tab. It grades branch
+  protection, dependency pinning, token permissions, SAST, update tooling and
+  maintenance from the outside, with no input from us.
+
+Asking other projects to accept a score computed about them, while refusing the
+same treatment, would not be a defensible position.
+
+---
+
 ## 🔬 &nbsp;How a project gets on the radar
 
 Generated entirely from **public GitHub topic search** — no scraping, no private data. A repository is scored by the **Relevance Engine** and kept only if its BRS clears the gate (**40**). Keyword matching is anchored at word boundaries, so a *MIDI controller* never slips in on the substring `mi`, and a PyTorch clone never slips in on "neural". Every kept project carries its **evidence tier** and its full **ledger** — the signals that got it there.
@@ -495,7 +522,7 @@ If you reference AxonOS Radar in academic or technical work, please cite it:
   title   = {{AxonOS Radar: a scored, evidence-backed map of the open brain--computer-interface field}},
   year    = {2026},
   url     = {https://github.com/AxonOS-BCI/axonos-community-radar},
-  version = {13.0.1}
+  version = {13.1.0}
 }
 ```
 

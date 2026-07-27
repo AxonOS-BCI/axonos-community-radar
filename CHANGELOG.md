@@ -1,5 +1,33 @@
 # Changelog
 
+## [13.1.0] — 2026-07-28 — "Provenance"
+
+### Added
+- **Commit provenance is now measured, not assumed.** Every automated commit
+  here is written through the GitHub Contents API; GitHub signs those when the
+  caller is an App identity (a workflow's `GITHUB_TOKEN`) and leaves them
+  unsigned when it is a user PAT. Both write identical files, so the
+  difference lived only in the history: of the last 1,281 commits on `main`,
+  716 of the 720 made by `github-actions[bot]` are signed, while the
+  PAT-written data commits since 2026-07-17 are not.
+  `scripts/check_provenance.py` reports the signed share per author and names
+  the newest unsigned commit; the health workflow runs it on schedule into its
+  job summary. Report-only by design — a rate-limited API is not a repository
+  defect. Documented end to end, with three independent ways to verify it, in
+  [docs/PROVENANCE.md](docs/PROVENANCE.md).
+- **The engine's publish path can now run as a fallback** (`PUBLISH_MODE`,
+  switchable from a repository variable): it publishes only once the data here
+  has aged past a threshold, i.e. only when this repository's own signed sync
+  path has actually stopped. Normal operation becomes fully signed while the
+  dual-path guarantee that the map cannot freeze is preserved — and a rare
+  unsigned commit becomes a visible alarm rather than the norm. An unknown
+  remote age publishes rather than risk a freeze. Seven tests.
+- **OpenSSF Scorecard** — an independent, automated supply-chain audit runs
+  weekly and on branch-protection changes, publishing to the public OpenSSF
+  dataset and to this repository's Security tab. The project asks others to
+  accept a score computed about them; submitting to the same is the consistent
+  position.
+
 ## [13.0.1] — 2026-07-28 — "the gate that caught its own author"
 
 ### Fixed

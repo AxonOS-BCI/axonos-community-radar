@@ -31,3 +31,12 @@ jobs:
 
       - name: Check published data freshness
         run: python3 scripts/health_check.py
+
+      - name: Commit provenance readout
+        # Data commits are written through the Contents API. GitHub signs those
+        # when the caller is an App identity (a workflow's GITHUB_TOKEN); the
+        # same API called with a user PAT produces an unsigned commit. The files
+        # land identically either way, so this is the only place the difference
+        # shows. Report-only: a rate-limited API is not a repository defect.
+        run: |
+          python3 scripts/check_provenance.py --limit 30 | tee -a "$GITHUB_STEP_SUMMARY"

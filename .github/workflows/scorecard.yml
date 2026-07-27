@@ -1,0 +1,65 @@
+# OpenSSF Scorecard — an independent, automated supply-chain audit.
+#
+# Scorecard is the Open Source Security Foundation's checker: it inspects this
+# repository from the outside (branch protection, pinned dependencies, SAST,
+# token permissions, dependency-update tooling, release hygiene, maintenance
+# activity...) and publishes a 0-10 score to a public dataset that anyone can
+# query. Nothing here is self-reported: the score is computed by a third party
+# from observable facts about the repository.
+#
+# That is the point. This project asks other people to trust scores it computes
+# about *them*; submitting to the same treatment from an independent auditor is
+# the consistent thing to do — including when the number is unflattering.
+#
+# publish_results: true is what makes the result public (and what makes the
+# badge possible). The SARIF upload puts the same findings in this repository's
+# Security tab, so a reader can see the individual checks, not just the number.
+name: OpenSSF Scorecard
+
+on:
+  # Re-score when branch protection changes — that's a scored input.
+  branch_protection_rule:
+  schedule:
+    - cron: "23 5 * * 2"   # weekly, Tuesday 05:23 UTC
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  analysis:
+    name: Scorecard analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      security-events: write   # upload findings to the Security tab
+      id-token: write          # publish the result to the public dataset
+      contents: read
+      actions: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Run analysis
+        uses: ossf/scorecard-action@2d1146689b8cda280b9bc96326124645441f03bc  # v2.4.4
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          # Publishing is required for the public badge and the public report.
+          publish_results: true
+
+      - name: Keep the raw result as an artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: scorecard-results
+          path: results.sarif
+          retention-days: 30
+
+      - name: Upload findings to the Security tab
+        uses: github/codeql-action/upload-sarif@e4fba868fa4b1b91e1fdab776edc8cfbe6e9fb81  # v4.37.3
+        with:
+          sarif_file: results.sarif

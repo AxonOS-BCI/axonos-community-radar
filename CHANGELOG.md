@@ -1,5 +1,30 @@
 # Changelog
 
+## [13.1.1] — 2026-07-29 — the ZeroCalib card said more than the code did
+
+### Fixed
+- **The roadmap advertised accuracy the implementation explicitly disclaims.**
+  The ZeroCalib card read *"Alpha — calibration-free decoding: usable accuracy
+  in seconds"*. The crate behind it says the opposite in four places:
+  `calibrate.rs` — *"no accuracy, transfer, or convergence claim"*;
+  `CLAIMS.md`, under **what is explicitly NOT claimed** — *"no claim is made
+  that it improves classification, transfers across sessions, or converges"*;
+  `LIMITATIONS.md` — a ZeroCalib **skeleton**.
+
+  Two cards replace it, because the honest split is two things. **Shipped:**
+  the symmetric inverse-square-root aligner, which now genuinely exists
+  (`axonos-signal-pipeline` 0.7.0) — integer arithmetic, fixed iteration count,
+  bit-for-bit reproducible. **Planned:** calibration-free decoding itself,
+  which alignment provably does not deliver on its own: it reduces
+  inter-subject difference to a residual rotation and cannot remove it, so
+  whether transfer occurs is an experiment on real montages rather than a
+  property of the transform.
+
+  Both cards now link to the code and to `CLAIMS.md` instead of to the board,
+  so a reader can check them in one click. The page invites verification a
+  paragraph later — *"nothing sits behind a private tracker"* — and that
+  invitation should not sit beside the one claim that would not survive it.
+
 ## [13.1.0] — 2026-07-28 — "Provenance"
 
 ### Added

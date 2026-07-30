@@ -1,5 +1,50 @@
 # Changelog
 
+## [13.5.0] — 2026-07-29 — "Search"
+
+### Added
+- **Search that finds two words.** The query was `haystack.indexOf(q)`, so
+  `mne lsl` matched nothing: no single string contains both. Queries are now
+  tokenised and every word must appear somewhere, with per-field weights — a
+  name match outranks a body mention, so searching `mne` puts `mne-python`
+  above the projects that merely cite it instead of interleaving them. A query
+  outranks the chosen sort while it is active, because answering a question in
+  activity order buries the answer.
+- **Query operators**, because the field's real questions are conjunctive:
+  `lang:rust`, `modality:eeg`, `standard:lsl`, `brs:>70`, `brs:<50`, `tier:`,
+  `owner:mne-tools`, `category:`, and `is:new` / `is:rising` / `is:falling` /
+  `is:active`. Composable, client-side, no index to download. Every operator
+  must hold — a query that quietly widens when a term misses is a query nobody
+  can trust.
+- **Keyboard navigation.** `j`/`k` move, `g`/`G` jump to the ends, `↵` opens,
+  `?` shows the shortcuts and the operator list. Nothing is bound while the
+  reader is typing, and `/` and `Esc` are left to the handlers that already
+  own them rather than contested by a second listener.
+- **Faceted evidence reaches the client.** `facets.modality`, `.standards` and
+  `.paradigm` are now carried through sanitisation. 88 of 120 projects have
+  them, and without them the `modality:` and `standard:` operators matched
+  nothing while appearing to work — a silent zero, which is worse than a
+  missing feature.
+
+### Changed
+- The relevance score is computed by a saturating combiner (engine 13.5.0,
+  `axonos-brs`). Measured on this corpus, the previous sum-and-clamp produced
+  **nine distinct values** across 117 projects with 19 % at exactly 100 and
+  31 % at exactly the gate; the replacement produces **35**, the ceiling is
+  empty, and the gate is unchanged at 40 so inclusion policy did not move with
+  the arithmetic. Three projects cross below the line, each from 40 to 36,
+  having tripped a single weak rule.
+
+### Not in this release, and why
+- **In-browser score recomputation.** The Rust crate is written and its
+  WebAssembly target is one command away, but the toolchain here cannot build
+  or verify that artifact, and shipping a check that has never been run is a
+  mistake this project has already paid for twice. It waits for a build it can
+  prove.
+- **The Considered view.** The engine now publishes `data/considered.json` —
+  every repository seen and not kept, with its score and shortfall — and the
+  interface for it is the next release rather than a rushed panel in this one.
+
 ## [13.1.1] — 2026-07-29 — the ZeroCalib card said more than the code did
 
 ### Fixed

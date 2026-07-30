@@ -73,6 +73,12 @@
       ecosystem_note:str(p.ecosystem_note,200),
       org_domicile:str(p.org_domicile,60),funding_round:str(p.funding_round,40),
       interop:(Array.isArray(p.interop)?p.interop:[]).slice(0,8).map(function(t){return str(t,24).toLowerCase();}).filter(function(t){return !!IOPL[t];}),
+      // Faceted evidence: 88 of 120 projects carry it, and without it the
+      // modality: and standard: operators match nothing while looking as
+      // though they work — a silent zero is worse than a missing feature.
+      facets:(function(f){ if(!f||typeof f!=='object')return {modality:[],standards:[],paradigm:[]};
+        var arr=function(a){return (Array.isArray(a)?a:[]).slice(0,12).map(function(x){return str(x,32);});};
+        return {modality:arr(f.modality), standards:arr(f.standards), paradigm:arr(f.paradigm)};})(p.facets),
       foundation:sanitizeFoundation(p.foundation),
       first_seen:str(p.first_seen,40),signals:sanitizeSignals(p.signals)};
   }
@@ -143,7 +149,108 @@
   var state={q:'',cats:{},lang:'',activeOnly:false,newOnly:false,fallingOnly:false,tiers:{},iops:{},dens:false,sort:'activity',view:'grid'};
   var points=[];
 
+
+  // ── v13.5 search: tokens and operators, not a substring scan ──
+  //
+  // The old query was `haystack.indexOf(q)`, which fails the two things people
+  // actually type. "mne lsl" found nothing, because no single string contains
+  // both. And there was no way to ask a conjunctive question — "Rust, EEG,
+  // still maintained" — which is the shape of every real question about this
+  // field. Both are fixed here, client-side, with no index to download.
+  var OPS = {lang:1, modality:1, standard:1, tier:1, owner:1, is:1, brs:1, category:1};
+
+  function parseQuery(raw){
+    var out={words:[], ops:[]};
+    String(raw||'').trim().split(/\s+/).forEach(function(tok){
+      if(!tok) return;
+      var m=/^([a-z]+):(.+)$/i.exec(tok);
+      if(m && OPS[m[1].toLowerCase()]){
+        var key=m[1].toLowerCase(), val=m[2];
+        var cmp=/^(>=|<=|>|<|=)?(.*)$/.exec(val);
+        out.ops.push({key:key, op:cmp[1]||'=', val:String(cmp[2]).toLowerCase()});
+      } else {
+        out.words.push(tok.toLowerCase());
+      }
+    });
+    return out;
+  }
+
+  // Fields carry weights because a name match and a body match are not the
+  // same evidence: searching "mne" should put mne-python first and the
+  // fourteen projects that merely mention it after, not interleaved.
+  function fieldsOf(p){
+    return [
+      {w:6, s:String(p.full_name||'').toLowerCase()},
+      {w:4, s:(p.topics||[]).join(' ').toLowerCase()},
+      {w:3, s:String(p.description||'').toLowerCase()},
+      {w:2, s:String(p.language||'').toLowerCase()+' '+String(p.category||'').toLowerCase()},
+      {w:2, s:((p.facets&&p.facets.modality)||[]).join(' ').toLowerCase()+' '+((p.facets&&p.facets.standards)||[]).join(' ').toLowerCase()+' '+((p.facets&&p.facets.paradigm)||[]).join(' ').toLowerCase()},
+      {w:1, s:(p.interop||[]).join(' ').toLowerCase()}
+    ];
+  }
+
+  // A word scores if any field contains it, and scores higher on a token
+  // boundary — so "eeg" ranks an EEG project above one mentioning "beeg" in a
+  // sentence, without excluding the latter outright.
+  function wordScore(fields, word){
+    var best=0;
+    for(var i=0;i<fields.length;i++){
+      var s=fields[i].s, at=s.indexOf(word);
+      if(at<0) continue;
+      var boundary=(at===0)||/[^a-z0-9]/.test(s.charAt(at-1));
+      var mult=boundary?2:1;
+      var sc=fields[i].w*mult;
+      if(sc>best) best=sc;
+    }
+    return best;
+  }
+
+  function opMatches(p, o){
+    var num=function(v){return typeof v==='number'?v:-1;};
+    switch(o.key){
+      case 'lang':     return String(p.language||'').toLowerCase().indexOf(o.val)===0;
+      case 'category': return String(p.category||'').toLowerCase().indexOf(o.val)>=0;
+      case 'owner':    return String(p.full_name||'').toLowerCase().indexOf(o.val+'/')===0;
+      case 'tier':     return String(p.evidence_tier||'').toLowerCase().indexOf(o.val)>=0;
+      case 'modality': return ((p.facets&&p.facets.modality)||[]).join(' ').toLowerCase().indexOf(o.val)>=0;
+      case 'standard': return ((p.facets&&p.facets.standards)||[]).join(' ').toLowerCase().indexOf(o.val)>=0
+                           || (p.interop||[]).join(' ').toLowerCase().indexOf(o.val)>=0;
+      case 'is':
+        if(o.val==='new')     return !!p.is_new;
+        if(o.val==='rising')  return (p.stars_delta_7d||0)>0;
+        if(o.val==='falling') return !!p.falling;
+        if(o.val==='active')  return !!p.active;
+        return false;
+      case 'brs':
+        var b=num(p.brs), v=parseInt(o.val,10);
+        if(isNaN(v)) return true;
+        if(o.op==='>')  return b>v;
+        if(o.op==='<')  return b<v;
+        if(o.op==='>=') return b>=v;
+        if(o.op==='<=') return b<=v;
+        return b===v;
+      default: return true;
+    }
+  }
+
+  // Returns -1 for no match, otherwise a relevance score. Every operator must
+  // hold; every word must appear somewhere. Conjunctive on purpose: a query
+  // that quietly widens when a term misses is a query nobody can trust.
+  function queryScore(p, parsed){
+    for(var i=0;i<parsed.ops.length;i++){ if(!opMatches(p, parsed.ops[i])) return -1; }
+    if(!parsed.words.length) return 0;
+    var fields=fieldsOf(p), total=0;
+    for(var j=0;j<parsed.words.length;j++){
+      var s=wordScore(fields, parsed.words[j]);
+      if(s<=0) return -1;
+      total+=s;
+    }
+    return total;
+  }
+
+  var PARSED=null;
   function filtered(){
+    PARSED=parseQuery(state.q);
     var q=state.q.toLowerCase(),anyCat=Object.keys(state.cats).some(function(k){return state.cats[k];});
     var anyTier=Object.keys(state.tiers).some(function(k){return state.tiers[k];});
     var arr=DATA.projects.filter(function(p){
@@ -155,10 +262,20 @@
       if(anyTier&&!state.tiers[p.evidence_tier])return false;
       if(anyCat&&!state.cats[p.category])return false;
       if(state.lang&&(p.language||'')!==state.lang)return false;
-      if(q){var hay=(p.full_name+' '+(p.description||'')+' '+(p.language||'')+' '+(p.topics||[]).join(' ')).toLowerCase();if(hay.indexOf(q)<0)return false;}
+      if(PARSED&&(PARSED.words.length||PARSED.ops.length)){
+        var sc=queryScore(p,PARSED);
+        if(sc<0) return false;
+        p._qs=sc;
+      } else { p._qs=0; }
       return true;
     });
     function hov(p){return (p.signals&&typeof p.signals.overall==='number')?p.signals.overall:-1;}
+    // A typed query outranks the chosen sort: the reader asked a question, and
+    // answering it in activity order buries the answer.
+    if(PARSED&&PARSED.words.length){
+      arr.sort(function(a,b){ return (b._qs-a._qs)||((b.stars||0)-(a.stars||0)); });
+      return arr;
+    }
     arr.sort(state.sort==='stars'?function(a,b){return (b.stars||0)-(a.stars||0);}
       :state.sort==='relevance'?function(a,b){function bs(p){return typeof p.brs==='number'?p.brs:-1;}return (bs(b)-bs(a))||((b.stars||0)-(a.stars||0));}
       :state.sort==='health'?function(a,b){return (hov(b)-hov(a))||((b.stars||0)-(a.stars||0));}
@@ -477,6 +594,53 @@
     document.body.classList.toggle('compact',state.dens);
     var db=$('densBtn');if(db)db.setAttribute('aria-pressed',String(state.dens));
     buildTierChips();}
+  // ── v13.5 keyboard: the audience lives in a terminal ──
+  //
+  // A radar that must be driven with a mouse is a radar used once. Focus moves
+  // with j/k, Enter opens, / searches, Esc clears, ? explains. Nothing is
+  // bound while the reader is typing in a field, because stealing keystrokes
+  // from a search box is worse than having no shortcuts.
+  var kbIndex=-1;
+  // Project cards carry data-name; the class alone also matches panel and
+  // ecosystem cards, and navigating into those would step through furniture.
+  function cards(){ return Array.prototype.slice.call(document.querySelectorAll('.card[data-name]')); }
+  function focusCard(n){
+    var list=cards();
+    if(!list.length) return;
+    kbIndex=Math.max(0,Math.min(list.length-1,n));
+    list.forEach(function(c,i){ c.classList.toggle('kb-on', i===kbIndex); });
+    var el=list[kbIndex];
+    if(el && el.scrollIntoView) el.scrollIntoView({block:'nearest'});
+    if(el && el.focus) { try{ el.focus({preventScroll:true}); }catch(e){} }
+  }
+  function typing(e){
+    var n=e.target && e.target.nodeName;
+    return n==='INPUT'||n==='TEXTAREA'||n==='SELECT'||(e.target&&e.target.isContentEditable);
+  }
+  function bindKeys(){
+    document.addEventListener('keydown', function(e){
+      if(e.metaKey||e.ctrlKey||e.altKey) return;
+      // `/` to search and Escape to clear are bound further down this file and
+      // are deliberately not repeated here: two handlers competing for one key
+      // is a bug that only shows up under a fast reader.
+      if(e.key==='Escape'){
+        cards().forEach(function(c){ c.classList.remove('kb-on'); });
+        kbIndex=-1;
+        return;
+      }
+      if(typing(e)) return;
+      if(e.key==='j'||e.key==='ArrowDown'){ e.preventDefault(); focusCard(kbIndex+1); }
+      else if(e.key==='k'||e.key==='ArrowUp'){ e.preventDefault(); focusCard(kbIndex-1); }
+      else if(e.key==='g'){ focusCard(0); }
+      else if(e.key==='G'){ focusCard(cards().length-1); }
+      else if(e.key==='Enter'){
+        var list=cards();
+        if(kbIndex>=0&&list[kbIndex]){ var href=list[kbIndex].getAttribute('href'); if(href) window.open(href,'_blank','noopener'); }
+      }
+      else if(e.key==='?'){ var h=document.getElementById('kbhelp'); if(h) h.hidden=!h.hidden; }
+    });
+  }
+
   function render(){
     var arr=filtered();
     $('radarSec').classList.toggle('hidden',state.view!=='radar');
@@ -746,6 +910,7 @@
       if(e.key==='/'&&['INPUT','SELECT','TEXTAREA'].indexOf(tag)<0){e.preventDefault();var s2=$('search');if(s2&&s2.focus)s2.focus();return;}
       if(e.key==='Escape'&&state.q){state.q='';var s3=$('search');if(s3)s3.value='';render();return;}
       if((e.key==='Enter'||e.key===' ')&&e.target&&e.target.getAttribute&&e.target.getAttribute('role')==='button'){e.preventDefault();e.target.click();}});
+    bindKeys();
     window.addEventListener('resize',function(){drawRadar(filtered());});
     document.body.classList.add('loading');
     render();

@@ -37,6 +37,23 @@ TOKEN = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN") or ""
 BRANCH = os.environ.get("SYNC_BRANCH", "main")
 
 RAW = f"https://raw.githubusercontent.com/{ENGINE_REPO}/{ENGINE_BRANCH}/"
+
+#: Public relay: the engine uploads the payload as release assets on *this*
+#: repository, and this workflow collects it from there.
+#:
+#: This exists to fix a provenance defect, not a transport one. The engine used
+#: to commit here directly with a user PAT, and GitHub does not sign
+#: API-created commits for user identities — so every automated commit on the
+#: public map had been unsigned since 2026-07-17 while the same code path with
+#: this workflow's own token produces signed ones. Uploading an asset creates no
+#: commit, so the PAT can hand over the data without being the author of
+#: anything, and the writer becomes the one identity GitHub will sign for.
+#:
+#: The relay is public by construction — assets on a public repository — so no
+#: credential is needed to read it, and the ENGINE_READ_TOKEN that a private
+#: engine would otherwise require is no longer needed at all.
+RELAY_TAG = os.environ.get("RELAY_TAG", "data-latest")
+RELAY = f"https://github.com/{REPO}/releases/download/{RELAY_TAG}/"
 API = f"https://api.github.com/repos/{REPO}/contents/"
 
 # The engine's *output* only. Never engine source — this repo is the showcase.
@@ -73,14 +90,20 @@ def fetch_raw(path: str):
     Read), fall back to the authenticated Contents API. Read-only by
     construction: this token cannot write anywhere even if leaked."""
     FETCH_ERR["kind"] = None
-    try:
-        req = urllib.request.Request(RAW + path, headers={"User-Agent": "radar-sync"})
-        with urllib.request.urlopen(req, timeout=30) as r:
-            return r.read().decode("utf-8")
-    except urllib.error.HTTPError as e:
-        FETCH_ERR["kind"] = "absent" if e.code in (403, 404) else "transient"
-    except Exception:  # noqa: BLE001
-        FETCH_ERR["kind"] = "transient"
+    # The relay first: it is public, needs no credential, and is the path whose
+    # commits are signed. The engine's raw URLs remain as a fallback for the
+    # case where the engine is public and the relay has not run yet.
+    for base, label in ((RELAY, "relay"), (RAW, "raw")):
+        url = base + (path.replace("/", "__") if label == "relay" else path)
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "radar-sync"})
+            with urllib.request.urlopen(req, timeout=30) as r:
+                FETCH_ERR["kind"] = None
+                return r.read().decode("utf-8")
+        except urllib.error.HTTPError as e:
+            FETCH_ERR["kind"] = "absent" if e.code in (403, 404) else "transient"
+        except Exception:  # noqa: BLE001
+            FETCH_ERR["kind"] = "transient"
     if not ENGINE_READ_TOKEN:
         return None
     try:

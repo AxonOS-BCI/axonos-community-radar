@@ -25,6 +25,11 @@ name: Sync data from the engine
 # ─────────────────────────────────────────────────────────────────────────────
 
 on:
+  # The engine fires this the moment a scan is relayed, so the data is signed
+  # and current within seconds rather than at the next cron. The crons stay as
+  # the backstop: a dropped dispatch must cost freshness, not the map.
+  repository_dispatch:
+    types: [data-ready]
   schedule:
     - cron: "37 */3 * * *"   # ~20 min after the engine's :17 scan lands
     - cron: "7 */6 * * *"    # backstop tick, offset — survives a dropped run

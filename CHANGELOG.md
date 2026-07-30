@@ -1,5 +1,35 @@
 # Changelog
 
+## [13.5.1] — 2026-07-30 — every automated commit is signed again
+
+### Fixed
+- **The data commits had been unsigned since 2026-07-17.** Of 1,281 commits on
+  `main`, the 716 signed ones are all `github-actions[bot]`; the 561 authored
+  as a person carry no signature but the 66 releases signed on a device. The
+  last bot commit is dated the day before the engine switched to publishing
+  with a user PAT.
+
+  The cause is a credential, not a bug: GitHub signs API-created commits for
+  App identities — a workflow's own `GITHUB_TOKEN` is one — and does not sign
+  them for user tokens. This repository's workflow *is* that identity. Its only
+  handicap was that it could not read a private engine.
+
+  The engine now uploads the payload as **release assets on this repository**,
+  which is public, and an asset upload creates no commit. A
+  `repository_dispatch` wakes `sync.yml`, which downloads the assets with no
+  credential at all, runs the contract gate it already had, and commits with
+  its own token — signed. `ENGINE_READ_TOKEN` is no longer needed for anything
+  and the manual step it represented is gone.
+
+  The engine's direct publish is demoted rather than deleted: it fires only if
+  the relay and this sync have both failed and the map would go stale. Those
+  commits are unsigned by construction, so a rare unsigned commit is now an
+  alarm instead of the norm.
+
+  Two earlier attempts at this defect failed for one reason — both ended in a
+  manual step, and the step did not happen. This one needs no secret, no token
+  and no click.
+
 ## [13.5.0] — 2026-07-29 — "Search"
 
 ### Added

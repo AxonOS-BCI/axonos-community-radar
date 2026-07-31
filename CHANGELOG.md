@@ -1,5 +1,29 @@
 # Changelog
 
+## [13.6.1] — 2026-07-31 — the version that kept coming back
+
+### Fixed
+- **`report.html` reverted to an older version after every scan, and would have
+  kept doing so at 13.7, 14.0 and every release after.** The cause is structural,
+  not careless: the report is rendered and published by the *scanner*, a separate
+  repository with its own version file, every three hours. A correct release here
+  re-rendered the report; the next scan overwrote it with one stamped at the
+  scanner's version; and this repository's own CI gate then failed on the file
+  the release had just fixed.
+
+  Synchronising the two numbers would have delayed the next divergence by exactly
+  one release. So the second number is gone instead. There is one product and one
+  version of it, and it is this repository's — the report no longer claims to
+  carry it. What it carries now is the **identity of the snapshot it renders**,
+  taken from the payload on the page, which cannot disagree with the data it
+  describes because it is derived from it.
+
+  `scripts/check_report.py` replaces the version grep and checks what was always
+  the point: the report renders the payload this repository publishes, and leaks
+  no link into the private scanner. A twelve-hour tolerance covers the scanner
+  landing the report and the payload in separate commits; beyond it the report is
+  stale and the gate says so.
+
 ## [13.6.0] — 2026-07-30 — "Considered"
 
 ### Added

@@ -49,21 +49,20 @@ jobs:
               print("weekly deltas plausible")
           PY
 
-      - name: report.html carries no engine links and the release version
-        # The report is rendered by the ENGINE and lands via both transports;
-        # its public home is this repo, so a link to the private engine's
-        # nonexistent Pages is a dead front door. The version is checked at
-        # major.minor only, on purpose: feature releases move both repos in
-        # lockstep (8.0 → 13.0 all bumped in pairs), while a patch on either
-        # side moves independently — pinning the patch digit here would make
-        # every showcase-only fix fail on a report the engine has no reason
-        # to re-render. A stale report from an older feature release still
-        # fails, which is what this gate is for.
-        run: |
-          ! grep -q "axonos-radar-core" report.html || { echo "::error::report.html leaks engine links"; exit 1; }
-          MM="$(cut -d. -f1,2 VERSION)"
-          grep -q "Radar v${MM}" report.html || { echo "::error::report.html is from a different feature release than VERSION (${MM}.x expected)"; exit 1; }
-          echo "report.html: links clean, feature release v${MM}.x"
+      - name: report.html renders the current payload and leaks no engine links
+        # The report is rendered and published by the ENGINE, a separate
+        # repository with its own version file, every three hours. This gate
+        # used to require the report to name *this* repository's release, which
+        # could not hold: a correct release here was overwritten by the next
+        # scan with a report stamped at the engine's version, and this gate then
+        # failed on the file the release had just fixed.
+        #
+        # There is one product and one version of it, and it is this one. The
+        # report no longer claims to carry it; it carries the identity of the
+        # snapshot it renders, derived from the payload on the page. That is
+        # what check_report.py verifies, along with the property that was always
+        # the real point: no link into the private engine.
+        run: python3 scripts/check_report.py
 
       - name: Validate history.json
         run: |

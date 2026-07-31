@@ -248,6 +248,7 @@
     return total;
   }
 
+  var CONSIDERED=null;
   var PARSED=null;
   function filtered(){
     PARSED=parseQuery(state.q);
@@ -839,6 +840,101 @@
   function dpEl(d){var sp=document.createElement('span');
     sp.className='dp '+(d>0?'up':(d<0?'down':'flat'));
     sp.textContent=d>0?('+'+d):(d<0?('\u2212'+Math.abs(d)):'\u00b10');return sp;}
+
+  // ── v13.6 the considered set ─────────────────────────────────────────────
+  //
+  // The engine has published data/considered.json every three hours since
+  // 13.5.0 and nothing read it. It answers the question the map is asked most
+  // often — "why only 120?" — and the answer turned out to be different from
+  // the one anyone expected, including me: of 3 165 repositories scanned, 120
+  // qualify and only ~30 come close. The rest trip no BCI rule at all.
+  //
+  // That is worth showing precisely because it is not the flattering version.
+  // A near-miss list of thirty says the gate is doing real work; a near-miss
+  // list of eight hundred would have said the gate was arbitrary.
+  function sanitizeConsidered(d){
+    if(!d||typeof d!=='object')return null;
+    var num=function(v,max){var n=Number(v);return (isFinite(n)&&n>=0&&n<=max)?Math.floor(n):0;};
+    var arr=Array.isArray(d.projects)?d.projects:[];
+    return {
+      scanned:num(d.scanned,10000000), kept:num(d.kept,100000),
+      total:num(d.considered_total,100000), published:num(d.published,100000),
+      gate:num(d.gate,100), min_score:num(d.min_score,100),
+      projects:arr.slice(0,400).map(function(x){
+        if(!x||typeof x!=='object')return null;
+        return {full_name:str(x.full_name,140), html_url:safeUrl(x.html_url),
+                brs:num(x.brs,99), shortfall:num(x.shortfall,100),
+                language:str(x.language,40), reason:str(x.reason,120)};
+      }).filter(Boolean)
+    };
+  }
+
+  function renderConsidered(){
+    var host=$('considered');
+    if(!host||!CONSIDERED||!CONSIDERED.projects.length)return;
+    host.textContent='';
+    host.classList.remove('hidden');
+
+    var h=document.createElement('h2');
+    h.textContent='Seen and not kept';
+    host.appendChild(h);
+
+    // Built from nodes, never from a markup string. This file bans assigning
+    // markup wholesale and a test greps for it, because every field below is
+    // derived from a scanned repository's own metadata and none of it is ours.
+    var lede=document.createElement('p'); lede.className='cs-lede';
+    lede.appendChild(document.createTextNode('The map keeps what clears a score of '));
+    var gate=document.createElement('b'); gate.textContent=String(CONSIDERED.gate);
+    lede.appendChild(gate);
+    lede.appendChild(document.createTextNode(
+      '. This is everything the scanner saw, scored at least '+CONSIDERED.min_score+
+      ', and did not keep \u2014 with what each reached and how far short it fell. '+
+      'Published so the size of the map is a claim you can check rather than one you have to accept.'));
+    host.appendChild(lede);
+
+    var funnel=document.createElement('div'); funnel.className='cs-funnel';
+    var below=Math.max(0, CONSIDERED.scanned-CONSIDERED.kept-CONSIDERED.total);
+    [[CONSIDERED.scanned,'repositories scanned',''],
+     [CONSIDERED.kept,'cleared the gate','is-kept'],
+     [CONSIDERED.total,'came close, below it',''],
+     [below,'tripped no rule at all','']].forEach(function(s){
+      var d=document.createElement('div'); d.className='cs-step'+(s[2]?' '+s[2]:'');
+      var n=document.createElement('span'); n.className='n'; n.textContent=String(s[0]); d.appendChild(n);
+      var l=document.createElement('span'); l.className='l'; l.textContent=s[1]; d.appendChild(l);
+      funnel.appendChild(d);
+    });
+    host.appendChild(funnel);
+
+    var list=document.createElement('div'); list.className='cs-list';
+    CONSIDERED.projects.slice().sort(function(a,b){return b.brs-a.brs;}).slice(0,40)
+      .forEach(function(x){
+        var a=document.createElement('a'); a.className='cs-row';
+        if(x.html_url){a.href=x.html_url;a.target='_blank';a.rel='noopener';}
+        var s=document.createElement('span'); s.className='cs-score'; s.textContent=String(x.brs); a.appendChild(s);
+        var mid=document.createElement('span');
+        var nm=document.createElement('span'); nm.className='cs-name'; nm.textContent=x.full_name; mid.appendChild(nm);
+        var why=document.createElement('span'); why.className='cs-why';
+        why.textContent=(x.reason||'no positive evidence')+(x.language?' · '+x.language:'');
+        mid.appendChild(why); a.appendChild(mid);
+        var g=document.createElement('span');
+        g.className='cs-gap'+(x.shortfall<=3?' is-close':'');
+        g.textContent=x.shortfall===1?'1 point short':(x.shortfall+' short');
+        a.appendChild(g);
+        list.appendChild(a);
+      });
+    host.appendChild(list);
+
+    var note=document.createElement('p'); note.className='cs-note';
+    var closest=CONSIDERED.projects.reduce(function(m,x){return (!m||x.shortfall<m.shortfall)?x:m;},null);
+    note.textContent='The closest miss is '+(closest?closest.shortfall:0)+
+      ' point'+((closest&&closest.shortfall===1)?'':'s')+' below the gate. '+
+      'A project moves by adding evidence a stranger can verify — declaring an acquisition '+
+      'modality in the repository topics, naming a field standard, citing the hardware. '+
+      'Nothing here is a judgement about quality; the score measures how much evidence of '+
+      'BCI work a scanner can find without asking anyone.';
+    host.appendChild(note);
+  }
+
   function renderWeekly(w){
     var host=$('weekly');if(!host||!w||!w.delta)return;
     host.textContent='';
@@ -917,6 +1013,13 @@
     fetch('./data/radar.json',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){DATA=sanitizeData(j);document.body.classList.remove('loading');buildChips();buildTierChips();buildIopChips();buildLangs();setStats();renderEcosystem();render();loadTrajectory();}).catch(function(err){console.log('radar data not loaded:',err);document.body.classList.remove('loading');setStats();render();});
     renderDonate();
     fetch('./data/weekly.json',{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(renderWeekly).catch(function(){});
+    // The considered set is optional by construction: a snapshot taken before
+    // the engine started publishing it simply has none, and the section stays
+    // hidden rather than showing an empty promise.
+    fetch('./data/considered.json',{cache:'no-store'})
+      .then(function(r){if(!r.ok)throw 0;return r.json();})
+      .then(function(d){CONSIDERED=sanitizeConsidered(d);renderConsidered();})
+      .catch(function(){});
   }
   boot();
 

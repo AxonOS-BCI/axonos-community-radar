@@ -1,5 +1,31 @@
 # Changelog
 
+## [13.6.0] — 2026-07-30 — "Considered"
+
+### Added
+- **The set the map did not keep, published.** The engine has written
+  `data/considered.json` every three hours since 13.5.0 and nothing read it —
+  a finished answer to the question this map is asked most often, sitting
+  unused. It now renders: a four-step funnel, every near miss with the score it
+  reached and how far short it fell, and a note naming the closest.
+
+  The answer turned out to be different from the one predicted, including by
+  the release plan that specified this feature. That plan expected 400–900
+  near misses, "the same order as the 500+ the complaint refers to". The live
+  figure is **thirty-one**. Of 3 165 repositories scanned, 120 clear the gate,
+  31 come close, and **3 014 trip no BCI rule at all** — topic-search noise
+  rather than BCI work being excluded.
+
+  That is the less flattering shape and it is the one shown, because it is the
+  one that means something: a near-miss list of thirty says the gate is doing
+  real work, where a list of eight hundred would have said the gate was
+  arbitrary. The closest miss is **one point** below it.
+
+- The section states plainly that the score is not a judgement of quality — it
+  measures how much evidence of BCI work a scanner can find without asking
+  anyone — and names what moves a project: an acquisition modality in the
+  topics, a field standard, the hardware cited.
+
 ## [13.5.1] — 2026-07-30 — every automated commit is signed again
 
 ### Fixed

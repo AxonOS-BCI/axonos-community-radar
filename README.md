@@ -504,7 +504,7 @@ Everything public in the AxonOS ecosystem — this radar, the open neural OS —
 
 © The AxonOS Project / Denis Yermakou
 
-**axonos.org · [medium.com/@AxonOS](https://medium.com/@AxonOS) · axonosorg@gmail.com**
+**axonos.org · [medium.com/@AxonOS](https://medium.com/@AxonOS) · support@axonos.org**
 
 </div>
 

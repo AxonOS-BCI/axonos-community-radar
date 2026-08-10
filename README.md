@@ -14,20 +14,27 @@ and the rule that combined them are all public. Refreshed every three hours.
 </div>
 
 ```mermaid
-%%{init: {'theme':'base','themeVariables':{'primaryColor':'#0e141d','primaryTextColor':'#e6edf3','primaryBorderColor':'#334155','lineColor':'#8b98ad','fontSize':'13px'}}}%%
-flowchart LR
-    S["GitHub<br/>~3200 repos scanned"] --> E["Evidence<br/>one ledger per repo"]
-    E --> R["axonos-brs<br/>the rule, public"]
-    R --> G{"score ≥ 40?"}
-    G -->|yes| M["the map<br/>~120 projects"]
-    G -->|no| C["considered<br/>31 near misses, published"]
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#0e141d','primaryTextColor':'#e6edf3','primaryBorderColor':'#334155','lineColor':'#5a6b82','fontSize':'14px','fontFamily':'ui-sans-serif,system-ui,sans-serif'}}}%%
+flowchart TB
+    S["<b>GitHub</b><br/><small>~3200 repositories read</small>"]
+    E["<b>Evidence</b><br/><small>one ledger per repository</small>"]
+    R["<b>axonos-brs</b><br/><small>the rule &mdash; public, in Rust</small>"]
+    G{"<b>score &ge; 40</b>"}
+    M["<b>The map</b><br/><small>~120 projects, refreshed 3-hourly</small>"]
+    C["<b>Considered</b><br/><small>31 near misses, published with<br/>their scores and what each lacked</small>"]
 
-    classDef src fill:#0e141d,stroke:#334155,color:#8b98ad
-    classDef rule fill:#0e141d,stroke:#3fd68f,color:#3fd68f,stroke-width:2px
-    classDef keep fill:#0e141d,stroke:#5cc8ff,color:#5cc8ff,stroke-width:2px
-    classDef drop fill:#0e141d,stroke:#ff6b8a,color:#ff6b8a
+    S --> E --> R --> G
+    G -->|kept| M
+    G -->|below the gate| C
+
+    classDef src  fill:#131b26,stroke:#334155,color:#8b98ad,rx:6,ry:6
+    classDef rule fill:#0f2a20,stroke:#3fd68f,color:#3fd68f,stroke-width:2px,rx:6,ry:6
+    classDef gate fill:#0e141d,stroke:#5a6b82,color:#e6edf3,stroke-width:2px
+    classDef keep fill:#0d2233,stroke:#5cc8ff,color:#5cc8ff,stroke-width:2px,rx:6,ry:6
+    classDef drop fill:#2a121a,stroke:#ff6b8a,color:#ff6b8a,rx:6,ry:6
     class S,E src
-    class R,G rule
+    class R rule
+    class G gate
     class M keep
     class C drop
 ```
@@ -82,7 +89,7 @@ without handing anyone a key.
 [![Roadmap](https://img.shields.io/badge/roadmap-to%20v17-f59e0b?style=flat-square)](https://github.com/users/AxonOS-BCI/projects/1)
 [![CI](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml)
 [![Pages](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml)
-[![Version](https://img.shields.io/badge/version-13.7.0-0a4a8f?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-13.8.0-0a4a8f?style=flat-square)](CHANGELOG.md)
 [![Release](https://img.shields.io/badge/release-Considered-6fe6f2?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-475569?style=flat-square)](LICENSE)
 
@@ -593,7 +600,7 @@ If you reference AxonOS Radar in academic or technical work, please cite it:
   title   = {{AxonOS Radar: a scored, evidence-backed map of the open brain--computer-interface field}},
   year    = {2026},
   url     = {https://github.com/AxonOS-BCI/axonos-community-radar},
-  version = {13.7.0}
+  version = {13.8.0}
 }
 ```
 

@@ -1,6 +1,19 @@
 # Changelog
 
-## [13.7.0] — 2026-08-08 — the rule, named and linked
+## [13.8.0] — 2026-08-08 — the rule, named and linked
+
+
+**Minor, and the first version of this entry said major.** The reasoning was
+that a schema enumerating the payload's top-level keys would break. That is
+true and it is not enough: by that argument every addition is a major, since
+any new key breaks any exhaustive schema. Nothing was removed and nothing
+renamed, so this is additive and minor.
+
+The correction has a concrete cost attached, which is why it is recorded rather
+than quietly fixed. ROADMAP.md reserves 14.0 for **Capital**; publishing payload
+metadata under that number would have consumed a planned milestone and pushed
+Standards and Frontier along behind it. A roadmap exists precisely to make that
+visible before it happens.
 
 ### Added
 - **The map now says where its arithmetic lives.** Every score is produced by

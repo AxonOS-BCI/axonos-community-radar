@@ -30,9 +30,23 @@ deploy carries.
 | **11.0** | Trajectory | ✅ shipped |
 | **12.0** | Badges | ✅ shipped |
 | **13.0** | Talent | ✅ shipped |
+| **13.1–13.8** | Search, Considered, the rule made public | ✅ shipped |
 | **14.0** | Capital | planned |
 | **15.0** | Standards | planned |
 | **16.0** | Frontier | planned |
+
+**What 13.1 through 13.8 were.** The table above names one row per feature
+release, and the eight patch and minor releases between Talent and here are not
+features — they are the rule becoming public. 13.5 published the sub-gate corpus
+so a project that fell short can see by how much. 13.6 rendered the funnel.
+13.8 named the rule in the payload, linked the crate from the report, and showed
+per project the evidence that put it on the map.
+
+None of that was planned in this table, which is worth saying rather than
+back-filling: the work came from discovering that the map asserted a property —
+that a score can be recomputed and therefore disputed — which no reader could
+act on. A roadmap that only ever records what it predicted is a roadmap nobody
+learns from.
 | **17.0** | The Atlas | the destination |
 
 ---

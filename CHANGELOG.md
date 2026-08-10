@@ -1,14 +1,6 @@
 # Changelog
 
-## [14.0.0] — 2026-08-08 — the rule, named and linked
-
-
-**Major, because the payload contract changed.** A consumer parsing
-`data/radar.json` now finds a `brs` object at the top level carrying the rule
-version, the implementation URL and the recompute instruction. Nothing was
-removed and nothing was renamed, so a reader that ignores unknown keys is
-unaffected — but a schema that enumerates them is not, and calling that a minor
-release would put the burden of discovering it on whoever wrote the schema.
+## [13.7.0] — 2026-08-08 — the rule, named and linked
 
 ### Added
 - **The map now says where its arithmetic lives.** Every score is produced by

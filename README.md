@@ -2,7 +2,42 @@
 
 # AxonOS Radar
 
-### The open brain–computer-interface field — mapped, scored, and explained automatically.
+### The rule is public, and so is the evidence
+
+Every score on the map is produced by a combiner published as a Rust crate:
+**[`axonos-brs`](https://github.com/AxonOS-org/axonos-brs)**. Each project's
+evidence — the signals that were found and what each was worth — is published
+beside its score in `data/radar.json` as `relevance_ledger`.
+
+That is the whole of it. There is no third input. So any score here can be
+recomputed from public data:
+
+```sh
+# one project's evidence, from the published payload
+curl -s https://raw.githubusercontent.com/AxonOS-BCI/axonos-community-radar/main/data/radar.json \
+  | python3 -c "import json,sys; p=[x for x in json.load(sys.stdin)['projects'] if x['full_name']=='NeuroTechX/moabb'][0]; print(p['brs'], p['relevance_ledger'])"
+
+# the same evidence through the crate
+git clone https://github.com/AxonOS-org/axonos-brs && cd axonos-brs
+cargo run --release --example emit | grep moabb
+```
+
+A disagreement is a bug report this project cannot argue with, which is the
+point of publishing the rule rather than describing it.
+
+The payload names the rule version that produced it. Two snapshots made under
+different rules are not comparable, and the version is there so a reader can
+refuse the comparison instead of reporting a difference that belongs to us
+rather than to the project. The scanner keeps a Python mirror of the combiner
+for speed; conformance vectors prove the two agree on the arithmetic, and CI
+proves they agree on the version.
+
+What is *not* public is the scanner: it holds API tokens and the keyword tables
+that turn a repository into evidence. The rule it applies is public, and each
+project's evidence vector is published — which is what makes a score disputable
+without handing anyone a key.
+
+## The open brain–computer-interface field — mapped, scored, and explained automatically.
 
 #### A living **intelligence engine** for open neurotech. Every public BCI repository on GitHub, discovered from real signals, scored 0–100 by a purpose-built relevance engine, and explained down to the evidence behind every decision — not a hand-curated list, not hype.
 
@@ -10,7 +45,7 @@
 [![Roadmap](https://img.shields.io/badge/roadmap-to%20v17-f59e0b?style=flat-square)](https://github.com/users/AxonOS-BCI/projects/1)
 [![CI](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml)
 [![Pages](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml)
-[![Version](https://img.shields.io/badge/version-13.6.1-0a4a8f?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-13.7.0-0a4a8f?style=flat-square)](CHANGELOG.md)
 [![Release](https://img.shields.io/badge/release-Considered-6fe6f2?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-475569?style=flat-square)](LICENSE)
 
@@ -522,7 +557,7 @@ If you reference AxonOS Radar in academic or technical work, please cite it:
   title   = {{AxonOS Radar: a scored, evidence-backed map of the open brain--computer-interface field}},
   year    = {2026},
   url     = {https://github.com/AxonOS-BCI/axonos-community-radar},
-  version = {13.6.1}
+  version = {13.7.0}
 }
 ```
 

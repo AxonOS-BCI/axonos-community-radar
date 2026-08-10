@@ -1,5 +1,32 @@
 # Changelog
 
+## [13.7.0] — 2026-08-08 — the rule, named and linked
+
+### Added
+- **The map now says where its arithmetic lives.** Every score is produced by
+  [`axonos-brs`](https://github.com/AxonOS-org/axonos-brs), and each project's
+  evidence ledger is published beside its score. Both facts were true before
+  this release and neither appeared anywhere a reader would find them: the
+  README mentioned the crate zero times, and so did `report.html`.
+
+  A property that cannot be discovered is not far from a property that does not
+  exist. The README now carries the recompute path — pull a ledger from the
+  payload, run it through the crate, compare — and says plainly that a
+  disagreement is a bug report this project cannot argue with.
+
+- **The payload names the rule version that produced it.** A published score
+  outlives the scan that made it. Without a version, a reader comparing two
+  snapshots across a rule change sees a difference and attributes it to the
+  project rather than to us. The version is there so the comparison can be
+  refused.
+
+  The scanner keeps a Python mirror of the combiner for speed. Conformance
+  vectors already proved the two agree on the arithmetic; CI now fetches the
+  crate and proves they agree on the version, because a constant written in two
+  places is one that will eventually differ in two places.
+
+- The report footer carries the rule version and links the crate.
+
 ## [13.6.1] — 2026-07-31 — the version that kept coming back
 
 ### Fixed

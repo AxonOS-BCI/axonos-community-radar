@@ -2,7 +2,43 @@
 
 # AxonOS Radar
 
-### The rule is public, and so is the evidence
+### An auditable map of open brain–computer interface work.
+
+Every project here cleared a scored gate, and the score, the evidence behind it
+and the rule that combined them are all public. Refreshed every three hours.
+
+[![Live map](https://img.shields.io/badge/live-map-3fd68f?style=for-the-badge&labelColor=0e141d)](https://axonos-bci.github.io/axonos-community-radar/)
+[![Field report](https://img.shields.io/badge/field-report-5cc8ff?style=for-the-badge&labelColor=0e141d)](https://axonos-bci.github.io/axonos-community-radar/report.html)
+[![Rule](https://img.shields.io/badge/rule-axonos--brs-8b98ad?style=for-the-badge&labelColor=0e141d)](https://github.com/AxonOS-org/axonos-brs)
+
+</div>
+
+```mermaid
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#0e141d','primaryTextColor':'#e6edf3','primaryBorderColor':'#334155','lineColor':'#8b98ad','fontSize':'13px'}}}%%
+flowchart LR
+    S["GitHub<br/>~3200 repos scanned"] --> E["Evidence<br/>one ledger per repo"]
+    E --> R["axonos-brs<br/>the rule, public"]
+    R --> G{"score ≥ 40?"}
+    G -->|yes| M["the map<br/>~120 projects"]
+    G -->|no| C["considered<br/>31 near misses, published"]
+
+    classDef src fill:#0e141d,stroke:#334155,color:#8b98ad
+    classDef rule fill:#0e141d,stroke:#3fd68f,color:#3fd68f,stroke-width:2px
+    classDef keep fill:#0e141d,stroke:#5cc8ff,color:#5cc8ff,stroke-width:2px
+    classDef drop fill:#0e141d,stroke:#ff6b8a,color:#ff6b8a
+    class S,E src
+    class R,G rule
+    class M keep
+    class C drop
+```
+
+Nothing is dropped silently. The 31 that fell short are published with their
+scores and what each was missing, because a filter that hides its rejections is
+a filter nobody can check.
+
+---
+
+## The rule is public, and so is the evidence
 
 Every score on the map is produced by a combiner published as a Rust crate:
 **[`axonos-brs`](https://github.com/AxonOS-org/axonos-brs)**. Each project's
@@ -36,6 +72,7 @@ What is *not* public is the scanner: it holds API tokens and the keyword tables
 that turn a repository into evidence. The rule it applies is public, and each
 project's evidence vector is published — which is what makes a score disputable
 without handing anyone a key.
+
 
 ## The open brain–computer-interface field — mapped, scored, and explained automatically.
 

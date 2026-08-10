@@ -9,3 +9,20 @@ package-lock.json
 package.json
 snap_*.html
 snap.html
+
+# Scratch that has reached the root before and should not again.
+#
+# SIGN_TEST.txt was one line reading "signed test", committed while verifying
+# that commit signing worked, and it sat in the root of a public repository for
+# months. purge_v7.py was a one-off migration for the v7 release, still present
+# at 13.7 where a reader could mistake dead code for something runnable.
+#
+# Neither was a mistake at the moment it was written. Both were mistakes the
+# moment they stopped being needed and nothing removed them.
+*_TEST.txt
+SIGN_TEST*
+purge_v*.py
+*.bak
+*.orig
+scratch/
+tmp/

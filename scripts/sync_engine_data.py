@@ -218,8 +218,19 @@ def feed_is_well_formed(body: str):
     """
     if len(body.encode("utf-8", "ignore")) > MAX_FEED_BYTES:
         return False, f"larger than {MAX_FEED_BYTES // 1024 // 1024} MB"
-    head = body[:4096].upper()
-    if "<!DOCTYPE" in head or "<!ENTITY" in body.upper():
+    # Both checks scan the whole document, and until now only one did.
+    #
+    # DOCTYPE was matched against the first 4 KB while ENTITY was matched
+    # against the entire body — an asymmetry that reads as one fix applied and
+    # its twin forgotten. A document with four kilobytes of whitespace or
+    # comments before its prologue would have carried a DOCTYPE straight past
+    # the guard and into a parser this function exists to protect.
+    #
+    # Size is already capped above, so scanning it all costs a pass over at
+    # most five megabytes. The comment beneath claims nothing reaching the
+    # parser can carry a DTD; that claim is only true now.
+    upper = body.upper()
+    if "<!DOCTYPE" in upper or "<!ENTITY" in upper:
         return False, "carries a DTD or entity declaration (refused before parsing)"
     try:
         # The two suppressions below are earned by the guard above, not

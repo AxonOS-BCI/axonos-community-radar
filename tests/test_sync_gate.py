@@ -144,3 +144,26 @@ def test_a_feed_mentioning_doctype_in_text_still_parses():
     ok, _ = S.feed_is_well_formed(
         "<feed><entry><summary>a post about DOCTYPE handling</summary></entry></feed>")
     assert ok
+
+
+def test_doctype_past_the_first_four_kilobytes_is_still_refused():
+    """The bypass this guard had until 13.8.1.
+
+    DOCTYPE was matched against `body[:4096]` while ENTITY was matched against
+    the whole body. Four kilobytes of whitespace or comments before the
+    prologue carried a DOCTYPE straight through, into a parser the function
+    exists to keep it away from. Pinned because the asymmetry read as
+    deliberate and would have been restored by anyone optimising the scan.
+    """
+    padded = '<?xml version="1.0"?>' + " " * 5000 + '<!DOCTYPE r [<!ENTITY x "y">]><rss/>'
+    ok, why = S.feed_is_well_formed(padded)
+    assert not ok
+    assert "DTD" in why or "entity" in why
+
+
+def test_a_feed_with_no_prologue_still_parses():
+    """The guard must refuse DTDs, not feeds."""
+    ok, _ = S.feed_is_well_formed(
+        '<?xml version="1.0"?><rss version="2.0"><channel><title>x</title></channel></rss>'
+    )
+    assert ok

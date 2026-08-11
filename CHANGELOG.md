@@ -1,5 +1,59 @@
 # Changelog
 
+## [13.8.1] — 2026-08-11 — one guard was scanning half the document
+
+### Fixed
+- **A DOCTYPE past the first four kilobytes reached the parser.** The feed guard
+  matched `<!DOCTYPE` against `body[:4096]` and `<!ENTITY` against the entire
+  body. That asymmetry reads as one fix applied and its twin forgotten, and it
+  had a consequence: four kilobytes of whitespace or comments before the
+  prologue carried a DOCTYPE straight past a guard whose docstring claims
+  nothing reaching the parser can carry one. The claim is true now; it was not
+  before.
+
+  Both checks scan the whole document. Size is already capped at 5 MB above, so
+  the cost is one pass over a bounded string. Two tests pin it, and the first
+  says in its name what it is for — the asymmetry looked deliberate and would
+  have been restored by anyone optimising the scan.
+
+### Added
+- **CI compares `VERSION` with `CITATION.cff`.** A citation file exists to tell
+  someone which version they are citing. This one has been kept correct by
+  hand, and a sibling crate in the same organisation was found two releases
+  behind — the file whose entire purpose is naming a version was naming one
+  that had not existed for a while. Derived from both files rather than
+  repeated in the workflow.
+
+### Notes
+Both come from an external audit that graded the repository A with no critical
+findings. Its version-drift finding was already stale — `CITATION.cff` and
+`VERSION` agreed by the time it was read — and is implemented anyway, because a
+thing kept correct by attention is a thing that will eventually not be. Its XML
+finding was real and understated: it described a design trade-off, and the code
+shows one check scanning the body and its neighbour scanning a prefix.
+
+## [13.8.2] — 2026-08-11 — the README reads on a phone
+
+### Changed
+- **628 lines, 27 sections, nothing collapsed.** On a phone that is a dozen
+  screens before a reader reaches the licence. Eight sections keep their
+  headings — which keeps their anchors and gives the page a visible spine —
+  and their bodies fold into `<details>` with a line saying what is inside.
+  Visible length drops to 404. Nothing is deleted: the content is the reason to
+  trust the page.
+
+- **Emoji removed from section headings.** Thirty of them. This page argues for
+  a particular seriousness and then decorated its own structure; lowRISC and the
+  Rust Foundation do not, and the absence is part of why they read as
+  infrastructure. Emoji inside prose and tables are untouched — the objection is
+  to pictograms standing in for section names.
+
+  That change broke six internal links, because GitHub builds an anchor from the
+  heading text and the headings changed. Caught by a check rather than by
+  reading, and every one recomputed from the new headings. A structural edit
+  made without checking what points at it is how the same six links broke on the
+  organisation profile a week ago.
+
 ## [13.8.0] — 2026-08-08 — the rule, named and linked
 
 

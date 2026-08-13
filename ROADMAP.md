@@ -31,9 +31,26 @@ deploy carries.
 | **12.0** | Badges | ✅ shipped |
 | **13.0** | Talent | ✅ shipped |
 | **13.1–13.8** | Search, Considered, the rule made public | ✅ shipped |
-| **14.0** | Capital | planned |
-| **15.0** | Standards | planned |
-| **16.0** | Frontier | planned |
+| **14.0** | Discoverable | **current** |
+| **15.0** | Capital | planned |
+| **16.0** | Standards | planned |
+| **17.0** | Frontier | planned |
+
+**Why 14.0 is Discoverable and not Capital.** Capital was the reserved name and
+it is not what shipped, so the reason is here rather than left for a reader to
+infer.
+
+Capital needs a measurement nobody has taken: how many of the mapped projects
+carry any funding signal at all. Under fifteen and a score ranks nothing — the
+honest product is a list, not a column. The design is written and the
+measurement is not, and building twelve functions before the number would be
+building against a guess.
+
+Discoverability was the pressing gap and its data already existed. The map
+publishes eighteen datasets, a schema and a ledger per project, and said none
+of it to a machine. That is this project's recurring defect one layer out: a
+property that cannot be discovered is close enough to a property that is not
+there. Capital moves to 15.0 with its number still owed.
 
 **What 13.1 through 13.8 were.** The table above names one row per feature
 release, and the eight patch and minor releases between Talent and here are not

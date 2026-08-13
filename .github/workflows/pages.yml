@@ -138,6 +138,16 @@ jobs:
 
       - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d  # v6.0.0
 
+      - name: Make the map legible to machines that are not browsers
+        # The map publishes eighteen JSON files and a scored ledger per project.
+        # A crawler finds the front page; a data-catalogue harvester finds
+        # nothing, because nothing said what the data is or where it starts.
+        #
+        # Runs after every derived file exists, and fails rather than advertise
+        # a dataset the deploy did not produce: sending a harvester to a 404
+        # teaches it that this catalogue is unreliable.
+        run: python3 scripts/build_discovery.py --out _site
+
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9  # v5.0.0
         with:
           path: _site

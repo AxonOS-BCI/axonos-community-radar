@@ -1,5 +1,47 @@
 # Changelog
 
+## [14.0.0] — 2026-08-13 — Discoverable
+
+### Added
+- **`robots.txt`, `sitemap.xml`, and `.well-known/dataset.json`.** The map
+  publishes eighteen JSON files, a schema, an RSS feed and a scored evidence
+  ledger per project. A person arriving through a link finds all of it; a
+  crawler finds the front page, and a data-catalogue harvester finds nothing,
+  because nothing here said what the data is or where it starts.
+
+  That is not a marketing gap. It is this project's recurring defect one layer
+  out: the scoring rule was public for months while the README mentioned it
+  zero times, and a property that cannot be discovered is close enough to a
+  property that does not exist.
+
+  The sitemap carries the **payload's** timestamp rather than the build's — a
+  sitemap claiming the data changed when the build ran is asserting freshness
+  the data may not have. The descriptor is generated after every derived file
+  exists and **fails rather than advertise a dataset the deploy did not
+  produce**, because sending a harvester to a 404 teaches it this catalogue is
+  unreliable.
+
+- **`schema.org` describes the dataset, not just the site.** The page was a
+  `WebSite`; it is now a graph of `WebSite` and `Dataset`, with a licence, a
+  maintainer, distributions and the measurement technique. A search engine that
+  understands the first shows a name; one that understands the second can say
+  what the data contains.
+
+  It describes **the dataset** and never the projects inside it. Structured data
+  asserting quality about third-party repositories would put this project's
+  opinion into somebody else's search result, and inclusion here is discovery
+  rather than endorsement.
+
+- No tracking, no analytics, no third-party script. Discoverability and
+  surveillance are different things that are usually shipped together.
+
+### Changed
+- **The roadmap reserved 14.0 for Capital and this is not Capital.** Capital
+  needs a measurement nobody has taken: how many mapped projects carry a funding
+  signal at all. Under fifteen and a score ranks nothing. Building twelve
+  functions before that number is building against a guess, so Capital moves to
+  15.0 with its number still owed, and the roadmap says why.
+
 ## [13.8.2] — 2026-08-11 — the README reads on a phone
 
 ### Changed

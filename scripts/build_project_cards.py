@@ -125,6 +125,17 @@ def stage_for(version: str | None, has_release: bool) -> tuple[str, str, str]:
     return ("st-early", "Early", f"version {version}")
 
 
+class RateLimited(Exception):
+    """The API refused, which is not the same as the file being absent.
+
+    The first version returned None for both, so a rate limit looked exactly
+    like a repository that states no version — and the generator reported two
+    projects as Planned that had stated theirs correctly. One of them had read
+    fine ten minutes earlier, which is the tell: a file does not stop existing
+    between runs, and a quota does.
+    """
+
+
 def fetch(path: str) -> dict | list | None:
     req = urllib.request.Request(
         f"{API}/{path.lstrip('/')}",
@@ -137,8 +148,15 @@ def fetch(path: str) -> dict | list | None:
     try:
         with urllib.request.urlopen(req, timeout=20) as r:
             return json.loads(r.read())
-    except Exception:  # noqa: BLE001
-        return None
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            # The file is genuinely not there. That is an answer.
+            return None
+        if e.code in (403, 429):
+            raise RateLimited(f"{e.code} on {path}") from e
+        raise RateLimited(f"HTTP {e.code} on {path}") from e
+    except Exception as e:  # noqa: BLE001
+        raise RateLimited(f"{type(e).__name__} on {path}") from e
 
 
 def read_version(repo: str) -> str | None:
@@ -148,18 +166,38 @@ def read_version(repo: str) -> str | None:
     VERSION, then Cargo.toml, then package.json. A repository with none of
     these has not stated a version, and the card says so rather than guessing.
     """
+    # Read through raw.githubusercontent first: it does not consume the API
+    # quota, and eleven repositories at four calls each was enough to exhaust
+    # it mid-run. The API is the fallback, for a private repository where raw
+    # is not reachable.
     for path, pattern in (
         ("VERSION", r"^\s*([0-9]+\.[0-9]+\.[0-9]+)"),
         ("Cargo.toml", r'^\s*version\s*=\s*"([0-9]+\.[0-9]+\.[0-9]+)"'),
         ("package.json", r'"version"\s*:\s*"([0-9]+\.[0-9]+\.[0-9]+)"'),
+        # CITATION.cff is a legitimate place to state a version and two
+        # repositories here use it as their only one: the conformance suite and
+        # the RFCs ship no manifest because neither is a package. The first
+        # version of this reader knew three files and called both Planned,
+        # which is a fact about the reader rather than about them.
+        #
+        # Anchored on ^version: so cff-version, which is the file format's
+        # version and not the project's, cannot be mistaken for it.
+        ("CITATION.cff", r'^version:\s*"?([0-9]+\.[0-9]+\.[0-9]+)"?'),
     ):
-        raw = fetch(f"repos/{repo}/contents/{path}")
-        if not isinstance(raw, dict) or "content" not in raw:
-            continue
-        import base64
+        body = None
         try:
-            body = base64.b64decode(raw["content"]).decode("utf-8", "replace")
-        except Exception:  # noqa: BLE001
+            req = urllib.request.Request(
+                f"https://raw.githubusercontent.com/{repo}/main/{path}",
+                headers={"User-Agent": "axonos-radar-cards"},
+            )
+            with urllib.request.urlopen(req, timeout=20) as r:
+                body = r.read().decode("utf-8", "replace")
+        except urllib.error.HTTPError as e:
+            if e.code != 404:
+                raise RateLimited(f"raw {e.code} on {repo}/{path}") from e
+        except Exception as e:  # noqa: BLE001
+            raise RateLimited(f"raw {type(e).__name__} on {repo}/{path}") from e
+        if body is None:
             continue
         m = re.search(pattern, body, re.M)
         if m:
@@ -176,8 +214,17 @@ def build() -> tuple[str, list[str]]:
     cards, notes = [], []
     for p in PROJECTS:
         repo = p["repo"]
-        version = read_version(repo)
-        rel = fetch(f"repos/{repo}/releases/latest")
+        try:
+            version = read_version(repo)
+            rel = fetch(f"repos/{repo}/releases/latest")
+        except RateLimited as e:
+            # Stop rather than continue. Continuing produces a page where some
+            # cards are facts and others are quota exhaustion, and nothing on
+            # the page says which is which.
+            print(f"::error::the API stopped answering at {repo}: {e}")
+            print("  Nothing written. With gh installed, run:")
+            print("    GITHUB_TOKEN=$(gh auth token) python3 scripts/build_project_cards.py --write index.html")
+            raise
         has_release = isinstance(rel, dict) and "tag_name" in rel
         cls, label, why = stage_for(version, has_release)
         notes.append(f"{repo.split('/')[-1]:<26} {label:<8} {why}")
@@ -230,7 +277,10 @@ def main() -> int:
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
-    cards, notes = build()
+    try:
+        cards, notes = build()
+    except RateLimited:
+        return 2
     print(f"  {len(PROJECTS)} projects, stage derived from version and release:")
     for n in notes:
         print(f"    {n}")

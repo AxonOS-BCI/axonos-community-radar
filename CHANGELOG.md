@@ -1,5 +1,44 @@
 # Changelog
 
+## [14.1.0] — 2026-08-13 — a stage nobody types
+
+### Changed
+- **The project cards derive their stage from the repositories.** The badges
+  were written by hand into `index.html` and had drifted: the radar read *Beta*
+  at version 14.0.0 after three months of running every three hours, the
+  conformance suite read *Beta* while four RFCs' vectors enforce its rules in
+  another repository's CI, and five cards pointed at the string `1` instead of
+  a URL.
+
+  Changing the labels would have fixed one day and guaranteed the same drift in
+  a month. The defect was never the labels: a fact about a repository was being
+  asserted somewhere the repository cannot reach.
+
+  Two published facts decide the stage now. The version in the manifest —
+  semantic versioning's own meanings, so a project claiming otherwise is
+  arguing with its own manifest. And whether a release object exists, because a
+  tag is not a release and a repository with none has published nothing anyone
+  can depend on, whatever its version says.
+
+  There is no override. An override is how the hand-written labels started.
+
+- **The kernel stays Beta, and that is the generator working.** It is 0.4.1
+  with forty-three machine-checked proofs and no hardware measurements: the
+  validation repository is empty and says so, the 972 µs is observed without
+  published traces, and the reference firmware documents a stubbed
+  wrap-tracking extension. A page calling that shipped would tell a reader it
+  is ready to depend on.
+
+- Each card now shows the version beside the stage. A stage without the number
+  behind it is an assertion; with it, a reader checks the claim in one click.
+
+### Added
+- CI regenerates the cards and **diffs** rather than rewriting them during
+  deploy. Rewriting at deploy time would change the artefact without changing
+  the commit, and the commit would stop describing what is published. When the
+  API cannot be read the run warns rather than failing, because an unreachable
+  repository is not a wrong card.
+
 ## [14.0.0] — 2026-08-13 — Discoverable
 
 ### Added
@@ -1480,3 +1519,4 @@ This project adheres to [Semantic Versioning](https://semver.org).
 
 ## [1.0.0] — 2026-06-24
 - Initial public release: interactive radar, public auto-refreshed data, contribution funnel.
+

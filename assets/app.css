@@ -464,3 +464,15 @@ tr.cov-foot th,tr.cov-foot td{opacity:.55;font-size:11px;padding-top:6px}
 .cs-gap{font-size:11px;color:var(--muted,#8a97a6);white-space:nowrap}
 .cs-gap.is-close{color:#f5c451}
 .cs-note{margin:14px 0 0;font-size:12px;line-height:1.6;color:var(--muted,#8a97a6);max-width:74ch}
+
+/* Stages the generator can produce that the hand-written cards never had.
+   `active` means a version exists and no release does — a tag is not a
+   release, and a repository with none has published nothing to depend on.
+   `early` is below 0.1.0, which is semantic versioning's own statement that
+   nothing is settled. */
+.st-active{color:#fbbf24;background:color-mix(in srgb,#fbbf24 10%,transparent);border-color:color-mix(in srgb,#fbbf24 26%,transparent)}
+.st-early{color:#a78bfa;background:color-mix(in srgb,#a78bfa 10%,transparent);border-color:color-mix(in srgb,#a78bfa 26%,transparent)}
+/* The version beside the stage. A stage without the number behind it is an
+   assertion; with it, a reader checks the claim in one click. */
+.ax-ver{margin-left:auto;font-size:10.5px;font-variant-numeric:tabular-nums;color:var(--faint,#6b7789);font-family:ui-monospace,Menlo,monospace}
+

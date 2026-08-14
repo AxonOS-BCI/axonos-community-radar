@@ -317,7 +317,35 @@ jobs:
           print(f"version {v} consistent across VERSION/README badge/bibtex/CITATION/CHANGELOG")
           PY
 
+      - name: The project cards match what the repositories say
+        # The stage badges were hand-written and drifted: the radar read Beta at
+        # 14.0.0 after three months of running, and five cards pointed at the
+        # string "1" instead of a URL. Changing the labels would have fixed one
+        # day; a fact about a repository was being asserted where the repository
+        # cannot reach.
+        #
+        # This regenerates and diffs. It does not rewrite during deploy: that
+        # would change the artefact without changing the commit, and the commit
+        # would stop describing what is published.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cp index.html /tmp/index.before
+          python3 scripts/build_project_cards.py --write index.html || {
+            echo "::warning::could not read every repository; the cards are unchecked this run"
+            cp /tmp/index.before index.html
+            exit 0
+          }
+          diff -q /tmp/index.before index.html || {
+            echo "::error::the project cards disagree with the repositories."
+            echo "Run: python3 scripts/build_project_cards.py --write index.html"
+            diff /tmp/index.before index.html | head -20
+            exit 1
+          }
+          echo "  cards agree with every repository"
+
       - name: Licence sanity (MIT text intact)
         run: |
           grep -q "MIT License" LICENSE && grep -q "Denis Yermakou" LICENSE || { echo "LICENSE malformed"; exit 1; }
           echo "LICENSE ok"
+

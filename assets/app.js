@@ -856,6 +856,22 @@
     if(!d||typeof d!=='object')return null;
     var num=function(v,max){var n=Number(v);return (isFinite(n)&&n>=0&&n<=max)?Math.floor(n):0;};
     var arr=Array.isArray(d.projects)?d.projects:[];
+    // The funnel has to close before it is drawn.
+    //
+    // scanned, kept and considered_total were each clamped independently, and
+    // the UI derives "tripped no rule" as scanned - kept - total. Nothing
+    // stopped that being negative, so a payload where the parts exceed the
+    // whole would render a filter that rejected more than it read — on a page
+    // whose entire argument is that the filter is honest.
+    //
+    // Refusing the block is the right failure: the section disappears rather
+    // than showing an impossible number, and impossible numbers are what this
+    // check exists to keep off the page.
+    var sc=num(d.scanned,10000000), kp=num(d.kept,100000), tt=num(d.considered_total,100000);
+    if(sc<kp+tt){
+      if(window.console&&console.warn)console.warn('radar: funnel does not close ('+sc+' scanned, '+kp+' kept, '+tt+' considered) — refusing the block');
+      return null;
+    }
     return {
       scanned:num(d.scanned,10000000), kept:num(d.kept,100000),
       total:num(d.considered_total,100000), published:num(d.published,100000),
@@ -1173,3 +1189,4 @@
     if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){b.textContent='Copied \u2713';setTimeout(function(){b.textContent='Copy';},1600);},function(){b.textContent='Copy failed';});}
     else{try{var r=document.createRange();r.selectNodeContents(a);var s=getSelection();s.removeAllRanges();s.addRange(r);document.execCommand('copy');s.removeAllRanges();b.textContent='Copied \u2713';setTimeout(function(){b.textContent='Copy';},1600);}catch(e){b.textContent='Select & copy';}}
   });})();
+

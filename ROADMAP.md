@@ -31,10 +31,11 @@ deploy carries.
 | **12.0** | Badges | ✅ shipped |
 | **13.0** | Talent | ✅ shipped |
 | **13.1–13.8** | Search, Considered, the rule made public | ✅ shipped |
-| **14.0** | Discoverable | **current** |
-| **15.0** | Capital | planned |
-| **16.0** | Standards | planned |
-| **17.0** | Frontier | planned |
+| **14.0** | Discoverable | ✅ shipped |
+| **15.0** | Closed arithmetic | **current** |
+| **16.0** | Capital | planned |
+| **17.0** | Standards | planned |
+| **18.0** | Frontier | planned |
 
 **Why 14.0 is Discoverable and not Capital.** Capital was the reserved name and
 it is not what shipped, so the reason is here rather than left for a reader to
@@ -50,7 +51,28 @@ Discoverability was the pressing gap and its data already existed. The map
 publishes eighteen datasets, a schema and a ledger per project, and said none
 of it to a machine. That is this project's recurring defect one layer out: a
 property that cannot be discovered is close enough to a property that is not
-there. Capital moves to 15.0 with its number still owed.
+there. Capital moves along with its number still owed — now 16.0, because 15.0 went to two arithmetic checks that were catching half of what they were written for, and a defect found is a better reason to cut a release than a milestone reached.
+
+## Shipped — v15.0 · "Closed arithmetic"
+
+Two checks that were catching half of what they were written for.
+
+The star-delta check tested `d > stars`, which catches a repository claiming
+more stars gained than it holds and lets the mirror image through: a hundred
+stars with a delta of minus five thousand passed. A repository cannot lose more
+than it has either, and both directions are the same impossibility. It tests
+the magnitude now.
+
+The funnel did not have to close. `scanned`, `kept` and `considered_total` were
+clamped independently, and the page derives "tripped no rule" by subtracting
+the parts from the whole — with nothing stopping the result from being
+negative. A payload where the parts exceeded the whole would have rendered a
+filter that rejected more than it read, on a page whose entire argument is that
+the filter is honest. The block is refused now rather than drawn, because an
+absent section is better than an impossible number.
+
+Neither came from a scan failing. Both came from reading the checks and asking
+what they do not catch, which is a different question from whether they pass.
 
 **What 13.1 through 13.8 were.** The table above names one row per feature
 release, and the eight patch and minor releases between Talent and here are not
@@ -64,7 +86,7 @@ back-filling: the work came from discovering that the map asserted a property �
 that a score can be recomputed and therefore disputed — which no reader could
 act on. A roadmap that only ever records what it predicted is a roadmap nobody
 learns from.
-| **17.0** | The Atlas | the destination |
+| **19.0** | The Atlas | the destination |
 
 ---
 
@@ -195,7 +217,7 @@ Ships ahead of 11.0, whose per-project history is accruing since 2026-07-16.
 - **The guide** (`docs`) — [docs/BADGES.md](docs/BADGES.md): embed, colour
   bands, freshness, integrity.
 
-## v13.0 "Talent" · v14.0 "Capital" · v15.0 "Standards"
+## v13.0 "Talent" · v16.0 "Capital" · v17.0 "Standards"
 
 The contributor and builder graph; funding and domicile signals; conformance
 tracking (LSL / BIDS / NWB) and clinical-readiness posture.
@@ -215,3 +237,4 @@ or a [Bug report](https://github.com/AxonOS-BCI/axonos-community-radar/issues/ne
 with real demand move up.
 
 <sub>© The AxonOS Project / Denis Yermakou · axonos.org · connect@axonos.org</sub>
+

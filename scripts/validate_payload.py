@@ -156,8 +156,16 @@ def validate_payload(payload, cap: int = DEFAULT_CAP):
         if isinstance(stars, int):
             for df in ("stars_delta_7d", "stars_delta_30d"):
                 d = r.get(df)
-                if isinstance(d, int) and d > stars:
-                    errors.append(f"{tag} {df} ({d}) exceeds current stars ({stars}) — impossible jump")
+                # Checked on the magnitude, not the sign.
+                #
+                # `d > stars` catches a repository claiming to have gained more
+                # stars than it holds and lets the mirror image through:
+                # stars = 100 with a 7-day delta of -5000 passed, and the UI
+                # renders that as a collapse. A repository cannot lose more
+                # stars than it has either, and both directions are the same
+                # impossibility.
+                if isinstance(d, int) and abs(d) > stars:
+                    errors.append(f"{tag} {df} ({d}) exceeds current stars ({stars}) in magnitude — impossible jump")
 
         # first_seen must not be in the future relative to the snapshot
         fs, snap = r.get("first_seen"), payload.get("snapshot_at")
@@ -324,3 +332,4 @@ def main(argv) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main(sys.argv[1:]))
+

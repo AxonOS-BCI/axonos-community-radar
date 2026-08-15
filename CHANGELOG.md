@@ -1,5 +1,41 @@
 # Changelog
 
+## [15.0.0] — 2026-08-16 — Closed arithmetic
+
+### Fixed
+- **The star-delta check caught half of what it was written for.** It tested
+  `d > stars`, which catches a repository claiming more stars gained than it
+  holds and lets the mirror image through: a hundred stars with a seven-day
+  delta of minus five thousand passed, and the page renders that as a collapse.
+  A repository cannot lose more stars than it has either, and both directions
+  are the same impossibility. It tests the magnitude now.
+
+- **The funnel did not have to close.** `scanned`, `kept` and
+  `considered_total` were each clamped independently, and the page derives
+  "tripped no rule" by subtracting the parts from the whole — with nothing
+  stopping the result from being negative. A payload where the parts exceeded
+  the whole would have drawn a filter that rejected more than it read, on a
+  page whose entire argument is that the filter is honest.
+
+  The block is refused rather than drawn. An absent section is better than an
+  impossible number, and impossible numbers are what this check exists to keep
+  off the page. Verified against the live payload: 3 165 scanned against 151
+  accounted for, which passes.
+
+- **The roadmap named Capital at 14.0 in a heading that survived the
+  renumbering.** The table said Discoverable; a section further down still said
+  Capital. Two statements about one milestone in one file is the drift this
+  project keeps finding between a plan and the place a plan is read.
+
+### Notes
+Neither defect came from a check failing. Both came from reading the checks and
+asking what they do not catch, which is a different question from whether they
+pass — and it is the question an external review asked that the project's own
+test suite could not.
+
+Capital moves to 16.0 with its number still owed: how many mapped projects
+carry a funding signal at all. Under fifteen and a score ranks nothing.
+
 ## [14.1.0] — 2026-08-13 — a stage nobody types
 
 ### Changed
@@ -1519,4 +1555,5 @@ This project adheres to [Semantic Versioning](https://semver.org).
 
 ## [1.0.0] — 2026-06-24
 - Initial public release: interactive radar, public auto-refreshed data, contribution funnel.
+
 

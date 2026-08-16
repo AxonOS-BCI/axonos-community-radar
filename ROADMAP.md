@@ -1,3 +1,16 @@
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+Copyright (c) 2026 Denis Yermakou <connect@axonos.org>
+
+The status column is checked against VERSION on every push. A milestone marked
+current that is not the version in VERSION fails CI, which is why the two
+cannot drift the way the project cards did before they were generated.
+
+Shipped rows are not edited by hand either: a release that does not add its own
+row is caught by the same check. What is written here is the *name* and the
+*reason* — the two things a version number cannot carry.
+-->
+
 # AxonOS Radar — Roadmap
 
 The public plan. This mirrors the GitHub Project board

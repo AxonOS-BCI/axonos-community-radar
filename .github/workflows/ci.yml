@@ -344,8 +344,39 @@ jobs:
           }
           echo "  cards agree with every repository"
 
+      - name: The roadmap's current milestone is the version
+        # The roadmap said 13.0 while VERSION said 14.1, and a heading further
+        # down still named Capital at a number the table had reassigned. Both
+        # were hand-written, which is the same defect the project cards had
+        # before they were generated: a fact stated where the fact cannot reach.
+        #
+        # This does not generate the file — the name and the reason are
+        # editorial and a version number cannot carry them. It checks the one
+        # thing that can drift silently.
+        run: |
+          python3 - <<'PY'
+          import re, sys, pathlib, collections
+          t = pathlib.Path("ROADMAP.md").read_text(encoding="utf-8")
+          v = pathlib.Path("VERSION").read_text().strip()
+          major = v.split(".")[0] + "." + v.split(".")[1]
+          rows = re.findall(r"^\| \*\*([\d.]+(?:–[\d.]+)?)\*\* \| ([^|]+) \| ([^|]+) \|", t, re.M)
+          cur = [n for n, _name, s in rows if "current" in s]
+          if len(cur) != 1:
+              print(f"::error::{len(cur)} milestones marked current; there must be exactly one")
+              sys.exit(1)
+          if cur[0] not in (major, v):
+              print(f"::error::the roadmap marks {cur[0]} as current and VERSION says {v}")
+              sys.exit(1)
+          d = [x for x, n in collections.Counter(n for n, _, _ in rows).items() if n > 1]
+          if d:
+              print(f"::error::two milestones share a number: {d}")
+              sys.exit(1)
+          print(f"  roadmap current is {cur[0]}, VERSION is {v}, no duplicate numbers")
+          PY
+
       - name: Licence sanity (MIT text intact)
         run: |
           grep -q "MIT License" LICENSE && grep -q "Denis Yermakou" LICENSE || { echo "LICENSE malformed"; exit 1; }
           echo "LICENSE ok"
+
 

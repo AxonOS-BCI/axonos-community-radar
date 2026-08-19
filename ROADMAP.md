@@ -45,7 +45,8 @@ deploy carries.
 | **13.0** | Talent | ✅ shipped |
 | **13.1–13.8** | Search, Considered, the rule made public | ✅ shipped |
 | **14.0** | Discoverable | ✅ shipped |
-| **15.0** | Closed arithmetic | **current** |
+| **15.0** | Closed arithmetic | ✅ shipped |
+| **15.1** | Stated limits | **current** |
 | **16.0** | Capital | planned |
 | **17.0** | Standards | planned |
 | **18.0** | Frontier | planned |

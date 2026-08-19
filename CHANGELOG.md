@@ -1,5 +1,41 @@
 # Changelog
 
+## [15.1.0] — 2026-08-16 — Stated limits
+
+### Changed
+- **The discovery score's blindness after sixty days is written down.** Its
+  recency term reaches zero at day sixty and stays there, so a repository last
+  touched two months ago and one abandoned eight years ago get the same bonus
+  and are then ordered by stars — which favours the abandoned one if it was
+  ever popular. The health score already grades staleness to 365 days and
+  beyond, so the project measures what this ordering ignores.
+
+  Stated rather than fixed. Changing the discovery formula changes which
+  projects enter the map at all, and doing that without first measuring how
+  many entries would move is how a filter stops being one.
+
+- **A missing input is not penalised while a measured zero is.** A repository
+  with no commits in a year scores zero on `momentum` and carries that weight;
+  one whose history the API did not return has the dimension dropped and the
+  rest renormalised, so it can out-score the first while being less verified.
+
+  The behaviour is deliberate — scoring an absent measurement as zero would
+  fabricate a finding — and the cost was unnamed: a score computed from fewer
+  dimensions is a weaker claim, and nothing on the page says which repositories
+  those are. The payload carries the inputs; the page does not surface them.
+
+### Notes
+Three further findings from the same review did not survive reading the full
+text. The penalty is on `neuroimaging (MRI/fMRI/PET)`, so fNIRS and MEG are not
+caught by it — the parenthesis was the answer. "No extra API calls" describes
+the scoring phase, and the document says two paragraphs later that a separate
+enrichment phase fetches downloads and contributors. And the sentence about the
+neuromorphic penalty names `brain-computer-interface` as one of the signals
+that lifts it, in the clause after the one quoted.
+
+Each was a sentence read to its middle. Recorded because a review's misses
+calibrate its hits, and these hits were worth having.
+
 ## [15.0.0] — 2026-08-16 — Closed arithmetic
 
 ### Fixed

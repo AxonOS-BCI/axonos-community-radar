@@ -114,6 +114,18 @@ The discovery score combines reach and recency:
 score = log10(stars + 1) * 10 + max(0, 60 - days_since_push) * 0.5
 ```
 
+**What this score stops distinguishing after sixty days.** The recency term is
+zero at day sixty and stays zero, so a repository last touched two months ago
+and one abandoned eight years ago receive the same bonus — and are ordered
+purely by stars, which favours the abandoned one if it was ever popular.
+
+The health score's `maintenance` dimension already grades staleness out to 365
+days and beyond, so the project measures the thing this score is blind to and
+does not use it here. That is a real limitation of the ordering, stated rather
+than fixed: changing the discovery formula changes which projects enter the map
+at all, and doing that without first measuring how many entries would move is
+how a filter stops being a filter.
+
 It favours visible, recently active work. It is a sorting aid, not a verdict.
 It is independent of the BRS, which decides *inclusion*, not rank.
 
@@ -152,6 +164,18 @@ scored fairly on what is known rather than being pushed down by hard zeros. The
 `basis` field records completeness: `enriched` (commits **and** contributors
 present), `search-only` (neither — momentum and team not measured), or `partial`
 (one of the two).
+
+**And a missing input is not penalised, while a measured zero is.** A repository
+with no commits in the last year scores zero on `momentum` and carries that
+weight; one whose commit history the API did not return has `momentum` dropped
+and the remaining weights renormalised. The second can therefore out-score the
+first while being less verified, not more.
+
+This is deliberate — scoring an absent measurement as zero would fabricate a
+finding — and it has a cost worth naming: a health score computed from fewer
+dimensions is a weaker claim than one computed from all of them, and nothing on
+the map currently says which repositories those are. The payload carries the
+inputs, so a reader can check; the page does not surface it.
 
 **Bands** (UI labels): `strong` ≥ 80, `solid` ≥ 60, `developing` ≥ 40, `early`
 below 40.
@@ -356,3 +380,4 @@ unknown interop tags and inconsistent foundation counts are all rejected);
 and `scripts/check_methodology.py` fails CI if any shipped signal, tag or
 endpoint is missing from the documentation — the promise that *nothing on a
 card is unexplained* is enforced mechanically, not editorially.
+

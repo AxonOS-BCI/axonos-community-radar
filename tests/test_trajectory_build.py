@@ -1,4 +1,5 @@
 """Merged trajectories: measured points only, engine points win, capped."""
+import pytest
 import json
 import os
 import sys
@@ -56,7 +57,14 @@ def test_malformed_inputs_never_crash():
 
 
 def test_output_matches_shipped_schema():
-    import jsonschema
+    # Skipped rather than failed when jsonschema is absent.
+    #
+    # CI installs it from requirements-ci.txt, so inside a workflow this always
+    # runs. Locally it is not a default package, and a suite that fails on a
+    # missing optional dependency tells a maintainer their change broke
+    # something when it did not — which is how people learn to ignore a red
+    # suite.
+    jsonschema = pytest.importorskip("jsonschema")
     schema = json.load(open(os.path.join(os.path.dirname(__file__), "..",
                                          "data", "trajectory.schema.json")))
     m = T.build(_hist(("2026-07-01T00:00:00+00:00", {"a/b": 10})),

@@ -311,7 +311,23 @@ def main() -> int:
         with open("data/radar.schema.json", encoding="utf-8") as fh:
             jsonschema.validate(payload, json.load(fh))
     except ImportError:
-        print("· jsonschema unavailable — invariant gate above still enforced")
+        # Absent in CI is a failure; absent locally is not.
+        #
+        # requirements-ci.txt pins jsonschema and every CI job installs it, so
+        # inside a workflow this import cannot fail unless the install did —
+        # and skipping the schema check because the installer broke publishes
+        # a payload nobody validated while the log says the gate held.
+        #
+        # Outside CI it is a convenience. A maintainer running this by hand
+        # should not be forced to install a package to check invariants that
+        # do not need one.
+        if os.environ.get("GITHUB_ACTIONS") == "true":
+            print("::error::jsonschema is missing inside CI, where "
+                  "requirements-ci.txt pins it. The install failed and the "
+                  "schema was not checked — this payload is unvalidated.")
+            return 1
+        print("· jsonschema unavailable locally — invariant gate above still "
+              "enforced, schema check skipped")
     except Exception as e:  # noqa: BLE001
         print(f"::error::engine payload fails the published schema: {str(e)[:200]}")
         return 1

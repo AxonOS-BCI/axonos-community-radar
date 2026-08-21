@@ -1,5 +1,39 @@
 # Changelog
 
+## [15.1.1] — 2026-08-21
+
+### Fixed
+- **A missing `jsonschema` skipped the schema check and said the gate held.**
+  The contract gate catches `ImportError` and prints that the invariant gate is
+  still enforced — which is true, and misleading. Inside CI the package is
+  pinned in `requirements-ci.txt` and installed by every job, so the import can
+  only fail if the install did. Skipping validation because the installer broke
+  publishes a payload nobody checked, while the log reassures whoever reads it.
+
+  It is now fatal inside CI and tolerated outside it. A maintainer running the
+  script by hand should not need a package to check invariants that do not use
+  one; a workflow that lost its dependency should stop.
+
+- **A test failed on a missing optional dependency instead of skipping.**
+  `test_output_matches_shipped_schema` imported `jsonschema` directly. CI
+  installs it, so the test always ran there; locally it turned a clean suite
+  red and told a maintainer their change broke something when it had not — the
+  fastest way to teach somebody to ignore a red suite. It uses
+  `pytest.importorskip` now.
+
+### Notes
+An external audit raised eight issues. Three were checked and are not defects.
+
+The `stars_delta` logic it flags as sign-blind was fixed in 15.0.0 and now
+tests the magnitude — the audit read an older version. `requirements-ci.txt` is
+not empty: it pins pytest, jsonschema and bandit, and three CI jobs install
+from it. And of the eight broad `except` blocks it objects to, none swallows
+silently — every one prints or returns a failure code, which is the property
+that matters rather than the width of the catch.
+
+Recorded because an audit's misses calibrate its hits, and the hit here was
+worth the read.
+
 ## [15.1.0] — 2026-08-16 — Stated limits
 
 ### Changed
@@ -1591,5 +1625,3 @@ This project adheres to [Semantic Versioning](https://semver.org).
 
 ## [1.0.0] — 2026-06-24
 - Initial public release: interactive radar, public auto-refreshed data, contribution funnel.
-
-

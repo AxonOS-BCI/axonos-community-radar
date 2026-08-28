@@ -6,7 +6,9 @@ i.e. what the world actually sees, not the checkout — and decides whether the
 radar is healthy:
 
   * STALE   — status.generated_at older than MAX_AGE_HOURS (scans run every
-              3 hours; 12h of silence means several consecutive failures).
+              3 hours, so 7h of silence means two consecutive scans are gone;
+              one dropped scheduled run is tolerated, two are not). Override
+              with RADAR_MAX_AGE_HOURS when the upstream cadence changes.
   * FAILED  — the last recorded run ended with ok=false.
 
 On a problem it opens (or updates) a single, marker-identified alert issue.
@@ -32,7 +34,11 @@ OWNER, _, NAME = REPO.partition("/")
 PAGES = f"https://{OWNER.lower()}.github.io/{NAME}/"
 API = f"https://api.github.com/repos/{REPO}"
 MARKER = "<!-- axonos-radar-health-alert f3a91c2e -->"
-MAX_AGE_HOURS = 12
+# Calibrated to the cadence of the thing being monitored, not to a round
+# number. The engine publishes every 3h; GitHub routinely drops one scheduled
+# run, so a single miss must not page anyone. Two consecutive misses is a
+# stalled pipeline and has to be visible the same day, not a day later.
+MAX_AGE_HOURS = float(os.environ.get("RADAR_MAX_AGE_HOURS", "7"))
 BOT_LOGINS = ("github-actions[bot]", "github-actions")
 
 HEADERS = {"Accept": "application/vnd.github+json", "User-Agent": "axonos-radar-health",

@@ -7,7 +7,12 @@ name: Health monitor
 
 on:
   schedule:
-    - cron: "43 6,18 * * *"   # twice a day, offset from the radar cron
+    # Every 3h, offset from the engine (:17) and the sync (:37). A monitor
+    # that runs every 12h against a 12h threshold cannot see an outage shorter
+    # than ~24h — which is how a 7h freeze stayed green with every badge
+    # passing. The check reads two small JSON files; running it 8x a day costs
+    # seconds on a public repo and cuts worst-case detection to ~10h.
+    - cron: "43 */3 * * *"
   workflow_dispatch:
 
 permissions:

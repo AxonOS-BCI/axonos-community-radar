@@ -81,6 +81,32 @@ jobs:
           print("contract gate: schema + feed well-formed")
           GATE
 
+      - name: Freshness readout
+        # The contract gate proves the payload is well-formed. It cannot prove
+        # the payload is recent: a frozen engine keeps serving last night's
+        # valid JSON, this workflow finds nothing to commit, exits 0, and the
+        # badge stays green while the public map quietly stops moving. That is
+        # the failure this repository already paid for once. Read the age out
+        # loud on every run so a stalled upstream is visible in the run log
+        # rather than only in an issue the monitor may not open for hours.
+        run: |
+          python3 - <<'FRESH'
+          import json, os
+          from datetime import datetime, timezone
+          limit = float(os.environ.get("RADAR_MAX_AGE_HOURS", "7"))
+          at = json.load(open("data/last_run.json"))["at"]
+          dt = datetime.fromisoformat(at.replace("Z", "+00:00"))
+          age = (datetime.now(timezone.utc) - dt).total_seconds() / 3600
+          line = f"last engine publish {at} — {age:.1f}h old (limit {limit:.0f}h)"
+          print(line)
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as fh:
+              fh.write(f"- {'STALE' if age > limit else 'fresh'}: {line}\n")
+          if age > limit:
+              print(f"::warning title=Engine data is stale::{line}. The sync "
+                    "path is healthy; the upstream engine has not published. "
+                    "Check the engine repository's Actions quota and schedule.")
+          FRESH
+
       - name: Redeploy the site with whatever arrived
         env:
           GH_TOKEN: ${{ github.token }}

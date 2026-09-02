@@ -1,7 +1,7 @@
 {
   "version": 5,
-  "generated_at": "2026-09-02T04:30:37+00:00",
-  "snapshot_at": "2026-09-02T00:00:00+00:00",
+  "generated_at": "2026-09-02T11:15:50+00:00",
+  "snapshot_at": "2026-09-02T06:00:00+00:00",
   "source": "GitHub topic search (public)",
   "criteria": "Public, non-archived, non-fork repositories that clear the BCI Relevance Engine (v7): a scored, auditable gate that keeps a repo only when the weight of BCI-specific evidence — acquisition modality, field standard, named hardware, explicit BCI topic or paradigm — exceeds generic-ML signals. Each kept repo carries its signed evidence ledger. Ranked by recency and stars.",
   "brs": {
@@ -67,14 +67,14 @@
   },
   "counts": {
     "total": 120,
-    "active_30d": 103,
-    "new": 6,
+    "active_30d": 102,
+    "new": 7,
     "rising": 2,
     "falling": 0,
     "community_active_30d": 120,
     "builders": 8,
-    "health_strong": 34,
-    "interop_tagged": 30,
+    "health_strong": 35,
+    "interop_tagged": 31,
     "foundation_checked": 120,
     "health_median": 67
   },
@@ -106,7 +106,7 @@
       "zero-copy"
     ],
     "repositories_seen": 3261,
-    "repositories_unreachable": 523675,
+    "repositories_unreachable": 524010,
     "note": "GitHub search returns at most 1000 results per query. A saturated topic holds more matches than the API will page through, so repositories_unreachable is a count of what exists and was not read — not an estimate."
   },
   "ecosystem": {
@@ -171,13 +171,13 @@
       {
         "modality": "EEG",
         "cells": [
-          9,
           8,
-          6,
+          8,
+          5,
           31,
-          13
+          12
         ],
-        "total": 67
+        "total": 64
       },
       {
         "modality": "ECoG",
@@ -239,18 +239,18 @@
         "cells": [
           1,
           0,
-          2,
+          1,
           0,
           0
         ],
-        "total": 3
+        "total": 2
       }
     ],
     "stage_totals": [
       16,
       8,
       10,
-      36,
+      35,
       21
     ],
     "n_projects": 120
@@ -317,18 +317,19 @@
         ]
       },
       {
+        "standard": "EDF",
+        "count": 2,
+        "repos": [
+          "AxonOS-org/axonos-kernel",
+          "wherrera10/EDFPlus.jl"
+        ]
+      },
+      {
         "standard": "FieldTrip",
         "count": 2,
         "repos": [
           "fieldtrip/fieldtrip",
           "neurotuning/GEDAI-master"
-        ]
-      },
-      {
-        "standard": "EDF",
-        "count": 1,
-        "repos": [
-          "AxonOS-org/axonos-kernel"
         ]
       },
       {
@@ -340,8 +341,8 @@
       }
     ],
     "n_standards": 8,
-    "n_repos_with_standards": 25,
-    "interop_edges": 86
+    "n_repos_with_standards": 26,
+    "interop_edges": 87
   },
   "projects": [
     {
@@ -505,148 +506,6 @@
       ]
     },
     {
-      "full_name": "AxonOS-org/axonos-standard",
-      "html_url": "https://github.com/AxonOS-org/axonos-standard",
-      "description": "Canonical technical standard and architecture manual for AxonOS: deterministic BCI software, neural permissions, consent, validation, and governance.",
-      "stars": 4,
-      "forks": 0,
-      "language": "Python",
-      "pushed_at": "2026-08-27T00:01:48Z",
-      "updated_at": "2026-08-27T16:19:37Z",
-      "topics": [
-        "axonos",
-        "bci",
-        "consent",
-        "embedded-systems",
-        "governance",
-        "neurotechnology",
-        "operating-system",
-        "privacy",
-        "real-time",
-        "safety-critical",
-        "standard"
-      ],
-      "license": "CC-BY-SA-4.0",
-      "has_license": true,
-      "brs": 55,
-      "relevance_tier": "L4_EXPLICIT_BCI",
-      "relevance_ledger": [
-        {
-          "points": 55,
-          "kind": "core",
-          "reason": "Explicit BCI topic (bci)",
-          "terms": 1
-        }
-      ],
-      "facets": {
-        "modality": [],
-        "paradigm": [],
-        "signal_chain": [],
-        "standards": []
-      },
-      "days_since_push": 5,
-      "active": true,
-      "community_active": true,
-      "category": "Protocols & OS",
-      "first_seen": "2026-07-02T00:00:00+00:00",
-      "is_new": false,
-      "_score": 41.43,
-      "enriched": true,
-      "contributors": 2,
-      "releases_count": 2,
-      "total_downloads": 0,
-      "latest_release_tag": "v1.1.0",
-      "latest_release_at": "2026-07-31T04:05:13Z",
-      "commits_52w": 29,
-      "activity_spark": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        3,
-        0
-      ],
-      "funding_platforms": [],
-      "funding_url": "",
-      "watchers": 1,
-      "size_kb": 20178,
-      "open_issues": 0,
-      "homepage": "https://axonos.org",
-      "archived": false,
-      "disabled": false,
-      "foundation": {
-        "license_file": true,
-        "readme": true,
-        "contributing": true,
-        "code_of_conduct": true,
-        "health_pct": 87,
-        "citation": true,
-        "security_policy": true,
-        "ci": true,
-        "count": 7
-      },
-      "ecosystem": true,
-      "ecosystem_role": "Specifications & conformance",
-      "ecosystem_note": "The AxonOS standard, conformance tiers and test vectors.",
-      "ecosystem_group": "AxonOS",
-      "signals": {
-        "overall": 66,
-        "basis": "enriched",
-        "badges": [
-          "osi-licensed",
-          "actively-maintained",
-          "has-releases"
-        ],
-        "license": 100,
-        "maintenance": 100,
-        "momentum": 59,
-        "adoption": 18,
-        "team": 40,
-        "docs": 100
-      },
-      "owner": "AxonOS-org",
-      "repo": "axonos-standard",
-      "evidence_tier": "L3_EXPLICIT_BCI",
-      "inclusion_reason": "Explicit BCI topic (bci, neurotechnology).",
-      "matched_topics": [
-        "bci",
-        "neurotechnology",
-        "privacy",
-        "real-time"
-      ],
-      "matched_keywords": [
-        "bci",
-        "neural",
-        "neuro"
-      ],
-      "quality_flags": {
-        "possible_false_positive": false,
-        "low_metadata": false,
-        "missing_license": false,
-        "unclear_license": false,
-        "no_recent_activity": false
-      },
-      "stars_delta_7d": 1,
-      "stars_delta_30d": 2,
-      "rising": false,
-      "falling": false,
-      "axon_relevance": {
-        "acquisition": 0.0,
-        "signal_pipeline": 0.0,
-        "protocol": 0.0,
-        "privacy": 0.68,
-        "runtime": 1.0,
-        "sdk": 0.0
-      },
-      "interop": []
-    },
-    {
       "full_name": "AxonOS-org/axonos-signal-pipeline",
       "html_url": "https://github.com/AxonOS-org/axonos-signal-pipeline",
       "description": "Deterministic, vector-pinned BCI signal pipeline for AxonOS: raw acquisition frame -> typed, consent-bound decision. no_std, zero-deps, unsafe-free, fixed-point. Engineering demonstrator, not a medical device.",
@@ -787,6 +646,148 @@
         "signal_pipeline": 0.34,
         "protocol": 0.0,
         "privacy": 0.34,
+        "runtime": 1.0,
+        "sdk": 0.0
+      },
+      "interop": []
+    },
+    {
+      "full_name": "AxonOS-org/axonos-standard",
+      "html_url": "https://github.com/AxonOS-org/axonos-standard",
+      "description": "Canonical technical standard and architecture manual for AxonOS: deterministic BCI software, neural permissions, consent, validation, and governance.",
+      "stars": 4,
+      "forks": 0,
+      "language": "Python",
+      "pushed_at": "2026-08-27T00:01:48Z",
+      "updated_at": "2026-08-27T16:19:37Z",
+      "topics": [
+        "axonos",
+        "bci",
+        "consent",
+        "embedded-systems",
+        "governance",
+        "neurotechnology",
+        "operating-system",
+        "privacy",
+        "real-time",
+        "safety-critical",
+        "standard"
+      ],
+      "license": "CC-BY-SA-4.0",
+      "has_license": true,
+      "brs": 55,
+      "relevance_tier": "L4_EXPLICIT_BCI",
+      "relevance_ledger": [
+        {
+          "points": 55,
+          "kind": "core",
+          "reason": "Explicit BCI topic (bci)",
+          "terms": 1
+        }
+      ],
+      "facets": {
+        "modality": [],
+        "paradigm": [],
+        "signal_chain": [],
+        "standards": []
+      },
+      "days_since_push": 6,
+      "active": true,
+      "community_active": true,
+      "category": "Protocols & OS",
+      "first_seen": "2026-07-02T00:00:00+00:00",
+      "is_new": false,
+      "_score": 40.93,
+      "enriched": true,
+      "contributors": 2,
+      "releases_count": 2,
+      "total_downloads": 0,
+      "latest_release_tag": "v1.1.0",
+      "latest_release_at": "2026-07-31T04:05:13Z",
+      "commits_52w": 29,
+      "activity_spark": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        3,
+        0
+      ],
+      "funding_platforms": [],
+      "funding_url": "",
+      "watchers": 1,
+      "size_kb": 20178,
+      "open_issues": 0,
+      "homepage": "https://axonos.org",
+      "archived": false,
+      "disabled": false,
+      "foundation": {
+        "license_file": true,
+        "readme": true,
+        "contributing": true,
+        "code_of_conduct": true,
+        "health_pct": 87,
+        "citation": true,
+        "security_policy": true,
+        "ci": true,
+        "count": 7
+      },
+      "ecosystem": true,
+      "ecosystem_role": "Specifications & conformance",
+      "ecosystem_note": "The AxonOS standard, conformance tiers and test vectors.",
+      "ecosystem_group": "AxonOS",
+      "signals": {
+        "overall": 66,
+        "basis": "enriched",
+        "badges": [
+          "osi-licensed",
+          "actively-maintained",
+          "has-releases"
+        ],
+        "license": 100,
+        "maintenance": 100,
+        "momentum": 59,
+        "adoption": 18,
+        "team": 40,
+        "docs": 100
+      },
+      "owner": "AxonOS-org",
+      "repo": "axonos-standard",
+      "evidence_tier": "L3_EXPLICIT_BCI",
+      "inclusion_reason": "Explicit BCI topic (bci, neurotechnology).",
+      "matched_topics": [
+        "bci",
+        "neurotechnology",
+        "privacy",
+        "real-time"
+      ],
+      "matched_keywords": [
+        "bci",
+        "neural",
+        "neuro"
+      ],
+      "quality_flags": {
+        "possible_false_positive": false,
+        "low_metadata": false,
+        "missing_license": false,
+        "unclear_license": false,
+        "no_recent_activity": false
+      },
+      "stars_delta_7d": 1,
+      "stars_delta_30d": 2,
+      "rising": false,
+      "falling": false,
+      "axon_relevance": {
+        "acquisition": 0.0,
+        "signal_pipeline": 0.0,
+        "protocol": 0.0,
+        "privacy": 0.68,
         "runtime": 1.0,
         "sdk": 0.0
       },
@@ -1088,8 +1089,8 @@
       "stars": 3,
       "forks": 0,
       "language": "HTML",
-      "pushed_at": "2026-09-01T23:22:24Z",
-      "updated_at": "2026-09-01T23:22:51Z",
+      "pushed_at": "2026-09-02T04:37:04Z",
+      "updated_at": "2026-09-02T04:37:15Z",
       "topics": [
         "axonos",
         "bci",
@@ -1134,14 +1135,14 @@
       "category": "Hardware & Acquisition",
       "first_seen": "2026-07-05T06:00:00+00:00",
       "is_new": false,
-      "_score": 28.527,
+      "_score": 28.53,
       "enriched": true,
       "contributors": 3,
       "releases_count": 61,
       "total_downloads": 14,
       "latest_release_tag": "v15.1.1",
       "latest_release_at": "2026-08-21T16:30:58Z",
-      "commits_52w": 3336,
+      "commits_52w": 3344,
       "activity_spark": [
         0,
         124,
@@ -1154,14 +1155,14 @@
         460,
         459,
         330,
-        106
+        114
       ],
       "funding_platforms": [
         "custom"
       ],
       "funding_url": "https://axonos-bci.github.io/axonos-community-radar/support.html",
       "watchers": 2,
-      "size_kb": 15282,
+      "size_kb": 15529,
       "open_issues": 4,
       "homepage": "https://axonos-bci.github.io/axonos-community-radar/",
       "archived": false,
@@ -1684,11 +1685,11 @@
       "full_name": "BasedHardware/omi",
       "html_url": "https://github.com/BasedHardware/omi",
       "description": "AI that sees your screen, listens to your conversations and tells you what to do",
-      "stars": 13369,
+      "stars": 13370,
       "forks": 2227,
       "language": "Python",
-      "pushed_at": "2026-09-02T04:28:42Z",
-      "updated_at": "2026-09-02T04:09:41Z",
+      "pushed_at": "2026-09-02T11:09:49Z",
+      "updated_at": "2026-09-02T11:06:49Z",
       "topics": [
         "ai",
         "app",
@@ -1729,14 +1730,14 @@
       "category": "Other",
       "first_seen": "2026-06-25T12:00:00+00:00",
       "is_new": false,
-      "_score": 83.496,
+      "_score": 83.585,
       "enriched": true,
       "contributors": 288,
       "releases_count": 100,
-      "total_downloads": 18703,
-      "latest_release_tag": "v0.12.259+12259-macos",
-      "latest_release_at": "2026-09-02T03:01:09Z",
-      "commits_52w": 33496,
+      "total_downloads": 19972,
+      "latest_release_tag": "v0.12.265+12265-macos",
+      "latest_release_at": "2026-09-02T09:11:47Z",
+      "commits_52w": 33575,
       "activity_spark": [
         669,
         3141,
@@ -1749,13 +1750,13 @@
         1185,
         972,
         445,
-        400
+        479
       ],
       "funding_platforms": [],
       "funding_url": "",
       "watchers": 89,
-      "size_kb": 1321905,
-      "open_issues": 639,
+      "size_kb": 1325075,
+      "open_issues": 642,
       "homepage": "https://omi.me",
       "archived": false,
       "disabled": false,
@@ -1803,8 +1804,8 @@
         "unclear_license": false,
         "no_recent_activity": true
       },
-      "stars_delta_7d": 111,
-      "stars_delta_30d": 290,
+      "stars_delta_7d": 107,
+      "stars_delta_30d": 291,
       "rising": false,
       "falling": false,
       "axon_relevance": {
@@ -1874,11 +1875,11 @@
       "category": "Hardware & Acquisition",
       "first_seen": "2026-06-25T12:00:00+00:00",
       "is_new": false,
-      "_score": 82.62,
+      "_score": 82.621,
       "enriched": true,
       "contributors": 21,
       "releases_count": 57,
-      "total_downloads": 2176,
+      "total_downloads": 2177,
       "latest_release_tag": "v1.5.7",
       "latest_release_at": "2026-08-31T10:14:09Z",
       "commits_52w": 216,
@@ -2017,11 +2018,11 @@
       "category": "Hardware & Acquisition",
       "first_seen": "2026-07-02T00:00:00+00:00",
       "is_new": false,
-      "_score": 76.747,
+      "_score": 76.751,
       "enriched": true,
       "contributors": 5,
       "releases_count": 100,
-      "total_downloads": 132258,
+      "total_downloads": 132670,
       "latest_release_tag": "v0.0.131-rc.24",
       "latest_release_at": "2026-08-12T09:10:10Z",
       "commits_52w": 1690,
@@ -2259,11 +2260,11 @@
       "full_name": "SpikeInterface/spikeinterface",
       "html_url": "https://github.com/SpikeInterface/spikeinterface",
       "description": "A Python-based module for creating flexible and robust spike sorting pipelines.",
-      "stars": 840,
+      "stars": 841,
       "forks": 278,
       "language": "Python",
       "pushed_at": "2026-08-31T09:00:20Z",
-      "updated_at": "2026-09-01T14:39:50Z",
+      "updated_at": "2026-09-02T09:24:25Z",
       "topics": [
         "electrophysiology",
         "neuroscience",
@@ -2301,7 +2302,7 @@
       "category": "Other",
       "first_seen": "2026-06-25T12:00:00+00:00",
       "is_new": false,
-      "_score": 75.644,
+      "_score": 75.649,
       "enriched": true,
       "contributors": 130,
       "releases_count": 0,
@@ -2353,7 +2354,7 @@
         "license": 100,
         "maintenance": 100,
         "momentum": 100,
-        "adoption": 58,
+        "adoption": 59,
         "team": 100,
         "docs": 100
       },
@@ -2379,8 +2380,8 @@
         "unclear_license": false,
         "no_recent_activity": false
       },
-      "stars_delta_7d": 8,
-      "stars_delta_30d": 16,
+      "stars_delta_7d": 9,
+      "stars_delta_30d": 17,
       "rising": false,
       "falling": false,
       "axon_relevance": {
@@ -2437,11 +2438,11 @@
       "category": "Hardware & Acquisition",
       "first_seen": "2026-07-02T00:00:00+00:00",
       "is_new": false,
-      "_score": 75.459,
+      "_score": 75.461,
       "enriched": true,
       "contributors": 26,
       "releases_count": 24,
-      "total_downloads": 745,
+      "total_downloads": 746,
       "latest_release_tag": "2.5.16",
       "latest_release_at": "2026-02-03T14:25:05Z",
       "commits_52w": 113,
@@ -2915,7 +2916,7 @@
       "funding_url": "https://github.com/sponsors/DominiqueMakowski",
       "watchers": 31,
       "size_kb": 4677813,
-      "open_issues": 15,
+      "open_issues": 17,
       "homepage": "https://neuropsychology.github.io/NeuroKit",
       "archived": false,
       "disabled": false,
@@ -2967,275 +2968,8 @@
         "unclear_license": false,
         "no_recent_activity": false
       },
-      "stars_delta_7d": 8,
+      "stars_delta_7d": 7,
       "stars_delta_30d": 36,
-      "rising": false,
-      "falling": false,
-      "axon_relevance": {
-        "acquisition": 0.0,
-        "signal_pipeline": 0.0,
-        "protocol": 0.0,
-        "privacy": 0.0,
-        "runtime": 0.0,
-        "sdk": 0.0
-      },
-      "interop": []
-    },
-    {
-      "full_name": "brainstorm-tools/brainstorm3",
-      "html_url": "https://github.com/brainstorm-tools/brainstorm3",
-      "description": "Brainstorm software: MEG, EEG, fNIRS, ECoG, sEEG and electrophysiology",
-      "stars": 485,
-      "forks": 189,
-      "language": "MATLAB",
-      "pushed_at": "2026-08-25T01:11:06Z",
-      "updated_at": "2026-08-27T20:00:41Z",
-      "topics": [
-        "eeg",
-        "electrophysiology",
-        "matlab",
-        "meg"
-      ],
-      "license": "GPL-3.0",
-      "has_license": true,
-      "brs": 63,
-      "relevance_tier": "L3_MODALITY_OR_PARADIGM",
-      "relevance_ledger": [
-        {
-          "points": 40,
-          "kind": "modality",
-          "reason": "Acquisition modality (ECoG, EEG, MEG)",
-          "terms": 4
-        },
-        {
-          "points": 25,
-          "kind": "neuro",
-          "reason": "Neuro term (electrophysiology)",
-          "terms": 1
-        }
-      ],
-      "facets": {
-        "modality": [
-          "ECoG",
-          "EEG",
-          "MEG",
-          "fNIRS"
-        ],
-        "paradigm": [],
-        "signal_chain": [],
-        "standards": []
-      },
-      "days_since_push": 7,
-      "active": true,
-      "community_active": true,
-      "category": "Hardware & Acquisition",
-      "first_seen": "2026-06-25T12:00:00+00:00",
-      "is_new": false,
-      "_score": 68.335,
-      "enriched": true,
-      "contributors": 61,
-      "releases_count": 1,
-      "total_downloads": 0,
-      "latest_release_tag": "3.260601",
-      "latest_release_at": "2026-06-04T02:01:15Z",
-      "commits_52w": 315,
-      "activity_spark": [
-        4,
-        3,
-        7,
-        3,
-        8,
-        7,
-        4,
-        2,
-        5,
-        8,
-        4,
-        0
-      ],
-      "funding_platforms": [],
-      "funding_url": "",
-      "watchers": 28,
-      "size_kb": 1278055,
-      "open_issues": 54,
-      "homepage": "http://neuroimage.usc.edu/brainstorm",
-      "archived": false,
-      "disabled": false,
-      "foundation": {
-        "license_file": true,
-        "readme": true,
-        "contributing": true,
-        "code_of_conduct": true,
-        "health_pct": 62,
-        "citation": true,
-        "security_policy": false,
-        "ci": true,
-        "count": 6
-      },
-      "signals": {
-        "overall": 91,
-        "basis": "enriched",
-        "badges": [
-          "osi-licensed",
-          "actively-maintained",
-          "has-releases",
-          "multi-contributor"
-        ],
-        "license": 100,
-        "maintenance": 100,
-        "momentum": 100,
-        "adoption": 56,
-        "team": 100,
-        "docs": 100
-      },
-      "owner": "brainstorm-tools",
-      "repo": "brainstorm3",
-      "evidence_tier": "L2_NEURAL_SIGNAL",
-      "inclusion_reason": "Neural-signal topic or keyword (eeg, meg).",
-      "matched_topics": [
-        "eeg",
-        "electrophysiology",
-        "meg"
-      ],
-      "matched_keywords": [
-        "ecog",
-        "eeg",
-        "electrophysiolog"
-      ],
-      "quality_flags": {
-        "possible_false_positive": false,
-        "low_metadata": false,
-        "missing_license": false,
-        "unclear_license": false,
-        "no_recent_activity": false
-      },
-      "stars_delta_7d": 1,
-      "stars_delta_30d": 1,
-      "rising": false,
-      "falling": false,
-      "axon_relevance": {
-        "acquisition": 0.0,
-        "signal_pipeline": 0.0,
-        "protocol": 0.0,
-        "privacy": 0.0,
-        "runtime": 0.0,
-        "sdk": 0.0
-      },
-      "interop": []
-    },
-    {
-      "full_name": "TBC-TJU/MetaBCI",
-      "html_url": "https://github.com/TBC-TJU/MetaBCI",
-      "description": "MetaBCI: China’s first open-source platform for non-invasive brain computer interface. The project of MetaBCI is led by Prof. Minpeng Xu from Tianjin University, China.",
-      "stars": 561,
-      "forks": 251,
-      "language": "Python",
-      "pushed_at": "2026-08-31T01:07:02Z",
-      "updated_at": "2026-09-01T02:35:29Z",
-      "topics": [
-        "bci",
-        "platform"
-      ],
-      "license": "GPL-2.0",
-      "has_license": true,
-      "brs": 64,
-      "relevance_tier": "L4_EXPLICIT_BCI",
-      "relevance_ledger": [
-        {
-          "points": 55,
-          "kind": "core",
-          "reason": "Explicit BCI topic (bci, brain-computer)",
-          "terms": 3
-        }
-      ],
-      "facets": {
-        "modality": [],
-        "paradigm": [],
-        "signal_chain": [],
-        "standards": []
-      },
-      "days_since_push": 1,
-      "active": true,
-      "community_active": true,
-      "category": "Other",
-      "first_seen": "2026-07-03T06:00:00+00:00",
-      "is_new": false,
-      "_score": 67.738,
-      "enriched": true,
-      "contributors": 28,
-      "releases_count": 4,
-      "total_downloads": 0,
-      "latest_release_tag": "v0.2.0",
-      "latest_release_at": "2026-01-11T14:37:01Z",
-      "commits_52w": 16,
-      "activity_spark": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        1,
-        0
-      ],
-      "funding_platforms": [],
-      "funding_url": "",
-      "watchers": 11,
-      "size_kb": 810,
-      "open_issues": 24,
-      "homepage": "http://metabci.readthedocs.io/",
-      "archived": false,
-      "disabled": false,
-      "foundation": {
-        "license_file": true,
-        "readme": true,
-        "contributing": false,
-        "code_of_conduct": false,
-        "health_pct": 42,
-        "citation": false,
-        "security_policy": false,
-        "ci": true,
-        "count": 3
-      },
-      "signals": {
-        "overall": 82,
-        "basis": "enriched",
-        "badges": [
-          "osi-licensed",
-          "actively-maintained",
-          "has-releases",
-          "multi-contributor"
-        ],
-        "license": 100,
-        "maintenance": 100,
-        "momentum": 49,
-        "adoption": 63,
-        "team": 100,
-        "docs": 100
-      },
-      "owner": "TBC-TJU",
-      "repo": "MetaBCI",
-      "evidence_tier": "L3_EXPLICIT_BCI",
-      "inclusion_reason": "Explicit BCI topic (bci).",
-      "matched_topics": [
-        "bci"
-      ],
-      "matched_keywords": [
-        "bci"
-      ],
-      "quality_flags": {
-        "possible_false_positive": false,
-        "low_metadata": false,
-        "missing_license": false,
-        "unclear_license": false,
-        "no_recent_activity": false
-      },
-      "stars_delta_7d": 2,
-      "stars_delta_30d": 14,
       "rising": false,
       "falling": false,
       "axon_relevance": {
@@ -3319,7 +3053,7 @@
       "enriched": true,
       "contributors": 68,
       "releases_count": 100,
-      "total_downloads": 277405,
+      "total_downloads": 277431,
       "latest_release_tag": "5.22.2",
       "latest_release_at": "2026-05-22T22:24:01Z",
       "commits_52w": 74,
@@ -3398,7 +3132,7 @@
         "unclear_license": true,
         "no_recent_activity": true
       },
-      "stars_delta_7d": 7,
+      "stars_delta_7d": 6,
       "stars_delta_30d": 15,
       "rising": false,
       "falling": false,
@@ -3467,7 +3201,7 @@
       "enriched": true,
       "contributors": 81,
       "releases_count": 90,
-      "total_downloads": 349119,
+      "total_downloads": 349154,
       "latest_release_tag": "v2.21.3",
       "latest_release_at": "2026-02-15T04:05:48Z",
       "commits_52w": 19,
@@ -3535,8 +3269,133 @@
         "unclear_license": true,
         "no_recent_activity": true
       },
-      "stars_delta_7d": 3,
+      "stars_delta_7d": 1,
       "stars_delta_30d": 3,
+      "rising": false,
+      "falling": false,
+      "axon_relevance": {
+        "acquisition": 0.0,
+        "signal_pipeline": 0.0,
+        "protocol": 0.0,
+        "privacy": 0.0,
+        "runtime": 0.0,
+        "sdk": 0.0
+      },
+      "interop": []
+    },
+    {
+      "full_name": "TBC-TJU/MetaBCI",
+      "html_url": "https://github.com/TBC-TJU/MetaBCI",
+      "description": "MetaBCI: China’s first open-source platform for non-invasive brain computer interface. The project of MetaBCI is led by Prof. Minpeng Xu from Tianjin University, China.",
+      "stars": 562,
+      "forks": 251,
+      "language": "Python",
+      "pushed_at": "2026-08-31T01:07:02Z",
+      "updated_at": "2026-09-02T08:18:24Z",
+      "topics": [
+        "bci",
+        "platform"
+      ],
+      "license": "GPL-2.0",
+      "has_license": true,
+      "brs": 64,
+      "relevance_tier": "L4_EXPLICIT_BCI",
+      "relevance_ledger": [
+        {
+          "points": 55,
+          "kind": "core",
+          "reason": "Explicit BCI topic (bci, brain-computer)",
+          "terms": 3
+        }
+      ],
+      "facets": {
+        "modality": [],
+        "paradigm": [],
+        "signal_chain": [],
+        "standards": []
+      },
+      "days_since_push": 2,
+      "active": true,
+      "community_active": true,
+      "category": "Other",
+      "first_seen": "2026-07-03T06:00:00+00:00",
+      "is_new": false,
+      "_score": 67.246,
+      "enriched": true,
+      "contributors": 28,
+      "releases_count": 4,
+      "total_downloads": 0,
+      "latest_release_tag": "v0.2.0",
+      "latest_release_at": "2026-01-11T14:37:01Z",
+      "commits_52w": 16,
+      "activity_spark": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "funding_platforms": [],
+      "funding_url": "",
+      "watchers": 11,
+      "size_kb": 810,
+      "open_issues": 24,
+      "homepage": "http://metabci.readthedocs.io/",
+      "archived": false,
+      "disabled": false,
+      "foundation": {
+        "license_file": true,
+        "readme": true,
+        "contributing": false,
+        "code_of_conduct": false,
+        "health_pct": 42,
+        "citation": false,
+        "security_policy": false,
+        "ci": true,
+        "count": 3
+      },
+      "signals": {
+        "overall": 82,
+        "basis": "enriched",
+        "badges": [
+          "osi-licensed",
+          "actively-maintained",
+          "has-releases",
+          "multi-contributor"
+        ],
+        "license": 100,
+        "maintenance": 100,
+        "momentum": 49,
+        "adoption": 63,
+        "team": 100,
+        "docs": 100
+      },
+      "owner": "TBC-TJU",
+      "repo": "MetaBCI",
+      "evidence_tier": "L3_EXPLICIT_BCI",
+      "inclusion_reason": "Explicit BCI topic (bci).",
+      "matched_topics": [
+        "bci"
+      ],
+      "matched_keywords": [
+        "bci"
+      ],
+      "quality_flags": {
+        "possible_false_positive": false,
+        "low_metadata": false,
+        "missing_license": false,
+        "unclear_license": false,
+        "no_recent_activity": false
+      },
+      "stars_delta_7d": 3,
+      "stars_delta_30d": 15,
       "rising": false,
       "falling": false,
       "axon_relevance": {
@@ -4248,7 +4107,7 @@
         "unclear_license": false,
         "no_recent_activity": true
       },
-      "stars_delta_7d": 6,
+      "stars_delta_7d": 5,
       "stars_delta_30d": 27,
       "rising": false,
       "falling": false,
@@ -4389,7 +4248,7 @@
         "unclear_license": true,
         "no_recent_activity": false
       },
-      "stars_delta_7d": 3,
+      "stars_delta_7d": 2,
       "stars_delta_30d": 4,
       "rising": true,
       "falling": false,
@@ -4534,6 +4393,133 @@
         "no_recent_activity": false
       },
       "stars_delta_7d": 0,
+      "stars_delta_30d": 1,
+      "rising": false,
+      "falling": false,
+      "axon_relevance": {
+        "acquisition": 0.0,
+        "signal_pipeline": 0.0,
+        "protocol": 0.0,
+        "privacy": 0.0,
+        "runtime": 0.0,
+        "sdk": 0.0
+      },
+      "interop": []
+    },
+    {
+      "full_name": "brainstorm-tools/brainstorm3",
+      "html_url": "https://github.com/brainstorm-tools/brainstorm3",
+      "description": "Brainstorm software: MEG, EEG, fNIRS, ECoG, sEEG and electrophysiology",
+      "stars": 485,
+      "forks": 189,
+      "language": "MATLAB",
+      "pushed_at": "2026-08-25T01:11:06Z",
+      "updated_at": "2026-08-27T20:00:41Z",
+      "topics": [
+        "eeg",
+        "electrophysiology",
+        "matlab",
+        "meg"
+      ],
+      "license": "GPL-3.0",
+      "has_license": true,
+      "brs": 63,
+      "relevance_tier": "L3_MODALITY_OR_PARADIGM",
+      "relevance_ledger": [
+        {
+          "points": 40,
+          "kind": "modality",
+          "reason": "Acquisition modality (ECoG, EEG, MEG)",
+          "terms": 4
+        },
+        {
+          "points": 25,
+          "kind": "neuro",
+          "reason": "Neuro term (electrophysiology)",
+          "terms": 1
+        }
+      ],
+      "facets": {
+        "modality": [
+          "ECoG",
+          "EEG",
+          "MEG",
+          "fNIRS"
+        ],
+        "paradigm": [],
+        "signal_chain": [],
+        "standards": []
+      },
+      "days_since_push": 8,
+      "active": true,
+      "community_active": true,
+      "category": "Hardware & Acquisition",
+      "first_seen": "2026-06-25T12:00:00+00:00",
+      "is_new": false,
+      "_score": 60.336,
+      "enriched": true,
+      "contributors": 61,
+      "releases_count": 1,
+      "total_downloads": 0,
+      "latest_release_tag": "3.260601",
+      "latest_release_at": "2026-06-04T02:01:15Z",
+      "activity_pending": true,
+      "funding_platforms": [],
+      "funding_url": "",
+      "watchers": 28,
+      "size_kb": 1278055,
+      "open_issues": 54,
+      "homepage": "http://neuroimage.usc.edu/brainstorm",
+      "archived": false,
+      "disabled": false,
+      "foundation": {
+        "license_file": true,
+        "readme": true,
+        "contributing": true,
+        "code_of_conduct": true,
+        "health_pct": 62,
+        "citation": true,
+        "security_policy": false,
+        "ci": true,
+        "count": 6
+      },
+      "signals": {
+        "overall": 85,
+        "basis": "partial",
+        "badges": [
+          "osi-licensed",
+          "actively-maintained",
+          "has-releases",
+          "multi-contributor"
+        ],
+        "license": 100,
+        "maintenance": 85,
+        "adoption": 56,
+        "team": 100,
+        "docs": 100
+      },
+      "owner": "brainstorm-tools",
+      "repo": "brainstorm3",
+      "evidence_tier": "L2_NEURAL_SIGNAL",
+      "inclusion_reason": "Neural-signal topic or keyword (eeg, meg).",
+      "matched_topics": [
+        "eeg",
+        "electrophysiology",
+        "meg"
+      ],
+      "matched_keywords": [
+        "ecog",
+        "eeg",
+        "electrophysiolog"
+      ],
+      "quality_flags": {
+        "possible_false_positive": false,
+        "low_metadata": false,
+        "missing_license": false,
+        "unclear_license": false,
+        "no_recent_activity": false
+      },
+      "stars_delta_7d": 1,
       "stars_delta_30d": 1,
       "rising": false,
       "falling": false,
@@ -4819,156 +4805,6 @@
       "interop": []
     },
     {
-      "full_name": "Elata-Biosciences/elata-bio-sdk",
-      "html_url": "https://github.com/Elata-Biosciences/elata-bio-sdk",
-      "description": "Elata SDK is the cross-platform biosignal toolkit for building neurotechnology and remote biosensing apps on web and native.",
-      "stars": 90,
-      "forks": 8,
-      "language": "TypeScript",
-      "pushed_at": "2026-08-31T00:15:06Z",
-      "updated_at": "2026-09-01T08:10:11Z",
-      "topics": [
-        "biosignal-processing",
-        "biosignals",
-        "brain-computer-interface",
-        "cross-platform",
-        "eeg",
-        "machine-learning",
-        "neurotechnology",
-        "physiological-computing",
-        "rppg",
-        "rust",
-        "sdk",
-        "typescript"
-      ],
-      "license": "MIT",
-      "has_license": true,
-      "brs": 77,
-      "relevance_tier": "L4_EXPLICIT_BCI",
-      "relevance_ledger": [
-        {
-          "points": 55,
-          "kind": "core",
-          "reason": "Explicit BCI topic (brain-computer, brain-computer-interface)",
-          "terms": 2
-        },
-        {
-          "points": 40,
-          "kind": "modality",
-          "reason": "Acquisition modality (EEG)",
-          "terms": 1
-        }
-      ],
-      "facets": {
-        "modality": [
-          "EEG"
-        ],
-        "paradigm": [],
-        "signal_chain": [
-          "Decoding"
-        ],
-        "standards": []
-      },
-      "days_since_push": 1,
-      "active": true,
-      "community_active": true,
-      "category": "Protocols & OS",
-      "first_seen": "2026-06-25T12:00:00+00:00",
-      "is_new": false,
-      "_score": 59.156,
-      "enriched": true,
-      "contributors": 4,
-      "releases_count": 0,
-      "total_downloads": 0,
-      "latest_release_tag": "",
-      "latest_release_at": "",
-      "commits_52w": 264,
-      "activity_spark": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        7,
-        0,
-        0,
-        0,
-        36,
-        0
-      ],
-      "funding_platforms": [],
-      "funding_url": "",
-      "watchers": 0,
-      "size_kb": 88609,
-      "open_issues": 9,
-      "homepage": "https://docs.elata.bio/sdk/overview",
-      "archived": false,
-      "disabled": false,
-      "foundation": {
-        "license_file": true,
-        "readme": true,
-        "contributing": true,
-        "code_of_conduct": true,
-        "health_pct": 87,
-        "citation": false,
-        "security_policy": true,
-        "ci": true,
-        "count": 6
-      },
-      "signals": {
-        "overall": 80,
-        "basis": "enriched",
-        "badges": [
-          "osi-licensed",
-          "actively-maintained",
-          "multi-contributor"
-        ],
-        "license": 100,
-        "maintenance": 100,
-        "momentum": 97,
-        "adoption": 39,
-        "team": 55,
-        "docs": 100
-      },
-      "owner": "Elata-Biosciences",
-      "repo": "elata-bio-sdk",
-      "evidence_tier": "L3_EXPLICIT_BCI",
-      "inclusion_reason": "Explicit BCI topic (brain-computer-interface, neurotechnology).",
-      "matched_topics": [
-        "brain-computer-interface",
-        "eeg",
-        "machine-learning",
-        "neurotechnology",
-        "rust"
-      ],
-      "matched_keywords": [
-        "brain-computer",
-        "eeg",
-        "neuro"
-      ],
-      "quality_flags": {
-        "possible_false_positive": false,
-        "low_metadata": false,
-        "missing_license": false,
-        "unclear_license": false,
-        "no_recent_activity": false
-      },
-      "stars_delta_7d": 2,
-      "stars_delta_30d": 5,
-      "rising": false,
-      "falling": false,
-      "axon_relevance": {
-        "acquisition": 0.0,
-        "signal_pipeline": 0.0,
-        "protocol": 0.0,
-        "privacy": 0.0,
-        "runtime": 0.0,
-        "sdk": 0.34
-      },
-      "interop": []
-    },
-    {
       "full_name": "sccn/eegprep",
       "html_url": "https://github.com/sccn/eegprep",
       "description": "EEGPrep is an automated preprocessing tool for human EEG data built on a benchmarked EEGLAB pipeline",
@@ -5113,6 +4949,156 @@
       "interop": [
         "eeglab"
       ]
+    },
+    {
+      "full_name": "Elata-Biosciences/elata-bio-sdk",
+      "html_url": "https://github.com/Elata-Biosciences/elata-bio-sdk",
+      "description": "Elata SDK is the cross-platform biosignal toolkit for building neurotechnology and remote biosensing apps on web and native.",
+      "stars": 90,
+      "forks": 8,
+      "language": "TypeScript",
+      "pushed_at": "2026-08-31T00:15:06Z",
+      "updated_at": "2026-09-01T08:10:11Z",
+      "topics": [
+        "biosignal-processing",
+        "biosignals",
+        "brain-computer-interface",
+        "cross-platform",
+        "eeg",
+        "machine-learning",
+        "neurotechnology",
+        "physiological-computing",
+        "rppg",
+        "rust",
+        "sdk",
+        "typescript"
+      ],
+      "license": "MIT",
+      "has_license": true,
+      "brs": 77,
+      "relevance_tier": "L4_EXPLICIT_BCI",
+      "relevance_ledger": [
+        {
+          "points": 55,
+          "kind": "core",
+          "reason": "Explicit BCI topic (brain-computer, brain-computer-interface)",
+          "terms": 2
+        },
+        {
+          "points": 40,
+          "kind": "modality",
+          "reason": "Acquisition modality (EEG)",
+          "terms": 1
+        }
+      ],
+      "facets": {
+        "modality": [
+          "EEG"
+        ],
+        "paradigm": [],
+        "signal_chain": [
+          "Decoding"
+        ],
+        "standards": []
+      },
+      "days_since_push": 2,
+      "active": true,
+      "community_active": true,
+      "category": "Protocols & OS",
+      "first_seen": "2026-06-25T12:00:00+00:00",
+      "is_new": false,
+      "_score": 58.656,
+      "enriched": true,
+      "contributors": 4,
+      "releases_count": 0,
+      "total_downloads": 0,
+      "latest_release_tag": "",
+      "latest_release_at": "",
+      "commits_52w": 264,
+      "activity_spark": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        7,
+        0,
+        0,
+        0,
+        36,
+        0
+      ],
+      "funding_platforms": [],
+      "funding_url": "",
+      "watchers": 0,
+      "size_kb": 88609,
+      "open_issues": 9,
+      "homepage": "https://docs.elata.bio/sdk/overview",
+      "archived": false,
+      "disabled": false,
+      "foundation": {
+        "license_file": true,
+        "readme": true,
+        "contributing": true,
+        "code_of_conduct": true,
+        "health_pct": 87,
+        "citation": false,
+        "security_policy": true,
+        "ci": true,
+        "count": 6
+      },
+      "signals": {
+        "overall": 80,
+        "basis": "enriched",
+        "badges": [
+          "osi-licensed",
+          "actively-maintained",
+          "multi-contributor"
+        ],
+        "license": 100,
+        "maintenance": 100,
+        "momentum": 97,
+        "adoption": 39,
+        "team": 55,
+        "docs": 100
+      },
+      "owner": "Elata-Biosciences",
+      "repo": "elata-bio-sdk",
+      "evidence_tier": "L3_EXPLICIT_BCI",
+      "inclusion_reason": "Explicit BCI topic (brain-computer-interface, neurotechnology).",
+      "matched_topics": [
+        "brain-computer-interface",
+        "eeg",
+        "machine-learning",
+        "neurotechnology",
+        "rust"
+      ],
+      "matched_keywords": [
+        "brain-computer",
+        "eeg",
+        "neuro"
+      ],
+      "quality_flags": {
+        "possible_false_positive": false,
+        "low_metadata": false,
+        "missing_license": false,
+        "unclear_license": false,
+        "no_recent_activity": false
+      },
+      "stars_delta_7d": 2,
+      "stars_delta_30d": 5,
+      "rising": false,
+      "falling": false,
+      "axon_relevance": {
+        "acquisition": 0.0,
+        "signal_pipeline": 0.0,
+        "protocol": 0.0,
+        "privacy": 0.0,
+        "runtime": 0.0,
+        "sdk": 0.34
+      },
+      "interop": []
     },
     {
       "full_name": "OpenNFT/OpenNFT",
@@ -5316,7 +5302,7 @@
       "enriched": true,
       "contributors": 25,
       "releases_count": 24,
-      "total_downloads": 60117,
+      "total_downloads": 60119,
       "latest_release_tag": "13.00",
       "latest_release_at": "2026-04-29T18:12:24Z",
       "commits_52w": 106,
@@ -5542,8 +5528,8 @@
       "stars": 217,
       "forks": 62,
       "language": "MATLAB",
-      "pushed_at": "2026-09-01T15:59:42Z",
-      "updated_at": "2026-09-01T16:09:47Z",
+      "pushed_at": "2026-09-02T09:49:40Z",
+      "updated_at": "2026-09-02T09:45:34Z",
       "topics": [
         "brain",
         "dcm",
@@ -5585,14 +5571,14 @@
       "category": "Hardware & Acquisition",
       "first_seen": "2026-06-25T12:00:00+00:00",
       "is_new": false,
-      "_score": 55.211,
+      "_score": 55.255,
       "enriched": true,
-      "contributors": 62,
+      "contributors": 63,
       "releases_count": 10,
-      "total_downloads": 94808,
+      "total_downloads": 94857,
       "latest_release_tag": "26.01.rc1",
       "latest_release_at": "2026-03-30T13:53:26Z",
-      "commits_52w": 170,
+      "commits_52w": 172,
       "activity_spark": [
         6,
         5,
@@ -5605,13 +5591,13 @@
         0,
         5,
         1,
-        0
+        2
       ],
       "funding_platforms": [],
       "funding_url": "",
-      "watchers": 15,
-      "size_kb": 807729,
-      "open_issues": 59,
+      "watchers": 14,
+      "size_kb": 807820,
+      "open_issues": 56,
       "homepage": "https://www.fil.ion.ucl.ac.uk/spm/",
       "archived": false,
       "disabled": false,
@@ -5637,7 +5623,7 @@
         ],
         "license": 100,
         "maintenance": 100,
-        "momentum": 89,
+        "momentum": 90,
         "adoption": 87,
         "team": 100,
         "docs": 100
@@ -5672,151 +5658,6 @@
         "protocol": 0.0,
         "privacy": 0.0,
         "runtime": 0.0,
-        "sdk": 0.0
-      },
-      "interop": []
-    },
-    {
-      "full_name": "dav0dea/goofi-pipe",
-      "html_url": "https://github.com/dav0dea/goofi-pipe",
-      "description": "real-time neuro-/biosignal processing and streaming pipeline",
-      "stars": 43,
-      "forks": 11,
-      "language": "Python",
-      "pushed_at": "2026-08-29T15:45:17Z",
-      "updated_at": "2026-08-20T19:02:10Z",
-      "topics": [
-        "biofeedback",
-        "eeg",
-        "neurofeedback",
-        "real-time",
-        "signal-processing"
-      ],
-      "license": "MIT",
-      "has_license": true,
-      "brs": 64,
-      "relevance_tier": "L3_MODALITY_OR_PARADIGM",
-      "relevance_ledger": [
-        {
-          "points": 40,
-          "kind": "modality",
-          "reason": "Acquisition modality (EEG)",
-          "terms": 1
-        },
-        {
-          "points": 40,
-          "kind": "paradigm",
-          "reason": "BCI paradigm (Neurofeedback)",
-          "terms": 1
-        }
-      ],
-      "facets": {
-        "modality": [
-          "EEG"
-        ],
-        "paradigm": [
-          "Neurofeedback"
-        ],
-        "signal_chain": [
-          "Acquisition",
-          "Application"
-        ],
-        "standards": []
-      },
-      "days_since_push": 3,
-      "active": true,
-      "community_active": true,
-      "category": "Signal Processing",
-      "first_seen": "2026-06-25T12:00:00+00:00",
-      "is_new": false,
-      "_score": 54.365,
-      "enriched": true,
-      "contributors": 7,
-      "releases_count": 0,
-      "total_downloads": 0,
-      "latest_release_tag": "",
-      "latest_release_at": "",
-      "commits_52w": 86,
-      "activity_spark": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        2,
-        0,
-        0
-      ],
-      "funding_platforms": [],
-      "funding_url": "",
-      "watchers": 3,
-      "size_kb": 28009,
-      "open_issues": 1,
-      "homepage": "",
-      "archived": false,
-      "disabled": false,
-      "foundation": {
-        "license_file": true,
-        "readme": true,
-        "contributing": false,
-        "code_of_conduct": false,
-        "health_pct": 42,
-        "citation": false,
-        "security_policy": false,
-        "ci": true,
-        "count": 3
-      },
-      "signals": {
-        "overall": 74,
-        "basis": "enriched",
-        "badges": [
-          "osi-licensed",
-          "actively-maintained",
-          "multi-contributor"
-        ],
-        "license": 100,
-        "maintenance": 100,
-        "momentum": 78,
-        "adoption": 33,
-        "team": 70,
-        "docs": 70
-      },
-      "owner": "dav0dea",
-      "repo": "goofi-pipe",
-      "evidence_tier": "L2_NEURAL_SIGNAL",
-      "inclusion_reason": "Neural-signal topic or keyword (eeg, neurofeedback).",
-      "matched_topics": [
-        "eeg",
-        "neurofeedback",
-        "real-time",
-        "signal-processing"
-      ],
-      "matched_keywords": [
-        "eeg",
-        "neuro",
-        "neurofeedback"
-      ],
-      "quality_flags": {
-        "possible_false_positive": false,
-        "low_metadata": false,
-        "missing_license": false,
-        "unclear_license": false,
-        "no_recent_activity": false
-      },
-      "stars_delta_7d": 0,
-      "stars_delta_30d": 1,
-      "rising": false,
-      "falling": false,
-      "axon_relevance": {
-        "acquisition": 0.0,
-        "signal_pipeline": 0.0,
-        "protocol": 0.0,
-        "privacy": 0.0,
-        "runtime": 0.34,
         "sdk": 0.0
       },
       "interop": []
@@ -6104,152 +5945,6 @@
       "interop": []
     },
     {
-      "full_name": "upsidedownlabs/Chords-Web",
-      "html_url": "https://github.com/upsidedownlabs/Chords-Web",
-      "description": "Chords is a web application that transforms your Arduino board into a powerful bio-potential signal acquisition tool, allowing you to visualize and record ECG, EMG, EOG, and EEG data directly in your browser.",
-      "stars": 39,
-      "forks": 15,
-      "language": "TypeScript",
-      "pushed_at": "2026-08-31T10:12:46Z",
-      "updated_at": "2026-08-31T10:22:26Z",
-      "topics": [
-        "acquisition",
-        "biopotential-signals",
-        "ecg",
-        "eeg",
-        "emg",
-        "eog",
-        "neuroscience",
-        "nueroscience",
-        "physiological-signals",
-        "upsidedownlabs",
-        "web-serial-api"
-      ],
-      "license": null,
-      "has_license": false,
-      "brs": 49,
-      "relevance_tier": "L3_MODALITY_OR_PARADIGM",
-      "relevance_ledger": [
-        {
-          "points": 40,
-          "kind": "modality",
-          "reason": "Acquisition modality (EEG, EMG, EOG)",
-          "terms": 3
-        }
-      ],
-      "facets": {
-        "modality": [
-          "EEG",
-          "EMG",
-          "EOG"
-        ],
-        "paradigm": [],
-        "signal_chain": [
-          "Acquisition",
-          "Application"
-        ],
-        "standards": []
-      },
-      "days_since_push": 1,
-      "active": true,
-      "community_active": true,
-      "category": "Hardware & Acquisition",
-      "first_seen": "2026-07-02T00:00:00+00:00",
-      "is_new": false,
-      "_score": 53.838,
-      "enriched": true,
-      "contributors": 7,
-      "releases_count": 0,
-      "total_downloads": 0,
-      "latest_release_tag": "",
-      "latest_release_at": "",
-      "commits_52w": 36,
-      "activity_spark": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        1
-      ],
-      "funding_platforms": [],
-      "funding_url": "",
-      "watchers": 4,
-      "size_kb": 11979,
-      "open_issues": 8,
-      "homepage": "https://chords.upsidedownlabs.tech/",
-      "archived": false,
-      "disabled": false,
-      "foundation": {
-        "license_file": false,
-        "readme": true,
-        "contributing": false,
-        "code_of_conduct": false,
-        "health_pct": 37,
-        "citation": false,
-        "security_policy": false,
-        "ci": true,
-        "count": 2
-      },
-      "signals": {
-        "overall": 59,
-        "basis": "enriched",
-        "badges": [
-          "actively-maintained",
-          "multi-contributor"
-        ],
-        "license": 0,
-        "maintenance": 100,
-        "momentum": 63,
-        "adoption": 32,
-        "team": 70,
-        "docs": 70
-      },
-      "owner": "upsidedownlabs",
-      "repo": "Chords-Web",
-      "evidence_tier": "L2_NEURAL_SIGNAL",
-      "inclusion_reason": "Neural-signal topic or keyword (eeg, emg).",
-      "matched_topics": [
-        "eeg",
-        "emg",
-        "eog",
-        "neuroscience"
-      ],
-      "matched_keywords": [
-        "eeg",
-        "emg",
-        "neuro"
-      ],
-      "quality_flags": {
-        "possible_false_positive": false,
-        "low_metadata": false,
-        "missing_license": true,
-        "unclear_license": false,
-        "no_recent_activity": false
-      },
-      "stars_delta_7d": 1,
-      "stars_delta_30d": 1,
-      "rising": false,
-      "falling": false,
-      "axon_relevance": {
-        "acquisition": 0.34,
-        "signal_pipeline": 0.0,
-        "protocol": 0.0,
-        "privacy": 0.0,
-        "runtime": 0.0,
-        "sdk": 0.34
-      },
-      "interop": [
-        "arduino"
-      ]
-    },
-    {
       "full_name": "openbraininstitute/eFEL",
       "html_url": "https://github.com/openbraininstitute/eFEL",
       "description": "Electrophys Feature Extraction Library",
@@ -6385,282 +6080,6 @@
         "privacy": 0.0,
         "runtime": 0.0,
         "sdk": 0.34
-      },
-      "interop": []
-    },
-    {
-      "full_name": "ppsp-team/HyPyP",
-      "html_url": "https://github.com/ppsp-team/HyPyP",
-      "description": "The Hyperscanning Python Pipeline",
-      "stars": 100,
-      "forks": 48,
-      "language": "Python",
-      "pushed_at": "2026-07-28T03:15:57Z",
-      "updated_at": "2026-08-17T14:56:02Z",
-      "topics": [
-        "eeg",
-        "fnirs",
-        "hyperscanning",
-        "meg",
-        "neuroscience"
-      ],
-      "license": "BSD-3-Clause",
-      "has_license": true,
-      "brs": 49,
-      "relevance_tier": "L3_MODALITY_OR_PARADIGM",
-      "relevance_ledger": [
-        {
-          "points": 40,
-          "kind": "modality",
-          "reason": "Acquisition modality (EEG, MEG, fNIRS)",
-          "terms": 3
-        }
-      ],
-      "facets": {
-        "modality": [
-          "EEG",
-          "MEG",
-          "fNIRS"
-        ],
-        "paradigm": [],
-        "signal_chain": [],
-        "standards": []
-      },
-      "days_since_push": 35,
-      "active": false,
-      "community_active": true,
-      "category": "Hardware & Acquisition",
-      "first_seen": "2026-07-02T00:00:00+00:00",
-      "is_new": false,
-      "_score": 53.073,
-      "enriched": true,
-      "contributors": 23,
-      "releases_count": 20,
-      "total_downloads": 18,
-      "latest_release_tag": "v0.6.0",
-      "latest_release_at": "2026-04-21T21:57:39Z",
-      "commits_52w": 52,
-      "activity_spark": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "funding_platforms": [],
-      "funding_url": "",
-      "watchers": 6,
-      "size_kb": 147714,
-      "open_issues": 35,
-      "homepage": "",
-      "archived": false,
-      "disabled": false,
-      "foundation": {
-        "license_file": true,
-        "readme": true,
-        "contributing": false,
-        "code_of_conduct": false,
-        "health_pct": 37,
-        "citation": false,
-        "security_policy": false,
-        "ci": true,
-        "count": 3
-      },
-      "signals": {
-        "overall": 74,
-        "basis": "enriched",
-        "badges": [
-          "osi-licensed",
-          "has-releases",
-          "multi-contributor"
-        ],
-        "license": 100,
-        "maintenance": 65,
-        "momentum": 69,
-        "adoption": 66,
-        "team": 85,
-        "docs": 70
-      },
-      "owner": "ppsp-team",
-      "repo": "HyPyP",
-      "evidence_tier": "L2_NEURAL_SIGNAL",
-      "inclusion_reason": "Neural-signal topic or keyword (eeg, meg).",
-      "matched_topics": [
-        "eeg",
-        "fnirs",
-        "meg",
-        "neuroscience"
-      ],
-      "matched_keywords": [
-        "eeg",
-        "neuro"
-      ],
-      "quality_flags": {
-        "possible_false_positive": false,
-        "low_metadata": false,
-        "missing_license": false,
-        "unclear_license": false,
-        "no_recent_activity": false
-      },
-      "stars_delta_7d": 0,
-      "stars_delta_30d": 2,
-      "rising": false,
-      "falling": false,
-      "axon_relevance": {
-        "acquisition": 0.0,
-        "signal_pipeline": 0.0,
-        "protocol": 0.0,
-        "privacy": 0.0,
-        "runtime": 0.0,
-        "sdk": 0.0
-      },
-      "interop": []
-    },
-    {
-      "full_name": "neuroinformatics-unit/spikewrap",
-      "html_url": "https://github.com/neuroinformatics-unit/spikewrap",
-      "description": "A package to manage electrophysiology analysis.",
-      "stars": 22,
-      "forks": 17,
-      "language": "Python",
-      "pushed_at": "2026-08-31T16:30:10Z",
-      "updated_at": "2026-08-27T17:19:27Z",
-      "topics": [
-        "electrophysiology",
-        "extracellular-electrophysiology",
-        "neuropixels"
-      ],
-      "license": "BSD-3-Clause",
-      "has_license": true,
-      "brs": 75,
-      "relevance_tier": "L3_STANDARD_OR_HARDWARE",
-      "relevance_ledger": [
-        {
-          "points": 40,
-          "kind": "modality",
-          "reason": "Acquisition modality (spikes/LFP)",
-          "terms": 1
-        },
-        {
-          "points": 45,
-          "kind": "hardware",
-          "reason": "Named BCI hardware (neuropixels)",
-          "terms": 1
-        },
-        {
-          "points": 25,
-          "kind": "neuro",
-          "reason": "Neuro term (electrophysiology)",
-          "terms": 1
-        }
-      ],
-      "facets": {
-        "modality": [
-          "spikes/LFP"
-        ],
-        "paradigm": [],
-        "signal_chain": [],
-        "standards": []
-      },
-      "days_since_push": 1,
-      "active": true,
-      "community_active": true,
-      "category": "Other",
-      "first_seen": "2026-07-02T00:00:00+00:00",
-      "is_new": false,
-      "_score": 53.046,
-      "enriched": true,
-      "contributors": 9,
-      "releases_count": 8,
-      "total_downloads": 0,
-      "latest_release_tag": "v0.4.0",
-      "latest_release_at": "2026-03-12T18:48:34Z",
-      "commits_52w": 14,
-      "activity_spark": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "funding_platforms": [],
-      "funding_url": "",
-      "watchers": 6,
-      "size_kb": 206825,
-      "open_issues": 28,
-      "homepage": "https://spikewrap.neuroinformatics.dev",
-      "archived": false,
-      "disabled": false,
-      "foundation": {
-        "license_file": true,
-        "readme": true,
-        "contributing": true,
-        "code_of_conduct": true,
-        "health_pct": 75,
-        "citation": false,
-        "security_policy": false,
-        "ci": true,
-        "count": 5
-      },
-      "signals": {
-        "overall": 73,
-        "basis": "enriched",
-        "badges": [
-          "osi-licensed",
-          "actively-maintained",
-          "has-releases",
-          "multi-contributor"
-        ],
-        "license": 100,
-        "maintenance": 100,
-        "momentum": 47,
-        "adoption": 43,
-        "team": 70,
-        "docs": 100
-      },
-      "owner": "neuroinformatics-unit",
-      "repo": "spikewrap",
-      "evidence_tier": "L2_NEURAL_SIGNAL",
-      "inclusion_reason": "Neural-signal topic or keyword (neuro).",
-      "matched_topics": [
-        "electrophysiology"
-      ],
-      "matched_keywords": [
-        "electrophysiolog",
-        "neuro"
-      ],
-      "quality_flags": {
-        "possible_false_positive": false,
-        "low_metadata": false,
-        "missing_license": false,
-        "unclear_license": false,
-        "no_recent_activity": false
-      },
-      "stars_delta_7d": -1,
-      "stars_delta_30d": -1,
-      "rising": false,
-      "falling": false,
-      "axon_relevance": {
-        "acquisition": 0.0,
-        "signal_pipeline": 0.0,
-        "protocol": 0.0,
-        "privacy": 0.0,
-        "runtime": 0.0,
-        "sdk": 0.0
       },
       "interop": []
     },
@@ -6811,74 +6230,65 @@
       "interop": []
     },
     {
-      "full_name": "delvendahl/miniML",
-      "html_url": "https://github.com/delvendahl/miniML",
-      "description": "A deep learning framework for synaptic event detection",
-      "stars": 27,
-      "forks": 12,
+      "full_name": "ppsp-team/HyPyP",
+      "html_url": "https://github.com/ppsp-team/HyPyP",
+      "description": "The Hyperscanning Python Pipeline",
+      "stars": 100,
+      "forks": 48,
       "language": "Python",
-      "pushed_at": "2026-08-31T12:06:26Z",
-      "updated_at": "2026-08-29T22:15:59Z",
+      "pushed_at": "2026-07-28T03:15:57Z",
+      "updated_at": "2026-08-17T14:56:02Z",
       "topics": [
-        "electrophysiology",
-        "machine-learning",
-        "mepsc",
-        "mini-analysis",
-        "neuroscience",
-        "neuroscience-methods",
-        "patch-clamp-recordings",
-        "postsynaptic-currents",
-        "postsynaptic-potentials",
-        "synaptic-transmission"
+        "eeg",
+        "fnirs",
+        "hyperscanning",
+        "meg",
+        "neuroscience"
       ],
-      "license": "MIT",
+      "license": "BSD-3-Clause",
       "has_license": true,
-      "brs": 41,
-      "relevance_tier": "L2_NEURO_TERM",
+      "brs": 49,
+      "relevance_tier": "L3_MODALITY_OR_PARADIGM",
       "relevance_ledger": [
         {
-          "points": 25,
-          "kind": "neuro",
-          "reason": "Neuro term (electrophysiology)",
-          "terms": 1
-        },
-        {
-          "points": 15,
-          "kind": "neuro",
-          "reason": "Neural context (neuroscience, synaptic)",
-          "terms": 2
+          "points": 40,
+          "kind": "modality",
+          "reason": "Acquisition modality (EEG, MEG, fNIRS)",
+          "terms": 3
         }
       ],
       "facets": {
-        "modality": [],
-        "paradigm": [],
-        "signal_chain": [
-          "Decoding"
+        "modality": [
+          "EEG",
+          "MEG",
+          "fNIRS"
         ],
+        "paradigm": [],
+        "signal_chain": [],
         "standards": []
       },
-      "days_since_push": 1,
-      "active": true,
+      "days_since_push": 36,
+      "active": false,
       "community_active": true,
-      "category": "Decoding & ML",
+      "category": "Hardware & Acquisition",
       "first_seen": "2026-07-02T00:00:00+00:00",
       "is_new": false,
-      "_score": 52.719,
+      "_score": 52.573,
       "enriched": true,
-      "contributors": 5,
-      "releases_count": 1,
-      "total_downloads": 0,
-      "latest_release_tag": "v1.0.0",
-      "latest_release_at": "2026-07-24T09:12:11Z",
-      "commits_52w": 59,
+      "contributors": 23,
+      "releases_count": 20,
+      "total_downloads": 18,
+      "latest_release_tag": "v0.6.0",
+      "latest_release_at": "2026-04-21T21:57:39Z",
+      "commits_52w": 52,
       "activity_spark": [
         0,
         0,
-        1,
         0,
         0,
-        16,
-        40,
+        0,
+        0,
+        0,
         0,
         0,
         0,
@@ -6887,10 +6297,10 @@
       ],
       "funding_platforms": [],
       "funding_url": "",
-      "watchers": 8,
-      "size_kb": 259259,
-      "open_issues": 0,
-      "homepage": "https://delvendahl.github.io/miniML/",
+      "watchers": 6,
+      "size_kb": 147714,
+      "open_issues": 35,
+      "homepage": "",
       "archived": false,
       "disabled": false,
       "foundation": {
@@ -6898,39 +6308,39 @@
         "readme": true,
         "contributing": false,
         "code_of_conduct": false,
-        "health_pct": 42,
+        "health_pct": 37,
         "citation": false,
         "security_policy": false,
         "ci": true,
         "count": 3
       },
       "signals": {
-        "overall": 76,
+        "overall": 74,
         "basis": "enriched",
         "badges": [
           "osi-licensed",
-          "actively-maintained",
           "has-releases",
           "multi-contributor"
         ],
         "license": 100,
-        "maintenance": 100,
-        "momentum": 71,
-        "adoption": 31,
-        "team": 70,
-        "docs": 100
+        "maintenance": 65,
+        "momentum": 69,
+        "adoption": 66,
+        "team": 85,
+        "docs": 70
       },
-      "owner": "delvendahl",
-      "repo": "miniML",
+      "owner": "ppsp-team",
+      "repo": "HyPyP",
       "evidence_tier": "L2_NEURAL_SIGNAL",
-      "inclusion_reason": "Neural-signal topic or keyword (neuro).",
+      "inclusion_reason": "Neural-signal topic or keyword (eeg, meg).",
       "matched_topics": [
-        "electrophysiology",
-        "machine-learning",
+        "eeg",
+        "fnirs",
+        "meg",
         "neuroscience"
       ],
       "matched_keywords": [
-        "electrophysiolog",
+        "eeg",
         "neuro"
       ],
       "quality_flags": {
@@ -6940,138 +6350,9 @@
         "unclear_license": false,
         "no_recent_activity": false
       },
-      "stars_delta_7d": 1,
-      "stars_delta_30d": 1,
-      "rising": false,
-      "falling": false,
-      "axon_relevance": {
-        "acquisition": 0.0,
-        "signal_pipeline": 0.0,
-        "protocol": 0.0,
-        "privacy": 0.0,
-        "runtime": 0.0,
-        "sdk": 0.34
-      },
-      "interop": []
-    },
-    {
-      "full_name": "wearable-devices/mudra-skills",
-      "html_url": "https://github.com/wearable-devices/mudra-skills",
-      "description": "Mudra Plugin for Mudra Studio: AI-assisted tools for building apps with Mudra wearable input.",
-      "stars": 6,
-      "forks": 0,
-      "language": "HTML",
-      "pushed_at": "2026-08-31T07:34:31Z",
-      "updated_at": "2026-08-31T07:34:42Z",
-      "topics": [
-        "emg",
-        "skills",
-        "wearable-devices"
-      ],
-      "license": null,
-      "has_license": false,
-      "brs": 40,
-      "relevance_tier": "L3_MODALITY_OR_PARADIGM",
-      "relevance_ledger": [
-        {
-          "points": 40,
-          "kind": "modality",
-          "reason": "Acquisition modality (EMG)",
-          "terms": 1
-        }
-      ],
-      "facets": {
-        "modality": [
-          "EMG"
-        ],
-        "paradigm": [],
-        "signal_chain": [
-          "Acquisition"
-        ],
-        "standards": []
-      },
-      "days_since_push": 1,
-      "active": true,
-      "community_active": true,
-      "category": "Hardware & Acquisition",
-      "first_seen": "2026-07-02T00:00:00+00:00",
-      "is_new": false,
-      "_score": 52.165,
-      "enriched": true,
-      "contributors": 5,
-      "releases_count": 5,
-      "total_downloads": 22,
-      "latest_release_tag": "v3.1.2",
-      "latest_release_at": "2026-08-31T07:32:58Z",
-      "commits_52w": 68,
-      "activity_spark": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        4,
-        0,
-        0,
-        0,
-        0,
-        2
-      ],
-      "funding_platforms": [],
-      "funding_url": "",
-      "watchers": 0,
-      "size_kb": 19169,
-      "open_issues": 0,
-      "homepage": "https://mudra-studio.com",
-      "archived": false,
-      "disabled": false,
-      "foundation": {
-        "license_file": false,
-        "readme": true,
-        "contributing": false,
-        "code_of_conduct": false,
-        "health_pct": 25,
-        "citation": false,
-        "security_policy": false,
-        "ci": true,
-        "count": 2
-      },
-      "signals": {
-        "overall": 62,
-        "basis": "enriched",
-        "badges": [
-          "actively-maintained",
-          "has-releases",
-          "multi-contributor"
-        ],
-        "license": 0,
-        "maintenance": 100,
-        "momentum": 74,
-        "adoption": 34,
-        "team": 70,
-        "docs": 70
-      },
-      "owner": "wearable-devices",
-      "repo": "mudra-skills",
-      "evidence_tier": "L2_NEURAL_SIGNAL",
-      "inclusion_reason": "Neural-signal topic or keyword (emg).",
-      "matched_topics": [
-        "emg"
-      ],
-      "matched_keywords": [
-        "emg"
-      ],
-      "quality_flags": {
-        "possible_false_positive": false,
-        "low_metadata": false,
-        "missing_license": true,
-        "unclear_license": false,
-        "no_recent_activity": false
-      },
-      "stars_delta_7d": 2,
+      "stars_delta_7d": 0,
       "stars_delta_30d": 2,
-      "rising": true,
+      "rising": false,
       "falling": false,
       "axon_relevance": {
         "acquisition": 0.0,
@@ -7523,148 +6804,6 @@
       ]
     },
     {
-      "full_name": "AllenNeuralDynamics/parallax",
-      "html_url": "https://github.com/AllenNeuralDynamics/parallax",
-      "description": "Automatic detection of probe position from multiple camera views",
-      "stars": 4,
-      "forks": 1,
-      "language": "Python",
-      "pushed_at": "2026-08-26T00:36:58Z",
-      "updated_at": "2026-06-05T20:28:42Z",
-      "topics": [
-        "electrophysiology",
-        "machine-vision",
-        "neuropixels",
-        "under-development"
-      ],
-      "license": "MIT",
-      "has_license": true,
-      "brs": 75,
-      "relevance_tier": "L3_STANDARD_OR_HARDWARE",
-      "relevance_ledger": [
-        {
-          "points": 40,
-          "kind": "modality",
-          "reason": "Acquisition modality (spikes/LFP)",
-          "terms": 1
-        },
-        {
-          "points": 45,
-          "kind": "hardware",
-          "reason": "Named BCI hardware (neuropixels)",
-          "terms": 1
-        },
-        {
-          "points": 25,
-          "kind": "neuro",
-          "reason": "Neuro term (electrophysiology)",
-          "terms": 1
-        }
-      ],
-      "facets": {
-        "modality": [
-          "spikes/LFP"
-        ],
-        "paradigm": [],
-        "signal_chain": [],
-        "standards": []
-      },
-      "days_since_push": 6,
-      "active": true,
-      "community_active": true,
-      "category": "Protocols & OS",
-      "first_seen": "2026-07-02T00:00:00+00:00",
-      "is_new": false,
-      "_score": 51.013,
-      "enriched": true,
-      "contributors": 6,
-      "releases_count": 70,
-      "total_downloads": 0,
-      "latest_release_tag": "1.16.2",
-      "latest_release_at": "2026-06-05T20:28:55Z",
-      "commits_52w": 352,
-      "activity_spark": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "funding_platforms": [],
-      "funding_url": "",
-      "watchers": 8,
-      "size_kb": 327605,
-      "open_issues": 14,
-      "homepage": "https://parallax.readthedocs.io/en/latest/index.html",
-      "archived": false,
-      "disabled": false,
-      "foundation": {
-        "license_file": true,
-        "readme": true,
-        "contributing": false,
-        "code_of_conduct": false,
-        "health_pct": 37,
-        "citation": false,
-        "security_policy": false,
-        "ci": true,
-        "count": 3
-      },
-      "signals": {
-        "overall": 82,
-        "basis": "enriched",
-        "badges": [
-          "osi-licensed",
-          "actively-maintained",
-          "has-releases",
-          "multi-contributor"
-        ],
-        "license": 100,
-        "maintenance": 100,
-        "momentum": 100,
-        "adoption": 34,
-        "team": 70,
-        "docs": 100
-      },
-      "owner": "AllenNeuralDynamics",
-      "repo": "parallax",
-      "evidence_tier": "L2_NEURAL_SIGNAL",
-      "inclusion_reason": "Neural-signal topic or keyword (neuro).",
-      "matched_topics": [
-        "electrophysiology"
-      ],
-      "matched_keywords": [
-        "electrophysiolog",
-        "neuro"
-      ],
-      "quality_flags": {
-        "possible_false_positive": false,
-        "low_metadata": false,
-        "missing_license": false,
-        "unclear_license": false,
-        "no_recent_activity": false
-      },
-      "stars_delta_7d": 0,
-      "stars_delta_30d": 0,
-      "rising": false,
-      "falling": false,
-      "axon_relevance": {
-        "acquisition": 0.0,
-        "signal_pipeline": 0.0,
-        "protocol": 0.0,
-        "privacy": 0.0,
-        "runtime": 0.0,
-        "sdk": 0.0
-      },
-      "interop": []
-    },
-    {
       "full_name": "ICUnit/Tokai",
       "html_url": "https://github.com/ICUnit/Tokai",
       "description": "BCI-assisted neurodivergent productivity suite — self-reported or EEG-driven cognitive metrics + an agentic AI task planner (Claude) that adapts to how your brain is actually performing.",
@@ -7811,6 +6950,274 @@
       },
       "stars_delta_7d": 0,
       "stars_delta_30d": 7,
+      "rising": false,
+      "falling": false,
+      "axon_relevance": {
+        "acquisition": 0.0,
+        "signal_pipeline": 0.0,
+        "protocol": 0.0,
+        "privacy": 0.0,
+        "runtime": 0.0,
+        "sdk": 0.0
+      },
+      "interop": []
+    },
+    {
+      "full_name": "AllenNeuralDynamics/parallax",
+      "html_url": "https://github.com/AllenNeuralDynamics/parallax",
+      "description": "Automatic detection of probe position from multiple camera views",
+      "stars": 4,
+      "forks": 1,
+      "language": "Python",
+      "pushed_at": "2026-08-26T00:36:58Z",
+      "updated_at": "2026-06-05T20:28:42Z",
+      "topics": [
+        "electrophysiology",
+        "machine-vision",
+        "neuropixels",
+        "under-development"
+      ],
+      "license": "MIT",
+      "has_license": true,
+      "brs": 75,
+      "relevance_tier": "L3_STANDARD_OR_HARDWARE",
+      "relevance_ledger": [
+        {
+          "points": 40,
+          "kind": "modality",
+          "reason": "Acquisition modality (spikes/LFP)",
+          "terms": 1
+        },
+        {
+          "points": 45,
+          "kind": "hardware",
+          "reason": "Named BCI hardware (neuropixels)",
+          "terms": 1
+        },
+        {
+          "points": 25,
+          "kind": "neuro",
+          "reason": "Neuro term (electrophysiology)",
+          "terms": 1
+        }
+      ],
+      "facets": {
+        "modality": [
+          "spikes/LFP"
+        ],
+        "paradigm": [],
+        "signal_chain": [],
+        "standards": []
+      },
+      "days_since_push": 7,
+      "active": true,
+      "community_active": true,
+      "category": "Protocols & OS",
+      "first_seen": "2026-07-02T00:00:00+00:00",
+      "is_new": false,
+      "_score": 50.513,
+      "enriched": true,
+      "contributors": 6,
+      "releases_count": 70,
+      "total_downloads": 0,
+      "latest_release_tag": "1.16.2",
+      "latest_release_at": "2026-06-05T20:28:55Z",
+      "commits_52w": 352,
+      "activity_spark": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "funding_platforms": [],
+      "funding_url": "",
+      "watchers": 8,
+      "size_kb": 327605,
+      "open_issues": 14,
+      "homepage": "https://parallax.readthedocs.io/en/latest/index.html",
+      "archived": false,
+      "disabled": false,
+      "foundation": {
+        "license_file": true,
+        "readme": true,
+        "contributing": false,
+        "code_of_conduct": false,
+        "health_pct": 37,
+        "citation": false,
+        "security_policy": false,
+        "ci": true,
+        "count": 3
+      },
+      "signals": {
+        "overall": 82,
+        "basis": "enriched",
+        "badges": [
+          "osi-licensed",
+          "actively-maintained",
+          "has-releases",
+          "multi-contributor"
+        ],
+        "license": 100,
+        "maintenance": 100,
+        "momentum": 100,
+        "adoption": 34,
+        "team": 70,
+        "docs": 100
+      },
+      "owner": "AllenNeuralDynamics",
+      "repo": "parallax",
+      "evidence_tier": "L2_NEURAL_SIGNAL",
+      "inclusion_reason": "Neural-signal topic or keyword (neuro).",
+      "matched_topics": [
+        "electrophysiology"
+      ],
+      "matched_keywords": [
+        "electrophysiolog",
+        "neuro"
+      ],
+      "quality_flags": {
+        "possible_false_positive": false,
+        "low_metadata": false,
+        "missing_license": false,
+        "unclear_license": false,
+        "no_recent_activity": false
+      },
+      "stars_delta_7d": 0,
+      "stars_delta_30d": 0,
+      "rising": false,
+      "falling": false,
+      "axon_relevance": {
+        "acquisition": 0.0,
+        "signal_pipeline": 0.0,
+        "protocol": 0.0,
+        "privacy": 0.0,
+        "runtime": 0.0,
+        "sdk": 0.0
+      },
+      "interop": []
+    },
+    {
+      "full_name": "neuroinformatics-unit/spikewrap",
+      "html_url": "https://github.com/neuroinformatics-unit/spikewrap",
+      "description": "A package to manage electrophysiology analysis.",
+      "stars": 22,
+      "forks": 17,
+      "language": "Python",
+      "pushed_at": "2026-08-31T16:30:10Z",
+      "updated_at": "2026-08-27T17:19:27Z",
+      "topics": [
+        "electrophysiology",
+        "extracellular-electrophysiology",
+        "neuropixels"
+      ],
+      "license": "BSD-3-Clause",
+      "has_license": true,
+      "brs": 75,
+      "relevance_tier": "L3_STANDARD_OR_HARDWARE",
+      "relevance_ledger": [
+        {
+          "points": 40,
+          "kind": "modality",
+          "reason": "Acquisition modality (spikes/LFP)",
+          "terms": 1
+        },
+        {
+          "points": 45,
+          "kind": "hardware",
+          "reason": "Named BCI hardware (neuropixels)",
+          "terms": 1
+        },
+        {
+          "points": 25,
+          "kind": "neuro",
+          "reason": "Neuro term (electrophysiology)",
+          "terms": 1
+        }
+      ],
+      "facets": {
+        "modality": [
+          "spikes/LFP"
+        ],
+        "paradigm": [],
+        "signal_chain": [],
+        "standards": []
+      },
+      "days_since_push": 1,
+      "active": true,
+      "community_active": true,
+      "category": "Other",
+      "first_seen": "2026-07-02T00:00:00+00:00",
+      "is_new": false,
+      "_score": 49.517,
+      "enriched": true,
+      "contributors": 9,
+      "releases_count": 8,
+      "total_downloads": 0,
+      "latest_release_tag": "v0.4.0",
+      "latest_release_at": "2026-03-12T18:48:34Z",
+      "activity_pending": true,
+      "funding_platforms": [],
+      "funding_url": "",
+      "watchers": 6,
+      "size_kb": 206825,
+      "open_issues": 28,
+      "homepage": "https://spikewrap.neuroinformatics.dev",
+      "archived": false,
+      "disabled": false,
+      "foundation": {
+        "license_file": true,
+        "readme": true,
+        "contributing": true,
+        "code_of_conduct": true,
+        "health_pct": 75,
+        "citation": false,
+        "security_policy": false,
+        "ci": true,
+        "count": 5
+      },
+      "signals": {
+        "overall": 80,
+        "basis": "partial",
+        "badges": [
+          "osi-licensed",
+          "actively-maintained",
+          "has-releases",
+          "multi-contributor"
+        ],
+        "license": 100,
+        "maintenance": 100,
+        "adoption": 43,
+        "team": 70,
+        "docs": 100
+      },
+      "owner": "neuroinformatics-unit",
+      "repo": "spikewrap",
+      "evidence_tier": "L2_NEURAL_SIGNAL",
+      "inclusion_reason": "Neural-signal topic or keyword (neuro).",
+      "matched_topics": [
+        "electrophysiology"
+      ],
+      "matched_keywords": [
+        "electrophysiolog",
+        "neuro"
+      ],
+      "quality_flags": {
+        "possible_false_positive": false,
+        "low_metadata": false,
+        "missing_license": false,
+        "unclear_license": false,
+        "no_recent_activity": false
+      },
+      "stars_delta_7d": -1,
+      "stars_delta_30d": -1,
       "rising": false,
       "falling": false,
       "axon_relevance": {
@@ -8109,6 +7516,137 @@
         "sdk": 0.0
       },
       "interop": []
+    },
+    {
+      "full_name": "upsidedownlabs/Chords-Web",
+      "html_url": "https://github.com/upsidedownlabs/Chords-Web",
+      "description": "Chords is a web application that transforms your Arduino board into a powerful bio-potential signal acquisition tool, allowing you to visualize and record ECG, EMG, EOG, and EEG data directly in your browser.",
+      "stars": 39,
+      "forks": 15,
+      "language": "TypeScript",
+      "pushed_at": "2026-08-31T10:12:46Z",
+      "updated_at": "2026-08-31T10:22:26Z",
+      "topics": [
+        "acquisition",
+        "biopotential-signals",
+        "ecg",
+        "eeg",
+        "emg",
+        "eog",
+        "neuroscience",
+        "nueroscience",
+        "physiological-signals",
+        "upsidedownlabs",
+        "web-serial-api"
+      ],
+      "license": null,
+      "has_license": false,
+      "brs": 49,
+      "relevance_tier": "L3_MODALITY_OR_PARADIGM",
+      "relevance_ledger": [
+        {
+          "points": 40,
+          "kind": "modality",
+          "reason": "Acquisition modality (EEG, EMG, EOG)",
+          "terms": 3
+        }
+      ],
+      "facets": {
+        "modality": [
+          "EEG",
+          "EMG",
+          "EOG"
+        ],
+        "paradigm": [],
+        "signal_chain": [
+          "Acquisition",
+          "Application"
+        ],
+        "standards": []
+      },
+      "days_since_push": 1,
+      "active": true,
+      "community_active": true,
+      "category": "Hardware & Acquisition",
+      "first_seen": "2026-07-02T00:00:00+00:00",
+      "is_new": false,
+      "_score": 49.133,
+      "enriched": true,
+      "contributors": 7,
+      "releases_count": 0,
+      "total_downloads": 0,
+      "latest_release_tag": "",
+      "latest_release_at": "",
+      "activity_pending": true,
+      "funding_platforms": [],
+      "funding_url": "",
+      "watchers": 4,
+      "size_kb": 11979,
+      "open_issues": 8,
+      "homepage": "https://chords.upsidedownlabs.tech/",
+      "archived": false,
+      "disabled": false,
+      "foundation": {
+        "license_file": false,
+        "readme": true,
+        "contributing": false,
+        "code_of_conduct": false,
+        "health_pct": 37,
+        "citation": false,
+        "security_policy": false,
+        "ci": true,
+        "count": 2
+      },
+      "signals": {
+        "overall": 58,
+        "basis": "partial",
+        "badges": [
+          "actively-maintained",
+          "multi-contributor"
+        ],
+        "license": 0,
+        "maintenance": 100,
+        "adoption": 32,
+        "team": 70,
+        "docs": 70
+      },
+      "owner": "upsidedownlabs",
+      "repo": "Chords-Web",
+      "evidence_tier": "L2_NEURAL_SIGNAL",
+      "inclusion_reason": "Neural-signal topic or keyword (eeg, emg).",
+      "matched_topics": [
+        "eeg",
+        "emg",
+        "eog",
+        "neuroscience"
+      ],
+      "matched_keywords": [
+        "eeg",
+        "emg",
+        "neuro"
+      ],
+      "quality_flags": {
+        "possible_false_positive": false,
+        "low_metadata": false,
+        "missing_license": true,
+        "unclear_license": false,
+        "no_recent_activity": false
+      },
+      "stars_delta_7d": 1,
+      "stars_delta_30d": 1,
+      "rising": false,
+      "falling": false,
+      "axon_relevance": {
+        "acquisition": 0.34,
+        "signal_pipeline": 0.0,
+        "protocol": 0.0,
+        "privacy": 0.0,
+        "runtime": 0.0,
+        "sdk": 0.34
+      },
+      "interop": [
+        "arduino"
+      ]
     },
     {
       "full_name": "xiangzhang1015/Deep-Learning-for-BCI",
@@ -8671,62 +8209,64 @@
       "interop": []
     },
     {
-      "full_name": "ChilloutCharles/BrainFlowsIntoVRChat",
-      "html_url": "https://github.com/ChilloutCharles/BrainFlowsIntoVRChat",
-      "description": "BrainFlow code that sends your brain's relaxation, focus metrics, and machine learned thought commands to vrchat avatar paramaters via OSC.",
-      "stars": 346,
-      "forks": 31,
-      "language": "Python",
-      "pushed_at": "2026-08-02T00:01:08Z",
-      "updated_at": "2026-08-31T12:38:12Z",
+      "full_name": "wherrera10/EDFPlus.jl",
+      "html_url": "https://github.com/wherrera10/EDFPlus.jl",
+      "description": "Reading, writing, and wrangling EEG signal files of BDF and EDF format in Julia",
+      "stars": 7,
+      "forks": 4,
+      "language": "Julia",
+      "pushed_at": "2026-09-01T03:58:28Z",
+      "updated_at": "2026-09-01T03:58:47Z",
       "topics": [
-        "bci",
-        "osc",
-        "vr",
-        "vrchat"
+        "edf-files",
+        "eeg",
+        "european-data-format",
+        "julia",
+        "neuroscience",
+        "signal"
       ],
-      "license": "MIT",
-      "has_license": true,
-      "brs": 75,
-      "relevance_tier": "L4_EXPLICIT_BCI",
+      "license": "NOASSERTION",
+      "has_license": false,
+      "brs": 67,
+      "relevance_tier": "L3_STANDARD_OR_HARDWARE",
       "relevance_ledger": [
         {
-          "points": 55,
-          "kind": "core",
-          "reason": "Explicit BCI topic (bci)",
+          "points": 40,
+          "kind": "modality",
+          "reason": "Acquisition modality (EEG)",
           "terms": 1
         },
         {
           "points": 45,
           "kind": "standard",
-          "reason": "Field standard/format (BrainFlow)",
+          "reason": "Field standard/format (EDF)",
           "terms": 1
         }
       ],
       "facets": {
-        "modality": [],
-        "paradigm": [],
-        "signal_chain": [
-          "Acquisition"
+        "modality": [
+          "EEG"
         ],
+        "paradigm": [],
+        "signal_chain": [],
         "standards": [
-          "BrainFlow"
+          "EDF"
         ]
       },
-      "days_since_push": 30,
+      "days_since_push": 1,
       "active": true,
       "community_active": true,
-      "category": "Protocols & OS",
-      "first_seen": "2026-07-03T06:00:00+00:00",
-      "is_new": false,
-      "_score": 47.641,
+      "category": "Hardware & Acquisition",
+      "first_seen": "2026-08-30T06:00:00+00:00",
+      "is_new": true,
+      "_score": 47.483,
       "enriched": true,
-      "contributors": 9,
-      "releases_count": 0,
+      "contributors": 3,
+      "releases_count": 5,
       "total_downloads": 0,
-      "latest_release_tag": "",
-      "latest_release_at": "",
-      "commits_52w": 11,
+      "latest_release_tag": "v0.2.1",
+      "latest_release_at": "2026-08-31T06:49:27Z",
+      "commits_52w": 47,
       "activity_spark": [
         0,
         0,
@@ -8738,15 +8278,15 @@
         0,
         0,
         0,
-        0,
-        0
+        7,
+        40
       ],
       "funding_platforms": [],
       "funding_url": "",
-      "watchers": 14,
-      "size_kb": 117633,
-      "open_issues": 8,
-      "homepage": "https://linktr.ee/ChilloutCharles",
+      "watchers": 3,
+      "size_kb": 18158,
+      "open_issues": 0,
+      "homepage": "",
       "archived": false,
       "disabled": false,
       "foundation": {
@@ -8757,55 +8297,57 @@
         "health_pct": 42,
         "citation": false,
         "security_policy": false,
-        "ci": false,
-        "count": 2
+        "ci": true,
+        "count": 3
       },
       "signals": {
-        "overall": 71,
+        "overall": 54,
         "basis": "enriched",
         "badges": [
-          "osi-licensed",
           "actively-maintained",
+          "has-releases",
           "multi-contributor"
         ],
-        "license": 100,
-        "maintenance": 85,
-        "momentum": 43,
-        "adoption": 51,
-        "team": 70,
-        "docs": 100
+        "license": 0,
+        "maintenance": 100,
+        "momentum": 67,
+        "adoption": 28,
+        "team": 55,
+        "docs": 40
       },
-      "owner": "ChilloutCharles",
-      "repo": "BrainFlowsIntoVRChat",
-      "evidence_tier": "L3_EXPLICIT_BCI",
-      "inclusion_reason": "Explicit BCI topic (bci).",
+      "owner": "wherrera10",
+      "repo": "EDFPlus.jl",
+      "evidence_tier": "L2_NEURAL_SIGNAL",
+      "inclusion_reason": "Neural-signal topic or keyword (eeg).",
       "matched_topics": [
-        "bci"
+        "eeg",
+        "neuroscience"
       ],
       "matched_keywords": [
-        "bci"
+        "eeg",
+        "neuro"
       ],
       "quality_flags": {
         "possible_false_positive": false,
         "low_metadata": false,
         "missing_license": false,
-        "unclear_license": false,
+        "unclear_license": true,
         "no_recent_activity": false
       },
-      "stars_delta_7d": 1,
-      "stars_delta_30d": 4,
+      "stars_delta_7d": 0,
+      "stars_delta_30d": 0,
       "rising": false,
       "falling": false,
       "axon_relevance": {
         "acquisition": 0.0,
         "signal_pipeline": 0.0,
-        "protocol": 0.34,
+        "protocol": 0.0,
         "privacy": 0.0,
         "runtime": 0.0,
         "sdk": 0.0
       },
       "interop": [
-        "brainflow"
+        "edf"
       ]
     },
     {
@@ -8939,6 +8481,143 @@
         "sdk": 0.0
       },
       "interop": []
+    },
+    {
+      "full_name": "ChilloutCharles/BrainFlowsIntoVRChat",
+      "html_url": "https://github.com/ChilloutCharles/BrainFlowsIntoVRChat",
+      "description": "BrainFlow code that sends your brain's relaxation, focus metrics, and machine learned thought commands to vrchat avatar paramaters via OSC.",
+      "stars": 346,
+      "forks": 31,
+      "language": "Python",
+      "pushed_at": "2026-08-02T00:01:08Z",
+      "updated_at": "2026-08-31T12:38:12Z",
+      "topics": [
+        "bci",
+        "osc",
+        "vr",
+        "vrchat"
+      ],
+      "license": "MIT",
+      "has_license": true,
+      "brs": 75,
+      "relevance_tier": "L4_EXPLICIT_BCI",
+      "relevance_ledger": [
+        {
+          "points": 55,
+          "kind": "core",
+          "reason": "Explicit BCI topic (bci)",
+          "terms": 1
+        },
+        {
+          "points": 45,
+          "kind": "standard",
+          "reason": "Field standard/format (BrainFlow)",
+          "terms": 1
+        }
+      ],
+      "facets": {
+        "modality": [],
+        "paradigm": [],
+        "signal_chain": [
+          "Acquisition"
+        ],
+        "standards": [
+          "BrainFlow"
+        ]
+      },
+      "days_since_push": 31,
+      "active": false,
+      "community_active": true,
+      "category": "Protocols & OS",
+      "first_seen": "2026-07-03T06:00:00+00:00",
+      "is_new": false,
+      "_score": 47.141,
+      "enriched": true,
+      "contributors": 9,
+      "releases_count": 0,
+      "total_downloads": 0,
+      "latest_release_tag": "",
+      "latest_release_at": "",
+      "commits_52w": 11,
+      "activity_spark": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "funding_platforms": [],
+      "funding_url": "",
+      "watchers": 14,
+      "size_kb": 117633,
+      "open_issues": 8,
+      "homepage": "https://linktr.ee/ChilloutCharles",
+      "archived": false,
+      "disabled": false,
+      "foundation": {
+        "license_file": true,
+        "readme": true,
+        "contributing": false,
+        "code_of_conduct": false,
+        "health_pct": 42,
+        "citation": false,
+        "security_policy": false,
+        "ci": false,
+        "count": 2
+      },
+      "signals": {
+        "overall": 66,
+        "basis": "enriched",
+        "badges": [
+          "osi-licensed",
+          "multi-contributor"
+        ],
+        "license": 100,
+        "maintenance": 65,
+        "momentum": 43,
+        "adoption": 51,
+        "team": 70,
+        "docs": 100
+      },
+      "owner": "ChilloutCharles",
+      "repo": "BrainFlowsIntoVRChat",
+      "evidence_tier": "L3_EXPLICIT_BCI",
+      "inclusion_reason": "Explicit BCI topic (bci).",
+      "matched_topics": [
+        "bci"
+      ],
+      "matched_keywords": [
+        "bci"
+      ],
+      "quality_flags": {
+        "possible_false_positive": false,
+        "low_metadata": false,
+        "missing_license": false,
+        "unclear_license": false,
+        "no_recent_activity": false
+      },
+      "stars_delta_7d": 1,
+      "stars_delta_30d": 4,
+      "rising": false,
+      "falling": false,
+      "axon_relevance": {
+        "acquisition": 0.0,
+        "signal_pipeline": 0.0,
+        "protocol": 0.34,
+        "privacy": 0.0,
+        "runtime": 0.0,
+        "sdk": 0.0
+      },
+      "interop": [
+        "brainflow"
+      ]
     },
     {
       "full_name": "thijor/pyntbci",
@@ -9085,6 +8764,120 @@
         "privacy": 0.0,
         "runtime": 0.0,
         "sdk": 0.34
+      },
+      "interop": []
+    },
+    {
+      "full_name": "wearable-devices/mudra-skills",
+      "html_url": "https://github.com/wearable-devices/mudra-skills",
+      "description": "Mudra Plugin for Mudra Studio: AI-assisted tools for building apps with Mudra wearable input.",
+      "stars": 6,
+      "forks": 0,
+      "language": "HTML",
+      "pushed_at": "2026-08-31T07:34:31Z",
+      "updated_at": "2026-08-31T07:34:42Z",
+      "topics": [
+        "emg",
+        "skills",
+        "wearable-devices"
+      ],
+      "license": null,
+      "has_license": false,
+      "brs": 40,
+      "relevance_tier": "L3_MODALITY_OR_PARADIGM",
+      "relevance_ledger": [
+        {
+          "points": 40,
+          "kind": "modality",
+          "reason": "Acquisition modality (EMG)",
+          "terms": 1
+        }
+      ],
+      "facets": {
+        "modality": [
+          "EMG"
+        ],
+        "paradigm": [],
+        "signal_chain": [
+          "Acquisition"
+        ],
+        "standards": []
+      },
+      "days_since_push": 1,
+      "active": true,
+      "community_active": true,
+      "category": "Hardware & Acquisition",
+      "first_seen": "2026-07-02T00:00:00+00:00",
+      "is_new": false,
+      "_score": 46.649,
+      "enriched": true,
+      "contributors": 5,
+      "releases_count": 5,
+      "total_downloads": 22,
+      "latest_release_tag": "v3.1.2",
+      "latest_release_at": "2026-08-31T07:32:58Z",
+      "activity_pending": true,
+      "funding_platforms": [],
+      "funding_url": "",
+      "watchers": 0,
+      "size_kb": 19169,
+      "open_issues": 0,
+      "homepage": "https://mudra-studio.com",
+      "archived": false,
+      "disabled": false,
+      "foundation": {
+        "license_file": false,
+        "readme": true,
+        "contributing": false,
+        "code_of_conduct": false,
+        "health_pct": 25,
+        "citation": false,
+        "security_policy": false,
+        "ci": true,
+        "count": 2
+      },
+      "signals": {
+        "overall": 59,
+        "basis": "partial",
+        "badges": [
+          "actively-maintained",
+          "has-releases",
+          "multi-contributor"
+        ],
+        "license": 0,
+        "maintenance": 100,
+        "adoption": 34,
+        "team": 70,
+        "docs": 70
+      },
+      "owner": "wearable-devices",
+      "repo": "mudra-skills",
+      "evidence_tier": "L2_NEURAL_SIGNAL",
+      "inclusion_reason": "Neural-signal topic or keyword (emg).",
+      "matched_topics": [
+        "emg"
+      ],
+      "matched_keywords": [
+        "emg"
+      ],
+      "quality_flags": {
+        "possible_false_positive": false,
+        "low_metadata": false,
+        "missing_license": true,
+        "unclear_license": false,
+        "no_recent_activity": false
+      },
+      "stars_delta_7d": 2,
+      "stars_delta_30d": 2,
+      "rising": true,
+      "falling": false,
+      "axon_relevance": {
+        "acquisition": 0.0,
+        "signal_pipeline": 0.0,
+        "protocol": 0.0,
+        "privacy": 0.0,
+        "runtime": 0.0,
+        "sdk": 0.0
       },
       "interop": []
     },
@@ -9403,6 +9196,147 @@
       "interop": []
     },
     {
+      "full_name": "open-ephys/onix-fmc-host",
+      "html_url": "https://github.com/open-ephys/onix-fmc-host",
+      "description": "FMC board to acquire from ONIX headstages and breakout boards",
+      "stars": 4,
+      "forks": 2,
+      "language": "HTML",
+      "pushed_at": "2026-09-01T00:41:39Z",
+      "updated_at": "2026-07-27T16:48:00Z",
+      "topics": [
+        "animal-behavior",
+        "closed-loop",
+        "electrophysiology",
+        "hardware",
+        "neuroscience",
+        "open-ephys",
+        "oshw"
+      ],
+      "license": "NOASSERTION",
+      "has_license": false,
+      "brs": 41,
+      "relevance_tier": "L2_NEURO_TERM",
+      "relevance_ledger": [
+        {
+          "points": 25,
+          "kind": "neuro",
+          "reason": "Neuro term (electrophysiology)",
+          "terms": 1
+        },
+        {
+          "points": 15,
+          "kind": "neuro",
+          "reason": "Neural context (ephys, neuroscience)",
+          "terms": 2
+        }
+      ],
+      "facets": {
+        "modality": [],
+        "paradigm": [],
+        "signal_chain": [
+          "Acquisition",
+          "Application"
+        ],
+        "standards": []
+      },
+      "days_since_push": 1,
+      "active": true,
+      "community_active": true,
+      "category": "Hardware & Acquisition",
+      "first_seen": "2026-07-02T00:00:00+00:00",
+      "is_new": false,
+      "_score": 44.233,
+      "enriched": true,
+      "contributors": 6,
+      "releases_count": 5,
+      "total_downloads": 0,
+      "latest_release_tag": "rev-f",
+      "latest_release_at": "2025-05-02T16:59:37Z",
+      "commits_52w": 8,
+      "activity_spark": [
+        0,
+        0,
+        4,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "funding_platforms": [],
+      "funding_url": "",
+      "watchers": 8,
+      "size_kb": 156333,
+      "open_issues": 3,
+      "homepage": "https://open-ephys.github.io/onix-docs/index.html",
+      "archived": false,
+      "disabled": false,
+      "foundation": {
+        "license_file": true,
+        "readme": true,
+        "contributing": false,
+        "code_of_conduct": false,
+        "health_pct": 37,
+        "citation": false,
+        "security_policy": false,
+        "ci": false,
+        "count": 2
+      },
+      "signals": {
+        "overall": 53,
+        "basis": "enriched",
+        "badges": [
+          "actively-maintained",
+          "has-releases",
+          "multi-contributor"
+        ],
+        "license": 0,
+        "maintenance": 100,
+        "momentum": 38,
+        "adoption": 24,
+        "team": 70,
+        "docs": 70
+      },
+      "owner": "open-ephys",
+      "repo": "onix-fmc-host",
+      "evidence_tier": "L2_NEURAL_SIGNAL",
+      "inclusion_reason": "Neural-signal topic or keyword (neuro).",
+      "matched_topics": [
+        "closed-loop",
+        "electrophysiology",
+        "neuroscience"
+      ],
+      "matched_keywords": [
+        "electrophysiolog",
+        "neuro"
+      ],
+      "quality_flags": {
+        "possible_false_positive": false,
+        "low_metadata": false,
+        "missing_license": false,
+        "unclear_license": true,
+        "no_recent_activity": false
+      },
+      "stars_delta_7d": 0,
+      "stars_delta_30d": 0,
+      "rising": false,
+      "falling": false,
+      "axon_relevance": {
+        "acquisition": 0.0,
+        "signal_pipeline": 0.0,
+        "protocol": 0.0,
+        "privacy": 0.0,
+        "runtime": 0.0,
+        "sdk": 0.0
+      },
+      "interop": []
+    },
+    {
       "full_name": "wzpan/wukong-robot",
       "html_url": "https://github.com/wzpan/wukong-robot",
       "description": "🤖 wukong-robot 是一个简单、灵活、优雅的中文语音对话机器人/智能音箱项目，支持ChatGPT多轮对话能力，还可能是首个支持脑机交互的开源智能音箱项目。",
@@ -9531,7 +9465,7 @@
         "unclear_license": false,
         "no_recent_activity": true
       },
-      "stars_delta_7d": -1,
+      "stars_delta_7d": 0,
       "stars_delta_30d": 2,
       "rising": false,
       "falling": false,
@@ -9699,156 +9633,6 @@
         "lsl",
         "mne"
       ]
-    },
-    {
-      "full_name": "BananaPuke/pdf-brain",
-      "html_url": "https://github.com/BananaPuke/pdf-brain",
-      "description": "📚 Index and enrich your PDFs and Markdown files locally for a powerful, unified knowledge base with semantic search capabilities.",
-      "stars": 3,
-      "forks": 1,
-      "language": "TypeScript",
-      "pushed_at": "2026-08-31T01:59:58Z",
-      "updated_at": "2026-08-31T02:00:16Z",
-      "topics": [
-        "assistant-api",
-        "aws",
-        "bci",
-        "brain-computer-interface",
-        "chat-application",
-        "convolutional-neural-networks",
-        "deep-learning",
-        "eeg-analysis",
-        "eeg-classification",
-        "kokoro-82m",
-        "mixture-of-experts",
-        "openai-assistant-api"
-      ],
-      "license": "MIT",
-      "has_license": true,
-      "brs": 78,
-      "relevance_tier": "L4_EXPLICIT_BCI",
-      "relevance_ledger": [
-        {
-          "points": 55,
-          "kind": "core",
-          "reason": "Explicit BCI topic (bci, brain-computer)",
-          "terms": 3
-        },
-        {
-          "points": 40,
-          "kind": "modality",
-          "reason": "Acquisition modality (EEG)",
-          "terms": 1
-        }
-      ],
-      "facets": {
-        "modality": [
-          "EEG"
-        ],
-        "paradigm": [],
-        "signal_chain": [
-          "Decoding",
-          "Application"
-        ],
-        "standards": []
-      },
-      "days_since_push": 1,
-      "active": true,
-      "community_active": true,
-      "category": "Decoding & ML",
-      "first_seen": "2026-06-25T12:00:00+00:00",
-      "is_new": false,
-      "_score": 43.702,
-      "enriched": true,
-      "contributors": 3,
-      "releases_count": 0,
-      "total_downloads": 0,
-      "latest_release_tag": "",
-      "latest_release_at": "",
-      "commits_52w": 83,
-      "activity_spark": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        1
-      ],
-      "funding_platforms": [],
-      "funding_url": "",
-      "watchers": 1,
-      "size_kb": 2217,
-      "open_issues": 0,
-      "homepage": "https://bananapuke.github.io",
-      "archived": false,
-      "disabled": false,
-      "foundation": {
-        "license_file": true,
-        "readme": true,
-        "contributing": false,
-        "code_of_conduct": false,
-        "health_pct": 42,
-        "citation": false,
-        "security_policy": false,
-        "ci": false,
-        "count": 2
-      },
-      "signals": {
-        "overall": 71,
-        "basis": "enriched",
-        "badges": [
-          "osi-licensed",
-          "actively-maintained",
-          "multi-contributor"
-        ],
-        "license": 100,
-        "maintenance": 100,
-        "momentum": 77,
-        "adoption": 12,
-        "team": 55,
-        "docs": 100
-      },
-      "owner": "BananaPuke",
-      "repo": "pdf-brain",
-      "evidence_tier": "L3_EXPLICIT_BCI",
-      "inclusion_reason": "Explicit BCI topic (bci, brain-computer-interface).",
-      "matched_topics": [
-        "bci",
-        "brain-computer-interface",
-        "deep-learning"
-      ],
-      "matched_keywords": [
-        "bci",
-        "brain-computer",
-        "eeg",
-        "neural"
-      ],
-      "quality_flags": {
-        "possible_false_positive": false,
-        "low_metadata": false,
-        "missing_license": false,
-        "unclear_license": false,
-        "no_recent_activity": false
-      },
-      "stars_delta_7d": 0,
-      "stars_delta_30d": 0,
-      "rising": false,
-      "falling": false,
-      "axon_relevance": {
-        "acquisition": 0.0,
-        "signal_pipeline": 0.0,
-        "protocol": 0.0,
-        "privacy": 0.0,
-        "runtime": 0.0,
-        "sdk": 0.34
-      },
-      "interop": []
     },
     {
       "full_name": "LukeMainwaring/cortexdj",
@@ -10151,140 +9935,6 @@
       "interop": []
     },
     {
-      "full_name": "nctrl-lab/nctrl-ephys",
-      "html_url": "https://github.com/nctrl-lab/nctrl-ephys",
-      "description": "Electrophysiology Data Analysis Tools for SpikeGLX and Kilosort",
-      "stars": 8,
-      "forks": 3,
-      "language": "Jupyter Notebook",
-      "pushed_at": "2026-08-28T04:39:39Z",
-      "updated_at": "2026-08-28T04:42:10Z",
-      "topics": [
-        "brain-computer-interface",
-        "kilosort",
-        "neurophysiology",
-        "neuroscience"
-      ],
-      "license": "MIT",
-      "has_license": true,
-      "brs": 71,
-      "relevance_tier": "L4_EXPLICIT_BCI",
-      "relevance_ledger": [
-        {
-          "points": 55,
-          "kind": "core",
-          "reason": "Explicit BCI topic (brain-computer, brain-computer-interface)",
-          "terms": 2
-        },
-        {
-          "points": 25,
-          "kind": "neuro",
-          "reason": "Neuro term (electrophysiology)",
-          "terms": 1
-        }
-      ],
-      "facets": {
-        "modality": [],
-        "paradigm": [],
-        "signal_chain": [],
-        "standards": []
-      },
-      "days_since_push": 4,
-      "active": true,
-      "community_active": true,
-      "category": "Protocols & OS",
-      "first_seen": "2026-07-29T06:00:00+00:00",
-      "is_new": false,
-      "_score": 43.418,
-      "enriched": true,
-      "contributors": 2,
-      "releases_count": 0,
-      "total_downloads": 0,
-      "latest_release_tag": "",
-      "latest_release_at": "",
-      "commits_52w": 20,
-      "activity_spark": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        11,
-        1,
-        1,
-        0,
-        2,
-        0
-      ],
-      "funding_platforms": [],
-      "funding_url": "",
-      "watchers": 2,
-      "size_kb": 3173,
-      "open_issues": 0,
-      "homepage": "",
-      "archived": false,
-      "disabled": false,
-      "foundation": {
-        "license_file": true,
-        "readme": true,
-        "contributing": false,
-        "code_of_conduct": false,
-        "health_pct": 50,
-        "citation": false,
-        "security_policy": false,
-        "ci": false,
-        "count": 2
-      },
-      "signals": {
-        "overall": 62,
-        "basis": "enriched",
-        "badges": [
-          "osi-licensed",
-          "actively-maintained"
-        ],
-        "license": 100,
-        "maintenance": 100,
-        "momentum": 53,
-        "adoption": 19,
-        "team": 40,
-        "docs": 70
-      },
-      "owner": "nctrl-lab",
-      "repo": "nctrl-ephys",
-      "evidence_tier": "L3_EXPLICIT_BCI",
-      "inclusion_reason": "Explicit BCI topic (brain-computer-interface).",
-      "matched_topics": [
-        "brain-computer-interface",
-        "neuroscience"
-      ],
-      "matched_keywords": [
-        "brain-computer",
-        "electrophysiolog",
-        "neuro"
-      ],
-      "quality_flags": {
-        "possible_false_positive": false,
-        "low_metadata": false,
-        "missing_license": false,
-        "unclear_license": false,
-        "no_recent_activity": false
-      },
-      "stars_delta_7d": 0,
-      "stars_delta_30d": 0,
-      "rising": false,
-      "falling": false,
-      "axon_relevance": {
-        "acquisition": 0.0,
-        "signal_pipeline": 0.0,
-        "protocol": 0.0,
-        "privacy": 0.0,
-        "runtime": 0.0,
-        "sdk": 0.0
-      },
-      "interop": []
-    },
-    {
       "full_name": "pieeg-club/EEGwithRaspberryPI",
       "html_url": "https://github.com/pieeg-club/EEGwithRaspberryPI",
       "description": "Not supported. Measure 8 EEG channels with Shield PiEEG and RaspberryPi in C library",
@@ -10567,11 +10217,295 @@
       "interop": []
     },
     {
+      "full_name": "BananaPuke/pdf-brain",
+      "html_url": "https://github.com/BananaPuke/pdf-brain",
+      "description": "📚 Index and enrich your PDFs and Markdown files locally for a powerful, unified knowledge base with semantic search capabilities.",
+      "stars": 3,
+      "forks": 1,
+      "language": "TypeScript",
+      "pushed_at": "2026-08-31T01:59:58Z",
+      "updated_at": "2026-08-31T02:00:16Z",
+      "topics": [
+        "assistant-api",
+        "aws",
+        "bci",
+        "brain-computer-interface",
+        "chat-application",
+        "convolutional-neural-networks",
+        "deep-learning",
+        "eeg-analysis",
+        "eeg-classification",
+        "kokoro-82m",
+        "mixture-of-experts",
+        "openai-assistant-api"
+      ],
+      "license": "MIT",
+      "has_license": true,
+      "brs": 78,
+      "relevance_tier": "L4_EXPLICIT_BCI",
+      "relevance_ledger": [
+        {
+          "points": 55,
+          "kind": "core",
+          "reason": "Explicit BCI topic (bci, brain-computer)",
+          "terms": 3
+        },
+        {
+          "points": 40,
+          "kind": "modality",
+          "reason": "Acquisition modality (EEG)",
+          "terms": 1
+        }
+      ],
+      "facets": {
+        "modality": [
+          "EEG"
+        ],
+        "paradigm": [],
+        "signal_chain": [
+          "Decoding",
+          "Application"
+        ],
+        "standards": []
+      },
+      "days_since_push": 2,
+      "active": true,
+      "community_active": true,
+      "category": "Decoding & ML",
+      "first_seen": "2026-06-25T12:00:00+00:00",
+      "is_new": false,
+      "_score": 43.202,
+      "enriched": true,
+      "contributors": 3,
+      "releases_count": 0,
+      "total_downloads": 0,
+      "latest_release_tag": "",
+      "latest_release_at": "",
+      "commits_52w": 83,
+      "activity_spark": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "funding_platforms": [],
+      "funding_url": "",
+      "watchers": 1,
+      "size_kb": 2217,
+      "open_issues": 0,
+      "homepage": "https://bananapuke.github.io",
+      "archived": false,
+      "disabled": false,
+      "foundation": {
+        "license_file": true,
+        "readme": true,
+        "contributing": false,
+        "code_of_conduct": false,
+        "health_pct": 42,
+        "citation": false,
+        "security_policy": false,
+        "ci": false,
+        "count": 2
+      },
+      "signals": {
+        "overall": 71,
+        "basis": "enriched",
+        "badges": [
+          "osi-licensed",
+          "actively-maintained",
+          "multi-contributor"
+        ],
+        "license": 100,
+        "maintenance": 100,
+        "momentum": 77,
+        "adoption": 12,
+        "team": 55,
+        "docs": 100
+      },
+      "owner": "BananaPuke",
+      "repo": "pdf-brain",
+      "evidence_tier": "L3_EXPLICIT_BCI",
+      "inclusion_reason": "Explicit BCI topic (bci, brain-computer-interface).",
+      "matched_topics": [
+        "bci",
+        "brain-computer-interface",
+        "deep-learning"
+      ],
+      "matched_keywords": [
+        "bci",
+        "brain-computer",
+        "eeg",
+        "neural"
+      ],
+      "quality_flags": {
+        "possible_false_positive": false,
+        "low_metadata": false,
+        "missing_license": false,
+        "unclear_license": false,
+        "no_recent_activity": false
+      },
+      "stars_delta_7d": 0,
+      "stars_delta_30d": 0,
+      "rising": false,
+      "falling": false,
+      "axon_relevance": {
+        "acquisition": 0.0,
+        "signal_pipeline": 0.0,
+        "protocol": 0.0,
+        "privacy": 0.0,
+        "runtime": 0.0,
+        "sdk": 0.34
+      },
+      "interop": []
+    },
+    {
+      "full_name": "nctrl-lab/nctrl-ephys",
+      "html_url": "https://github.com/nctrl-lab/nctrl-ephys",
+      "description": "Electrophysiology Data Analysis Tools for SpikeGLX and Kilosort",
+      "stars": 8,
+      "forks": 3,
+      "language": "Jupyter Notebook",
+      "pushed_at": "2026-08-28T04:39:39Z",
+      "updated_at": "2026-08-28T04:42:10Z",
+      "topics": [
+        "brain-computer-interface",
+        "kilosort",
+        "neurophysiology",
+        "neuroscience"
+      ],
+      "license": "MIT",
+      "has_license": true,
+      "brs": 71,
+      "relevance_tier": "L4_EXPLICIT_BCI",
+      "relevance_ledger": [
+        {
+          "points": 55,
+          "kind": "core",
+          "reason": "Explicit BCI topic (brain-computer, brain-computer-interface)",
+          "terms": 2
+        },
+        {
+          "points": 25,
+          "kind": "neuro",
+          "reason": "Neuro term (electrophysiology)",
+          "terms": 1
+        }
+      ],
+      "facets": {
+        "modality": [],
+        "paradigm": [],
+        "signal_chain": [],
+        "standards": []
+      },
+      "days_since_push": 5,
+      "active": true,
+      "community_active": true,
+      "category": "Protocols & OS",
+      "first_seen": "2026-07-29T06:00:00+00:00",
+      "is_new": false,
+      "_score": 42.918,
+      "enriched": true,
+      "contributors": 2,
+      "releases_count": 0,
+      "total_downloads": 0,
+      "latest_release_tag": "",
+      "latest_release_at": "",
+      "commits_52w": 20,
+      "activity_spark": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        11,
+        1,
+        1,
+        0,
+        2,
+        0
+      ],
+      "funding_platforms": [],
+      "funding_url": "",
+      "watchers": 2,
+      "size_kb": 3173,
+      "open_issues": 0,
+      "homepage": "",
+      "archived": false,
+      "disabled": false,
+      "foundation": {
+        "license_file": true,
+        "readme": true,
+        "contributing": false,
+        "code_of_conduct": false,
+        "health_pct": 50,
+        "citation": false,
+        "security_policy": false,
+        "ci": false,
+        "count": 2
+      },
+      "signals": {
+        "overall": 62,
+        "basis": "enriched",
+        "badges": [
+          "osi-licensed",
+          "actively-maintained"
+        ],
+        "license": 100,
+        "maintenance": 100,
+        "momentum": 53,
+        "adoption": 19,
+        "team": 40,
+        "docs": 70
+      },
+      "owner": "nctrl-lab",
+      "repo": "nctrl-ephys",
+      "evidence_tier": "L3_EXPLICIT_BCI",
+      "inclusion_reason": "Explicit BCI topic (brain-computer-interface).",
+      "matched_topics": [
+        "brain-computer-interface",
+        "neuroscience"
+      ],
+      "matched_keywords": [
+        "brain-computer",
+        "electrophysiolog",
+        "neuro"
+      ],
+      "quality_flags": {
+        "possible_false_positive": false,
+        "low_metadata": false,
+        "missing_license": false,
+        "unclear_license": false,
+        "no_recent_activity": false
+      },
+      "stars_delta_7d": 0,
+      "stars_delta_30d": 0,
+      "rising": false,
+      "falling": false,
+      "axon_relevance": {
+        "acquisition": 0.0,
+        "signal_pipeline": 0.0,
+        "protocol": 0.0,
+        "privacy": 0.0,
+        "runtime": 0.0,
+        "sdk": 0.0
+      },
+      "interop": []
+    },
+    {
       "full_name": "mne-tools/mne-bids",
       "html_url": "https://github.com/mne-tools/mne-bids",
       "description": "MNE-BIDS is a Python package that allows you to read and write BIDS-compatible datasets with the help of MNE-Python.",
       "stars": 181,
-      "forks": 113,
+      "forks": 114,
       "language": "Python",
       "pushed_at": "2026-09-01T20:50:35Z",
       "updated_at": "2026-09-01T20:46:57Z",
@@ -10648,7 +10582,7 @@
       "funding_url": "",
       "watchers": 17,
       "size_kb": 76401,
-      "open_issues": 91,
+      "open_issues": 92,
       "homepage": "https://mne.tools/mne-bids/",
       "archived": false,
       "disabled": false,
@@ -11015,141 +10949,6 @@
       "interop": []
     },
     {
-      "full_name": "cortex-lab/phy",
-      "html_url": "https://github.com/cortex-lab/phy",
-      "description": "phy: interactive visualization and manual spike sorting of large-scale ephys data",
-      "stars": 427,
-      "forks": 187,
-      "language": "Python",
-      "pushed_at": "2026-09-01T21:47:11Z",
-      "updated_at": "2026-09-01T22:53:00Z",
-      "topics": [
-        "data-analysis",
-        "electrophysiology",
-        "python"
-      ],
-      "license": "BSD-3-Clause",
-      "has_license": true,
-      "brs": 55,
-      "relevance_tier": "L3_MODALITY_OR_PARADIGM",
-      "relevance_ledger": [
-        {
-          "points": 40,
-          "kind": "modality",
-          "reason": "Acquisition modality (spikes/LFP)",
-          "terms": 1
-        },
-        {
-          "points": 25,
-          "kind": "neuro",
-          "reason": "Neuro term (electrophysiology)",
-          "terms": 1
-        }
-      ],
-      "facets": {
-        "modality": [
-          "spikes/LFP"
-        ],
-        "paradigm": [],
-        "signal_chain": [],
-        "standards": []
-      },
-      "days_since_push": 0,
-      "active": true,
-      "community_active": true,
-      "category": "Other",
-      "first_seen": "2026-07-02T00:00:00+00:00",
-      "is_new": false,
-      "_score": 41.999,
-      "enriched": true,
-      "contributors": 24,
-      "releases_count": 1,
-      "total_downloads": 10,
-      "latest_release_tag": "v2.1.0",
-      "latest_release_at": "2026-07-17T10:45:00Z",
-      "commits_52w": 166,
-      "activity_spark": [
-        1,
-        0,
-        0,
-        1,
-        18,
-        67,
-        2,
-        2,
-        5,
-        2,
-        0,
-        0
-      ],
-      "funding_platforms": [],
-      "funding_url": "",
-      "watchers": 26,
-      "size_kb": 8920,
-      "open_issues": 84,
-      "homepage": "",
-      "archived": false,
-      "disabled": false,
-      "foundation": {
-        "license_file": true,
-        "readme": true,
-        "contributing": false,
-        "code_of_conduct": true,
-        "health_pct": 50,
-        "citation": false,
-        "security_policy": false,
-        "ci": true,
-        "count": 4
-      },
-      "signals": {
-        "overall": 84,
-        "basis": "enriched",
-        "badges": [
-          "osi-licensed",
-          "actively-maintained",
-          "has-releases",
-          "multi-contributor"
-        ],
-        "license": 100,
-        "maintenance": 100,
-        "momentum": 89,
-        "adoption": 60,
-        "team": 85,
-        "docs": 70
-      },
-      "owner": "cortex-lab",
-      "repo": "phy",
-      "evidence_tier": "L0_WEAK_ADJACENT",
-      "inclusion_reason": "Weak adjacent signal; flagged for review.",
-      "matched_topics": [
-        "electrophysiology"
-      ],
-      "matched_keywords": [
-        "electrophysiolog",
-        "spike sorting"
-      ],
-      "quality_flags": {
-        "possible_false_positive": true,
-        "low_metadata": false,
-        "missing_license": false,
-        "unclear_license": false,
-        "no_recent_activity": true
-      },
-      "stars_delta_7d": 2,
-      "stars_delta_30d": 4,
-      "rising": false,
-      "falling": false,
-      "axon_relevance": {
-        "acquisition": 0.0,
-        "signal_pipeline": 0.0,
-        "protocol": 0.0,
-        "privacy": 0.0,
-        "runtime": 0.34,
-        "sdk": 0.0
-      },
-      "interop": []
-    },
-    {
       "full_name": "mims-harvard/UniTS",
       "html_url": "https://github.com/mims-harvard/UniTS",
       "description": "A unified multi-task time series model.",
@@ -11331,13 +11130,13 @@
         ],
         "standards": []
       },
-      "days_since_push": 13,
+      "days_since_push": 14,
       "active": true,
       "community_active": true,
       "category": "Hardware & Acquisition",
       "first_seen": "2026-06-25T12:00:00+00:00",
       "is_new": false,
-      "_score": 41.366,
+      "_score": 40.866,
       "enriched": true,
       "contributors": 1,
       "releases_count": 0,
@@ -11595,271 +11394,6 @@
       "interop": []
     },
     {
-      "full_name": "Jalte-Diye-Foundation/NuroLab",
-      "html_url": "https://github.com/Jalte-Diye-Foundation/NuroLab",
-      "description": "Smart devices for Improvement of Mental Health",
-      "stars": 7,
-      "forks": 5,
-      "language": "Kotlin",
-      "pushed_at": "2026-08-24T08:46:11Z",
-      "updated_at": "2026-08-13T03:18:10Z",
-      "topics": [
-        "brain-computer-interface",
-        "brain-imaging",
-        "mental-health",
-        "mental-peace"
-      ],
-      "license": null,
-      "has_license": false,
-      "brs": 61,
-      "relevance_tier": "L4_EXPLICIT_BCI",
-      "relevance_ledger": [
-        {
-          "points": 55,
-          "kind": "core",
-          "reason": "Explicit BCI topic (brain-computer, brain-computer-interface)",
-          "terms": 2
-        }
-      ],
-      "facets": {
-        "modality": [],
-        "paradigm": [],
-        "signal_chain": [],
-        "standards": []
-      },
-      "days_since_push": 8,
-      "active": true,
-      "community_active": true,
-      "category": "Other",
-      "first_seen": "2026-06-25T12:00:00+00:00",
-      "is_new": false,
-      "_score": 40.631,
-      "enriched": true,
-      "contributors": 2,
-      "releases_count": 0,
-      "total_downloads": 0,
-      "latest_release_tag": "",
-      "latest_release_at": "",
-      "commits_52w": 16,
-      "activity_spark": [
-        4,
-        1,
-        0,
-        4,
-        0,
-        0,
-        0,
-        3,
-        1,
-        0,
-        0,
-        0
-      ],
-      "funding_platforms": [],
-      "funding_url": "",
-      "watchers": 2,
-      "size_kb": 722142,
-      "open_issues": 5,
-      "homepage": "https://reallyrealeducation.org/Nurolab.html",
-      "archived": false,
-      "disabled": false,
-      "foundation": {
-        "license_file": false,
-        "readme": true,
-        "contributing": true,
-        "code_of_conduct": true,
-        "health_pct": 75,
-        "citation": false,
-        "security_policy": false,
-        "ci": true,
-        "count": 4
-      },
-      "signals": {
-        "overall": 46,
-        "basis": "enriched",
-        "badges": [
-          "actively-maintained"
-        ],
-        "license": 0,
-        "maintenance": 85,
-        "momentum": 49,
-        "adoption": 18,
-        "team": 40,
-        "docs": 70
-      },
-      "owner": "Jalte-Diye-Foundation",
-      "repo": "NuroLab",
-      "evidence_tier": "L3_EXPLICIT_BCI",
-      "inclusion_reason": "Explicit BCI topic (brain-computer-interface).",
-      "matched_topics": [
-        "brain-computer-interface"
-      ],
-      "matched_keywords": [
-        "brain-computer"
-      ],
-      "quality_flags": {
-        "possible_false_positive": false,
-        "low_metadata": false,
-        "missing_license": true,
-        "unclear_license": false,
-        "no_recent_activity": false
-      },
-      "stars_delta_7d": 0,
-      "stars_delta_30d": 0,
-      "rising": false,
-      "falling": false,
-      "axon_relevance": {
-        "acquisition": 0.0,
-        "signal_pipeline": 0.0,
-        "protocol": 0.0,
-        "privacy": 0.0,
-        "runtime": 0.0,
-        "sdk": 0.0
-      },
-      "interop": []
-    },
-    {
-      "full_name": "Zbezz-git/NeuroScope",
-      "html_url": "https://github.com/Zbezz-git/NeuroScope",
-      "description": "🔍 Visualize and analyze neural network execution in real-time for PyTorch, TensorFlow, and JAX. Enhance model insight with performance profiling and gradient tracking.",
-      "stars": 3,
-      "forks": 0,
-      "language": "Python",
-      "pushed_at": "2026-08-31T02:04:51Z",
-      "updated_at": "2026-08-31T02:04:57Z",
-      "topics": [
-        "biosignals",
-        "bugbounty-tool",
-        "containers",
-        "crawler",
-        "ecg",
-        "eeg",
-        "entropy",
-        "eog",
-        "heart-rate",
-        "kubernetes",
-        "neural-networks",
-        "physiology"
-      ],
-      "license": "MIT",
-      "has_license": true,
-      "brs": 46,
-      "relevance_tier": "L3_MODALITY_OR_PARADIGM",
-      "relevance_ledger": [
-        {
-          "points": 40,
-          "kind": "modality",
-          "reason": "Acquisition modality (EEG, EOG)",
-          "terms": 2
-        }
-      ],
-      "facets": {
-        "modality": [
-          "EEG",
-          "EOG"
-        ],
-        "paradigm": [],
-        "signal_chain": [
-          "Decoding"
-        ],
-        "standards": []
-      },
-      "days_since_push": 1,
-      "active": true,
-      "community_active": true,
-      "category": "Hardware & Acquisition",
-      "first_seen": "2026-06-25T12:00:00+00:00",
-      "is_new": false,
-      "_score": 40.553,
-      "enriched": true,
-      "contributors": 2,
-      "releases_count": 0,
-      "total_downloads": 0,
-      "latest_release_tag": "",
-      "latest_release_at": "",
-      "commits_52w": 10,
-      "activity_spark": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        1
-      ],
-      "funding_platforms": [],
-      "funding_url": "",
-      "watchers": 1,
-      "size_kb": 23645,
-      "open_issues": 0,
-      "homepage": "https://zbezz-git.github.io",
-      "archived": false,
-      "disabled": false,
-      "foundation": {
-        "license_file": true,
-        "readme": true,
-        "contributing": false,
-        "code_of_conduct": false,
-        "health_pct": 42,
-        "citation": false,
-        "security_policy": false,
-        "ci": false,
-        "count": 2
-      },
-      "signals": {
-        "overall": 61,
-        "basis": "enriched",
-        "badges": [
-          "osi-licensed",
-          "actively-maintained"
-        ],
-        "license": 100,
-        "maintenance": 100,
-        "momentum": 42,
-        "adoption": 12,
-        "team": 40,
-        "docs": 100
-      },
-      "owner": "Zbezz-git",
-      "repo": "NeuroScope",
-      "evidence_tier": "L2_NEURAL_SIGNAL",
-      "inclusion_reason": "Neural-signal topic or keyword (eeg, eog).",
-      "matched_topics": [
-        "eeg",
-        "eog"
-      ],
-      "matched_keywords": [
-        "eeg",
-        "neural",
-        "neuro"
-      ],
-      "quality_flags": {
-        "possible_false_positive": false,
-        "low_metadata": false,
-        "missing_license": false,
-        "unclear_license": false,
-        "no_recent_activity": false
-      },
-      "stars_delta_7d": 0,
-      "stars_delta_30d": 0,
-      "rising": false,
-      "falling": false,
-      "axon_relevance": {
-        "acquisition": 0.0,
-        "signal_pipeline": 0.0,
-        "protocol": 0.0,
-        "privacy": 0.0,
-        "runtime": 0.34,
-        "sdk": 0.0
-      },
-      "interop": []
-    },
-    {
       "full_name": "Wanyea/NeuroGaze",
       "html_url": "https://github.com/Wanyea/NeuroGaze",
       "description": "Codebase for NeuroGaze: A Hybrid EEG and Eye-Tracking Brain-Computer Interface for Hands-Free Interaction in Virtual Reality 🧠👁️🖥️ 10.3389/fnhum.2025.1695446",
@@ -11971,142 +11505,6 @@
         "bci",
         "brain-computer",
         "eeg",
-        "neuro"
-      ],
-      "quality_flags": {
-        "possible_false_positive": false,
-        "low_metadata": false,
-        "missing_license": false,
-        "unclear_license": false,
-        "no_recent_activity": false
-      },
-      "stars_delta_7d": 0,
-      "stars_delta_30d": 0,
-      "rising": false,
-      "falling": false,
-      "axon_relevance": {
-        "acquisition": 0.0,
-        "signal_pipeline": 0.0,
-        "protocol": 0.0,
-        "privacy": 0.0,
-        "runtime": 0.0,
-        "sdk": 0.0
-      },
-      "interop": []
-    },
-    {
-      "full_name": "etherealcomputing/Ouija",
-      "html_url": "https://github.com/etherealcomputing/Ouija",
-      "description": "God-View for your brain",
-      "stars": 10,
-      "forks": 1,
-      "language": "TypeScript",
-      "pushed_at": "2026-08-17T03:51:16Z",
-      "updated_at": "2026-08-17T03:51:28Z",
-      "topics": [
-        "artificial-intelligence",
-        "brain-computer-interface",
-        "deep-learning",
-        "machine-learning",
-        "neuroimaging",
-        "neurotech",
-        "neurotechnology"
-      ],
-      "license": "MIT",
-      "has_license": true,
-      "brs": 64,
-      "relevance_tier": "L4_EXPLICIT_BCI",
-      "relevance_ledger": [
-        {
-          "points": 55,
-          "kind": "core",
-          "reason": "Explicit BCI topic (brain-computer, brain-computer-interface)",
-          "terms": 3
-        }
-      ],
-      "facets": {
-        "modality": [],
-        "paradigm": [],
-        "signal_chain": [
-          "Decoding"
-        ],
-        "standards": []
-      },
-      "days_since_push": 15,
-      "active": true,
-      "community_active": true,
-      "category": "Decoding & ML",
-      "first_seen": "2026-06-25T12:00:00+00:00",
-      "is_new": false,
-      "_score": 40.419,
-      "enriched": true,
-      "contributors": 3,
-      "releases_count": 0,
-      "total_downloads": 0,
-      "latest_release_tag": "",
-      "latest_release_at": "",
-      "commits_52w": 49,
-      "activity_spark": [
-        0,
-        0,
-        21,
-        25,
-        0,
-        0,
-        1,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "funding_platforms": [],
-      "funding_url": "",
-      "watchers": 2,
-      "size_kb": 5417,
-      "open_issues": 0,
-      "homepage": "https://ouija-ten.vercel.app",
-      "archived": false,
-      "disabled": false,
-      "foundation": {
-        "license_file": true,
-        "readme": true,
-        "contributing": false,
-        "code_of_conduct": false,
-        "health_pct": 37,
-        "citation": false,
-        "security_policy": false,
-        "ci": true,
-        "count": 3
-      },
-      "signals": {
-        "overall": 67,
-        "basis": "enriched",
-        "badges": [
-          "osi-licensed",
-          "actively-maintained",
-          "multi-contributor"
-        ],
-        "license": 100,
-        "maintenance": 85,
-        "momentum": 68,
-        "adoption": 21,
-        "team": 55,
-        "docs": 100
-      },
-      "owner": "etherealcomputing",
-      "repo": "Ouija",
-      "evidence_tier": "L3_EXPLICIT_BCI",
-      "inclusion_reason": "Explicit BCI topic (brain-computer-interface, neurotech, neurotechnology).",
-      "matched_topics": [
-        "brain-computer-interface",
-        "deep-learning",
-        "machine-learning",
-        "neurotech",
-        "neurotechnology"
-      ],
-      "matched_keywords": [
-        "brain-computer",
         "neuro"
       ],
       "quality_flags": {
@@ -12421,6 +11819,147 @@
       "interop": []
     },
     {
+      "full_name": "Zbezz-git/NeuroScope",
+      "html_url": "https://github.com/Zbezz-git/NeuroScope",
+      "description": "🔍 Visualize and analyze neural network execution in real-time for PyTorch, TensorFlow, and JAX. Enhance model insight with performance profiling and gradient tracking.",
+      "stars": 3,
+      "forks": 0,
+      "language": "Python",
+      "pushed_at": "2026-08-31T02:04:51Z",
+      "updated_at": "2026-08-31T02:04:57Z",
+      "topics": [
+        "biosignals",
+        "bugbounty-tool",
+        "containers",
+        "crawler",
+        "ecg",
+        "eeg",
+        "entropy",
+        "eog",
+        "heart-rate",
+        "kubernetes",
+        "neural-networks",
+        "physiology"
+      ],
+      "license": "MIT",
+      "has_license": true,
+      "brs": 46,
+      "relevance_tier": "L3_MODALITY_OR_PARADIGM",
+      "relevance_ledger": [
+        {
+          "points": 40,
+          "kind": "modality",
+          "reason": "Acquisition modality (EEG, EOG)",
+          "terms": 2
+        }
+      ],
+      "facets": {
+        "modality": [
+          "EEG",
+          "EOG"
+        ],
+        "paradigm": [],
+        "signal_chain": [
+          "Decoding"
+        ],
+        "standards": []
+      },
+      "days_since_push": 2,
+      "active": true,
+      "community_active": true,
+      "category": "Hardware & Acquisition",
+      "first_seen": "2026-06-25T12:00:00+00:00",
+      "is_new": false,
+      "_score": 40.053,
+      "enriched": true,
+      "contributors": 2,
+      "releases_count": 0,
+      "total_downloads": 0,
+      "latest_release_tag": "",
+      "latest_release_at": "",
+      "commits_52w": 10,
+      "activity_spark": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "funding_platforms": [],
+      "funding_url": "",
+      "watchers": 1,
+      "size_kb": 23645,
+      "open_issues": 0,
+      "homepage": "https://zbezz-git.github.io",
+      "archived": false,
+      "disabled": false,
+      "foundation": {
+        "license_file": true,
+        "readme": true,
+        "contributing": false,
+        "code_of_conduct": false,
+        "health_pct": 42,
+        "citation": false,
+        "security_policy": false,
+        "ci": false,
+        "count": 2
+      },
+      "signals": {
+        "overall": 61,
+        "basis": "enriched",
+        "badges": [
+          "osi-licensed",
+          "actively-maintained"
+        ],
+        "license": 100,
+        "maintenance": 100,
+        "momentum": 42,
+        "adoption": 12,
+        "team": 40,
+        "docs": 100
+      },
+      "owner": "Zbezz-git",
+      "repo": "NeuroScope",
+      "evidence_tier": "L2_NEURAL_SIGNAL",
+      "inclusion_reason": "Neural-signal topic or keyword (eeg, eog).",
+      "matched_topics": [
+        "eeg",
+        "eog"
+      ],
+      "matched_keywords": [
+        "eeg",
+        "neural",
+        "neuro"
+      ],
+      "quality_flags": {
+        "possible_false_positive": false,
+        "low_metadata": false,
+        "missing_license": false,
+        "unclear_license": false,
+        "no_recent_activity": false
+      },
+      "stars_delta_7d": 0,
+      "stars_delta_30d": 0,
+      "rising": false,
+      "falling": false,
+      "axon_relevance": {
+        "acquisition": 0.0,
+        "signal_pipeline": 0.0,
+        "protocol": 0.0,
+        "privacy": 0.0,
+        "runtime": 0.34,
+        "sdk": 0.0
+      },
+      "interop": []
+    },
+    {
       "full_name": "analyticalmonk/awesome-neuroscience",
       "html_url": "https://github.com/analyticalmonk/awesome-neuroscience",
       "description": "A curated list of awesome neuroscience libraries, software and any content related to the domain.",
@@ -12497,7 +12036,7 @@
       "funding_url": "",
       "watchers": 76,
       "size_kb": 179,
-      "open_issues": 6,
+      "open_issues": 4,
       "homepage": "https://www.akashtandon.in/awesome-neuroscience/",
       "archived": false,
       "disabled": false,
@@ -12560,100 +12099,66 @@
       "interop": []
     },
     {
-      "full_name": "ruvnet/ruv-neural",
-      "html_url": "https://github.com/ruvnet/ruv-neural",
-      "description": "The open closed-loop OS for gamma-entrainment research — a Rust/WASM/edge harness to measure, adapt & compare 40 Hz multisensory stimulation protocols with signed, reproducible evidence. Research-grade, not a medical device.",
-      "stars": 30,
-      "forks": 8,
-      "language": "Rust",
-      "pushed_at": "2026-08-09T02:02:06Z",
-      "updated_at": "2026-08-25T13:19:40Z",
+      "full_name": "etherealcomputing/Ouija",
+      "html_url": "https://github.com/etherealcomputing/Ouija",
+      "description": "God-View for your brain",
+      "stars": 10,
+      "forks": 1,
+      "language": "TypeScript",
+      "pushed_at": "2026-08-17T03:51:16Z",
+      "updated_at": "2026-08-17T03:51:28Z",
       "topics": [
-        "bci",
+        "artificial-intelligence",
         "brain-computer-interface",
-        "brain-mapping",
-        "closed-loop",
-        "dsp",
-        "eeg",
-        "gamma-entrainment",
-        "graph-theory",
-        "magnetometry",
-        "minimum-cut",
-        "neural-decoding",
-        "neurofeedback"
+        "deep-learning",
+        "machine-learning",
+        "neuroimaging",
+        "neurotech",
+        "neurotechnology"
       ],
       "license": "MIT",
       "has_license": true,
-      "brs": 93,
+      "brs": 61,
       "relevance_tier": "L4_EXPLICIT_BCI",
       "relevance_ledger": [
         {
           "points": 55,
           "kind": "core",
-          "reason": "Explicit BCI topic (bci, brain-computer)",
-          "terms": 3
-        },
-        {
-          "points": 40,
-          "kind": "modality",
-          "reason": "Acquisition modality (EEG)",
-          "terms": 1
-        },
-        {
-          "points": 40,
-          "kind": "paradigm",
-          "reason": "BCI paradigm (Neurofeedback)",
-          "terms": 1
-        },
-        {
-          "points": 25,
-          "kind": "neuro",
-          "reason": "Neuro term (neural-decoding)",
-          "terms": 1
-        },
-        {
-          "points": 25,
-          "kind": "neuro",
-          "reason": "Neuro-anchored 'neural' phrase (e.g. neural interface/signal/decoding)",
-          "terms": 1
+          "reason": "Explicit BCI topic (brain-computer, brain-computer-interface)",
+          "terms": 2
         }
       ],
       "facets": {
-        "modality": [
-          "EEG"
-        ],
-        "paradigm": [
-          "Neurofeedback"
-        ],
+        "modality": [],
+        "paradigm": [],
         "signal_chain": [
-          "Decoding",
-          "Application"
+          "Decoding"
         ],
         "standards": []
       },
-      "days_since_push": 23,
+      "days_since_push": 16,
       "active": true,
       "community_active": true,
       "category": "Decoding & ML",
       "first_seen": "2026-06-25T12:00:00+00:00",
       "is_new": false,
-      "_score": 39.849,
+      "_score": 39.919,
       "enriched": true,
       "contributors": 3,
       "releases_count": 0,
       "total_downloads": 0,
       "latest_release_tag": "",
       "latest_release_at": "",
-      "commits_52w": 21,
+      "commits_52w": 49,
       "activity_spark": [
-        10,
+        0,
+        0,
+        21,
+        25,
+        0,
         0,
         1,
         0,
-        0,
-        0,
-        0,
-        6,
         0,
         0,
         0,
@@ -12661,10 +12166,10 @@
       ],
       "funding_platforms": [],
       "funding_url": "",
-      "watchers": 1,
-      "size_kb": 1654,
-      "open_issues": 1,
-      "homepage": "",
+      "watchers": 2,
+      "size_kb": 5417,
+      "open_issues": 0,
+      "homepage": "https://ouija-ten.vercel.app",
       "archived": false,
       "disabled": false,
       "foundation": {
@@ -12672,14 +12177,14 @@
         "readme": true,
         "contributing": false,
         "code_of_conduct": false,
-        "health_pct": 42,
+        "health_pct": 37,
         "citation": false,
         "security_policy": false,
         "ci": true,
         "count": 3
       },
       "signals": {
-        "overall": 63,
+        "overall": 67,
         "basis": "enriched",
         "badges": [
           "osi-licensed",
@@ -12688,30 +12193,25 @@
         ],
         "license": 100,
         "maintenance": 85,
-        "momentum": 54,
-        "adoption": 30,
+        "momentum": 68,
+        "adoption": 21,
         "team": 55,
-        "docs": 70
+        "docs": 100
       },
-      "owner": "ruvnet",
-      "repo": "ruv-neural",
+      "owner": "etherealcomputing",
+      "repo": "Ouija",
       "evidence_tier": "L3_EXPLICIT_BCI",
-      "inclusion_reason": "Explicit BCI topic (bci, brain-computer-interface).",
+      "inclusion_reason": "Explicit BCI topic (brain-computer-interface, neurotech, neurotechnology).",
       "matched_topics": [
-        "bci",
         "brain-computer-interface",
-        "closed-loop",
-        "eeg",
-        "neural-decoding",
-        "neurofeedback"
+        "deep-learning",
+        "machine-learning",
+        "neurotech",
+        "neurotechnology"
       ],
       "matched_keywords": [
-        "bci",
         "brain-computer",
-        "eeg",
-        "neural",
-        "neuro",
-        "neurofeedback"
+        "neuro"
       ],
       "quality_flags": {
         "possible_false_positive": false,
@@ -12721,12 +12221,142 @@
         "no_recent_activity": false
       },
       "stars_delta_7d": 0,
-      "stars_delta_30d": 5,
+      "stars_delta_30d": 0,
       "rising": false,
       "falling": false,
       "axon_relevance": {
         "acquisition": 0.0,
-        "signal_pipeline": 0.34,
+        "signal_pipeline": 0.0,
+        "protocol": 0.0,
+        "privacy": 0.0,
+        "runtime": 0.0,
+        "sdk": 0.0
+      },
+      "interop": []
+    },
+    {
+      "full_name": "degibug-del/spectral-grammar",
+      "html_url": "https://github.com/degibug-del/spectral-grammar",
+      "description": "",
+      "stars": 2,
+      "forks": 0,
+      "language": "Python",
+      "pushed_at": "2026-09-01T05:20:56Z",
+      "updated_at": "2026-09-01T05:21:15Z",
+      "topics": [
+        "brain-computer-interface",
+        "eigenvalues",
+        "grammar",
+        "interpretable-ai",
+        "neuroscience",
+        "python"
+      ],
+      "license": null,
+      "has_license": false,
+      "brs": 61,
+      "relevance_tier": "L4_EXPLICIT_BCI",
+      "relevance_ledger": [
+        {
+          "points": 55,
+          "kind": "core",
+          "reason": "Explicit BCI topic (brain-computer, brain-computer-interface)",
+          "terms": 2
+        }
+      ],
+      "facets": {
+        "modality": [],
+        "paradigm": [],
+        "signal_chain": [
+          "Feature extraction"
+        ],
+        "standards": []
+      },
+      "days_since_push": 1,
+      "active": true,
+      "community_active": true,
+      "category": "Signal Processing",
+      "first_seen": "2026-07-27T12:00:00+00:00",
+      "is_new": false,
+      "_score": 39.769,
+      "enriched": true,
+      "contributors": 1,
+      "releases_count": 0,
+      "total_downloads": 0,
+      "latest_release_tag": "",
+      "latest_release_at": "",
+      "commits_52w": 26,
+      "activity_spark": [
+        0,
+        0,
+        0,
+        0,
+        25,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "funding_platforms": [],
+      "funding_url": "",
+      "watchers": 1,
+      "size_kb": 20108,
+      "open_issues": 0,
+      "homepage": "",
+      "archived": false,
+      "disabled": false,
+      "foundation": {
+        "license_file": false,
+        "readme": true,
+        "contributing": false,
+        "code_of_conduct": false,
+        "health_pct": 14,
+        "citation": false,
+        "security_policy": false,
+        "ci": false,
+        "count": 1
+      },
+      "signals": {
+        "overall": 39,
+        "basis": "enriched",
+        "badges": [
+          "actively-maintained"
+        ],
+        "license": 0,
+        "maintenance": 100,
+        "momentum": 57,
+        "adoption": 10,
+        "team": 20,
+        "docs": 0
+      },
+      "owner": "degibug-del",
+      "repo": "spectral-grammar",
+      "evidence_tier": "L3_EXPLICIT_BCI",
+      "inclusion_reason": "Explicit BCI topic (brain-computer-interface).",
+      "matched_topics": [
+        "brain-computer-interface",
+        "neuroscience"
+      ],
+      "matched_keywords": [
+        "brain-computer",
+        "neuro"
+      ],
+      "quality_flags": {
+        "possible_false_positive": false,
+        "low_metadata": true,
+        "missing_license": true,
+        "unclear_license": false,
+        "no_recent_activity": false
+      },
+      "stars_delta_7d": 0,
+      "stars_delta_30d": 0,
+      "rising": false,
+      "falling": false,
+      "axon_relevance": {
+        "acquisition": 0.0,
+        "signal_pipeline": 0.0,
         "protocol": 0.0,
         "privacy": 0.0,
         "runtime": 0.0,
@@ -13001,6 +12631,181 @@
       "axon_relevance": {
         "acquisition": 0.0,
         "signal_pipeline": 0.0,
+        "protocol": 0.0,
+        "privacy": 0.0,
+        "runtime": 0.0,
+        "sdk": 0.0
+      },
+      "interop": []
+    },
+    {
+      "full_name": "ruvnet/ruv-neural",
+      "html_url": "https://github.com/ruvnet/ruv-neural",
+      "description": "The open closed-loop OS for gamma-entrainment research — a Rust/WASM/edge harness to measure, adapt & compare 40 Hz multisensory stimulation protocols with signed, reproducible evidence. Research-grade, not a medical device.",
+      "stars": 30,
+      "forks": 8,
+      "language": "Rust",
+      "pushed_at": "2026-08-09T02:02:06Z",
+      "updated_at": "2026-08-25T13:19:40Z",
+      "topics": [
+        "bci",
+        "brain-computer-interface",
+        "brain-mapping",
+        "closed-loop",
+        "dsp",
+        "eeg",
+        "gamma-entrainment",
+        "graph-theory",
+        "magnetometry",
+        "minimum-cut",
+        "neural-decoding",
+        "neurofeedback"
+      ],
+      "license": "MIT",
+      "has_license": true,
+      "brs": 93,
+      "relevance_tier": "L4_EXPLICIT_BCI",
+      "relevance_ledger": [
+        {
+          "points": 55,
+          "kind": "core",
+          "reason": "Explicit BCI topic (bci, brain-computer)",
+          "terms": 3
+        },
+        {
+          "points": 40,
+          "kind": "modality",
+          "reason": "Acquisition modality (EEG)",
+          "terms": 1
+        },
+        {
+          "points": 40,
+          "kind": "paradigm",
+          "reason": "BCI paradigm (Neurofeedback)",
+          "terms": 1
+        },
+        {
+          "points": 25,
+          "kind": "neuro",
+          "reason": "Neuro term (neural-decoding)",
+          "terms": 1
+        },
+        {
+          "points": 25,
+          "kind": "neuro",
+          "reason": "Neuro-anchored 'neural' phrase (e.g. neural interface/signal/decoding)",
+          "terms": 1
+        }
+      ],
+      "facets": {
+        "modality": [
+          "EEG"
+        ],
+        "paradigm": [
+          "Neurofeedback"
+        ],
+        "signal_chain": [
+          "Decoding",
+          "Application"
+        ],
+        "standards": []
+      },
+      "days_since_push": 24,
+      "active": true,
+      "community_active": true,
+      "category": "Decoding & ML",
+      "first_seen": "2026-06-25T12:00:00+00:00",
+      "is_new": false,
+      "_score": 39.349,
+      "enriched": true,
+      "contributors": 3,
+      "releases_count": 0,
+      "total_downloads": 0,
+      "latest_release_tag": "",
+      "latest_release_at": "",
+      "commits_52w": 21,
+      "activity_spark": [
+        10,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0,
+        0
+      ],
+      "funding_platforms": [],
+      "funding_url": "",
+      "watchers": 1,
+      "size_kb": 1654,
+      "open_issues": 1,
+      "homepage": "",
+      "archived": false,
+      "disabled": false,
+      "foundation": {
+        "license_file": true,
+        "readme": true,
+        "contributing": false,
+        "code_of_conduct": false,
+        "health_pct": 42,
+        "citation": false,
+        "security_policy": false,
+        "ci": true,
+        "count": 3
+      },
+      "signals": {
+        "overall": 63,
+        "basis": "enriched",
+        "badges": [
+          "osi-licensed",
+          "actively-maintained",
+          "multi-contributor"
+        ],
+        "license": 100,
+        "maintenance": 85,
+        "momentum": 54,
+        "adoption": 30,
+        "team": 55,
+        "docs": 70
+      },
+      "owner": "ruvnet",
+      "repo": "ruv-neural",
+      "evidence_tier": "L3_EXPLICIT_BCI",
+      "inclusion_reason": "Explicit BCI topic (bci, brain-computer-interface).",
+      "matched_topics": [
+        "bci",
+        "brain-computer-interface",
+        "closed-loop",
+        "eeg",
+        "neural-decoding",
+        "neurofeedback"
+      ],
+      "matched_keywords": [
+        "bci",
+        "brain-computer",
+        "eeg",
+        "neural",
+        "neuro",
+        "neurofeedback"
+      ],
+      "quality_flags": {
+        "possible_false_positive": false,
+        "low_metadata": false,
+        "missing_license": false,
+        "unclear_license": false,
+        "no_recent_activity": false
+      },
+      "stars_delta_7d": 0,
+      "stars_delta_30d": 5,
+      "rising": false,
+      "falling": false,
+      "axon_relevance": {
+        "acquisition": 0.0,
+        "signal_pipeline": 0.34,
         "protocol": 0.0,
         "privacy": 0.0,
         "runtime": 0.0,
@@ -13493,151 +13298,6 @@
       ]
     },
     {
-      "full_name": "AxonOS-org/axonos-rfcs",
-      "html_url": "https://github.com/AxonOS-org/axonos-rfcs",
-      "description": "Proposals, design documents, and architectural decisions for the AxonOS project.",
-      "stars": 3,
-      "forks": 0,
-      "language": "",
-      "pushed_at": "2026-08-26T23:54:45Z",
-      "updated_at": "2026-08-27T16:19:58Z",
-      "topics": [
-        "axonos",
-        "bci",
-        "eeg",
-        "embedded-systems",
-        "engineering",
-        "kernel",
-        "neural-networks",
-        "real-time",
-        "rfcs",
-        "rust"
-      ],
-      "license": "CC-BY-SA-4.0",
-      "has_license": true,
-      "brs": 73,
-      "relevance_tier": "L4_EXPLICIT_BCI",
-      "relevance_ledger": [
-        {
-          "points": 55,
-          "kind": "core",
-          "reason": "Explicit BCI topic (bci)",
-          "terms": 1
-        },
-        {
-          "points": 40,
-          "kind": "modality",
-          "reason": "Acquisition modality (EEG)",
-          "terms": 1
-        }
-      ],
-      "facets": {
-        "modality": [
-          "EEG"
-        ],
-        "paradigm": [],
-        "signal_chain": [],
-        "standards": []
-      },
-      "days_since_push": 6,
-      "active": true,
-      "community_active": true,
-      "category": "Protocols & OS",
-      "first_seen": "2026-07-29T06:00:00+00:00",
-      "is_new": false,
-      "_score": 38.491,
-      "enriched": true,
-      "contributors": 1,
-      "releases_count": 1,
-      "total_downloads": 0,
-      "latest_release_tag": "v1.0.0",
-      "latest_release_at": "2026-05-31T03:53:43Z",
-      "commits_52w": 20,
-      "activity_spark": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        4,
-        0,
-        2,
-        0,
-        1,
-        0
-      ],
-      "funding_platforms": [],
-      "funding_url": "",
-      "watchers": 1,
-      "size_kb": 293,
-      "open_issues": 0,
-      "homepage": "https://axonos.org",
-      "archived": false,
-      "disabled": false,
-      "foundation": {
-        "license_file": true,
-        "readme": true,
-        "contributing": true,
-        "code_of_conduct": true,
-        "health_pct": 87,
-        "citation": true,
-        "security_policy": true,
-        "ci": true,
-        "count": 7
-      },
-      "signals": {
-        "overall": 61,
-        "basis": "enriched",
-        "badges": [
-          "osi-licensed",
-          "actively-maintained",
-          "has-releases"
-        ],
-        "license": 100,
-        "maintenance": 100,
-        "momentum": 53,
-        "adoption": 14,
-        "team": 20,
-        "docs": 100
-      },
-      "owner": "AxonOS-org",
-      "repo": "axonos-rfcs",
-      "evidence_tier": "L3_EXPLICIT_BCI",
-      "inclusion_reason": "Explicit BCI topic (bci).",
-      "matched_topics": [
-        "bci",
-        "eeg",
-        "real-time",
-        "rust"
-      ],
-      "matched_keywords": [
-        "bci",
-        "eeg",
-        "neural"
-      ],
-      "quality_flags": {
-        "possible_false_positive": false,
-        "low_metadata": false,
-        "missing_license": false,
-        "unclear_license": false,
-        "no_recent_activity": false
-      },
-      "stars_delta_7d": 0,
-      "stars_delta_30d": 0,
-      "rising": false,
-      "falling": false,
-      "axon_relevance": {
-        "acquisition": 0.0,
-        "signal_pipeline": 0.0,
-        "protocol": 0.0,
-        "privacy": 0.0,
-        "runtime": 0.68,
-        "sdk": 0.0
-      },
-      "interop": []
-    },
-    {
       "full_name": "advien/reborn-medtech-project",
       "html_url": "https://github.com/advien/reborn-medtech-project",
       "description": "Modular safety-first control architecture for a human-in-the-loop active elbow orthosis with EMG, IMU, simulation, and bounded ML. Researching how assistive robotic systems should determine appropriate assistance under uncertain sensing con",
@@ -13752,273 +13412,6 @@
       ],
       "matched_keywords": [
         "emg"
-      ],
-      "quality_flags": {
-        "possible_false_positive": false,
-        "low_metadata": false,
-        "missing_license": false,
-        "unclear_license": false,
-        "no_recent_activity": false
-      },
-      "stars_delta_7d": 0,
-      "stars_delta_30d": 0,
-      "rising": false,
-      "falling": false,
-      "axon_relevance": {
-        "acquisition": 0.0,
-        "signal_pipeline": 0.0,
-        "protocol": 0.0,
-        "privacy": 0.0,
-        "runtime": 0.0,
-        "sdk": 0.0
-      },
-      "interop": []
-    },
-    {
-      "full_name": "SAKEverse/sake",
-      "html_url": "https://github.com/SAKEverse/sake",
-      "description": "Batch processing toolbox for spectral analysis of EEG/LFP data",
-      "stars": 2,
-      "forks": 1,
-      "language": "Python",
-      "pushed_at": "2026-08-27T18:37:30Z",
-      "updated_at": "2026-08-27T18:42:25Z",
-      "topics": [
-        "batch-processing",
-        "eeg",
-        "lfp",
-        "neuroscience",
-        "python",
-        "spectral-analysis"
-      ],
-      "license": "Apache-2.0",
-      "has_license": true,
-      "brs": 46,
-      "relevance_tier": "L3_MODALITY_OR_PARADIGM",
-      "relevance_ledger": [
-        {
-          "points": 40,
-          "kind": "modality",
-          "reason": "Acquisition modality (EEG, spikes/LFP)",
-          "terms": 2
-        }
-      ],
-      "facets": {
-        "modality": [
-          "EEG",
-          "spikes/LFP"
-        ],
-        "paradigm": [],
-        "signal_chain": [
-          "Feature extraction"
-        ],
-        "standards": []
-      },
-      "days_since_push": 5,
-      "active": true,
-      "community_active": true,
-      "category": "Signal Processing",
-      "first_seen": "2026-08-10T00:00:00+00:00",
-      "is_new": false,
-      "_score": 38.207,
-      "enriched": true,
-      "contributors": 2,
-      "releases_count": 0,
-      "total_downloads": 0,
-      "latest_release_tag": "",
-      "latest_release_at": "",
-      "commits_52w": 21,
-      "activity_spark": [
-        2,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        2,
-        0,
-        0,
-        1,
-        0
-      ],
-      "funding_platforms": [],
-      "funding_url": "",
-      "watchers": 1,
-      "size_kb": 3742,
-      "open_issues": 0,
-      "homepage": "",
-      "archived": false,
-      "disabled": false,
-      "foundation": {
-        "license_file": true,
-        "readme": true,
-        "contributing": false,
-        "code_of_conduct": false,
-        "health_pct": 37,
-        "citation": false,
-        "security_policy": false,
-        "ci": false,
-        "count": 2
-      },
-      "signals": {
-        "overall": 60,
-        "basis": "enriched",
-        "badges": [
-          "osi-licensed",
-          "actively-maintained"
-        ],
-        "license": 100,
-        "maintenance": 100,
-        "momentum": 54,
-        "adoption": 10,
-        "team": 40,
-        "docs": 70
-      },
-      "owner": "SAKEverse",
-      "repo": "sake",
-      "evidence_tier": "L2_NEURAL_SIGNAL",
-      "inclusion_reason": "Neural-signal topic or keyword (eeg, lfp).",
-      "matched_topics": [
-        "eeg",
-        "lfp",
-        "neuroscience"
-      ],
-      "matched_keywords": [
-        "eeg",
-        "lfp",
-        "neuro"
-      ],
-      "quality_flags": {
-        "possible_false_positive": false,
-        "low_metadata": false,
-        "missing_license": false,
-        "unclear_license": false,
-        "no_recent_activity": false
-      },
-      "stars_delta_7d": 0,
-      "stars_delta_30d": 0,
-      "rising": false,
-      "falling": false,
-      "axon_relevance": {
-        "acquisition": 0.0,
-        "signal_pipeline": 0.0,
-        "protocol": 0.0,
-        "privacy": 0.0,
-        "runtime": 0.0,
-        "sdk": 0.0
-      },
-      "interop": []
-    },
-    {
-      "full_name": "Hamid-Jahani/Game-Experience-Analysis-Stress-",
-      "html_url": "https://github.com/Hamid-Jahani/Game-Experience-Analysis-Stress-",
-      "description": "Stress-level classification from gaming-session sensory and behavioral data (scikit-learn, RFECV, repeated stratified CV)",
-      "stars": 2,
-      "forks": 0,
-      "language": "Python",
-      "pushed_at": "2026-08-31T14:37:37Z",
-      "updated_at": "2026-08-31T14:56:18Z",
-      "topics": [
-        "classification",
-        "eeg",
-        "machine-learning",
-        "scikit-learn"
-      ],
-      "license": "MIT",
-      "has_license": true,
-      "brs": 40,
-      "relevance_tier": "L3_MODALITY_OR_PARADIGM",
-      "relevance_ledger": [
-        {
-          "points": 40,
-          "kind": "modality",
-          "reason": "Acquisition modality (EEG)",
-          "terms": 1
-        }
-      ],
-      "facets": {
-        "modality": [
-          "EEG"
-        ],
-        "paradigm": [],
-        "signal_chain": [
-          "Decoding",
-          "Application"
-        ],
-        "standards": []
-      },
-      "days_since_push": 1,
-      "active": true,
-      "community_active": true,
-      "category": "Decoding & ML",
-      "first_seen": "2026-08-31T18:00:00+00:00",
-      "is_new": true,
-      "_score": 37.81,
-      "enriched": true,
-      "contributors": 1,
-      "releases_count": 0,
-      "total_downloads": 0,
-      "latest_release_tag": "",
-      "latest_release_at": "",
-      "commits_52w": 5,
-      "activity_spark": [
-        0,
-        1,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        4
-      ],
-      "funding_platforms": [],
-      "funding_url": "",
-      "watchers": 1,
-      "size_kb": 2078,
-      "open_issues": 0,
-      "homepage": "",
-      "archived": false,
-      "disabled": false,
-      "foundation": {
-        "license_file": true,
-        "readme": true,
-        "contributing": false,
-        "code_of_conduct": false,
-        "health_pct": 42,
-        "citation": false,
-        "security_policy": false,
-        "ci": false,
-        "count": 2
-      },
-      "signals": {
-        "overall": 52,
-        "basis": "enriched",
-        "badges": [
-          "osi-licensed",
-          "actively-maintained"
-        ],
-        "license": 100,
-        "maintenance": 100,
-        "momentum": 31,
-        "adoption": 10,
-        "team": 20,
-        "docs": 70
-      },
-      "owner": "Hamid-Jahani",
-      "repo": "Game-Experience-Analysis-Stress-",
-      "evidence_tier": "L2_NEURAL_SIGNAL",
-      "inclusion_reason": "Neural-signal topic or keyword (eeg).",
-      "matched_topics": [
-        "eeg",
-        "machine-learning"
-      ],
-      "matched_keywords": [
-        "eeg"
       ],
       "quality_flags": {
         "possible_false_positive": false,
@@ -14925,6 +14318,160 @@
       "interop": []
     },
     {
+      "full_name": "neurotuning/GEDAI-master",
+      "html_url": "https://github.com/neurotuning/GEDAI-master",
+      "description": "GEDAI denoising plugin for EEG (EEGLAB, Brainstorm and Fieldtrip toolboxes)",
+      "stars": 70,
+      "forks": 13,
+      "language": "MATLAB",
+      "pushed_at": "2026-09-01T11:37:42Z",
+      "updated_at": "2026-09-01T11:38:30Z",
+      "topics": [
+        "artifacts",
+        "denoising",
+        "eeg",
+        "eeglab",
+        "emg",
+        "eog",
+        "leadfield",
+        "meg",
+        "noise"
+      ],
+      "license": "NOASSERTION",
+      "has_license": false,
+      "brs": 76,
+      "relevance_tier": "L3_STANDARD_OR_HARDWARE",
+      "relevance_ledger": [
+        {
+          "points": 40,
+          "kind": "modality",
+          "reason": "Acquisition modality (EEG, EMG, EOG)",
+          "terms": 4
+        },
+        {
+          "points": 45,
+          "kind": "standard",
+          "reason": "Field standard/format (EEGLAB, FieldTrip)",
+          "terms": 2
+        }
+      ],
+      "facets": {
+        "modality": [
+          "EEG",
+          "EMG",
+          "EOG",
+          "MEG"
+        ],
+        "paradigm": [],
+        "signal_chain": [
+          "Preprocessing"
+        ],
+        "standards": [
+          "EEGLAB",
+          "FieldTrip"
+        ]
+      },
+      "days_since_push": 0,
+      "active": true,
+      "community_active": true,
+      "category": "Hardware & Acquisition",
+      "first_seen": "2026-06-25T12:00:00+00:00",
+      "is_new": false,
+      "_score": 35.87,
+      "enriched": true,
+      "contributors": 4,
+      "releases_count": 7,
+      "total_downloads": 47,
+      "latest_release_tag": "v1.7",
+      "latest_release_at": "2026-05-26T11:19:53Z",
+      "commits_52w": 296,
+      "activity_spark": [
+        0,
+        9,
+        0,
+        5,
+        0,
+        0,
+        1,
+        0,
+        0,
+        2,
+        1,
+        1
+      ],
+      "funding_platforms": [],
+      "funding_url": "",
+      "watchers": 6,
+      "size_kb": 118151,
+      "open_issues": 0,
+      "homepage": "https://cibm.ch/noise-cancelling-headphones-for-the-brain-how-a-new-algorithm-eliminates-noise-in-eeg-data/",
+      "archived": false,
+      "disabled": false,
+      "foundation": {
+        "license_file": true,
+        "readme": true,
+        "contributing": false,
+        "code_of_conduct": false,
+        "health_pct": 37,
+        "citation": false,
+        "security_policy": false,
+        "ci": true,
+        "count": 3
+      },
+      "signals": {
+        "overall": 69,
+        "basis": "enriched",
+        "badges": [
+          "actively-maintained",
+          "has-releases",
+          "multi-contributor"
+        ],
+        "license": 0,
+        "maintenance": 100,
+        "momentum": 99,
+        "adoption": 59,
+        "team": 55,
+        "docs": 70
+      },
+      "owner": "neurotuning",
+      "repo": "GEDAI-master",
+      "evidence_tier": "L2_NEURAL_SIGNAL",
+      "inclusion_reason": "Neural-signal topic or keyword (eeg, emg).",
+      "matched_topics": [
+        "eeg",
+        "emg",
+        "eog",
+        "meg"
+      ],
+      "matched_keywords": [
+        "eeg",
+        "emg",
+        "neuro"
+      ],
+      "quality_flags": {
+        "possible_false_positive": false,
+        "low_metadata": false,
+        "missing_license": false,
+        "unclear_license": true,
+        "no_recent_activity": true
+      },
+      "stars_delta_7d": 2,
+      "stars_delta_30d": 3,
+      "rising": false,
+      "falling": false,
+      "axon_relevance": {
+        "acquisition": 0.0,
+        "signal_pipeline": 0.0,
+        "protocol": 0.0,
+        "privacy": 0.0,
+        "runtime": 0.0,
+        "sdk": 0.0
+      },
+      "interop": [
+        "eeglab"
+      ]
+    },
+    {
       "full_name": "neuroTUM/Cortical-Peaks-Challenge-2026",
       "html_url": "https://github.com/neuroTUM/Cortical-Peaks-Challenge-2026",
       "description": "A collection of arcade games built with Python and Pygame, designed and implemented to serve as the competition environment for the Cortical Peaks Challenge at the Graz BCI Conference 2026",
@@ -15057,160 +14604,6 @@
         "sdk": 0.0
       },
       "interop": []
-    },
-    {
-      "full_name": "neurotuning/GEDAI-master",
-      "html_url": "https://github.com/neurotuning/GEDAI-master",
-      "description": "GEDAI denoising plugin for EEG (EEGLAB, Brainstorm and Fieldtrip toolboxes)",
-      "stars": 70,
-      "forks": 13,
-      "language": "MATLAB",
-      "pushed_at": "2026-09-01T11:37:42Z",
-      "updated_at": "2026-09-01T11:38:30Z",
-      "topics": [
-        "artifacts",
-        "denoising",
-        "eeg",
-        "eeglab",
-        "emg",
-        "eog",
-        "leadfield",
-        "meg",
-        "noise"
-      ],
-      "license": "NOASSERTION",
-      "has_license": false,
-      "brs": 76,
-      "relevance_tier": "L3_STANDARD_OR_HARDWARE",
-      "relevance_ledger": [
-        {
-          "points": 40,
-          "kind": "modality",
-          "reason": "Acquisition modality (EEG, EMG, EOG)",
-          "terms": 4
-        },
-        {
-          "points": 45,
-          "kind": "standard",
-          "reason": "Field standard/format (EEGLAB, FieldTrip)",
-          "terms": 2
-        }
-      ],
-      "facets": {
-        "modality": [
-          "EEG",
-          "EMG",
-          "EOG",
-          "MEG"
-        ],
-        "paradigm": [],
-        "signal_chain": [
-          "Preprocessing"
-        ],
-        "standards": [
-          "EEGLAB",
-          "FieldTrip"
-        ]
-      },
-      "days_since_push": 0,
-      "active": true,
-      "community_active": true,
-      "category": "Hardware & Acquisition",
-      "first_seen": "2026-06-25T12:00:00+00:00",
-      "is_new": false,
-      "_score": 35.843,
-      "enriched": true,
-      "contributors": 4,
-      "releases_count": 7,
-      "total_downloads": 46,
-      "latest_release_tag": "v1.7",
-      "latest_release_at": "2026-05-26T11:19:53Z",
-      "commits_52w": 296,
-      "activity_spark": [
-        0,
-        9,
-        0,
-        5,
-        0,
-        0,
-        1,
-        0,
-        0,
-        2,
-        1,
-        1
-      ],
-      "funding_platforms": [],
-      "funding_url": "",
-      "watchers": 6,
-      "size_kb": 118151,
-      "open_issues": 0,
-      "homepage": "https://cibm.ch/noise-cancelling-headphones-for-the-brain-how-a-new-algorithm-eliminates-noise-in-eeg-data/",
-      "archived": false,
-      "disabled": false,
-      "foundation": {
-        "license_file": true,
-        "readme": true,
-        "contributing": false,
-        "code_of_conduct": false,
-        "health_pct": 37,
-        "citation": false,
-        "security_policy": false,
-        "ci": true,
-        "count": 3
-      },
-      "signals": {
-        "overall": 69,
-        "basis": "enriched",
-        "badges": [
-          "actively-maintained",
-          "has-releases",
-          "multi-contributor"
-        ],
-        "license": 0,
-        "maintenance": 100,
-        "momentum": 99,
-        "adoption": 59,
-        "team": 55,
-        "docs": 70
-      },
-      "owner": "neurotuning",
-      "repo": "GEDAI-master",
-      "evidence_tier": "L2_NEURAL_SIGNAL",
-      "inclusion_reason": "Neural-signal topic or keyword (eeg, emg).",
-      "matched_topics": [
-        "eeg",
-        "emg",
-        "eog",
-        "meg"
-      ],
-      "matched_keywords": [
-        "eeg",
-        "emg",
-        "neuro"
-      ],
-      "quality_flags": {
-        "possible_false_positive": false,
-        "low_metadata": false,
-        "missing_license": false,
-        "unclear_license": true,
-        "no_recent_activity": true
-      },
-      "stars_delta_7d": 2,
-      "stars_delta_30d": 3,
-      "rising": false,
-      "falling": false,
-      "axon_relevance": {
-        "acquisition": 0.0,
-        "signal_pipeline": 0.0,
-        "protocol": 0.0,
-        "privacy": 0.0,
-        "runtime": 0.0,
-        "sdk": 0.0
-      },
-      "interop": [
-        "eeglab"
-      ]
     },
     {
       "full_name": "mne-tools/mne-rsa",
@@ -15355,6 +14748,122 @@
       "interop": [
         "mne"
       ]
+    },
+    {
+      "full_name": "Hamid-Jahani/Game-Experience-Analysis-Stress-",
+      "html_url": "https://github.com/Hamid-Jahani/Game-Experience-Analysis-Stress-",
+      "description": "Stress-level classification from gaming-session sensory and behavioral data (scikit-learn, RFECV, repeated stratified CV)",
+      "stars": 2,
+      "forks": 0,
+      "language": "Python",
+      "pushed_at": "2026-08-31T14:37:37Z",
+      "updated_at": "2026-08-31T14:56:18Z",
+      "topics": [
+        "classification",
+        "eeg",
+        "machine-learning",
+        "scikit-learn"
+      ],
+      "license": "MIT",
+      "has_license": true,
+      "brs": 40,
+      "relevance_tier": "L3_MODALITY_OR_PARADIGM",
+      "relevance_ledger": [
+        {
+          "points": 40,
+          "kind": "modality",
+          "reason": "Acquisition modality (EEG)",
+          "terms": 1
+        }
+      ],
+      "facets": {
+        "modality": [
+          "EEG"
+        ],
+        "paradigm": [],
+        "signal_chain": [
+          "Decoding",
+          "Application"
+        ],
+        "standards": []
+      },
+      "days_since_push": 1,
+      "active": true,
+      "community_active": true,
+      "category": "Decoding & ML",
+      "first_seen": "2026-08-31T18:00:00+00:00",
+      "is_new": true,
+      "_score": 35.475,
+      "enriched": true,
+      "contributors": 1,
+      "releases_count": 0,
+      "total_downloads": 0,
+      "latest_release_tag": "",
+      "latest_release_at": "",
+      "activity_pending": true,
+      "funding_platforms": [],
+      "funding_url": "",
+      "watchers": 1,
+      "size_kb": 2078,
+      "open_issues": 0,
+      "homepage": "",
+      "archived": false,
+      "disabled": false,
+      "foundation": {
+        "license_file": true,
+        "readme": true,
+        "contributing": false,
+        "code_of_conduct": false,
+        "health_pct": 42,
+        "citation": false,
+        "security_policy": false,
+        "ci": false,
+        "count": 2
+      },
+      "signals": {
+        "overall": 58,
+        "basis": "partial",
+        "badges": [
+          "osi-licensed",
+          "actively-maintained"
+        ],
+        "license": 100,
+        "maintenance": 100,
+        "adoption": 10,
+        "team": 20,
+        "docs": 70
+      },
+      "owner": "Hamid-Jahani",
+      "repo": "Game-Experience-Analysis-Stress-",
+      "evidence_tier": "L2_NEURAL_SIGNAL",
+      "inclusion_reason": "Neural-signal topic or keyword (eeg).",
+      "matched_topics": [
+        "eeg",
+        "machine-learning"
+      ],
+      "matched_keywords": [
+        "eeg"
+      ],
+      "quality_flags": {
+        "possible_false_positive": false,
+        "low_metadata": false,
+        "missing_license": false,
+        "unclear_license": false,
+        "no_recent_activity": false
+      },
+      "stars_delta_7d": 0,
+      "stars_delta_30d": 0,
+      "rising": false,
+      "falling": false,
+      "axon_relevance": {
+        "acquisition": 0.0,
+        "signal_pipeline": 0.0,
+        "protocol": 0.0,
+        "privacy": 0.0,
+        "runtime": 0.0,
+        "sdk": 0.0
+      },
+      "interop": []
     },
     {
       "full_name": "ivsemenkov/LISA",
@@ -15955,6 +15464,126 @@
       "interop": []
     },
     {
+      "full_name": "cortex-lab/phy",
+      "html_url": "https://github.com/cortex-lab/phy",
+      "description": "phy: interactive visualization and manual spike sorting of large-scale ephys data",
+      "stars": 427,
+      "forks": 187,
+      "language": "Python",
+      "pushed_at": "2026-09-01T21:47:11Z",
+      "updated_at": "2026-09-01T22:53:00Z",
+      "topics": [
+        "data-analysis",
+        "electrophysiology",
+        "python"
+      ],
+      "license": "BSD-3-Clause",
+      "has_license": true,
+      "brs": 55,
+      "relevance_tier": "L3_MODALITY_OR_PARADIGM",
+      "relevance_ledger": [
+        {
+          "points": 40,
+          "kind": "modality",
+          "reason": "Acquisition modality (spikes/LFP)",
+          "terms": 1
+        },
+        {
+          "points": 25,
+          "kind": "neuro",
+          "reason": "Neuro term (electrophysiology)",
+          "terms": 1
+        }
+      ],
+      "facets": {
+        "modality": [
+          "spikes/LFP"
+        ],
+        "paradigm": [],
+        "signal_chain": [],
+        "standards": []
+      },
+      "days_since_push": 0,
+      "active": true,
+      "community_active": true,
+      "category": "Other",
+      "first_seen": "2026-07-02T00:00:00+00:00",
+      "is_new": false,
+      "_score": 35.33,
+      "enriched": true,
+      "contributors": 24,
+      "releases_count": 1,
+      "total_downloads": 10,
+      "latest_release_tag": "v2.1.0",
+      "latest_release_at": "2026-07-17T10:45:00Z",
+      "activity_pending": true,
+      "funding_platforms": [],
+      "funding_url": "",
+      "watchers": 26,
+      "size_kb": 8920,
+      "open_issues": 84,
+      "homepage": "",
+      "archived": false,
+      "disabled": false,
+      "foundation": {
+        "license_file": true,
+        "readme": true,
+        "contributing": false,
+        "code_of_conduct": true,
+        "health_pct": 50,
+        "citation": false,
+        "security_policy": false,
+        "ci": true,
+        "count": 4
+      },
+      "signals": {
+        "overall": 83,
+        "basis": "partial",
+        "badges": [
+          "osi-licensed",
+          "actively-maintained",
+          "has-releases",
+          "multi-contributor"
+        ],
+        "license": 100,
+        "maintenance": 100,
+        "adoption": 60,
+        "team": 85,
+        "docs": 70
+      },
+      "owner": "cortex-lab",
+      "repo": "phy",
+      "evidence_tier": "L0_WEAK_ADJACENT",
+      "inclusion_reason": "Weak adjacent signal; flagged for review.",
+      "matched_topics": [
+        "electrophysiology"
+      ],
+      "matched_keywords": [
+        "electrophysiolog",
+        "spike sorting"
+      ],
+      "quality_flags": {
+        "possible_false_positive": true,
+        "low_metadata": false,
+        "missing_license": false,
+        "unclear_license": false,
+        "no_recent_activity": true
+      },
+      "stars_delta_7d": 2,
+      "stars_delta_30d": 4,
+      "rising": false,
+      "falling": false,
+      "axon_relevance": {
+        "acquisition": 0.0,
+        "signal_pipeline": 0.0,
+        "protocol": 0.0,
+        "privacy": 0.0,
+        "runtime": 0.34,
+        "sdk": 0.0
+      },
+      "interop": []
+    },
+    {
       "full_name": "mne-rt-org/antares",
       "html_url": "https://github.com/mne-rt-org/antares",
       "description": "Advanced Neurofeedback for Tinnitus Applying Representational EEG Signatures",
@@ -16383,6 +16012,136 @@
       "interop": []
     },
     {
+      "full_name": "AxonOS-org/axonos-rfcs",
+      "html_url": "https://github.com/AxonOS-org/axonos-rfcs",
+      "description": "Proposals, design documents, and architectural decisions for the AxonOS project.",
+      "stars": 3,
+      "forks": 0,
+      "language": "",
+      "pushed_at": "2026-08-26T23:54:45Z",
+      "updated_at": "2026-08-27T16:19:58Z",
+      "topics": [
+        "axonos",
+        "bci",
+        "eeg",
+        "embedded-systems",
+        "engineering",
+        "kernel",
+        "neural-networks",
+        "real-time",
+        "rfcs",
+        "rust"
+      ],
+      "license": "CC-BY-SA-4.0",
+      "has_license": true,
+      "brs": 73,
+      "relevance_tier": "L4_EXPLICIT_BCI",
+      "relevance_ledger": [
+        {
+          "points": 55,
+          "kind": "core",
+          "reason": "Explicit BCI topic (bci)",
+          "terms": 1
+        },
+        {
+          "points": 40,
+          "kind": "modality",
+          "reason": "Acquisition modality (EEG)",
+          "terms": 1
+        }
+      ],
+      "facets": {
+        "modality": [
+          "EEG"
+        ],
+        "paradigm": [],
+        "signal_chain": [],
+        "standards": []
+      },
+      "days_since_push": 6,
+      "active": true,
+      "community_active": true,
+      "category": "Protocols & OS",
+      "first_seen": "2026-07-29T06:00:00+00:00",
+      "is_new": false,
+      "_score": 34.525,
+      "enriched": true,
+      "contributors": 1,
+      "releases_count": 1,
+      "total_downloads": 0,
+      "latest_release_tag": "v1.0.0",
+      "latest_release_at": "2026-05-31T03:53:43Z",
+      "activity_pending": true,
+      "funding_platforms": [],
+      "funding_url": "",
+      "watchers": 1,
+      "size_kb": 293,
+      "open_issues": 0,
+      "homepage": "https://axonos.org",
+      "archived": false,
+      "disabled": false,
+      "foundation": {
+        "license_file": true,
+        "readme": true,
+        "contributing": true,
+        "code_of_conduct": true,
+        "health_pct": 87,
+        "citation": true,
+        "security_policy": true,
+        "ci": true,
+        "count": 7
+      },
+      "signals": {
+        "overall": 62,
+        "basis": "partial",
+        "badges": [
+          "osi-licensed",
+          "actively-maintained",
+          "has-releases"
+        ],
+        "license": 100,
+        "maintenance": 100,
+        "adoption": 14,
+        "team": 20,
+        "docs": 100
+      },
+      "owner": "AxonOS-org",
+      "repo": "axonos-rfcs",
+      "evidence_tier": "L3_EXPLICIT_BCI",
+      "inclusion_reason": "Explicit BCI topic (bci).",
+      "matched_topics": [
+        "bci",
+        "eeg",
+        "real-time",
+        "rust"
+      ],
+      "matched_keywords": [
+        "bci",
+        "eeg",
+        "neural"
+      ],
+      "quality_flags": {
+        "possible_false_positive": false,
+        "low_metadata": false,
+        "missing_license": false,
+        "unclear_license": false,
+        "no_recent_activity": false
+      },
+      "stars_delta_7d": 0,
+      "stars_delta_30d": 0,
+      "rising": false,
+      "falling": false,
+      "axon_relevance": {
+        "acquisition": 0.0,
+        "signal_pipeline": 0.0,
+        "protocol": 0.0,
+        "privacy": 0.0,
+        "runtime": 0.68,
+        "sdk": 0.0
+      },
+      "interop": []
+    },
+    {
       "full_name": "vlawhern/arl-eegmodels",
       "html_url": "https://github.com/vlawhern/arl-eegmodels",
       "description": "This is the Army Research Laboratory (ARL) EEGModels Project: A Collection of Convolutional Neural Network (CNN) models for EEG signal classification, using Keras and Tensorflow",
@@ -16530,11 +16289,11 @@
       "full_name": "openlists/ElectrophysiologyData",
       "html_url": "https://github.com/openlists/ElectrophysiologyData",
       "description": "A list of openly available datasets in (mostly human) electrophysiology.",
-      "stars": 546,
+      "stars": 547,
       "forks": 85,
       "language": "",
       "pushed_at": "2026-06-06T11:15:24Z",
-      "updated_at": "2026-08-19T08:01:52Z",
+      "updated_at": "2026-09-02T05:56:26Z",
       "topics": [
         "data",
         "ecog",
@@ -16582,7 +16341,7 @@
       "category": "Hardware & Acquisition",
       "first_seen": "2026-06-25T12:00:00+00:00",
       "is_new": false,
-      "_score": 33.834,
+      "_score": 33.842,
       "enriched": true,
       "contributors": 5,
       "releases_count": 0,
@@ -16660,8 +16419,147 @@
         "unclear_license": false,
         "no_recent_activity": false
       },
-      "stars_delta_7d": 1,
-      "stars_delta_30d": 5,
+      "stars_delta_7d": 2,
+      "stars_delta_30d": 6,
+      "rising": false,
+      "falling": false,
+      "axon_relevance": {
+        "acquisition": 0.0,
+        "signal_pipeline": 0.0,
+        "protocol": 0.0,
+        "privacy": 0.0,
+        "runtime": 0.0,
+        "sdk": 0.0
+      },
+      "interop": []
+    },
+    {
+      "full_name": "ava-agent/bci-research",
+      "html_url": "https://github.com/ava-agent/bci-research",
+      "description": "BCI Research - 脑机接口技术调研 + BCI Agent Demo",
+      "stars": 5,
+      "forks": 0,
+      "language": "TypeScript",
+      "pushed_at": "2026-08-10T16:10:01Z",
+      "updated_at": "2026-08-15T12:12:40Z",
+      "topics": [
+        "ai-agent",
+        "bci",
+        "brain-computer-interface",
+        "eeg",
+        "nextjs",
+        "typescript"
+      ],
+      "license": null,
+      "has_license": false,
+      "brs": 78,
+      "relevance_tier": "L4_EXPLICIT_BCI",
+      "relevance_ledger": [
+        {
+          "points": 55,
+          "kind": "core",
+          "reason": "Explicit BCI topic (bci, brain-computer)",
+          "terms": 3
+        },
+        {
+          "points": 40,
+          "kind": "modality",
+          "reason": "Acquisition modality (EEG)",
+          "terms": 1
+        }
+      ],
+      "facets": {
+        "modality": [
+          "EEG"
+        ],
+        "paradigm": [],
+        "signal_chain": [],
+        "standards": []
+      },
+      "days_since_push": 22,
+      "active": true,
+      "community_active": true,
+      "category": "Hardware & Acquisition",
+      "first_seen": "2026-07-02T00:00:00+00:00",
+      "is_new": false,
+      "_score": 33.531,
+      "enriched": true,
+      "contributors": 3,
+      "releases_count": 0,
+      "total_downloads": 0,
+      "latest_release_tag": "",
+      "latest_release_at": "",
+      "commits_52w": 27,
+      "activity_spark": [
+        0,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "funding_platforms": [],
+      "funding_url": "",
+      "watchers": 1,
+      "size_kb": 2564,
+      "open_issues": 1,
+      "homepage": "https://bci.rxcloud.group",
+      "archived": false,
+      "disabled": false,
+      "foundation": {
+        "license_file": false,
+        "readme": true,
+        "contributing": false,
+        "code_of_conduct": false,
+        "health_pct": 37,
+        "citation": false,
+        "security_policy": false,
+        "ci": false,
+        "count": 1
+      },
+      "signals": {
+        "overall": 49,
+        "basis": "enriched",
+        "badges": [
+          "actively-maintained",
+          "multi-contributor"
+        ],
+        "license": 0,
+        "maintenance": 85,
+        "momentum": 58,
+        "adoption": 16,
+        "team": 55,
+        "docs": 70
+      },
+      "owner": "ava-agent",
+      "repo": "bci-research",
+      "evidence_tier": "L3_EXPLICIT_BCI",
+      "inclusion_reason": "Explicit BCI topic (bci, brain-computer-interface).",
+      "matched_topics": [
+        "bci",
+        "brain-computer-interface",
+        "eeg"
+      ],
+      "matched_keywords": [
+        "bci",
+        "brain-computer",
+        "eeg"
+      ],
+      "quality_flags": {
+        "possible_false_positive": false,
+        "low_metadata": false,
+        "missing_license": true,
+        "unclear_license": false,
+        "no_recent_activity": false
+      },
+      "stars_delta_7d": 0,
+      "stars_delta_30d": 2,
       "rising": false,
       "falling": false,
       "axon_relevance": {
@@ -16856,21 +16754,7 @@
       "total_downloads": 0,
       "latest_release_tag": "",
       "latest_release_at": "",
-      "commits_52w": 0,
-      "activity_spark": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
+      "activity_pending": true,
       "funding_platforms": [],
       "funding_url": "",
       "watchers": 30,
@@ -16891,14 +16775,13 @@
         "count": 2
       },
       "signals": {
-        "overall": 39,
-        "basis": "enriched",
+        "overall": 49,
+        "basis": "partial",
         "badges": [
           "osi-licensed"
         ],
         "license": 100,
         "maintenance": 10,
-        "momentum": 0,
         "adoption": 58,
         "team": 40,
         "docs": 70
@@ -16942,8 +16825,8 @@
       "stars": 18,
       "forks": 13,
       "language": "Python",
-      "pushed_at": "2026-09-01T18:14:32Z",
-      "updated_at": "2026-09-01T18:43:04Z",
+      "pushed_at": "2026-09-02T10:13:29Z",
+      "updated_at": "2026-09-02T10:15:34Z",
       "topics": [
         "analysis-tools",
         "annotation",
@@ -16983,14 +16866,14 @@
       "category": "Hardware & Acquisition",
       "first_seen": "2026-06-25T12:00:00+00:00",
       "is_new": false,
-      "_score": 29.91,
+      "_score": 29.919,
       "enriched": true,
       "contributors": 12,
       "releases_count": 16,
       "total_downloads": 0,
       "latest_release_tag": "1.2.0",
       "latest_release_at": "2026-07-18T16:38:40Z",
-      "commits_52w": 418,
+      "commits_52w": 421,
       "activity_spark": [
         4,
         9,
@@ -17003,13 +16886,13 @@
         0,
         8,
         10,
-        6
+        9
       ],
       "funding_platforms": [],
       "funding_url": "",
       "watchers": 3,
-      "size_kb": 27557,
-      "open_issues": 10,
+      "size_kb": 27569,
+      "open_issues": 9,
       "homepage": "https://www.hedtags.org/hed-python",
       "archived": false,
       "disabled": false,
@@ -17114,7 +16997,7 @@
         ],
         "standards": []
       },
-      "days_since_push": 774,
+      "days_since_push": 775,
       "active": false,
       "community_active": true,
       "category": "Decoding & ML",
@@ -17408,7 +17291,7 @@
         ],
         "standards": []
       },
-      "days_since_push": 884,
+      "days_since_push": 885,
       "active": false,
       "community_active": true,
       "category": "Decoding & ML",
@@ -17508,7 +17391,7 @@
       "stars": 23,
       "forks": 8,
       "language": "Python",
-      "pushed_at": "2026-09-01T20:25:39Z",
+      "pushed_at": "2026-09-02T10:15:27Z",
       "updated_at": "2026-09-01T12:47:28Z",
       "topics": [
         "eeg",
@@ -17577,7 +17460,7 @@
       "funding_platforms": [],
       "funding_url": "",
       "watchers": 2,
-      "size_kb": 160346,
+      "size_kb": 162521,
       "open_issues": 1,
       "homepage": "https://neurotuning.github.io/gedai/",
       "archived": false,
@@ -17760,8 +17643,8 @@
       "active_projects_30d": 6,
       "projects": [
         "AxonOS-org/axonos-kernel",
-        "AxonOS-org/axonos-standard",
         "AxonOS-org/axonos-signal-pipeline",
+        "AxonOS-org/axonos-standard",
         "AxonOS-org/axonos-consent",
         "AxonOS-org/axonos-protocol",
         "AxonOS-org/axonos-rfcs"

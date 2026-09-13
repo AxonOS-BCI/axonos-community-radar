@@ -476,3 +476,84 @@ tr.cov-foot th,tr.cov-foot td{opacity:.55;font-size:11px;padding-top:6px}
    assertion; with it, a reader checks the claim in one click. */
 .ax-ver{margin-left:auto;font-size:10.5px;font-variant-numeric:tabular-nums;color:var(--faint,#6b7789);font-family:ui-monospace,Menlo,monospace}
 
+/* ── Plans ────────────────────────────────────────────────────────────
+   Four columns, and the fourth is the point. A pricing table whose free
+   column is a crippled version of the paid one is describing a product
+   that gates features; this one does not, so the self-host column carries
+   the same list and costs nothing. It is styled as an equal, not as a
+   footnote, because that is what it is.                                */
+.plans { display: block; }
+.plans-head { margin-bottom: 1.1rem; }
+.plans-sub { color: var(--muted); font-size: .93rem; line-height: 1.6; max-width: 72ch; margin: .4em 0 0; }
+
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: .9rem;
+  margin-top: 1.2rem;
+  align-items: stretch;
+}
+.plan {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--bd);
+  border-radius: 12px;
+  padding: 1.1rem 1.15rem 1rem;
+  background: var(--bg2, rgba(255,255,255,.02));
+}
+.plan-mid { border-color: #2dd4ff; box-shadow: 0 0 0 1px rgba(45,212,255,.18); }
+.plan-pro { border-color: #a78bfa; box-shadow: 0 0 0 1px rgba(167,139,250,.18); }
+
+.plan-k {
+  font-size: .7rem; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: .45em;
+}
+.plan-mid .plan-k { color: #2dd4ff; }
+.plan-pro .plan-k { color: #a78bfa; }
+
+.plan-p { font-size: 1.55rem; font-weight: 700; line-height: 1; margin-bottom: .55em; }
+.plan-per { font-size: .72rem; font-weight: 500; color: var(--muted); margin-left: .45em; letter-spacing: .02em; }
+
+.plan-w { font-size: .88rem; line-height: 1.55; color: var(--muted); margin: 0 0 .85em; }
+
+.plan-l { list-style: none; margin: 0 0 1em; padding: 0; }
+.plan-l li {
+  font-size: .885rem; line-height: 1.5; margin-bottom: .5em;
+  padding-left: 1.05em; position: relative;
+}
+.plan-l li::before { content: "·"; position: absolute; left: .3em; color: var(--muted); font-weight: 700; }
+.plan-l li:last-child { margin-bottom: 0; }
+
+.plan-cta { margin: auto 0 0; padding-top: .4em; }
+.plan-cta .btn { width: 100%; text-align: center; }
+
+.plan-cost {
+  font-size: .78rem; line-height: 1.5; color: var(--muted);
+  margin: .75em 0 0; padding-top: .65em; border-top: 1px solid var(--bd);
+}
+.plans-foot { font-size: .86rem; line-height: 1.6; color: var(--muted); margin: 1.3em 0 0; max-width: 74ch; }
+
+@media (max-width: 560px) {
+  .plan-grid { grid-template-columns: 1fr; }
+  .plan { padding: 1rem 1.05rem .95rem; }
+  .plan-p { font-size: 1.4rem; }
+}
+
+/* The open/closed panel. It sits above the paid columns rather than below
+   them, because a reader deciding whether a subscription is worth anything
+   needs to know what is closed before they read the price, not after. */
+.open-panel {
+  border: 1px solid var(--bd);
+  border-left: 3px solid #3ddc97;
+  border-radius: 10px;
+  padding: 1rem 1.15rem .85rem;
+  margin: 1.1rem 0 .2rem;
+}
+.open-k {
+  font-size: .7rem; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; color: #3ddc97; margin-bottom: .5em;
+}
+.open-panel p { font-size: .89rem; line-height: 1.6; margin: 0 0 .7em; }
+.open-panel p:last-child { margin-bottom: 0; }
+.open-not { border-top: 1px solid var(--bd); padding-top: .7em; color: var(--muted); }
+.open-panel code { font-size: .85em; }

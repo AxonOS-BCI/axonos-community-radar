@@ -1,5 +1,44 @@
 # Changelog
 
+## [15.2.0] — 2026-09-13
+
+### Added
+
+- **Paid plans, and the disclosure that had to come with them.** `support.html`
+  now carries two subscription tiers. It also states, for the first time on any
+  public surface, that `axonos-radar-core` — the repository that performs the
+  scan and the scoring — is private. This site, its build and every data file
+  it publishes are open; the engine behind them is not.
+
+  That sentence was the price of the page. A plans table on a project
+  describing itself as fully open would have been a contradiction a reader
+  finds in one click, and the reader who finds it is the reader who matters.
+
+- **Free is listed first and in full**, above the prices rather than as the
+  weakest column beside them. The map, the stats, the digest, the feed, the
+  manifest, the badge and every data file stay free with no account and no
+  limit.
+
+  So does the complete history, and the page says how to get it without us:
+  `git log -p -- data/radar.json` yields all 2,811 snapshots since 25 June.
+  Selling a file anyone can clone was on the table for about an hour and is not
+  on it now.
+
+### Changed
+
+- **`support.html` no longer claims "everything stays open".** It claimed that
+  while the engine was closed, which was true of the repository the reader was
+  looking at and false of the system. Replaced with what is open and what is
+  not, named.
+- The plans describe what each line costs to provide — outbound delivery, the
+  request budget a key consumes, the scan budget a private watchlist reserves
+  against GitHub's rate limit — rather than asserting value.
+
+### Housekeeping
+
+- `radar.yml.disabled` removed. It was superseded by `sync.yml` and had been
+  sitting in `.github/workflows/` as a disabled file with a live-looking cron.
+
 ## [15.1.1] — 2026-08-21
 
 ### Fixed

@@ -327,6 +327,15 @@ jobs:
         # This regenerates and diffs. It does not rewrite during deploy: that
         # would change the artefact without changing the commit, and the commit
         # would stop describing what is published.
+        #
+        # One card is this repository's own, and that card cannot be validated
+        # before the push. The gate reads the *live* repositories, so until the
+        # bump is published the live radar still states the old version and
+        # agrees with the stale card; the two disagree the moment the push
+        # lands. A self-referential version bump is therefore a two-step
+        # operation: push the bump, then regenerate the cards against the
+        # repository as it now is. Regenerating first proves nothing, and a
+        # green local run before such a push is not evidence.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -339,6 +348,9 @@ jobs:
           diff -q /tmp/index.before index.html || {
             echo "::error::the project cards disagree with the repositories."
             echo "Run: python3 scripts/build_project_cards.py --write index.html"
+            echo "If the only disagreement is this repository's own card, this run"
+            echo "follows a version bump and the regeneration step is still owed:"
+            echo "the card could not have been correct until the bump was pushed."
             diff /tmp/index.before index.html | head -20
             exit 1
           }

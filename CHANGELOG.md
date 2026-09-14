@@ -34,6 +34,20 @@
   request budget a key consumes, the scan budget a private watchlist reserves
   against GitHub's rate limit — rather than asserting value.
 
+### Fixed
+
+- **The radar's own project card still said 15.1.1 after the bump.** The bump
+  replaced `v15.1.1` with `v15.2.0`; the card carries the number without the
+  `v`, so the replacement passed over it. The local gate was green because it
+  compares the cards against the live repositories, and before the push the
+  live radar was still 15.1.1 and agreed with the stale card. The push is what
+  made them disagree.
+
+  Recorded in the gate, because the lesson outlasts the defect: this
+  repository's own card cannot be validated before its own version is
+  published. A self-referential bump is two steps — push, then regenerate —
+  and a green local run before the push is not evidence about the card.
+
 ### Housekeeping
 
 - `radar.yml.disabled` removed. It was superseded by `sync.yml` and had been

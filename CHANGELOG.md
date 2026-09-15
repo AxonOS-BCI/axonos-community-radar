@@ -1,5 +1,52 @@
 # Changelog
 
+## [15.2.1] — 2026-09-15 — "The map froze and the monitor said it was fine"
+
+The site served the build of 31 August for fifteen days. The engine kept
+scanning, every scan landed in this repository, and not one of them reached a
+reader.
+
+### Fixed
+
+- **`pages.yml` used `cancel-in-progress: false`, which does not mean what its
+  comment said.** GitHub allows one running and one *pending* run per
+  concurrency group, and cancels the pending one when a third arrives. So
+  deploys were being cancelled the whole time; the setting only chose *which*
+  to cancel, and it chose the new work over whatever was holding the running
+  slot. With the triggers clustered inside thirty minutes — the engine's
+  dispatch near :20, sync's cron at :37, this one's at :47 — a run that could
+  not finish held the group, and every arrival behind it died queued. Last
+  successful deploy 31 August, every run since cancelled, one pending for
+  fourteen hours.
+
+  It is `true` now. For a deploy whose entire content is "publish main as it
+  is", the newest run is the only one worth finishing. Superseding a stuck head
+  costs one redundant build; not superseding it cost a fortnight.
+
+- **The health monitor diagnosed this correctly every three hours and reported
+  success.** `health_check.py` returned 0 on the unhealthy path, by a stated
+  design: the alert issue is the signal, and a red run would be noise. That
+  inverts what gets looked at. The run list showed an unbroken column of green
+  ticks beside a fortnight-old site, and the alert sat in an issue among other
+  issues. A monitor whose own status contradicts its finding is worse than
+  none, because it is evidence pointing the wrong way. Unhealthy exits
+  non-zero.
+
+### Added
+
+- **A deploy clock, separate from the data clock.** The monitor checked
+  `status.generated_at` — when the engine last scanned — and nothing checked
+  when a scan last reached the page. Those fail independently, and this was the
+  failure with no check on it: current data in the repository, frozen artifact
+  on the site, healthy from every angle except the one a reader sees.
+  `data/build.json`'s `deployed_at` is now read with a nine-hour threshold, two
+  missed cycles with slack.
+
+- `set -o pipefail` on the health step. The default shell is `bash -e` without
+  it, so piping the readout into the step summary would have reported `tee`'s
+  exit status and masked the non-zero exit this release exists to produce — the
+  same defect, reintroduced by its own fix, one line lower.
+
 ## [15.2.0] — 2026-09-13
 
 ### Added

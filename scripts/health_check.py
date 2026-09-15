@@ -9,14 +9,32 @@ radar is healthy:
               3 hours, so 7h of silence means two consecutive scans are gone;
               one dropped scheduled run is tolerated, two are not). Override
               with RADAR_MAX_AGE_HOURS when the upstream cadence changes.
+  * FROZEN  — data/build.json's deployed_at older than MAX_DEPLOY_AGE_HOURS.
+              This is a different failure from STALE and the map has now had
+              it: the engine kept scanning and publishing, every scan landed in
+              the repository, and not one of them reached the site because no
+              deploy completed for fifteen days. Fresh data behind a frozen
+              artifact looks healthy from every angle except the one that
+              matters, which is the page a reader opens.
   * FAILED  — the last recorded run ended with ok=false.
 
 On a problem it opens (or updates) a single, marker-identified alert issue.
 On recovery it closes that issue with a comment. One issue, no spam, and only
 issues created by the Actions bot are ever touched (marker-collision defense).
 
-Zero dependencies; exits 0 even when unhealthy — the ALERT is the signal, a
-red health-run would just be noise on top.
+Zero dependencies. Exits NON-ZERO when unhealthy, which is the opposite of
+what this file used to do.
+
+The old rule was that the alert issue is the signal and a red run would be
+noise on top of it. That reasoning inverted what actually gets looked at. The
+map froze on 31 August, this monitor correctly diagnosed it every three hours
+for two weeks, and every one of those runs reported success — because the
+diagnosis returned 0. The run list showed an unbroken column of green ticks
+next to a site serving a fortnight-old build, and the alert sat in an issue
+among other issues. The green tick is the thing a maintainer scans; the issue
+is the thing that gets buried. A monitor whose own status contradicts its
+finding is worse than no monitor, because it is evidence in the wrong
+direction.
 """
 from __future__ import annotations
 
@@ -39,6 +57,11 @@ MARKER = "<!-- axonos-radar-health-alert f3a91c2e -->"
 # run, so a single miss must not page anyone. Two consecutive misses is a
 # stalled pipeline and has to be visible the same day, not a day later.
 MAX_AGE_HOURS = float(os.environ.get("RADAR_MAX_AGE_HOURS", "7"))
+# The deploy has its own clock and its own failure. pages.yml runs on :47 every
+# 3h plus a dispatch from sync, so nine hours is two missed cycles with slack —
+# late enough not to page on one dropped run, early enough to be seen the same
+# day rather than a fortnight later.
+MAX_DEPLOY_AGE_HOURS = float(os.environ.get("RADAR_MAX_DEPLOY_AGE_HOURS", "9"))
 BOT_LOGINS = ("github-actions[bot]", "github-actions")
 
 HEADERS = {"Accept": "application/vnd.github+json", "User-Agent": "axonos-radar-health",
@@ -117,6 +140,30 @@ def diagnose():
                                 f"(threshold {MAX_AGE_HOURS}h; scans run every 3h)")
         except Exception:  # noqa: BLE001
             problems.append(f"status.generated_at unparsable: {gen!r}")
+    # The deploy clock, read from the artifact itself. status.generated_at says
+    # when the engine last scanned; build.json says when that scan last reached
+    # a reader. They fail independently and the second one had never been
+    # checked here.
+    build = fetch_json(PAGES + "data/build.json")
+    if build is None:
+        problems.append("published data/build.json is unreachable")
+    else:
+        dep = build.get("deployed_at") or ""
+        try:
+            dt = datetime.fromisoformat(str(dep).replace("Z", "+00:00"))
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            age_h = (datetime.now(timezone.utc) - dt).total_seconds() / 3600
+            print(f"  build.deployed_at  = {dep} (age {age_h:.1f}h, build {build.get('build')})")
+            if age_h > MAX_DEPLOY_AGE_HOURS:
+                problems.append(
+                    f"the site is FROZEN: last successful deploy {age_h:.1f}h ago "
+                    f"(threshold {MAX_DEPLOY_AGE_HOURS}h; deploys run every 3h). "
+                    f"Data may still be current in the repository and unreachable "
+                    f"on the page.")
+        except Exception:  # noqa: BLE001
+            problems.append(f"build.deployed_at unparsable: {dep!r}")
+
     last = fetch_json(PAGES + "data/last_run.json")
     if last is not None and last.get("ok") is False:
         problems.append(f"last pipeline run FAILED: {last.get('reason', 'unknown')}")
@@ -159,7 +206,9 @@ def main():
                 "body": body, "labels": ["pipeline-health"]})
             print(f"UNHEALTHY — alert issue created "
                   f"(#{created.get('number', '?')}, HTTP {code})")
-        return 0
+        # Non-zero: the run itself must carry the finding. See the note at the
+        # head of this file about two weeks of green ticks.
+        return 1
 
     print("HEALTHY")
     if alert:

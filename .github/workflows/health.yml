@@ -34,8 +34,21 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
 
-      - name: Check published data freshness
-        run: python3 scripts/health_check.py
+      - name: Check published data and deploy freshness
+        # This step is allowed to fail now, and that is the point. The script
+        # used to exit 0 while opening an alert issue, so the run list showed a
+        # green tick every three hours for the fifteen days the map was serving
+        # a frozen artifact. The issue was correct and invisible; the tick was
+        # wrong and prominent.
+        #
+        # `set -o pipefail` is load-bearing: the default shell here is `bash -e`
+        # without it, so a pipeline reports the exit status of `tee`, which is
+        # always 0. Piping the readout into the summary would have masked the
+        # non-zero exit this whole change exists to produce — the same defect,
+        # reintroduced by its own fix, one line lower.
+        run: |
+          set -o pipefail
+          python3 scripts/health_check.py | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Commit provenance readout
         # Data commits are written through the Contents API. GitHub signs those

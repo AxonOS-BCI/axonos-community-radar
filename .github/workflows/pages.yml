@@ -12,10 +12,23 @@ name: Deploy Pages
 #   • push to main — deploys source changes (feature commits, which do NOT carry
 #     "[skip ci]") immediately, instead of waiting for the next tick.
 #   • workflow_dispatch — manual redeploy button.
-# concurrency.cancel-in-progress: FALSE → overlapping deploys queue and wait;
-# nothing is ever cancelled (this was the root of the old "unable to cancel"
-# errors). Assets are stamped with the commit SHA at assemble time, so browsers
-# can never serve a stale app.css/app.js under fresh HTML again.
+# concurrency.cancel-in-progress: TRUE → the newest deploy wins and runs to
+# completion. This is the reverse of what it said until now, and the reversal
+# is not a preference.
+#
+# "Nothing is ever cancelled" was not what false bought. GitHub allows one
+# running and one *pending* run per group, and cancels the pending one when a
+# third arrives. So fresh runs were cancelled all along — false only chose
+# which to cancel, and it chose the new work over the stuck head. With the
+# triggers below clustered inside thirty minutes (engine dispatch at ~:20,
+# sync cron at :37, this cron at :47), whatever held the running slot held the
+# group, and every arrival after it died queued. The site last deployed on
+# 31 August and every run since was cancelled.
+#
+# For a deploy whose whole content is "publish main as it is now", the latest
+# run is the only one worth finishing. Assets are stamped with the commit SHA
+# at assemble time, so browsers can never serve a stale app.css/app.js under
+# fresh HTML.
 #
 # One-time setup: repo Settings → Pages → Source = "GitHub Actions".
 # ─────────────────────────────────────────────────────────────────────────────
@@ -32,11 +45,12 @@ permissions:
   pages: write
   id-token: write
 
-# Queue deploys; never cancel a running one. This is the opposite of the old
-# setting and is what stops the "unable to cancel, it's finished" error.
+# The newest deploy wins. A run that cannot finish must not be able to hold
+# the group: superseding it costs one redundant build, and not superseding it
+# cost a fortnight of frozen map.
 concurrency:
   group: pages-deploy
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   deploy:

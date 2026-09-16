@@ -910,10 +910,16 @@
 
     var funnel=document.createElement('div'); funnel.className='cs-funnel';
     var below=Math.max(0, CONSIDERED.scanned-CONSIDERED.kept-CONSIDERED.total);
+    // The fourth bucket is everything left over: scanned, minus kept, minus
+    // listed. It said 'tripped no rule at all', which is a claim about those
+    // repositories and not one this arithmetic makes. A repository scoring 14
+    // tripped a rule and still lands here, because the listing floor is
+    // min_score. What is provable is the floor itself, so that is what it
+    // says, with the number read from the payload rather than written in.
     [[CONSIDERED.scanned,'repositories scanned',''],
-     [CONSIDERED.kept,'cleared the gate','is-kept'],
-     [CONSIDERED.total,'came close, below it',''],
-     [below,'tripped no rule at all','']].forEach(function(s){
+     [CONSIDERED.kept,'cleared the gate of '+CONSIDERED.gate,'is-kept'],
+     [CONSIDERED.total,'scored '+CONSIDERED.min_score+' to '+(CONSIDERED.gate-1),''],
+     [below,'scored below '+CONSIDERED.min_score,'']].forEach(function(s){
       var d=document.createElement('div'); d.className='cs-step'+(s[2]?' '+s[2]:'');
       var n=document.createElement('span'); n.className='n'; n.textContent=String(s[0]); d.appendChild(n);
       var l=document.createElement('span'); l.className='l'; l.textContent=s[1]; d.appendChild(l);
@@ -934,7 +940,11 @@
         mid.appendChild(why); a.appendChild(mid);
         var g=document.createElement('span');
         g.className='cs-gap'+(x.shortfall<=3?' is-close':'');
-        g.textContent=x.shortfall===1?'1 point short':(x.shortfall+' short');
+        // The singular branch carried the noun and the plural branch dropped
+        // it, so the first row read '1 point short' and every other row read
+        // '4 short'. The note thirty lines below pluralises correctly, so the
+        // page disagreed with itself twice on one screen.
+        g.textContent=x.shortfall+' point'+(x.shortfall===1?'':'s')+' short';
         a.appendChild(g);
         list.appendChild(a);
       });

@@ -46,7 +46,8 @@ deploy carries.
 | **13.1–13.8** | Search, Considered, the rule made public | ✅ shipped |
 | **14.0** | Discoverable | ✅ shipped |
 | **15.0** | Closed arithmetic | ✅ shipped |
-| **15.2** | Stated limits, and the closed engine said out loud | **current** |
+| **15.2** | Stated limits, and the closed engine said out loud | ✅ shipped |
+| **15.3** | Measured, not judged — contrast, plurals and a funnel that claims only what it proves | **current** |
 | **16.0** | Capital | planned |
 | **17.0** | Standards | planned |
 | **18.0** | Frontier | planned |

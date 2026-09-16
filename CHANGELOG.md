@@ -1,5 +1,59 @@
 # Changelog
 
+## [15.3.0] — 2026-09-15 — "Measured, not judged"
+
+### Fixed
+
+- **The near-miss list disagreed with itself about plurals.** The first row read
+  "1 point short" and every other row read "4 short": the singular branch
+  carried the noun and the plural branch dropped it. Thirty lines below, the
+  same page pluralises correctly — "N points below the gate" — so the
+  disagreement was visible twice on one screen.
+
+- **The fourth funnel bucket claimed more than the arithmetic supports.** It
+  read "tripped no rule at all" for 3 014 repositories, computed as scanned
+  minus kept minus listed. A repository scoring 14 tripped a rule and still
+  lands in that bucket, because the listing floor is `min_score`. What the
+  arithmetic proves is the floor, so that is what the four cards say now, with
+  the numbers read from the payload rather than written into the page:
+  scanned · cleared the gate of 40 · scored 15 to 39 · scored below 15.
+
+- **The smallest text on the page failed contrast, and it was carrying the most
+  of it.** `--faint` was `#6b7488` — **4.29:1** against the background where AA
+  asks 4.5:1 — and it styled the 10 to 11.5 pixel labels: the legend, the tag
+  chips, the health keys. It is `#828da1` now, **6.02:1**, still clearly below
+  `--dim` at 7.96:1, so the three-tier hierarchy survives the repair. Measured
+  with the WCAG relative-luminance formula, not judged by eye.
+
+- **The funnel collapsed onto one line on a phone.** `flex: 1 1 130px` is a
+  basis, not a floor, and a flex item shrinks past its basis until its own
+  content stops it. On a 380-pixel screen all four cards squeezed onto one row
+  at about eighty pixels each, the labels broke into columns of single words,
+  and the numbers — the only part that matters — scrolled under the sticky nav.
+  `min-width` makes the basis a floor; the row wraps two by two.
+
+- **The reason for each near miss was truncated to one line.** It is the point
+  of the row, and on a narrow screen it was the first thing cut. Two lines on
+  phones, ellipsis after that.
+
+### Changed
+
+- **The README had two openings.** A calm one with the evidence story, and
+  ninety lines later a second headline with its own badge wall and three
+  paragraphs restating the first in sales language — "a living intelligence
+  engine", "the first honest intelligence layer". A page that argues for
+  checkable claims should not open twice, and should not use a superlative it
+  cannot support. One opening, one summary table of what the map decides by,
+  keeps, publishes and refuses to do.
+
+### Known, not fixed here
+
+- Two of the thirty-one near misses carry `Neuro term (electrophysiological,
+  electrophysiology)` — the same matched term in two morphological forms. That
+  string is produced by the scanning engine, not by this repository, and
+  de-duplicating it at render time would hide an engine defect behind a
+  cosmetic fix. It belongs in `axonos-radar-core`.
+
 ## [15.2.1] — 2026-09-15 — "The map froze and the monitor said it was fine"
 
 The site served the build of 31 August for fifteen days. The engine kept

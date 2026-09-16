@@ -81,15 +81,13 @@ project's evidence vector is published — which is what makes a score disputabl
 without handing anyone a key.
 
 
-## The open brain–computer-interface field — mapped, scored, and explained automatically.
-
-#### A living **intelligence engine** for open neurotech. Every public BCI repository on GitHub, discovered from real signals, scored 0–100 by a purpose-built relevance engine, and explained down to the evidence behind every decision — not a hand-curated list, not hype.
+## Status
 
 [![Live](https://img.shields.io/badge/live-axonos--bci.github.io-a78bfa?style=flat-square)](https://axonos-bci.github.io/axonos-community-radar/)
 [![Roadmap](https://img.shields.io/badge/roadmap-to%20v17-f59e0b?style=flat-square)](https://github.com/users/AxonOS-BCI/projects/1)
 [![CI](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml)
 [![Pages](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml)
-[![Version](https://img.shields.io/badge/version-15.2.1-0a4a8f?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-15.3.0-0a4a8f?style=flat-square)](CHANGELOG.md)
 [![Release](https://img.shields.io/badge/release-Considered-6fe6f2?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-475569?style=flat-square)](LICENSE)
 
@@ -106,13 +104,23 @@ without handing anyone a key.
 
 ---
 
-**AxonOS Radar** is the continuously-updated, public map of the open brain–computer-interface world — and, since v7, an **intelligence engine** rather than a directory (now on the v8 open-core line). On a schedule it scans **public GitHub metadata**, decides whether each candidate is *genuinely* a BCI/neuro project through a scored relevance engine (not generic ML that merely says "neural"), records the exact evidence for every decision, maps the field's modalities, standards and signal-chain coverage, tracks momentum and health, and renders all of it as an interactive radar, an ecosystem map, a statistics dashboard, a self-updating GitHub issue, and a weekly investor-grade intelligence report.
+The open brain–computer-interface field is spread across thousands of GitHub
+repositories with no map. This is one: every three hours the scanner reads
+public GitHub metadata, scores each candidate against a published rule, keeps
+what clears the gate, and publishes the evidence behind every decision —
+including the near misses and what each of them lacked.
 
-The BCI field is scattered across hundreds of GitHub repositories with no map. AxonOS
-Radar is that map — but it doesn't just *list* projects, it **scores** them. A purpose-built
-relevance engine reads every candidate, decides whether it's genuinely a brain–computer
-interface project (not generic ML that happens to say "neural"), and shows you **exactly why**.
-The result is the first honest, continuously-updated intelligence layer for neurotech software.
+It scores rather than lists, which is the whole difference. A curated list is
+an opinion you either trust or do not. A score computed from a public rule over
+published evidence is a claim you can check, reproduce, and argue with.
+
+| | |
+|:--|:--|
+| **Decides by** | `axonos-brs`, a public rule in Rust — [the crate](https://github.com/AxonOS-org/axonos-brs) |
+| **Keeps** | score ≥ 40 of 100 |
+| **Publishes** | the evidence vector per project, and every near miss down to 15 |
+| **Refreshes** | every three hours |
+| **Does not** | rank quality, endorse, certify, or hand-curate anything — including its own entry |
 
 > **Discovery, not endorsement.** Inclusion never implies quality, safety, or clinical fitness, and listing transfers no ownership. Scores are discovery signals computed from public evidence. **AxonOS itself is scored by the exact same engine as everyone else** — there is no self-boosting, and no figure on this map is hand-curated to flatter anyone.
 
@@ -640,7 +648,7 @@ If you reference AxonOS Radar in academic or technical work, please cite it:
   title   = {{AxonOS Radar: a scored, evidence-backed map of the open brain--computer-interface field}},
   year    = {2026},
   url     = {https://github.com/AxonOS-BCI/axonos-community-radar},
-  version = {15.2.1}
+  version = {15.3.0}
 }
 ```
 

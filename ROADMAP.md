@@ -47,10 +47,8 @@ deploy carries.
 | **14.0** | Discoverable | ✅ shipped |
 | **15.0** | Closed arithmetic | ✅ shipped |
 | **15.2** | Stated limits, and the closed engine said out loud | ✅ shipped |
-| **15.3** | Measured, not judged — contrast, plurals and a funnel that claims only what it proves | **current** |
-| **16.0** | Capital | planned |
-| **17.0** | Standards | planned |
-| **18.0** | Frontier | planned |
+| **15.3** | Measured, not judged — contrast, plurals and a funnel that claims only what it proves | ✅ shipped |
+| **16.0** | Trend — every headline figure carries its own thirty days, and the social card is generated | **current** |
 
 **Why 14.0 is Discoverable and not Capital.** Capital was the reserved name and
 it is not what shipped, so the reason is here rather than left for a reader to
@@ -253,3 +251,16 @@ with real demand move up.
 
 <sub>© The AxonOS Project / Denis Yermakou · axonos.org · connect@axonos.org</sub>
 
+## Why there are no planned rows
+
+This table used to end with three: Capital, Standards, Frontier. They were
+names, not commitments, and they had been sitting there long enough that the
+next one collided with a release actually being made — the CI gate caught two
+milestones numbered 16.0 on the same day this file advanced.
+
+A roadmap of unshipped names is a set of claims with no evidence behind them,
+which is the one thing this project spends its effort removing from other
+people's pages. So the table records what shipped and what is being worked on
+now. What comes next is decided in the open, on the
+[project board](https://github.com/users/AxonOS-BCI/projects/1), where a change
+of mind costs nothing and misleads nobody.

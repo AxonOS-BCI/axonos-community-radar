@@ -1,5 +1,72 @@
 # Changelog
 
+## [16.0.0] — 2026-09-17 — "Trend"
+
+### Added
+
+- **Every headline figure now carries its own thirty days.** Four numbers with
+  no shape to them: 120 projects is the same glyph whether the field grew all
+  month or stood still. `data/history.json` already held 145 snapshots of
+  exactly those four metrics and nothing on the page read it. Each figure gets
+  a sparkline and the change across the window, drawn inline — no library, one
+  extra file, and if that file is missing the band renders exactly as before.
+  A trend is context, never a precondition for showing the number.
+
+  The window is sliced by **time**, not by count, and this matters: snapshots
+  land about four times a day, so the last thirty of them cover a week. The
+  first version of this labelled that "in 30d" and was caught by rendering the
+  geometry against the live payload instead of trusting it. The window is
+  thirty days of wall clock — 114 snapshots today — and the label states the
+  span the retained data actually covers.
+
+- **The social card is generated, from a script, with its text checked.** It
+  was a committed binary with no source, so nothing in the repository could
+  read it, and it had gone on advertising `auto-refreshed every 6h` while the
+  README, the page footer, the changelog and the deploy cron all said three.
+  It is the one image most people see before they see the site.
+
+  `scripts/build_og_image.py` builds it from `assets/foundation-banner.jpg`
+  with the cadence **read out of the workflow** rather than typed.
+  `tests/test_og_image.py` pins its dimensions and provenance with the standard
+  library alone, and CI regenerates it and compares bytes.
+
+  The AxonOS Foundation artwork is now part of it.
+
+### Removed
+
+- **The roadmap section, out of the README entirely,** along with its badge.
+  Twenty-three lines promising Capital, Standards and Frontier. A page whose
+  argument is that its claims are checkable should not carry a list of things
+  that have not happened.
+
+- **The speculative rows in `ROADMAP.md`.** They were names rather than
+  commitments, and they had sat there long enough that the next one collided
+  with a release actually being made: the CI gate caught two milestones
+  numbered 16.0 on the same day. The table records what shipped and what is
+  being worked on now; what comes next is decided on the project board, where
+  changing your mind costs nothing and misleads nobody.
+
+- **A static badge claiming "tracked 120+ BCI projects"**, three lines above the
+  live endpoint badge measuring the same thing, and the counts frozen into the
+  flow diagram — "~3200 repositories read", "~120 projects", "31 near misses".
+  The map is rescored every three hours, so each was correct on the morning it
+  was written. A CI gate now fails on a static badge asserting a project count
+  or prose asserting a near-miss count; verified by putting the old badge back,
+  which makes it name the badge and exit non-zero.
+
+- **"The first honest census of open BCI software."** First is not checkable,
+  and honest is not a property a page can assert about itself.
+
+### Note on the 15.3.0 deploy
+
+It was cancelled by the delivery script, not by GitHub. That script listed
+unfinished Deploy Pages runs and cancelled them before dispatching its own — a
+step written when the concurrency group was jammed by a stuck head. 15.2.1 set
+`cancel-in-progress: true` and made it unnecessary; one release later it killed
+the run carrying the commit it had just pushed. The tooling repeated the exact
+mistake the release before it had removed from the workflow. It cancels nothing
+now.
+
 ## [15.3.0] — 2026-09-15 — "Measured, not judged"
 
 ### Fixed

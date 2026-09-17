@@ -16,12 +16,12 @@ and the rule that combined them are all public. Refreshed every three hours.
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'primaryColor':'#0e141d','primaryTextColor':'#e6edf3','primaryBorderColor':'#334155','lineColor':'#5a6b82','fontSize':'14px','fontFamily':'ui-sans-serif,system-ui,sans-serif'}}}%%
 flowchart TB
-    S["<b>GitHub</b><br/><small>~3200 repositories read</small>"]
+    S["<b>GitHub</b><br/><small>public repository metadata</small>"]
     E["<b>Evidence</b><br/><small>one ledger per repository</small>"]
     R["<b>axonos-brs</b><br/><small>the rule &mdash; public, in Rust</small>"]
     G{"<b>score &ge; 40</b>"}
-    M["<b>The map</b><br/><small>~120 projects, refreshed 3-hourly</small>"]
-    C["<b>Considered</b><br/><small>31 near misses, published with<br/>their scores and what each lacked</small>"]
+    M["<b>The map</b><br/><small>kept, and refreshed every 3 hours</small>"]
+    C["<b>Considered</b><br/><small>near misses, published with<br/>their scores and what each lacked</small>"]
 
     S --> E --> R --> G
     G -->|kept| M
@@ -75,6 +75,11 @@ rather than to the project. The scanner keeps a Python mirror of the combiner
 for speed; conformance vectors prove the two agree on the arithmetic, and CI
 proves they agree on the version.
 
+The diagram above carries no counts on purpose. They change every three hours,
+and a number frozen into a README is a claim that quietly stops being true. The
+live figures are in the badge at the top of this file and in
+[`data/status.json`](https://axonos-bci.github.io/axonos-community-radar/data/status.json).
+
 What is *not* public is the scanner: it holds API tokens and the keyword tables
 that turn a repository into evidence. The rule it applies is public, and each
 project's evidence vector is published — which is what makes a score disputable
@@ -84,15 +89,13 @@ without handing anyone a key.
 ## Status
 
 [![Live](https://img.shields.io/badge/live-axonos--bci.github.io-a78bfa?style=flat-square)](https://axonos-bci.github.io/axonos-community-radar/)
-[![Roadmap](https://img.shields.io/badge/roadmap-to%20v17-f59e0b?style=flat-square)](https://github.com/users/AxonOS-BCI/projects/1)
 [![CI](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml)
 [![Pages](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml)
-[![Version](https://img.shields.io/badge/version-15.3.0-0a4a8f?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-16.0.0-0a4a8f?style=flat-square)](CHANGELOG.md)
 [![Release](https://img.shields.io/badge/release-Considered-6fe6f2?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-475569?style=flat-square)](LICENSE)
 
 [![Engine](https://img.shields.io/badge/inclusion-scored%20·%20BRS%200–100-46d0e0?style=flat-square)](#the-relevance-engine--scored-inclusion-not-a-curated-list)
-[![Tracked](https://img.shields.io/badge/tracked-120%2B%20BCI%20projects-6fe6f2?style=flat-square)](https://axonos-bci.github.io/axonos-community-radar/)
 [![Evidence](https://img.shields.io/badge/every%20call-evidence--backed-34d399?style=flat-square)](#how-a-project-gets-on-the-radar)
 [![Data](https://img.shields.io/badge/data-open%20JSON%20API-2dd4ff?style=flat-square)](#the-data--an-open-honest-api)
 [![Runtime deps](https://img.shields.io/badge/runtime%20deps-zero-34d399?style=flat-square)](#architecture--open-core)
@@ -134,7 +137,7 @@ The BCI field is scattered across hundreds of repositories with no map and no ho
 |:--|:--|
 | **Investors & scouts** | An independent, continuously-updated read on *what's real* in open BCI — relevance score, evidence tier, momentum, ecosystem position — that doesn't come from a pitch deck. A due-diligence layer for a field that had none. |
 | **Researchers & builders** | Discover the libraries, decoders, hardware and protocols that actually exist, see what's gaining momentum in *your* modality, find the people building multiple projects worth following — and get scored and seen yourself. |
-| **The ecosystem** | The first honest census of open BCI software: where the field is dense, where it's thin, which standards win, and where it's heading — computed live from verifiable signals, not opinion. |
+| **The ecosystem** | A census of open BCI software computed from public signals: where the field is dense, where it is thin, which standards recur, and how that moves. Every figure traces to the evidence that produced it. |
 
 > **The anti-hype contract.** Every link is real. Every project is discovered live from public data. Inclusion is **scored, and every score carries its evidence** — the signals that raised it and the signals that lowered it, each with a plain-language reason. *Rising* reflects measured 7-day star velocity, not editorial choice. AxonOS is ranked by the same rules and currently sits mid-field; the engine has no way to flatter anyone.
 
@@ -584,29 +587,6 @@ axonos-community-radar/            # this repo — the open showcase
 
 ---
 
-## Roadmap — to v17
-
-The radar is early. Here's the arc from today to the canonical neurotech intelligence platform. Live board: **[Roadmap →](https://github.com/users/AxonOS-BCI/projects/1)**.
-
-| Version | Theme | What ships |
-|:--:|:--|:--|
-| **7.0** | The Relevance Engine | ✅ Scored inclusion (BRS) · signed evidence ledger · domain intelligence · ecosystem map |
-| **7.1** | Legible | ✅ Per-card BRS badge · inline "why included" ledger · Relevance sort |
-| **7.2** | Dashboards | ✅ Generated **BCI Ecosystem Intelligence** dashboard (embedded above) |
-| **8.0** | Open-core | ✅ Scoring engine moved fully private; showcase is UI + open data |
-| **8.1** | Dashboards, live | ✅ The Stats page is now a live dashboard — coverage matrix, BRS distribution, standards, health |
-| **9.0** | Signals | ✅ `signals.json` + RSS feeds per slice · watchlist on Stats · token-free data path |
-| **10.0** | Feed | ✅ Data API — `api.json` front door · signals feeds & schema · CSV export · [docs/API.md](docs/API.md) |
-| **11.0** | Trajectory | ✅ Sparkline on every card + `data/trajectory.json` — stars measured since 2026-06-26, BRS since 2026-07-16 |
-| **12.0** | **Badges** | ✅ Live scored badge per project — [docs/BADGES.md](docs/BADGES.md) · `badges/index.json` |
-| **13.0** | **Talent** | ✅ Who builds the field — `data/talent.json`, builders board & expertise clusters on [Stats](https://axonos-bci.github.io/axonos-community-radar/stats.html) |
-| **14.0** | Capital | Funding & domicile signals — who raised, where, and when |
-| **15.0** | Standards | Compliance tracking — LSL/BIDS/NWB conformance, clinical readiness |
-| **16.0** | Frontier | Adjacent domains — neuromodulation, neuroprosthetics, spatial compute |
-| **17.0** | **The Atlas** | The canonical, real-time intelligence platform for neurotech |
-
----
-
 ## Within AxonOS
 
 The Radar is the community-facing edge of a larger open project — an open, real-time neural operating system for BCIs. The engineering it points back to:
@@ -648,7 +628,7 @@ If you reference AxonOS Radar in academic or technical work, please cite it:
   title   = {{AxonOS Radar: a scored, evidence-backed map of the open brain--computer-interface field}},
   year    = {2026},
   url     = {https://github.com/AxonOS-BCI/axonos-community-radar},
-  version = {15.3.0}
+  version = {16.0.0}
 }
 ```
 

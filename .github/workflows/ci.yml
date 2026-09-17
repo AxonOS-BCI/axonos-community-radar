@@ -299,6 +299,23 @@ jobs:
           python3 - <<'PY'
           import re, sys
           v = open("VERSION").read().strip()
+          # A live count frozen into the README is a claim that quietly stops
+          # being true: the map is rescored every three hours, so "120+ BCI
+          # projects" on a static badge and "31 near misses" in a diagram are
+          # right on the morning they are written and wrong by the evening.
+          import re as _re
+          _rd = open("README.md", encoding="utf-8").read()
+          _frozen = []
+          for _m in _re.finditer(r"img\.shields\.io/badge/[^)\s]*?(\d{2,5})%2B?%20(?:BCI%20)?projects", _rd):
+              _frozen.append("static badge claiming " + _m.group(1) + " projects")
+          for _m in _re.finditer(r"(?<![\w.])(\d{2,4})\s+near\s+miss", _rd):
+              _frozen.append("prose claiming " + _m.group(1) + " near misses")
+          if _frozen:
+              for _f in _frozen:
+                  print("::error::the README freezes a live count: " + _f)
+              raise SystemExit(1)
+          print("no live count is frozen into the README")
+
           readme = open("README.md", encoding="utf-8").read()
           cff = open("CITATION.cff", encoding="utf-8").read()
           chlog = open("CHANGELOG.md", encoding="utf-8").read()
@@ -385,6 +402,15 @@ jobs:
               sys.exit(1)
           print(f"  roadmap current is {cur[0]}, VERSION is {v}, no duplicate numbers")
           PY
+
+      - name: The social card matches its generator
+        # The card used to be a committed binary with no source, which is how
+        # it went on advertising a six-hour refresh while everything else said
+        # three. Regenerating it here and comparing bytes means the text on the
+        # image is checked like any other claim in this repository.
+        run: |
+          pip install --quiet --break-system-packages pillow
+          python3 scripts/build_og_image.py --check
 
       - name: Licence sanity (MIT text intact)
         run: |

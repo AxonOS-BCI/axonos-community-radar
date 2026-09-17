@@ -573,3 +573,33 @@ tr.cov-foot th,tr.cov-foot td{opacity:.55;font-size:11px;padding-top:6px}
 .open-panel p:last-child { margin-bottom: 0; }
 .open-not { border-top: 1px solid var(--bd); padding-top: .7em; color: var(--muted); }
 .open-panel code { font-size: .85em; }
+
+
+/* The trend under each headline figure.
+   Sized so the band keeps its height on a phone: the sparkline is 26px and the
+   delta sits beside it rather than under it, because a fifth line in each card
+   would push the numbers under the sticky nav again. Colours are the stat's own
+   accent at low alpha, so four trends read as one family rather than four
+   competing charts. */
+.stat-trend{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px}
+.spark{display:block;overflow:visible}
+.spark-base{stroke:rgba(255,255,255,.10);stroke-width:1}
+.spark-line{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round;opacity:.9}
+.spark-dot{fill:currentColor}
+.stat-delta{font-style:normal;font-size:11.5px;font-weight:600;color:var(--faint);white-space:nowrap;font-variant-numeric:tabular-nums}
+.stat-delta.up{color:#34d399}
+.stat-delta.down{color:#fb7185}
+/* `currentColor` on the sparkline inherits from the card, so the card carries
+   the accent and the existing `.stat.x b` rules on line 58 keep the headline
+   colours they already had. Setting `color` on `.stat` alone would have
+   repainted the label too — `.stat span` is deliberately --faint — so the
+   inheritance is scoped to the svg. */
+.stat.a .spark,.stat.a .spark-dot{color:#2dd4ff}
+.stat.n .spark,.stat.n .spark-dot{color:var(--emerald)}
+.stat.s .spark,.stat.s .spark-dot{color:var(--amber)}
+.stat.c .spark,.stat.c .spark-dot{color:var(--violet)}
+@media(max-width:620px){
+  .stat-trend{gap:6px}
+  .spark{width:78px}
+  .stat-delta{font-size:11px}
+}

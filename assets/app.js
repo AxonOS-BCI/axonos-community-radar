@@ -696,15 +696,87 @@
     arr.forEach(function(L){var o=document.createElement('option');o.value=L;o.textContent=L+' ('+langs[L]+')';sel.appendChild(o);});
     sel.value=state.lang;}
 
+  var HISTORY=null,SPAN_DAYS=0;
+
+  /** Values of one meta key across the retained snapshots, oldest first. */
+  function seriesOf(key){
+    if(!HISTORY||!HISTORY.length)return null;
+    var out=[];
+    for(var i=0;i<HISTORY.length;i++){
+      var m=HISTORY[i]&&HISTORY[i].meta;
+      var v=m&&m[key];
+      if(typeof v!=='number'||!isFinite(v))return null;
+      out.push(v);
+    }
+    return out.length>=4?out:null;
+  }
+
+  /**
+   * A sparkline and the change across the window.
+   *
+   * Deliberately plain: a polyline, a baseline and a dot on the latest point.
+   * It answers one question — is this going up, down or nowhere — and refuses
+   * to imply precision it does not have, which is why there are no axes and no
+   * tooltip. The exact numbers live in the report and the API.
+   */
+  function sparkFor(key){
+    var v=seriesOf(key);if(!v)return null;
+    var W=112,H=26,P=2;
+    var lo=Math.min.apply(null,v),hi=Math.max.apply(null,v);
+    var wrap=document.createElement('div');wrap.className='stat-trend';
+    var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('viewBox','0 0 '+W+' '+H);
+    svg.setAttribute('width',String(W));svg.setAttribute('height',String(H));
+    svg.setAttribute('aria-hidden','true');svg.setAttribute('focusable','false');
+    svg.setAttribute('class','spark');
+    var span=(hi-lo)||1, step=(W-P*2)/(v.length-1);
+    function yv(n){return H-P-((n-lo)/span)*(H-P*2);}
+    var pts=[];
+    for(var i=0;i<v.length;i++)pts.push((P+i*step).toFixed(1)+','+yv(v[i]).toFixed(1));
+    var base=document.createElementNS('http://www.w3.org/2000/svg','line');
+    base.setAttribute('x1','0');base.setAttribute('x2',String(W));
+    base.setAttribute('y1',String(H-P));base.setAttribute('y2',String(H-P));
+    base.setAttribute('class','spark-base');svg.appendChild(base);
+    var pl=document.createElementNS('http://www.w3.org/2000/svg','polyline');
+    pl.setAttribute('points',pts.join(' '));pl.setAttribute('class','spark-line');
+    svg.appendChild(pl);
+    var last=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    last.setAttribute('cx',(P+(v.length-1)*step).toFixed(1));
+    last.setAttribute('cy',yv(v[v.length-1]).toFixed(1));
+    last.setAttribute('r','2.2');last.setAttribute('class','spark-dot');
+    svg.appendChild(last);
+    wrap.appendChild(svg);
+
+    var delta=v[v.length-1]-v[0];
+    var t=document.createElement('em');
+    t.className='stat-delta'+(delta>0?' up':(delta<0?' down':''));
+    var n=Math.abs(delta);
+    t.textContent=(delta>0?'+':(delta<0?'\u2212':'\u00b1'))+(n>=1000?(n/1000).toFixed(1)+'k':String(n))+
+      (SPAN_DAYS?' in '+SPAN_DAYS+'d':'');
+    wrap.appendChild(t);
+    return wrap;
+  }
+
   function setStats(){
     var c=DATA.counts||{},tot=c.total||DATA.projects.length,act=c.active_30d||0,nw=c.new||0;
     var stars=DATA.projects.reduce(function(s,p){return s+(p.stars||0);},0),cats={};DATA.projects.forEach(function(p){cats[p.category]=1;});
     function k(n){return n>=1000?(n/1000).toFixed(n>=10000?0:1)+'k':String(n);}
     var st=$('stats');st.textContent='';
-    [['a',tot,'PROJECTS'],['n',nw,'NEW THIS WEEK'],['s',k(stars),'TOTAL STARS'],['c',act,'ACTIVE 30D']].forEach(function(x){
+    // Four numbers with no shape to them: 120 projects is the same glyph
+    // whether the field grew all month or stood still. history.json already
+    // holds 145 snapshots of exactly these four metrics, so each figure now
+    // carries its own last thirty days underneath it and the change across
+    // that window beside it. Drawn inline, no library, no request beyond the
+    // one file.
+    [['a',tot,'PROJECTS','total'],
+     ['n',nw,'NEW THIS WEEK','new'],
+     ['s',k(stars),'TOTAL STARS','total_stars'],
+     ['c',act,'ACTIVE 30D','active_30d']].forEach(function(x){
       var d=document.createElement('div');d.className='stat '+x[0];
       var b=document.createElement('b');b.textContent=String(x[1]);d.appendChild(b);
-      var sp=document.createElement('span');sp.textContent=x[2];d.appendChild(sp);st.appendChild(d);});
+      var sp=document.createElement('span');sp.textContent=x[2];d.appendChild(sp);
+      var spark=sparkFor(x[3]);if(spark)d.appendChild(spark);
+      st.appendChild(d);});
     var u=$('updated');u.textContent='';
     if(DATA.generated_at){var d2=new Date(DATA.generated_at);
       u.appendChild(document.createTextNode('Updated '+d2.toUTCString().replace('GMT','UTC')+' \u00b7 refreshes every 3h \u00b7 '));
@@ -1039,6 +1111,30 @@
     fetch('./data/radar.json',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){DATA=sanitizeData(j);document.body.classList.remove('loading');buildChips();buildTierChips();buildIopChips();buildLangs();setStats();renderEcosystem();render();loadTrajectory();}).catch(function(err){console.log('radar data not loaded:',err);document.body.classList.remove('loading');setStats();render();});
     renderDonate();
     fetch('./data/weekly.json',{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(renderWeekly).catch(function(){});
+    // The trend under each headline figure. If this file is missing the band
+    // renders exactly as it did before — a sparkline is context, never a
+    // precondition for showing the number.
+    fetch('./data/history.json',{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();})
+      .then(function(h){
+        var snaps=(h&&h.snapshots)||[];
+        if(!Array.isArray(snaps)||snaps.length<4)return;
+        // Sliced by time, not by count. Snapshots land about four times a day,
+        // so the last thirty of them cover a week — and a label reading
+        // "in 30d" over seven days of data is the kind of claim this page
+        // exists to not make. The window is thirty days of wall clock, and the
+        // label states the span the retained data actually covers.
+        var t1=Date.parse(snaps[snaps.length-1].snapshot_at);
+        var cut=t1-30*864e5, win=[];
+        for(var i=0;i<snaps.length;i++){
+          var t=Date.parse(snaps[i].snapshot_at);
+          if(isFinite(t)&&t>=cut)win.push(snaps[i]);
+        }
+        if(win.length<4)win=snaps.slice(-30);
+        HISTORY=win;
+        var t0=Date.parse(win[0].snapshot_at);
+        SPAN_DAYS=(isFinite(t0)&&isFinite(t1))?Math.max(1,Math.round((t1-t0)/864e5)):0;
+        setStats();
+      }).catch(function(){});
     // The considered set is optional by construction: a snapshot taken before
     // the engine started publishing it simply has none, and the section stays
     // hidden rather than showing an empty promise.

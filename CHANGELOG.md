@@ -1,5 +1,32 @@
 # Changelog
 
+## [16.1.0] — 2026-09-17 — "Named"
+
+### Fixed
+
+- **The score column read as broken numbering.** In the near-miss list the
+  leading figure was a bare number with nothing naming it, so nine rows reading
+  `36` and seven reading `25` looked like an ordinal that had failed. It was
+  read that way twice, which is twice more than a page like this gets to
+  explain itself.
+
+  `report.html` puts `SCORE` over the same column and nobody misreads it there,
+  so the list gets the same treatment: a header — score · project · short of 40
+  — and each figure now carries the gate it is measured against, `36/40`, so a
+  row torn out of context still says what it is.
+
+### Changed
+
+- **Premium is $99 a month and Premium PRO is $500 a month, institutional.**
+  They were €9 and €29. One page, one price each, no second figure anywhere.
+
+- **The Subscribe buttons are gone.** Both pointed at
+  `github.com/sponsors/AxonOS-BCI`, which is not enabled and redirects to the
+  organisation page — a checkout that leads nowhere, next to a price. They open
+  a mail draft now, and the page says billing is not automated rather than
+  looking like it is. When Sponsors is switched on, the button changes and the
+  sentence goes with it.
+
 ## [16.0.0] — 2026-09-17 — "Trend"
 
 ### Added

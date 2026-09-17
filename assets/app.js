@@ -1000,11 +1000,26 @@
     host.appendChild(funnel);
 
     var list=document.createElement('div'); list.className='cs-list';
+    // A header, because the leading figure was a bare number with nothing
+    // naming it: nine rows reading 36 and seven reading 25 look like numbering
+    // that broke, and were read that way twice. report.html puts SCORE over
+    // the same column and nobody misreads it there.
+    var hdr=document.createElement('div');hdr.className='cs-head';
+    [['cs-h-score','score'],['cs-h-name','project'],['cs-h-gap','short of '+(CONSIDERED.gate||40)]]
+      .forEach(function(h){var e=document.createElement('span');e.className=h[0];e.textContent=h[1];hdr.appendChild(e);});
+    list.appendChild(hdr);
     CONSIDERED.projects.slice().sort(function(a,b){return b.brs-a.brs;}).slice(0,40)
       .forEach(function(x){
         var a=document.createElement('a'); a.className='cs-row';
         if(x.html_url){a.href=x.html_url;a.target='_blank';a.rel='noopener';}
-        var s=document.createElement('span'); s.className='cs-score'; s.textContent=String(x.brs); a.appendChild(s);
+        // The figure carries the gate it is measured against, so a row read
+        // out of context says 36/40 rather than 36 — a measurement, not a
+        // position in a list.
+        var s=document.createElement('span'); s.className='cs-score';
+        s.appendChild(document.createTextNode(String(x.brs)));
+        var of=document.createElement('i'); of.className='cs-of';
+        of.textContent='/'+(CONSIDERED.gate||40); s.appendChild(of);
+        a.appendChild(s);
         var mid=document.createElement('span');
         var nm=document.createElement('span'); nm.className='cs-name'; nm.textContent=x.full_name; mid.appendChild(nm);
         var why=document.createElement('span'); why.className='cs-why';

@@ -474,7 +474,7 @@ tr.cov-foot th,tr.cov-foot td{opacity:.55;font-size:11px;padding-top:6px}
 .cs-list{display:grid;gap:6px}
 .cs-row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:baseline;padding:7px 9px;border:1px solid rgba(120,140,160,.16);border-radius:8px;background:rgba(10,14,26,.35);text-decoration:none}
 .cs-row:hover{border-color:rgba(45,212,255,.4)}
-.cs-score{font-variant-numeric:tabular-nums;font-weight:650;font-size:13px;color:var(--fg,#e8eef4);min-width:2.2em;text-align:right}
+.cs-score{font-variant-numeric:tabular-nums;font-weight:650;font-size:13px;color:var(--fg,#e8eef4);min-width:3.4em;text-align:right;white-space:nowrap}
 .cs-name{font-size:13px;color:var(--fg,#e8eef4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cs-why{display:block;font-size:12px;line-height:1.4;color:var(--muted,#8a97a6);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cs-gap{font-size:12px;color:var(--muted,#8a97a6);white-space:nowrap;font-variant-numeric:tabular-nums}
@@ -602,4 +602,20 @@ tr.cov-foot th,tr.cov-foot td{opacity:.55;font-size:11px;padding-top:6px}
   .stat-trend{gap:6px}
   .spark{width:78px}
   .stat-delta{font-size:11px}
+}
+
+
+/* The near-miss list column headings.
+   The score column led with a bare number and nothing named it, so nine rows
+   reading 36 and seven reading 25 read as numbering that had broken. The gate
+   is now printed beside each figure as well, so a row torn out of context
+   still says what it is measured against. */
+.cs-head{display:flex;align-items:center;gap:10px;padding:4px 12px 8px;
+  font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.cs-h-score{min-width:3.4em;text-align:right}
+.cs-h-name{flex:1 1 auto}
+.cs-h-gap{margin-left:auto;white-space:nowrap}
+.cs-of{font-style:normal;font-weight:500;font-size:11px;color:var(--faint);margin-left:1px}
+@media(max-width:620px){
+  .cs-head{font-size:10px;gap:8px;padding:2px 10px 6px}
 }

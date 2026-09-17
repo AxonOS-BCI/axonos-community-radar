@@ -43,3 +43,29 @@
     }
   });
 })();
+
+  // Copy-to-clipboard for the address, with a visible result.
+  //
+  // Nothing is assigned as markup anywhere on this page, so the confirmation is a text node on
+  // the button itself. If the clipboard API is unavailable — an insecure
+  // context, an old browser, a user who blocked it — the button says so rather
+  // than silently doing nothing, because a payment address that you think you
+  // copied and did not is a worse outcome than no button.
+  document.addEventListener('click', function (e) {
+    var b = e.target && e.target.closest && e.target.closest('[data-copy]');
+    if (!b) return;
+    var value = b.getAttribute('data-copy') || '';
+    var restore = b.textContent;
+    function say(msg) {
+      b.textContent = msg;
+      setTimeout(function () { b.textContent = restore; }, 2200);
+    }
+    if (!navigator.clipboard || !navigator.clipboard.writeText) {
+      say('Select it and copy by hand');
+      return;
+    }
+    navigator.clipboard.writeText(value).then(
+      function () { say('Copied'); },
+      function () { say('Could not copy — select it by hand'); }
+    );
+  });

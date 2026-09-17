@@ -62,6 +62,26 @@ MAX_AGE_HOURS = float(os.environ.get("RADAR_MAX_AGE_HOURS", "7"))
 # late enough not to page on one dropped run, early enough to be seen the same
 # day rather than a fortnight later.
 MAX_DEPLOY_AGE_HOURS = float(os.environ.get("RADAR_MAX_DEPLOY_AGE_HOURS", "9"))
+
+#: Clock skew allowance. Beyond this a timestamp is not early, it is wrong.
+FUTURE_TOLERANCE_H = 0.25
+
+
+def future_fault(field: str, raw: str, ahead_h: float) -> str:
+    """A forward-dated timestamp is a fault, and a particularly quiet one.
+
+    Staleness here is `now - timestamp`. A payload dated tomorrow is therefore
+    permanently fresh: the comparison can never exceed the threshold, and this monitor
+    stops being able to report anything at all. The site already went fifteen
+    days frozen while every check reported success; a skewed clock upstream
+    would reproduce that without anyone touching the deploy.
+
+    So it is reported as its own problem rather than silently passing the
+    staleness test it makes unfailable.
+    """
+    return (f"published {field} is {ahead_h:.1f}h in the FUTURE ({raw}). "
+            f"A forward-dated payload reads as permanently fresh, so the "
+            f"staleness check above can never fire while this persists.")
 BOT_LOGINS = ("github-actions[bot]", "github-actions")
 
 HEADERS = {"Accept": "application/vnd.github+json", "User-Agent": "axonos-radar-health",
@@ -135,7 +155,9 @@ def diagnose():
                 dt = dt.replace(tzinfo=timezone.utc)
             age_h = (datetime.now(timezone.utc) - dt).total_seconds() / 3600
             print(f"  status.generated_at = {gen} (age {age_h:.1f}h)")
-            if age_h > MAX_AGE_HOURS:
+            if age_h < -FUTURE_TOLERANCE_H:
+                problems.append(future_fault("status.generated_at", gen, -age_h))
+            elif age_h > MAX_AGE_HOURS:
                 problems.append(f"data is STALE: last scan {age_h:.1f}h ago "
                                 f"(threshold {MAX_AGE_HOURS}h; scans run every 3h)")
         except Exception:  # noqa: BLE001
@@ -155,7 +177,9 @@ def diagnose():
                 dt = dt.replace(tzinfo=timezone.utc)
             age_h = (datetime.now(timezone.utc) - dt).total_seconds() / 3600
             print(f"  build.deployed_at  = {dep} (age {age_h:.1f}h, build {build.get('build')})")
-            if age_h > MAX_DEPLOY_AGE_HOURS:
+            if age_h < -FUTURE_TOLERANCE_H:
+                problems.append(future_fault("build.deployed_at", dep, -age_h))
+            elif age_h > MAX_DEPLOY_AGE_HOURS:
                 problems.append(
                     f"the site is FROZEN: last successful deploy {age_h:.1f}h ago "
                     f"(threshold {MAX_DEPLOY_AGE_HOURS}h; deploys run every 3h). "

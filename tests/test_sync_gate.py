@@ -1,5 +1,6 @@
 """The sync path is a write path into main — nothing invalid may pass it."""
 import json
+from datetime import datetime, timedelta, timezone
 import os
 import sys
 
@@ -19,7 +20,15 @@ def _run(monkeypatch, remote_obj, *, newer=True):
     puts = []
     body = json.dumps(remote_obj)
     if newer:
-        remote_obj["generated_at"] = "2099-01-01T00:00:00+00:00"
+        # Was "2099-01-01", a sentinel chosen to be unmistakably newer than the
+        # committed payload. 16.2.0 makes a forward-dated payload invalid — a
+        # timestamp in the future reads as permanent freshness and blinds the
+        # staleness monitor — so the fixture can no longer use the one value
+        # the validator now exists to refuse. Thirty seconds ago is newer than
+        # anything committed and is a timestamp a real run could produce.
+        remote_obj["generated_at"] = (
+            datetime.now(timezone.utc) - timedelta(seconds=30)
+        ).strftime("%Y-%m-%dT%H:%M:%S+00:00")
         body = json.dumps(remote_obj)
 
     def fake_fetch(path):

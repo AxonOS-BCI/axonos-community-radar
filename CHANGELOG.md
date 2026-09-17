@@ -1,5 +1,71 @@
 # Changelog
 
+## [16.2.0] — 2026-09-17 — "Counted apart"
+
+### Fixed
+
+- **Four repositories were counted as having cleared a gate they were never
+  measured against.** The map holds 120 projects; 116 have a BRS at or above
+  40. The other four — `axonos-kernel`, `axonos-protocol`, `axonos-consent`,
+  `axonos-signal-pipeline` — carry no score at all. They are placed in the map
+  by `scripts/ecosystem.py` as ecosystem anchors, named in
+  [`data/curated.json`](data/curated.json) under `_anchors` and flagged
+  `ecosystem: true`. Two further anchors do score and do clear the gate.
+
+  The funnel added them together and labelled the sum *cleared the gate of 40*.
+  On a page whose argument is that one rule applies to everyone including its
+  author, that put four of the author's own unscored repositories inside the
+  count of repositories a rule admitted.
+
+  Five buckets now, and the arithmetic still closes: 3 165 scanned = 116
+  cleared + 4 anchors + 31 scored 15–39 + 3 014 below 15. The anchor bucket is
+  styled apart, and the lede names it where the number is read.
+
+- **A `generated_at` in the future was accepted as freshness.** The validator
+  took a payload dated 2099 without comment. Staleness is measured as
+  `now − generated_at`, so a forward-dated payload is permanently fresh and the
+  freeze monitor can never fire — the same outcome as the fifteen-day outage,
+  reached through a skewed clock instead of a cancelled deploy. Refused beyond
+  five minutes of tolerance, and the monitor reports a future timestamp as its
+  own fault on both clocks rather than passing the test it has made unfailable.
+
+  `tests/test_future_timestamps.py` pins both layers. One existing fixture used
+  `2099-01-01` as a "clearly newer" sentinel and had to stop: it was the one
+  value the validator now exists to refuse.
+
+### Added
+
+- **Launch offer: 7 000 DOGE for a year of full functionality.** Priced in
+  Dogecoin rather than converted into it, which is why it is the only figure
+  on that page payable in one click — the amount is exact, so
+  `dogecoin:…?amount=7000` opens a wallet with the payment ready. The QR, the
+  address and the explorer link sit in the same block, the address is the
+  single canonical one the CI gate verifies by Base58Check, and identification
+  is by transaction id sent to `connect@axonos.org`. No processor, no account,
+  no external request from the page.
+
+### Removed
+
+- **The roadmap, everywhere.** The nav tab, the block on the landing view, the
+  board CTA on the AxonOS tab, 1 329 bytes of styling for a component that no
+  longer exists, the CI gate that checked its milestone, `ROADMAP.md` itself,
+  and the wording in the issue template and the label script. The UI smoke test
+  now asserts the block is **absent** and fails if it returns.
+
+### Documentation
+
+- README and `docs/METHODOLOGY.md` state the anchor exception where they state
+  the rule. "Kept only if its BRS clears the gate" was true of the rule and
+  false of the map. A CI gate fails if the payload carries force-included
+  projects and the prose stops naming them.
+
+### Not changed
+
+- **RSS stays public and free.** `feed.xml`, `feeds/signals.xml`,
+  `feeds/new.xml` and `feeds/rising.xml` are part of the API contract, listed
+  in the discovery manifest and documented in `docs/API.md`. They are not
+  moving behind the paid tier.
+
 ## [16.1.1] — 2026-09-17
 
 ### Fixed

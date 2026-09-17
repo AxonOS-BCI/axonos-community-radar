@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Create the radar's label taxonomy so issues land on the Roadmap board already
+# Create the radar's label taxonomy so issues land on the project board already
 # structured. Idempotent: `gh label create --force` updates colour/description if
 # a label already exists. Requires the GitHub CLI (`gh auth login` first).
 #
@@ -22,7 +22,7 @@ label "area:engine"    "5319e7" "Relevance / domain scoring"
 label "area:ui"        "1d76db" "Site, map, cards, charts"
 label "area:data"      "0e8a16" "Enrichment, history, exports"
 label "area:infra"     "555555" "CI/CD, hosting, API"
-label "area:docs"      "c5def5" "Methodology, roadmap, docs"
+label "area:docs"      "c5def5" "Methodology and docs"
 
 # ── priority ──────────────────────────────────────────────────────────────
 label "priority:high"  "b60205" "Blocks real use"

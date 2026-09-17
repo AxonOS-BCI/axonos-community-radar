@@ -316,6 +316,30 @@ jobs:
               raise SystemExit(1)
           print("no live count is frozen into the README")
 
+          # The funnel counts gate-admitted repositories apart from the
+          # ecosystem anchors. The prose has to keep saying so: "kept only if
+          # its BRS clears the gate" was true of the rule and false of the map,
+          # and it stayed on the page while four unscored AxonOS repositories
+          # sat inside the number labelled as having cleared it.
+          import json as _json, pathlib as _pl
+          _anch = set((_json.loads(_pl.Path("data/curated.json").read_text())
+                       .get("_anchors") or {}).keys())
+          _proj = _json.loads(_pl.Path("data/radar.json").read_text())["projects"]
+          _forced = [p["full_name"] for p in _proj if p.get("ecosystem")]
+          if _forced:
+              for _doc in ("README.md", "docs/METHODOLOGY.md"):
+                  _t = _pl.Path(_doc).read_text(encoding="utf-8")
+                  if "ecosystem anchor" not in _t.lower():
+                      print(f"::error::{_doc} does not mention the ecosystem anchors, "
+                            f"and {len(_forced)} repositories are in the map as one")
+                      raise SystemExit(1)
+                  if "kept only if its BRS clears the gate" in _t:
+                      print(f"::error::{_doc} still says projects are kept only by score")
+                      raise SystemExit(1)
+              print(f"{len(_forced)} ecosystem anchors in the map, named in the docs")
+          else:
+              print("no force-included projects in the payload")
+
           readme = open("README.md", encoding="utf-8").read()
           cff = open("CITATION.cff", encoding="utf-8").read()
           chlog = open("CHANGELOG.md", encoding="utf-8").read()
@@ -372,36 +396,6 @@ jobs:
             exit 1
           }
           echo "  cards agree with every repository"
-
-      - name: The roadmap's current milestone is the version
-        # The roadmap said 13.0 while VERSION said 14.1, and a heading further
-        # down still named Capital at a number the table had reassigned. Both
-        # were hand-written, which is the same defect the project cards had
-        # before they were generated: a fact stated where the fact cannot reach.
-        #
-        # This does not generate the file — the name and the reason are
-        # editorial and a version number cannot carry them. It checks the one
-        # thing that can drift silently.
-        run: |
-          python3 - <<'PY'
-          import re, sys, pathlib, collections
-          t = pathlib.Path("ROADMAP.md").read_text(encoding="utf-8")
-          v = pathlib.Path("VERSION").read_text().strip()
-          major = v.split(".")[0] + "." + v.split(".")[1]
-          rows = re.findall(r"^\| \*\*([\d.]+(?:–[\d.]+)?)\*\* \| ([^|]+) \| ([^|]+) \|", t, re.M)
-          cur = [n for n, _name, s in rows if "current" in s]
-          if len(cur) != 1:
-              print(f"::error::{len(cur)} milestones marked current; there must be exactly one")
-              sys.exit(1)
-          if cur[0] not in (major, v):
-              print(f"::error::the roadmap marks {cur[0]} as current and VERSION says {v}")
-              sys.exit(1)
-          d = [x for x, n in collections.Counter(n for n, _, _ in rows).items() if n > 1]
-          if d:
-              print(f"::error::two milestones share a number: {d}")
-              sys.exit(1)
-          print(f"  roadmap current is {cur[0]}, VERSION is {v}, no duplicate numbers")
-          PY
 
       - name: The social card matches its generator
         # The card used to be a committed binary with no source, which is how

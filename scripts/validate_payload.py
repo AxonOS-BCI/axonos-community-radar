@@ -20,6 +20,7 @@ Usage:
     python3 scripts/validate_payload.py --check         # same as default path
 """
 from __future__ import annotations
+from datetime import datetime, timezone
 
 import json
 import re
@@ -76,6 +77,12 @@ def _load_known_interop():
 _KNOWN_INTEROP = _load_known_interop()
 
 
+#: How far ahead of now a payload may be stamped. A runner's clock and this
+#: one do not agree to the second, and a payload minted during a run is
+#: legitimately a few seconds ahead. Anything beyond this is a broken clock.
+FUTURE_TOLERANCE_S = 300
+
+
 def validate_payload(payload, cap: int = DEFAULT_CAP):
     """Return a list of error strings. Empty list == valid."""
     errors: list[str] = []
@@ -94,6 +101,37 @@ def validate_payload(payload, cap: int = DEFAULT_CAP):
         total = counts.get("total")
         if isinstance(total, int) and total < 0:
             errors.append("counts.total is negative")
+
+    # A timestamp in the future is not freshness, it is a broken clock — and it
+    # is the one bad value that makes everything downstream look healthier than
+    # it is. `health_check.py` measures staleness as now minus generated_at, so
+    # a payload dated next year is permanently fresh and the freeze monitor can
+    # never fire. That is exactly how a two-week outage stayed invisible once
+    # already, reached this time through a skewed runner clock rather than a
+    # cancelled deploy.
+    #
+    # Five minutes of tolerance, because a runner and this machine do not agree
+    # to the second and a payload minted during the run is legitimately a few
+    # seconds ahead.
+    gen = payload.get("generated_at")
+    if gen is not None:
+        if not isinstance(gen, str):
+            errors.append(f"generated_at must be a string, got {type(gen).__name__}")
+        else:
+            try:
+                when = datetime.fromisoformat(gen.replace("Z", "+00:00"))
+                if when.tzinfo is None:
+                    when = when.replace(tzinfo=timezone.utc)
+            except ValueError:
+                errors.append(f"generated_at is not an ISO-8601 timestamp: {gen!r}")
+            else:
+                ahead = (when - datetime.now(timezone.utc)).total_seconds()
+                if ahead > FUTURE_TOLERANCE_S:
+                    errors.append(
+                        f"generated_at is {ahead / 3600:.1f}h in the future ({gen}); "
+                        f"a payload cannot be generated after now, and a future "
+                        f"timestamp makes the freshness monitor blind"
+                    )
 
     # v4 and v5 both keep every v3 invariant — verified against live production
     # data (120/120 projects carry evidence_tier + inclusion_reason; all four

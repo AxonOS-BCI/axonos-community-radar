@@ -282,11 +282,13 @@ await healCase("stale shell", "oldsha00", { build: "newsha11" }, true);
 await healCase("fresh shell", "same1234", { build: "same1234" }, false);
 await healCase("build.json missing", "some1234", null, false);
 
-// public roadmap board link is present and points at the project board
+// the roadmap block is gone, and nothing should put it back
 {
   const rm = window.document.querySelector('a.roadmap');
-  assert(rm && /github\.com\/users\/AxonOS-BCI\/projects\/1/.test(rm.getAttribute('href') || ''),
-         "roadmap board link present on landing view");
+  assert(rm === null, "no roadmap block on the landing view");
+  const navRoadmap = [...window.document.querySelectorAll('a.nav-link')]
+    .some(a => (a.textContent || '').trim().toLowerCase() === 'roadmap');
+  assert(navRoadmap === false, "no Roadmap tab in the nav");
 }
 
 // support surface: nav link, canonical DOGE address single-sourced, zero innerHTML

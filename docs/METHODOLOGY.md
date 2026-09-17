@@ -12,11 +12,26 @@ result is auditable rather than asserted.
   can be wrong. They describe, they do not rank.
 - **Scores are discovery signals, not quality, safety, or clinical ratings.**
 - **GitHub topics are self-declared** by repository maintainers.
-- **AxonOS projects are not boosted.** They are ranked by the same formula as
-  everyone else — including this radar's own repository, which appears on the
-  map and is scored by the same engine, with its evidence ledger public like
-  every other card. Where an AxonOS repository shows no BRS, none has been
-  assigned; the card says so rather than inventing a number.
+- **AxonOS scores are not boosted, and six AxonOS repositories are in the map
+  without a score at all.** Two things, and conflating them is how the previous
+  wording misled.
+
+  The scoring is untouched: where an AxonOS repository has a BRS it was earned
+  from the same evidence as everyone else's, with the same ledger, and this
+  radar's own entry sits mid-field on it.
+
+  But six repositories — listed by name in
+  [`data/curated.json`](../data/curated.json) under `_anchors`, and flagged
+  `ecosystem: true` in the payload — are placed in the map by
+  `scripts/ecosystem.py` as ecosystem anchors rather than admitted by the gate.
+  Four of them carry no BRS. They are there to give the ecosystem view its
+  spine, not because they cleared 40.
+
+  The funnel counts them apart for that reason: *cleared the gate* and
+  *ecosystem anchors, force-included* are two numbers on the map, never one.
+  Until 16.2.0 they were added together and the total was labelled as having
+  cleared the gate, which said four unscored AxonOS repositories had passed a
+  rule they were never measured against.
 
 ## Source data
 
@@ -40,8 +55,10 @@ Score (BRS, 0–100)**, built from a *signed evidence ledger*. Every positive an
 negative signal is recorded with its points and a plain-language reason, so
 inclusion is transparent rather than opaque; the ledger travels with each
 project as `relevance_ledger`, the score as `brs`, and a summary label as
-`relevance_tier`. A repo is kept only when its raw score reaches the gate
-(currently 40).
+`relevance_tier`. A repo is kept when its raw score reaches the gate
+(currently 40) — with the one documented exception above: the six ecosystem
+anchors, which are placed in the map by name and counted separately from the
+repositories the gate admitted.
 
 The decisive idea is **disambiguation by anchor**. The word `neural` counts as
 neuroscience only when it sits next to a neuro anchor (interface, signal,

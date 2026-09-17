@@ -976,7 +976,7 @@
     lede.appendChild(gate);
     lede.appendChild(document.createTextNode(
       '. This is everything the scanner saw, scored at least '+CONSIDERED.min_score+
-      ', and did not keep \u2014 with what each reached and how far short it fell. '+
+      ', and did not keep \u2014 with what each reached and how far short it fell. '+'Six repositories are in the map as ecosystem anchors rather than by score, four of them unscored; they are counted separately above and listed in data/curated.json. '+
       'Published so the size of the map is a claim you can check rather than one you have to accept.'));
     host.appendChild(lede);
 
@@ -988,9 +988,28 @@
     // tripped a rule and still lands here, because the listing floor is
     // min_score. What is provable is the floor itself, so that is what it
     // says, with the number read from the payload rather than written in.
+    // The kept count is not one thing. Six repositories are force-included as
+    // ecosystem anchors by the scanner — they are listed in data/curated.json
+    // under `_anchors` and flagged `ecosystem: true` — and four of those carry
+    // no score at all. Counting them under "cleared the gate of 40" put four
+    // AxonOS repositories among the projects said to have passed a rule they
+    // were never measured against, on a page whose argument is that the same
+    // rule applies to everyone including its author.
+    //
+    // Split, so the number says what it is. The arithmetic still closes:
+    // cleared + anchors + considered + below == scanned.
+    var gate=CONSIDERED.gate;
+    var inMap=(DATA&&DATA.projects)?DATA.projects:[];
+    var clearedN=0, anchorN=0;
+    for(var q=0;q<inMap.length;q++){
+      var b=inMap[q].brs;
+      if(typeof b==='number'&&isFinite(b)&&b>=gate)clearedN++; else anchorN++;
+    }
+    if(!inMap.length){clearedN=CONSIDERED.kept;anchorN=0;}
     [[CONSIDERED.scanned,'repositories scanned',''],
-     [CONSIDERED.kept,'cleared the gate of '+CONSIDERED.gate,'is-kept'],
-     [CONSIDERED.total,'scored '+CONSIDERED.min_score+' to '+(CONSIDERED.gate-1),''],
+     [clearedN,'cleared the gate of '+gate,'is-kept'],
+     [anchorN,'ecosystem anchors, force-included','is-anchor'],
+     [CONSIDERED.total,'scored '+CONSIDERED.min_score+' to '+(gate-1),''],
      [below,'scored below '+CONSIDERED.min_score,'']].forEach(function(s){
       var d=document.createElement('div'); d.className='cs-step'+(s[2]?' '+s[2]:'');
       var n=document.createElement('span'); n.className='n'; n.textContent=String(s[0]); d.appendChild(n);

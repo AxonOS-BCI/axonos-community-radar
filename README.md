@@ -91,7 +91,7 @@ without handing anyone a key.
 [![Live](https://img.shields.io/badge/live-axonos--bci.github.io-a78bfa?style=flat-square)](https://axonos-bci.github.io/axonos-community-radar/)
 [![CI](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml)
 [![Pages](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml)
-[![Version](https://img.shields.io/badge/version-16.1.1-0a4a8f?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-16.2.0-0a4a8f?style=flat-square)](CHANGELOG.md)
 [![Release](https://img.shields.io/badge/release-Considered-6fe6f2?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-475569?style=flat-square)](LICENSE)
 
@@ -139,7 +139,7 @@ The BCI field is scattered across hundreds of repositories with no map and no ho
 | **Researchers & builders** | Discover the libraries, decoders, hardware and protocols that actually exist, see what's gaining momentum in *your* modality, find the people building multiple projects worth following — and get scored and seen yourself. |
 | **The ecosystem** | A census of open BCI software computed from public signals: where the field is dense, where it is thin, which standards recur, and how that moves. Every figure traces to the evidence that produced it. |
 
-> **The anti-hype contract.** Every link is real. Every project is discovered live from public data. Inclusion is **scored, and every score carries its evidence** — the signals that raised it and the signals that lowered it, each with a plain-language reason. *Rising* reflects measured 7-day star velocity, not editorial choice. AxonOS is ranked by the same rules and currently sits mid-field; the engine has no way to flatter anyone.
+> **The anti-hype contract.** Every link is real. Every project is discovered live from public data. Inclusion is **scored, and every score carries its evidence** — the signals that raised it and the signals that lowered it, each with a plain-language reason. *Rising* reflects measured 7-day star velocity, not editorial choice. AxonOS is ranked by the same rules and currently sits mid-field. Six AxonOS repositories are additionally placed in the map as **ecosystem anchors** rather than admitted by the gate — named in [`data/curated.json`](data/curated.json), flagged `ecosystem: true`, and counted in their own bucket on the funnel, never inside *cleared the gate*.
 
 ### The pains this radar closes
 
@@ -546,7 +546,7 @@ same treatment, would not be a defensible position.
 
 ## How a project gets on the radar
 
-Generated entirely from **public GitHub topic search** — no scraping, no private data. A repository is scored by the **Relevance Engine** and kept only if its BRS clears the gate (**40**). Keyword matching is anchored at word boundaries, so a *MIDI controller* never slips in on the substring `mi`, and a PyTorch clone never slips in on "neural". Every kept project carries its **evidence tier** and its full **ledger** — the signals that got it there.
+Generated entirely from **public GitHub topic search** — no scraping, no private data. A repository is scored by the **Relevance Engine** and kept if its BRS clears the gate (**40**); the six ecosystem anchors are the documented exception and are counted separately. Keyword matching is anchored at word boundaries, so a *MIDI controller* never slips in on the substring `mi`, and a PyTorch clone never slips in on "neural". Every kept project carries its **evidence tier** and its full **ledger** — the signals that got it there.
 
 **Stable & safe.** Recency is measured from a fixed snapshot, so unchanged projects keep their place. If more than a quarter of topic queries fail, the run aborts *without writing* — the last good map is preserved. Data is committed through the GitHub API, which signs the commit, so the history stays **Verified**.
 
@@ -628,7 +628,7 @@ If you reference AxonOS Radar in academic or technical work, please cite it:
   title   = {{AxonOS Radar: a scored, evidence-backed map of the open brain--computer-interface field}},
   year    = {2026},
   url     = {https://github.com/AxonOS-BCI/axonos-community-radar},
-  version = {16.1.1}
+  version = {16.2.0}
 }
 ```
 

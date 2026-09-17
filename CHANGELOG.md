@@ -1,5 +1,35 @@
 # Changelog
 
+## [16.1.1] — 2026-09-17
+
+### Fixed
+
+- **The social-card gate compared file bytes, which is not a property of the
+  card.** A PNG of one identical picture differs byte-for-byte between zlib
+  builds and between `optimize` settings — 172 373 against 173 837 here for the
+  same image — so the check would have failed on a machine drawing exactly the
+  right card. It compares pixels now, measured rather than assumed: the buffers
+  are equal where the files are not.
+
+- **That gate installed Pillow unpinned.** `pip install pillow` next to a
+  `requirements-ci.txt` that pins everything else. A drawing change in a new
+  Pillow would have read as a broken card, and the gate's behaviour would have
+  moved under the repository without a commit — the unpinned-scanner defect,
+  again, in a check written to prevent exactly that class. `pillow==12.1.1`
+  sits with the other pins and the step installs from the file.
+
+### Note on how releases are made
+
+`release.yml` already creates the Release from a `v*` tag, idempotently, and
+verifies it exists. The delivery script was calling `gh release create` as
+well — two paths to the same object, and the second one is where 16.1.0 broke:
+its notes contained `$99`, which bash expanded inside double quotes to the
+ninth positional parameter and then failed under `set -u`. The commit was
+already pushed; only the Release was missing.
+
+The script pushes the tag now and lets the repository's own path make the
+Release. No inline notes, no shell interpolating a price.
+
 ## [16.1.0] — 2026-09-17 — "Named"
 
 ### Fixed

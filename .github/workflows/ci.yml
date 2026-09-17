@@ -409,7 +409,11 @@ jobs:
         # three. Regenerating it here and comparing bytes means the text on the
         # image is checked like any other claim in this repository.
         run: |
-          pip install --quiet --break-system-packages pillow
+          # Pinned, from the file that holds the other pins. It was a bare
+          # `pip install pillow`, which is the unpinned-scanner defect: the gate
+          # would have changed behaviour under the repository whenever Pillow
+          # released, and a drawing change would have read as a broken card.
+          pip install -r requirements-ci.txt --quiet --break-system-packages
           python3 scripts/build_og_image.py --check
 
       - name: Licence sanity (MIT text intact)

@@ -49,7 +49,8 @@ deploy carries.
 | **15.2** | Stated limits, and the closed engine said out loud | ✅ shipped |
 | **15.3** | Measured, not judged — contrast, plurals and a funnel that claims only what it proves | ✅ shipped |
 | **16.0** | Trend — every headline figure carries its own thirty days, and the social card is generated | ✅ shipped |
-| **16.1** | Named — the score column says it is a score, and the paid tiers say what they cost | **current** |
+| **16.1** | Named — the score column says it is a score, and the paid tiers say what they cost | ✅ shipped |
+| **16.1.1** | Gates that hold across machines, and one release path instead of two | **current** |
 
 **Why 14.0 is Discoverable and not Capital.** Capital was the reserved name and
 it is not what shipped, so the reason is here rather than left for a reader to

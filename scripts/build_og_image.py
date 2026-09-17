@@ -21,7 +21,7 @@ PNG stops matching what this script produces.
 from __future__ import annotations
 
 import argparse
-import hashlib
+import io
 import pathlib
 import re
 import sys
@@ -133,7 +133,6 @@ def main() -> int:
     args = ap.parse_args()
 
     img = build()
-    import io
 
     from PIL import Image
 
@@ -156,12 +155,21 @@ def main() -> int:
         if not OUT.exists():
             print("::error::og-image.png is missing")
             return 1
-        have = OUT.read_bytes()
-        if hashlib.sha256(have).hexdigest() != hashlib.sha256(made).hexdigest():
-            print("::error::og-image.png does not match what build_og_image.py produces")
+        # Pixels, not file bytes. A PNG of the same image differs byte-for-byte
+        # between zlib builds and between `optimize` settings — 172 373 against
+        # 173 837 here for one identical picture — so a checksum gate would
+        # fail on a machine that draws exactly the right card. Measured rather
+        # than assumed: the pixel buffers compare equal where the files do not.
+        from PIL import Image
+
+        have = Image.open(OUT)
+        want = Image.open(io.BytesIO(made))
+        if have.size != want.size or have.convert("RGB").tobytes() != want.convert("RGB").tobytes():
+            print("::error::og-image.png is not what build_og_image.py draws")
             print("::error::run: python3 scripts/build_og_image.py --write")
             return 1
-        print(f"og-image.png matches its generator ({len(have)} bytes)")
+        print(f"og-image.png matches its generator pixel for pixel "
+              f"({have.width}x{have.height}, {OUT.stat().st_size // 1024} kB)")
         return 0
 
     print(__doc__)

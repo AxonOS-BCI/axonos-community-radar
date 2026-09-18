@@ -1,0 +1,76 @@
+{
+  "$comment": "Plans as data. Prices lived in HTML three times and contradicted themselves twice \u2014 EUR 9 beside USD 99, then a Subscribe button to a Sponsors page that was never enabled. CI renders this file against support.html so a figure cannot drift without failing the build.",
+  "schema_version": 1,
+  "currency_fiat": "USD",
+  "plans": {
+    "premium": {
+      "id": "RADAR_PREMIUM",
+      "name": "Premium",
+      "price": {
+        "amount": 99,
+        "currency": "USD",
+        "period": "month"
+      },
+      "billing": "monthly, cancellable at any time",
+      "entitlements": {
+        "api_requests_month": 10000,
+        "seats": 1,
+        "alerts": true,
+        "webhook": true,
+        "csv_export": true,
+        "private_watchlist": false
+      }
+    },
+    "premium_pro": {
+      "id": "RADAR_PRO",
+      "name": "Premium PRO",
+      "audience": "institutional",
+      "price": {
+        "amount": 500,
+        "currency": "USD",
+        "period": "month"
+      },
+      "billing": "monthly, cancellable at any time",
+      "entitlements": {
+        "api_requests_month": 200000,
+        "seats": 5,
+        "alerts": true,
+        "webhook": true,
+        "csv_export": true,
+        "private_watchlist": true,
+        "custom_scan_cadence": true
+      }
+    },
+    "launch_annual": {
+      "id": "RADAR_LAUNCH_ANNUAL",
+      "name": "Launch Annual",
+      "promotion": true,
+      "price": {
+        "amount": 7000,
+        "currency": "DOGE",
+        "period": "year"
+      },
+      "billing": "prepaid for twelve months from payment confirmation",
+      "term_months": 12,
+      "grants": "premium_pro",
+      "entitlements": {
+        "api_requests_month": 200000,
+        "seats": 5,
+        "alerts": true,
+        "webhook": true,
+        "csv_export": true,
+        "private_watchlist": true,
+        "custom_scan_cadence": true
+      }
+    }
+  },
+  "provisioning": {
+    "automated": false,
+    "statement": "Provisioning is manual and begins after the payment confirms on chain. There is no billing backend; nothing on this site pretends otherwise.",
+    "order_id_format": "AXR-YYYY-NNNNNN"
+  },
+  "cadence": {
+    "public_scan_hours": 3,
+    "private_statement": "Custom cadence is agreed during provisioning and is bounded by GitHub's rate limits. No figure is promised before that conversation."
+  }
+}

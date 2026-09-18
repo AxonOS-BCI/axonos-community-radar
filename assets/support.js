@@ -32,40 +32,45 @@
     return ok;
   }
 
-  btn.addEventListener('click', function () {
+  /**
+   * One copy path for every control on this page.
+   *
+   * There were two. The first, on the support button, tried the async API and
+   * fell back to execCommand; the second, added with the launch offer, tried
+   * the async API and gave up. So the same click could succeed on one button
+   * and fail on the other in the same browser, and the two reported it in
+   * different words. On a page where the thing being copied is a payment
+   * address, a copy that quietly does nothing is the worst outcome available.
+   *
+   * Resolves to true or false; the caller decides what to say.
+   */
+  function copyText(value) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(ADDR).then(
-        function () { say('DOGE address copied — thank you!'); },
-        function () { say(fallbackCopy(ADDR) ? 'DOGE address copied — thank you!' : 'Copy failed — select the address manually'); }
+      return navigator.clipboard.writeText(value).then(
+        function () { return true; },
+        function () { return fallbackCopy(value); }
       );
-    } else {
-      say(fallbackCopy(ADDR) ? 'DOGE address copied — thank you!' : 'Copy failed — select the address manually');
     }
-  });
-})();
+    return Promise.resolve(fallbackCopy(value));
+  }
 
-  // Copy-to-clipboard for the address, with a visible result.
-  //
-  // Nothing is assigned as markup anywhere on this page, so the confirmation is a text node on
-  // the button itself. If the clipboard API is unavailable — an insecure
-  // context, an old browser, a user who blocked it — the button says so rather
-  // than silently doing nothing, because a payment address that you think you
-  // copied and did not is a worse outcome than no button.
+  var COPIED = 'Copied';
+  var COPY_FAILED = 'Copy failed — select manually';
+
+  btn.addEventListener('click', function () {
+    copyText(ADDR).then(function (ok) { say(ok ? COPIED : COPY_FAILED); });
+  });
+
+  // The launch-offer button, which used to carry its own half of this logic.
+  // The confirmation lands on the button itself because it sits far from the
+  // toast, and both use the same two strings.
   document.addEventListener('click', function (e) {
     var b = e.target && e.target.closest && e.target.closest('[data-copy]');
     if (!b) return;
-    var value = b.getAttribute('data-copy') || '';
     var restore = b.textContent;
-    function say(msg) {
-      b.textContent = msg;
+    copyText(b.getAttribute('data-copy') || '').then(function (ok) {
+      b.textContent = ok ? COPIED : COPY_FAILED;
       setTimeout(function () { b.textContent = restore; }, 2200);
-    }
-    if (!navigator.clipboard || !navigator.clipboard.writeText) {
-      say('Select it and copy by hand');
-      return;
-    }
-    navigator.clipboard.writeText(value).then(
-      function () { say('Copied'); },
-      function () { say('Could not copy — select it by hand'); }
-    );
+    });
   });
+})();

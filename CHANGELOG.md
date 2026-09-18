@@ -1,5 +1,89 @@
 # Changelog
 
+## [16.3.0] — 2026-09-18 — "Contracts, not markup"
+
+Prices and a payment address stop living in HTML.
+
+### Added
+
+- **[`data/payment.json`](data/payment.json)** — the address, the `dogecoin:`
+  URI, the QR path, the explorer link and the contact, in one file. A Dogecoin
+  transaction is irreversible: an address wrong by one character in the QR, or
+  in the URI, or in the copy button sends a stranger's money somewhere nobody
+  controls, and nothing on the page would look wrong.
+
+- **[`data/commercial.json`](data/commercial.json)** — every plan, price,
+  quota, seat count, term and the provisioning statement. The prices drifted
+  three times while they lived only in markup: €9 and €29 became $99 and $500
+  with the old pair surviving elsewhere on the page, a Subscribe button pointed
+  for weeks at a Sponsors account that was never enabled, and the launch offer
+  arrived beside two monthly plans with no stated relationship between them.
+  Every one of those was found by a person reading the page.
+
+- **[`tests/test_support_contract.py`](tests/test_support_contract.py)** — twelve
+  checks binding the rendered page to those two files: Base58Check on the
+  address, the same address in the QR alt text and the URI and the copy button
+  and the explorer link and nowhere else, the URI's amount against the contract,
+  every price, every quota, the seat count, the term, what the launch offer
+  grants, and the phrases that used to overstate it.
+
+  Proved by mutation rather than asserted: a second D-address, a swapped QR, an
+  amount changed from 7 000 to 700, a price edited in the HTML, and
+  "Full functionality" restored — each fails the suite, and the unmodified page
+  passes.
+
+- **[`docs/OPEN_CORE_BOUNDARY.md`](docs/OPEN_CORE_BOUNDARY.md)** — what is
+  public, what is not, and the one thing a reader cannot reproduce: the
+  candidate universe. The scanner is private, so what it chose to examine is
+  taken on trust, and no amount of published evidence closes that. Also states
+  what is *not built* — no billing backend, no order state machine, no quota
+  service — so silence stops implying otherwise.
+
+### Fixed
+
+- **"Everything on this page" and "Full functionality"** are gone. Launch Annual
+  lists what it includes: Premium PRO in full, twelve months, 200 000 requests a
+  month, five seats on one shared watchlist, a private watchlist, alerts and
+  exports.
+
+- **"every seat that comes with it"** → five seats, stated.
+
+- **Monthly and prepaid were called the same thing.** The terms said every paid
+  plan is billed monthly while the launch offer is a twelve-month prepayment.
+  Separated.
+
+- **An order id.** A txid identifies a payment but not what it was for, how long
+  it runs, or who to provision. `AXR-2026-000001`, issued by reply before
+  payment, costs one message and removes the ambiguity.
+
+- **"scan budget"** as a customer-facing phrase, and the unbounded "its own
+  cadence". A cadence is agreed at provisioning and bounded by GitHub's rate
+  limits; no interval is promised before that conversation.
+
+- **Two clipboard implementations.** One tried the async API and fell back to
+  `execCommand`; the other tried the async API and gave up — so the same click
+  could succeed on one button and fail on the other in one browser, reported in
+  different words. One `copyText()`, one pair of messages. On a page whose
+  subject is a payment address, a copy that quietly does nothing is the worst
+  outcome available.
+
+- The meta description described the page as voluntary support only, after it
+  had become a commercial service page.
+
+### Removed
+
+- **1.0 MB of orphaned images.** `docs/assets/dashboard-example-audit.jpg` and
+  `dashboard-example-gap-analysis.jpg` were referenced by nothing and shipped in
+  every clone.
+
+### Not done, and not pretended
+
+The audit's H5 to H9 and M4 to M11 describe an order state machine, hashed API
+keys, server-side quota enforcement, tenant isolation and webhook HMAC. None of
+that exists. Writing it into this repository would document software that has
+not been written, which this project treats as the same defect as a wrong
+number. `docs/OPEN_CORE_BOUNDARY.md` says so in as many words.
+
 ## [16.2.1] — 2026-09-17
 
 An external audit found one real release-blocker in 16.2.0, and it was in the

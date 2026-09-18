@@ -411,6 +411,16 @@ jobs:
           }
           echo "  cards agree with every repository"
 
+      - name: The payment address and the prices match their contracts
+        # A Dogecoin transaction is irreversible. An address wrong by one
+        # character in the QR, the URI or the copy button sends a stranger's
+        # money somewhere nobody controls, and nothing on the page would look
+        # wrong. The prices have already drifted three times on their own.
+        # Both are data with a test now, checked on every push.
+        run: |
+          pip install -r requirements-ci.txt --quiet --break-system-packages
+          python3 -m pytest tests/test_support_contract.py -q
+
       - name: The social card matches its generator
         # The card used to be a committed binary with no source, which is how
         # it went on advertising a six-hour refresh while everything else said

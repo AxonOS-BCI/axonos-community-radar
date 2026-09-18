@@ -99,6 +99,8 @@
       "Transactions are irreversible - verify the complete address before sending.",
       "AxonOS will never ask for a wallet seed phrase, private key or remote wallet access.",
       "Commercial licence payments require a written agreement and invoice; fiat (SGD or USD) is the default. See CRYPTO_PAYMENT_TERMS.md in neural-boundary-game."
-    ]
+    ],
+    "$comment": "Mirrors data/payment.json, which is the single source for every payment field. Two files holding a wallet address independently is two roots of truth for an irreversible transfer; they agree today and nothing made them agree tomorrow. CI now reads payment.json and fails if this copy drifts from it.",
+    "source": "data/payment.json"
   }
 }

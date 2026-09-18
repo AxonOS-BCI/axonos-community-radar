@@ -124,20 +124,39 @@ def test_every_price_on_the_page_comes_from_the_contract():
 def test_the_quotas_and_seats_on_the_page_match_the_contract():
     flat = PAGE.replace("&nbsp;", " ")
     for key in ("premium", "premium_pro"):
-        e = _plan(key)["entitlements"]
+        e = _entitlements(key)
         q = f"{e['api_requests_month']:,}".replace(",", " ")
         assert q in flat, f"{key}: quota {q} is not on the page"
-    pro = _plan("premium_pro")["entitlements"]
+    pro = _entitlements("premium_pro")
     assert re.search(rf"\b(five|{pro['seats']})\s+seats", flat, re.I), \
         "the PRO seat count is not stated on the page"
+
+
+def _entitlements(key):
+    """Resolve through `grants`, so a granting plan has no entitlements of its own."""
+    plan = _plan(key)
+    if "entitlements" in plan:
+        return plan["entitlements"]
+    return _entitlements(plan["grants"])
+
+
+def test_a_granting_plan_does_not_carry_its_own_entitlement_copy():
+    """The duplicate is removed from the model, not merely checked for equality.
+
+    launch_annual used to repeat every field of premium_pro and a test asserted
+    they matched. That catches a divergence after it is written; it does not stop
+    the model from allowing one. One definition, resolved through `grants`.
+    """
+    launch = _plan("launch_annual")
+    assert "entitlements" not in launch, \
+        "launch_annual carries its own entitlement copy again"
+    assert launch["grants"] == "premium_pro"
+    assert _entitlements("launch_annual") == _plan("premium_pro")["entitlements"]
 
 
 def test_the_launch_offer_states_its_term_and_what_it_grants():
     launch = _plan("launch_annual")
     assert launch["grants"] == "premium_pro"
-    assert launch["entitlements"] == _plan("premium_pro")["entitlements"], (
-        "launch_annual claims to grant Premium PRO but lists different entitlements"
-    )
     flat = PAGE.replace("&nbsp;", " ").lower()
     assert "twelve months" in flat or f"{launch['term_months']} months" in flat
     assert "premium pro" in flat, "the launch offer does not name what it grants"

@@ -1,5 +1,54 @@
 # Changelog
 
+## [16.4.0] — 2026-09-18 — "Executable contracts"
+
+### Fixed
+
+- **The QR code was never read.** 16.3.0 shipped a check named "the QR and the
+  explorer point at the canonical address" and a release note saying a swapped
+  QR fails the suite. Neither was true. The check read the `alt` attribute in
+  the HTML, and the mutation that "proved" it edited that same attribute.
+  Nothing in this repository had ever opened `assets/doge-qr.svg`.
+
+  So the attack it existed to stop went straight through: correct address in the
+  text, correct address in the alt, correct filename in `payment.json`, and a
+  replaced image encoding someone else's wallet. Every check passes and the page
+  looks right. Claiming that as coverage was the more serious half of the error;
+  an unchecked thing is safer than a thing believed to be checked.
+
+  [`tests/test_qr_integrity.py`](tests/test_qr_integrity.py) recovers the module
+  grid from the SVG path, renders it and **decodes it**. The payload is compared
+  with `data/payment.json`; the decoded address is compared separately; and the
+  code must carry no embedded amount, because a figure baked into an image
+  outlives whatever the page says it is for.
+
+  Proved by replacing the image with a valid QR for a different address —
+  three checks fail. The decoder is pinned in `requirements-ci.txt` and the CI
+  step fails if it is missing rather than skipping, since a decode that silently
+  does not run is how this defect existed in the first place.
+
+- **Two roots of truth for the wallet address.** The funding gate read canonical
+  from `data/ecosystem-registry.json` while the support tests read it from
+  `data/payment.json`. Two files holding an address for irreversible transfers,
+  agreeing only because nothing had yet made them disagree. `payment.json` is
+  the root; the registry entry names it as its source, and CI fails if the
+  mirror drifts.
+
+### Changed
+
+- **`launch_annual` no longer repeats the PRO entitlements.** It carried a full
+  copy and a test asserted the two matched — which catches a divergence after
+  someone writes it, but leaves the model free to allow one. Entitlements
+  resolve through `grants`, so there is one definition and nothing to diverge.
+
+### Still open
+
+`ci.yml` holds thousands of characters of shell and Python inside YAML, where
+it cannot be run locally, linted, or covered by a test. Two real defects have
+already passed through that layer. Extracting it into `scripts/gates/` is the
+next release and is not folded in here, because a change to the thing that
+checks everything else should not ride along with anything.
+
 ## [16.3.0] — 2026-09-18 — "Contracts, not markup"
 
 Prices and a payment address stop living in HTML.

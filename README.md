@@ -4,8 +4,11 @@
 
 ### An auditable map of open brain–computer interface work.
 
-Every project here cleared a scored gate, and the score, the evidence behind it
-and the rule that combined them are all public. Refreshed every three hours.
+Almost every project here cleared a scored gate, and the score, the evidence
+behind it and the rule that combined them are all public. The exception is
+named: a handful of AxonOS repositories are placed in the map as **ecosystem
+anchors** rather than admitted by the gate, they carry no `brs`, and the funnel
+counts them in their own bucket. Refreshed every three hours.
 
 [![Live map](https://img.shields.io/badge/live-map-3fd68f?style=for-the-badge&labelColor=0e141d)](https://axonos-bci.github.io/axonos-community-radar/)
 [![Field report](https://img.shields.io/badge/field-report-5cc8ff?style=for-the-badge&labelColor=0e141d)](https://axonos-bci.github.io/axonos-community-radar/report.html)
@@ -91,7 +94,7 @@ without handing anyone a key.
 [![Live](https://img.shields.io/badge/live-axonos--bci.github.io-a78bfa?style=flat-square)](https://axonos-bci.github.io/axonos-community-radar/)
 [![CI](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml)
 [![Pages](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml)
-[![Version](https://img.shields.io/badge/version-16.2.0-0a4a8f?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-16.2.1-0a4a8f?style=flat-square)](CHANGELOG.md)
 [![Release](https://img.shields.io/badge/release-Considered-6fe6f2?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-475569?style=flat-square)](LICENSE)
 
@@ -628,7 +631,7 @@ If you reference AxonOS Radar in academic or technical work, please cite it:
   title   = {{AxonOS Radar: a scored, evidence-backed map of the open brain--computer-interface field}},
   year    = {2026},
   url     = {https://github.com/AxonOS-BCI/axonos-community-radar},
-  version = {16.2.0}
+  version = {16.2.1}
 }
 ```
 

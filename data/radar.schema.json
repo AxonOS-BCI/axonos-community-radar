@@ -258,7 +258,8 @@
           "type": "object"
         },
         "_score": {
-          "type": "number"
+          "type": "number",
+          "description": "Internal ranking artefact. NOT the BRS and not comparable to it: the one anchor carrying both shows brs 78 against _score 28.5. Published because the payload is emitted whole; no public meaning is claimed for it and nothing should be decided from it."
         },
         "updated_at": {
           "type": "string"
@@ -345,6 +346,12 @@
               "maximum": 7
             }
           }
+        },
+        "brs": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "BCI Relevance Score, 0-100, produced by axonos-brs from the evidence in relevance_ledger. The gate is applied to this number and to no other. Absent on ecosystem anchors, which are placed in the map by name rather than admitted by the gate."
         }
       }
     },

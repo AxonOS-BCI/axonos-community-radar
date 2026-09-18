@@ -21,11 +21,23 @@ result is auditable rather than asserted.
   radar's own entry sits mid-field on it.
 
   But six repositories — listed by name in
-  [`data/curated.json`](../data/curated.json) under `_anchors`, and flagged
-  `ecosystem: true` in the payload — are placed in the map by
-  `scripts/ecosystem.py` as ecosystem anchors rather than admitted by the gate.
-  Four of them carry no BRS. They are there to give the ecosystem view its
-  spine, not because they cleared 40.
+  [`data/curated.json`](../data/curated.json) under `_anchors`, flagged
+  `ecosystem: true` and carrying `data_source: "curated+github"` — are placed in
+  the map by `scripts/ecosystem.py` as ecosystem anchors rather than admitted by
+  the gate. They are there to give the ecosystem view its spine, not because
+  they cleared 40.
+
+  Most of them carry **no `brs` at all**. The exact number moves between scans —
+  it was four one afternoon and five the next — which is why the funnel counts
+  them live from the payload and no figure for it is written into this page.
+
+  They do carry an internal `_score`, and it is worth being precise about what
+  that is not. It is **not the BRS under another name**: the one anchor that has
+  both shows `brs` 78 against `_score` 28.5. `_score` appears in the schema as a
+  bare number with no description, no range and no stated relationship to the
+  published score, while `brs` — the number the gate is applied to — has no
+  schema entry at all. Until that is fixed, treat `_score` as an internal
+  artefact that happens to be published, not as evidence of anything.
 
   The funnel counts them apart for that reason: *cleared the gate* and
   *ecosystem anchors, force-included* are two numbers on the map, never one.

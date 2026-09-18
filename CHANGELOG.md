@@ -1,5 +1,49 @@
 # Changelog
 
+## [16.2.1] — 2026-09-17
+
+An external audit found one real release-blocker in 16.2.0, and it was in the
+first paragraph of the README.
+
+### Fixed
+
+- **"Every project here cleared a scored gate" — the opening sentence.** 16.2.0
+  corrected two statements of that claim and missed the one a reader meets
+  first. The gate added in that release checked only that the disclosure
+  *existed* somewhere in the file; the README said "ecosystem anchors" three
+  hundred lines down and contradicted it in line 7, and the check passed.
+
+  A gate that looks for a disclosure and never looks for the contradiction is
+  half a gate. It now fails on the contradicting phrasings by name, verified by
+  restoring the old sentence: it names the file and exits non-zero.
+
+- **"Four of them carry no BRS" was wrong twice.** The count moves between
+  scans — four one afternoon, five the next — so no figure for it belongs in
+  prose at all; the funnel already computes it live from the payload. And the
+  anchors are not simply unscored.
+
+### Clarified
+
+- **`_score` is not the BRS, and the schema now says so.** Five anchors carry an
+  internal `_score` between 31.6 and 38.3 with no `brs`, which reads like "they
+  scored below 40". It is not that: the one anchor holding both fields shows
+  `brs` 78 against `_score` 28.5. The two are different quantities.
+
+  `_score` was in the schema as a bare `{"type": "number"}` with no description,
+  while **`brs` — the number the gate is applied to — had no schema entry at
+  all.** The undocumented internal field was specified and the documented public
+  one was not. `brs` is described now, with its range and the anchor exception;
+  `_score` is marked as an internal artefact that carries no public meaning.
+
+### Not a defect
+
+- The audit's first release-blocker — "public main is 15.2.1, not 16.2.0" — does
+  not reproduce. `origin/main` is at `9b807d0`, `VERSION` reads 16.2.0, the
+  subject line is "16.2.0 — counted apart", every tag from v15.1.1 to v16.2.0 is
+  present on the remote, and `ROADMAP.md` is gone from the tree. The reading
+  came from a cached view; `raw.githubusercontent.com` serves stale content for
+  minutes after a push.
+
 ## [16.2.0] — 2026-09-17 — "Counted apart"
 
 ### Fixed

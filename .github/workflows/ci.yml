@@ -333,9 +333,23 @@ jobs:
                       print(f"::error::{_doc} does not mention the ecosystem anchors, "
                             f"and {len(_forced)} repositories are in the map as one")
                       raise SystemExit(1)
-                  if "kept only if its BRS clears the gate" in _t:
-                      print(f"::error::{_doc} still says projects are kept only by score")
-                      raise SystemExit(1)
+                  # Checking that a disclosure EXISTS is not the same as
+                  # checking that the contradiction is ABSENT, and 16.2.0
+                  # shipped with only the first. The README said "ecosystem
+                  # anchors" three hundred lines down and "Every project here
+                  # cleared a scored gate" in its opening sentence; this gate
+                  # passed on the former and never looked at the latter. A
+                  # reader stops at the opening sentence.
+                  _contradictions = [
+                      "kept only if its BRS clears the gate",
+                      "Every project here cleared a scored gate",
+                      "every project cleared the gate",
+                      "AxonOS projects are not boosted.** They are ranked by the same formula as\n  everyone else",
+                  ]
+                  for _bad in _contradictions:
+                      if _bad.lower() in _t.lower():
+                          print(f"::error::{_doc} still claims a universal gate: {_bad!r}")
+                          raise SystemExit(1)
               print(f"{len(_forced)} ecosystem anchors in the map, named in the docs")
           else:
               print("no force-included projects in the payload")

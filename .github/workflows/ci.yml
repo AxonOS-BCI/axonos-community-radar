@@ -268,125 +268,24 @@ jobs:
           [ "$bad" = "0" ] && echo "no dead post-cutover references found"
           exit "$bad"
 
-      - name: Funding consistency (ONE DOGE address, checksum-verified, everywhere)
+      - name: Funding consistency (one address, checksum-verified, everywhere)
         # The single-source rule for the support address. Guards against a
         # typo'd or swapped address ever shipping on any surface: the registry
         # is canonical; app.js, support.html, FUNDING.yml and the QR alt-text
         # must all carry exactly it — and it must pass Base58Check (0x1E).
         run: |
-          python3 - <<'PY'
-          import hashlib, json, re
-          ALPH='123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
-          def b58check(s):
-              n=0
-              for ch in s: n=n*58+ALPH.index(ch)
-              raw=n.to_bytes(25,'big')
-              return raw[0]==0x1E and hashlib.sha256(hashlib.sha256(raw[:-4]).digest()).digest()[:4]==raw[-4:]
-          # payment.json is the root. This gate used to read the address out
-          # of ecosystem-registry.json while the support tests read it out of
-          # payment.json — two roots of truth for an irreversible transfer,
-          # agreeing today because nothing had yet made them disagree.
-          pay=json.load(open('data/payment.json'))
-          reg=json.load(open('data/ecosystem-registry.json'))['funding']
-          assert reg['address']==pay['address'], (
-              'ecosystem-registry.json has drifted from data/payment.json: '
-              f"{reg['address']} vs {pay['address']}")
-          reg=pay
-          addr=reg['address']
-          assert b58check(addr), 'registry DOGE address fails Base58Check'
-          assert reg['uri']==f'dogecoin:{addr}' and addr in reg['explorer']
-          for path in ('assets/app.js','support.html','.github/FUNDING.yml'):
-              body=open(path,encoding='utf-8').read()
-              assert addr in body, f'{path} missing canonical address'
-              others=set(re.findall(r'\bD[1-9A-HJ-NP-Za-km-z]{25,40}\b',body))-{addr}
-              assert not others, f'{path} carries a FOREIGN D-address: {others}'
-          print(f'funding consistency ok: {addr} (Base58Check valid, single-source)')
-          PY
+          python3 scripts/gates/check_funding.py
 
-      - name: Version consistency (VERSION == badge == CITATION == bibtex == CHANGELOG)
+      - name: Claims and versions agree across every surface
+        # Three gates, one step. They were one eighty-line block of Python
+        # inside this file doing three unrelated jobs — frozen counts, the
+        # anchor disclosure and the version — because each was bolted on
+        # after a separate incident. scripts/gates/ holds them now, where
+        # tests/test_gates.py runs every one of their failure paths.
         run: |
-          python3 - <<'PY'
-          import re, sys
-          v = open("VERSION").read().strip()
-          # A live count frozen into the README is a claim that quietly stops
-          # being true: the map is rescored every three hours, so "120+ BCI
-          # projects" on a static badge and "31 near misses" in a diagram are
-          # right on the morning they are written and wrong by the evening.
-          import re as _re
-          _rd = open("README.md", encoding="utf-8").read()
-          _frozen = []
-          for _m in _re.finditer(r"img\.shields\.io/badge/[^)\s]*?(\d{2,5})%2B?%20(?:BCI%20)?projects", _rd):
-              _frozen.append("static badge claiming " + _m.group(1) + " projects")
-          for _m in _re.finditer(r"(?<![\w.])(\d{2,4})\s+near\s+miss", _rd):
-              _frozen.append("prose claiming " + _m.group(1) + " near misses")
-          if _frozen:
-              for _f in _frozen:
-                  print("::error::the README freezes a live count: " + _f)
-              raise SystemExit(1)
-          print("no live count is frozen into the README")
-
-          # The funnel counts gate-admitted repositories apart from the
-          # ecosystem anchors. The prose has to keep saying so: "kept only if
-          # its BRS clears the gate" was true of the rule and false of the map,
-          # and it stayed on the page while four unscored AxonOS repositories
-          # sat inside the number labelled as having cleared it.
-          import json as _json, pathlib as _pl
-          _anch = set((_json.loads(_pl.Path("data/curated.json").read_text())
-                       .get("_anchors") or {}).keys())
-          _proj = _json.loads(_pl.Path("data/radar.json").read_text())["projects"]
-          _forced = [p["full_name"] for p in _proj if p.get("ecosystem")]
-          if _forced:
-              for _doc in ("README.md", "docs/METHODOLOGY.md"):
-                  _t = _pl.Path(_doc).read_text(encoding="utf-8")
-                  if "ecosystem anchor" not in _t.lower():
-                      print(f"::error::{_doc} does not mention the ecosystem anchors, "
-                            f"and {len(_forced)} repositories are in the map as one")
-                      raise SystemExit(1)
-                  # Checking that a disclosure EXISTS is not the same as
-                  # checking that the contradiction is ABSENT, and 16.2.0
-                  # shipped with only the first. The README said "ecosystem
-                  # anchors" three hundred lines down and "Every project here
-                  # cleared a scored gate" in its opening sentence; this gate
-                  # passed on the former and never looked at the latter. A
-                  # reader stops at the opening sentence.
-                  # Anchored, not substring. The first version of this list
-                  # flagged its own fix: "Almost every project here cleared a
-                  # scored gate" contains "every project here cleared a scored
-                  # gate", so the corrected sentence failed the check written to
-                  # enforce it. A qualifier in front of a claim changes the
-                  # claim, and a checker that cannot see the qualifier is
-                  # reading letters rather than meaning.
-                  _contradictions = [
-                      r"kept only if its BRS clears the gate",
-                      r"(?<!almost )every project here cleared a scored gate",
-                      r"(?<!almost )every project cleared the gate",
-                      r"(?<!almost )all projects here cleared",
-                  ]
-                  for _bad in _contradictions:
-                      if _re.search(_bad, _t, _re.I):
-                          print(f"::error::{_doc} still claims a universal gate: {_bad!r}")
-                          raise SystemExit(1)
-              print(f"{len(_forced)} ecosystem anchors in the map, named in the docs")
-          else:
-              print("no force-included projects in the payload")
-
-          readme = open("README.md", encoding="utf-8").read()
-          cff = open("CITATION.cff", encoding="utf-8").read()
-          chlog = open("CHANGELOG.md", encoding="utf-8").read()
-          errs = []
-          if f"version-{v}-" not in readme: errs.append(f"README badge != {v}")
-          m = re.search(r"version = \{([^}]+)\}", readme)
-          if not m or m.group(1) != v: errs.append(f"README bibtex {m.group(1) if m else '?'} != {v}")
-          m = re.search(r"^version: (.+)$", cff, re.M)
-          if not m or m.group(1).strip() != v: errs.append(f"CITATION.cff != {v}")
-          m = re.search(r"^## \[([0-9.]+)\]", chlog, re.M)
-          if not m or m.group(1) != v: errs.append(f"CHANGELOG top {m.group(1) if m else '?'} != {v}")
-          for page in ("index.html", "stats.html"):
-              if f"v{v}" not in open(page, encoding="utf-8").read():
-                  errs.append(f"{page} footer chip != v{v}")
-          if errs: print("\n".join(errs)); sys.exit(1)
-          print(f"version {v} consistent across VERSION/README badge/bibtex/CITATION/CHANGELOG")
-          PY
+          python3 scripts/gates/check_frozen_counts.py
+          python3 scripts/gates/check_anchor_disclosure.py
+          python3 scripts/gates/check_version_consistency.py
 
       - name: The project cards match what the repositories say
         # The stage badges were hand-written and drifted: the radar read Beta at
@@ -428,31 +327,22 @@ jobs:
           echo "  cards agree with every repository"
 
       - name: The QR code decodes to the canonical payment URI
-        # Mandatory, and it fails if the decoder is missing rather than
-        # skipping. 16.3.0 shipped a check with "QR" in its name that read the
-        # alt attribute in the HTML and never opened the image, and a release
-        # note saying a swapped QR fails the suite. It did not. The image is
-        # decoded here, and a decode that cannot run is a failure, not a pass.
+        # Decoded, not described, and a missing decoder is a failure rather
+        # than a skip. See docs/DECISIONS.md D-2.
         run: |
           pip install -r requirements-ci.txt --quiet --break-system-packages
           python3 -c "import cv2; print('decoder', cv2.__version__)"
           python3 -m pytest tests/test_qr_integrity.py -q
 
       - name: The payment address and the prices match their contracts
-        # A Dogecoin transaction is irreversible. An address wrong by one
-        # character in the QR, the URI or the copy button sends a stranger's
-        # money somewhere nobody controls, and nothing on the page would look
-        # wrong. The prices have already drifted three times on their own.
-        # Both are data with a test now, checked on every push.
+        # An irreversible transfer and three price drifts. See docs/DECISIONS.md D-1.
         run: |
           pip install -r requirements-ci.txt --quiet --break-system-packages
           python3 -m pytest tests/test_support_contract.py -q
 
       - name: The social card matches its generator
-        # The card used to be a committed binary with no source, which is how
-        # it went on advertising a six-hour refresh while everything else said
-        # three. Regenerating it here and comparing bytes means the text on the
-        # image is checked like any other claim in this repository.
+        # Regenerated and compared, because the committed binary once
+        # advertised a cadence nothing else agreed with.
         run: |
           # Pinned, from the file that holds the other pins. It was a bare
           # `pip install pillow`, which is the unpinned-scanner defect: the gate

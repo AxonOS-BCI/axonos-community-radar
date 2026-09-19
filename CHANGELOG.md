@@ -1,5 +1,58 @@
 # Changelog
 
+## [16.5.0] — 2026-09-18 — "Policy is source"
+
+### Changed
+
+- **The gates moved out of YAML.** `ci.yml` held 246 lines of shell and embedded
+  Python; it holds 142 now, and the file is 359 lines rather than 433. One
+  eighty-line block was doing three unrelated jobs — frozen counts, the anchor
+  disclosure, the version — because each had been bolted on after a separate
+  incident.
+
+  They are four files in [`scripts/gates/`](scripts/gates/), each with one
+  responsibility and a `check()` that returns a list of problems:
+  `check_funding.py`, `check_frozen_counts.py`, `check_anchor_disclosure.py`,
+  `check_version_consistency.py`. The workflow calls them in one line each.
+
+  This matters because both defects that reached production came through that
+  layer: a duplicate `run:` key that stopped the workflow parsing, so a release
+  produced no result of any kind while appearing to have failed its proofs; and
+  a gate that checked a disclosure existed and never that the contradiction was
+  absent. Neither was findable locally, because there was nothing to run.
+
+- **[`tests/test_gates.py`](tests/test_gates.py) — eighteen checks.** Every gate
+  is importable, documented and clean on the committed tree, and every gate is
+  made to *fail* against a mutated working copy: a foreign address, the two
+  address files drifting apart, a checksum failure, a static project badge, a
+  near-miss count in prose, a silent README, the universal claim returning — and
+  one asserting the qualified sentence still passes, which is the regression
+  where a gate rejected its own fix.
+
+  A gate that has never failed is a gate nobody has tested.
+
+- **[`docs/DECISIONS.md`](docs/DECISIONS.md)** — eight entries. CI was carrying
+  long postmortems in its comments, which turns a file that should read as an
+  executable contract into an incident archive. The reasons still matter; a
+  maintainer who deletes a guard without knowing what it caught reintroduces the
+  defect. They live where a person reads them on purpose, and the comments that
+  remain are one line pointing at the entry.
+
+### Note on two audits
+
+Three findings reported as operational defects did not reproduce:
+`VERSION` matching neither `CITATION.cff` nor the pages; `main` and the deployed
+artifact carrying different payment instructions; and `support.js` holding two
+clipboard implementations. Read from git rather than from a CDN, every version
+surface agreed, `main` carried the order-id flow, and the clipboard was unified
+in 16.3.0. `raw.githubusercontent.com` caches for minutes after a push and has
+now produced the same false report twice. `git show origin/main:VERSION`, or
+`data/build.json` on the deployed site, answers it correctly.
+
+A fourth — that "each unambiguous signal clears the gate on its own"
+oversimplifies the scoring model — is accurate as written: 37 projects have
+exactly one ledger entry, each worth 40 or 55 points against a gate of 40.
+
 ## [16.4.0] — 2026-09-18 — "Executable contracts"
 
 ### Fixed

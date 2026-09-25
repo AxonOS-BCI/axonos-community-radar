@@ -290,9 +290,93 @@
 
   // ── radar ──
   var cv=$('radar'),ctx=cv.getContext('2d'),DPR=1,S=460;
+  // ── Motion ───────────────────────────────────────────────────────────────
+  // The radar sweeps, and a blip answers when the beam crosses it. Motion runs
+  // only where it can be seen: a browser with IntersectionObserver, motion not
+  // reduced, the radar tab open, the canvas on screen and the page visible.
+  // Anywhere else — jsdom included — the radar is drawn once, as before.
+  var MOTION=('IntersectionObserver' in window)&&!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  var SWEEP=6000,lastArr=[],layer=null,sweepOn=false,sweepRaf=0,sweepSeen=false,pings=[],lastA=null,heroBuilt=false,countedUp=false;
+  function sweepShould(){return MOTION&&state.view==='radar'&&sweepSeen&&!document.hidden&&!!layer;}
+  function stopSweep(){sweepOn=false;if(sweepRaf)cancelAnimationFrame(sweepRaf);sweepRaf=0;pings=[];}
+  function startSweep(){if(!sweepShould()){stopSweep();return;}if(sweepOn)return;sweepOn=true;lastA=null;sweepRaf=requestAnimationFrame(sweepLoop);}
+  // Fail-safe: anything that throws on the animated path turns motion off for
+  // good and redraws the radar as it was before any of this. Never a blank map.
+  function sweepFail(){MOTION=false;stopSweep();layer=null;try{drawRadarStatic(lastArr);}catch(e){}}
+  function sweepLoop(t){if(!sweepOn)return;try{paintSweep(t);}catch(e){sweepFail();return;}sweepRaf=requestAnimationFrame(sweepLoop);}
+  function crossed(a0,a1,p){var d=function(x){x%=6.2832;return x<0?x+6.2832:x;};var s=d(a1-a0);return s<3.1416&&d(p-a0)<=s;}
+  function paintSweep(t){
+    if(!layer)return;var c=ctx,cx=S/2,cy=S/2,R=S/2-12,a=((t%SWEEP)/SWEEP)*6.2832-Math.PI/2;
+    if(!layer.width||!layer.height)return;
+    c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,cv.width,cv.height);c.drawImage(layer,0,0);c.setTransform(DPR,0,0,DPR,0,0);
+    // the beam: a fan of thin wedges, brightest at its leading edge
+    for(var k=0,N=26,span=.95;k<N;k++){var a1=a-span*k/N,a0=a-span*(k+1)/N,f=1-k/N;
+      c.beginPath();c.moveTo(cx,cy);c.arc(cx,cy,R,a0,a1);c.closePath();c.fillStyle='rgba(45,212,255,'+(.15*f*f).toFixed(3)+')';c.fill();}
+    c.beginPath();c.moveTo(cx,cy);c.lineTo(cx+Math.cos(a)*R,cy+Math.sin(a)*R);c.strokeStyle='rgba(140,232,255,.8)';c.lineWidth=1.4;c.stroke();
+    // a blip the beam has just crossed opens a ring that fades
+    if(lastA!==null)for(var i=0;i<points.length;i++){var q=points[i];if(crossed(lastA,a,Math.atan2(q.y-cy,q.x-cx)))pings.push({x:q.x,y:q.y,r:q.r-6,t:t,v:q.p.active?1:.6});}
+    lastA=a;
+    for(var j=pings.length-1;j>=0;j--){var g=pings[j],u=(t-g.t)/1150;if(u>=1){pings.splice(j,1);continue;}
+      c.beginPath();c.arc(g.x,g.y,g.r+u*18,0,6.2832);c.strokeStyle='rgba(255,255,255,'+(.72*g.v*(1-u)).toFixed(3)+')';c.lineWidth=1.3;c.stroke();
+      c.beginPath();c.arc(g.x,g.y,g.r*.55,0,6.2832);c.fillStyle='rgba(255,255,255,'+(.6*g.v*(1-u)*(1-u)).toFixed(3)+')';c.fill();}
+  }
+  if(MOTION){
+    new IntersectionObserver(function(e){sweepSeen=e[0].isIntersecting;startSweep();},{threshold:.05}).observe(cv);
+    document.addEventListener('visibilitychange',startSweep);
+  }
+  // The hero carries the same radar, drawn from the same projects with the
+  // same geometry, so every blip in it sits where it sits on the map below.
+  function buildHeroRadar(arr){
+    var host=document.querySelector('header.hero');if(heroBuilt||!host||!arr||!arr.length)return;heroBuilt=true;
+    var NSV='http://www.w3.org/2000/svg',mk=function(n,a,par){var e=document.createElementNS(NSV,n);for(var k in a)e.setAttribute(k,a[k]);if(par)par.appendChild(e);return e;};
+    var wrap=document.createElement('div');wrap.className='hero-radar';wrap.setAttribute('aria-hidden','true');
+    var svg=mk('svg',{viewBox:'0 0 400 400',focusable:'false'}),c=200,R=190,pt=function(th,r){return (c+Math.sin(th)*r).toFixed(1)+','+(c-Math.cos(th)*r).toFixed(1);};
+    var grid=mk('g',{'class':'hr-grid'},svg);
+    [.22,.46,.68,1].forEach(function(f){mk('circle',{cx:c,cy:c,r:(R*f).toFixed(1)},grid);});
+    for(var s=0;s<NS;s++){var th=(s/NS)*6.2832;mk('line',{x1:c,y1:c,x2:(c+Math.sin(th)*R).toFixed(1),y2:(c-Math.cos(th)*R).toFixed(1)},grid);}
+    var beam=mk('g',{'class':'hr-beam'},svg);
+    for(var k=0,N=10,w=.9/N;k<N;k++){mk('path',{d:'M'+c+','+c+' L'+pt(-(k+1)*w,R)+' A'+R+' '+R+' 0 0 1 '+pt(-k*w,R)+' Z','fill-opacity':(.2*Math.pow(1-k/N,2)).toFixed(3)},beam);}
+    mk('line',{x1:c,y1:c,x2:c,y2:c-R,'class':'hr-edge'},beam);
+    var dots=mk('g',{'class':'hr-dots'},svg);
+    var top=arr.filter(function(p){return !p.archived;}).sort(function(a,b){return (b.stars||0)-(a.stars||0);}).slice(0,64);
+    top.forEach(function(p,i){var si=catIndex(p.category);if(si>=NS)si=hash(p.full_name)%NS;var h=hash(p.full_name);
+      var ang=((si+.5)/NS)*6.2832-Math.PI/2+((h%50)-25)/25*(6.2832/NS)*.40;
+      var fr=Math.min(.96,tierFrac(p.days_since_push)*(.94+((h>>6)%12)/100));
+      var x=c+Math.cos(ang)*R*fr,y=c+Math.sin(ang)*R*fr,r=1.1+Math.min(2.9,Math.log((p.stars||0)+1)/Math.LN10*.72);
+      var phi=((ang+Math.PI/2)%6.2832+6.2832)%6.2832,delay=(phi/6.2832*SWEEP/1000).toFixed(2)+'s';
+      if(i<24){var ring=mk('circle',{cx:x.toFixed(1),cy:y.toFixed(1),r:r.toFixed(1),'class':'hr-ring',stroke:CATS[si].c},dots);ring.style.animationDelay=delay;}
+      var d=mk('circle',{cx:x.toFixed(1),cy:y.toFixed(1),r:r.toFixed(1),'class':'hr-blip',fill:CATS[si].c},dots);d.style.animationDelay=delay;});
+    wrap.appendChild(svg);host.insertBefore(wrap,host.firstChild);
+  }
+  // The four figures count up once, the first time they come into view.
+  function countUp(root){
+    if(!MOTION||countedUp||!root)return;countedUp=true;var RX=/^(\d+(?:\.\d+)?)(k?)$/;
+    var run=function(b){var fin=b.getAttribute('data-final'),m=RX.exec(fin);if(!m)return;var v=parseFloat(m[1]),dec=(m[1].split('.')[1]||'').length,suf=m[2],t0=null;
+      var step=function(t){if(t0===null)t0=t;var u=Math.min(1,(t-t0)/1100),e=1-Math.pow(1-u,3);b.textContent=u<1?(v*e).toFixed(dec)+suf:fin;if(u<1)requestAnimationFrame(step);};
+      b.textContent=(0).toFixed(dec)+suf;requestAnimationFrame(step);};
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){io.unobserve(e.target);run(e.target);}});},{threshold:.5});
+    root.querySelectorAll('.stat b').forEach(function(b){if(RX.test(b.textContent)){b.setAttribute('data-final',b.textContent);io.observe(b);}});
+  }
+  // Sections rise into view once. Visible by default: they are hidden only
+  // once this has run, and a timer shows everything regardless.
+  if(MOTION){
+    document.documentElement.classList.add('motion');
+    var rv=document.querySelectorAll('#stats,#weekly,#considered,#donate,#ecosystem,.tabs,#radarSec,.ghead,#cards');
+    var rio=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');rio.unobserve(e.target);}});},{rootMargin:'0px 0px -6% 0px',threshold:.04});
+    rv.forEach(function(el){el.classList.add('rv');rio.observe(el);});
+    setTimeout(function(){rv.forEach(function(el){el.classList.add('in');});},2600);
+  }
   function layout(){var rect=cv.getBoundingClientRect();S=Math.round(rect.width)||((cv.parentNode.clientWidth||356)-44);if(!S||S<200)S=Math.max(200,((cv.parentNode.clientWidth||356)-44));DPR=Math.min(2,window.devicePixelRatio||1);cv.width=Math.round(S*DPR);cv.height=Math.round(S*DPR);ctx.setTransform(DPR,0,0,DPR,0,0);}
   function tierFrac(d){if(d==null||d>=9000)return .88;if(d<=7)return .22;if(d<=30)return .46;if(d<=90)return .68;return .85;}
   function drawRadar(arr){
+    if(state.view!=='radar'){startSweep();return;}
+    lastArr=arr;if(!MOTION){drawRadarStatic(arr);return;}
+    var main=ctx;layout();if(!layer)layer=document.createElement('canvas');
+    layer.width=cv.width;layer.height=cv.height;ctx=layer.getContext('2d');
+    try{drawRadarStatic(arr);}finally{ctx=main;}
+    pings=[];lastA=null;try{paintSweep(performance.now());}catch(e){sweepFail();return;}startSweep();
+  }
+  function drawRadarStatic(arr){
     if(state.view!=='radar')return;
     layout();var cx=S/2,cy=S/2,R=S/2-12;ctx.clearRect(0,0,S,S);
     for(var s=0;s<NS;s++){var a0=(s/NS)*6.283-Math.PI/2,a1=((s+1)/NS)*6.283-Math.PI/2;
@@ -644,7 +728,7 @@
 
   function render(){
     var arr=filtered();
-    $('radarSec').classList.toggle('hidden',state.view!=='radar');
+    $('radarSec').classList.toggle('hidden',state.view!=='radar');startSweep();
     $('cards').classList.toggle('hidden',false);
     drawRadar(arr);renderCards(arr);
     $('gcount').textContent='Showing '+arr.length+' of '+DATA.projects.length+' projects';
@@ -777,6 +861,7 @@
       var sp=document.createElement('span');sp.textContent=x[2];d.appendChild(sp);
       var spark=sparkFor(x[3]);if(spark)d.appendChild(spark);
       st.appendChild(d);});
+    countUp(st);buildHeroRadar(DATA.projects);
     var u=$('updated');u.textContent='';
     if(DATA.generated_at){var d2=new Date(DATA.generated_at);
       u.appendChild(document.createTextNode('Updated '+d2.toUTCString().replace('GMT','UTC')+' \u00b7 refreshes every 3h \u00b7 '));

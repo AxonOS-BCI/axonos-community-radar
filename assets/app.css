@@ -613,3 +613,39 @@ tr.cov-foot th,tr.cov-foot td{opacity:.55;font-size:11px;padding-top:6px}
    how four unscored entries sat inside "cleared the gate of 40". */
 .cs-step.is-anchor{border-color:rgba(245,196,81,.35)}
 .cs-step.is-anchor .n{color:var(--amber,#f5c451)}
+
+/* ── Motion ──────────────────────────────────────────────────────────────
+   One idea, drawn from the data: a radar that sweeps, and projects that
+   answer when the beam crosses them. The hero carries the same radar as the
+   map below, blip for blip. Everything decorative sits behind the words and
+   never moves them; all of it stops for reduced motion. */
+header.hero{position:relative;isolation:isolate}
+.hero-radar{position:absolute;left:50%;top:56%;width:min(900px,100vw);aspect-ratio:1/1;transform:translate(-50%,-50%);
+  z-index:-1;pointer-events:none;opacity:.6;
+  -webkit-mask-image:radial-gradient(circle at 50% 50%,rgba(0,0,0,.16) 0,rgba(0,0,0,.16) 24%,#000 50%,transparent 71%);
+          mask-image:radial-gradient(circle at 50% 50%,rgba(0,0,0,.16) 0,rgba(0,0,0,.16) 24%,#000 50%,transparent 71%)}
+.hero-radar svg{display:block;width:100%;height:100%}
+.hr-grid circle{fill:none;stroke:rgba(170,190,230,.14);stroke-width:1}
+.hr-grid line{stroke:rgba(160,180,220,.07);stroke-width:1}
+.hr-beam{transform-origin:200px 200px;animation:rdr-spin 6s linear infinite}
+.hr-beam path{fill:#2dd4ff}
+.hr-edge{stroke:rgba(140,232,255,.55);stroke-width:1}
+.hr-blip{opacity:.4;transform-box:fill-box;transform-origin:center;animation:rdr-ping 6s cubic-bezier(.2,.7,.2,1) infinite}
+.hr-ring{fill:none;stroke-width:1;opacity:0;transform-box:fill-box;transform-origin:center;animation:rdr-ring 6s cubic-bezier(.2,.7,.2,1) infinite}
+@keyframes rdr-spin{to{transform:rotate(360deg)}}
+@keyframes rdr-ping{0%{opacity:1;transform:scale(1.8)}14%{opacity:.9;transform:scale(1)}55%,100%{opacity:.4;transform:scale(1)}}
+@keyframes rdr-ring{0%{opacity:.75;transform:scale(1)}22%,100%{opacity:0;transform:scale(3.6)}}
+
+/* sections rise once as they arrive; visible without script */
+html.motion .rv{opacity:0;transform:translateY(18px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+html.motion .rv.in{opacity:1;transform:none}
+
+/* the refresh line breathes: the map is live */
+.updated:not(:empty)::before{content:"";display:inline-block;width:7px;height:7px;margin-right:9px;border-radius:50%;
+  background:var(--emerald);vertical-align:1px;animation:rdr-live 2.4s ease-out infinite}
+@keyframes rdr-live{0%{box-shadow:0 0 0 0 rgba(52,211,153,.55)}70%,100%{box-shadow:0 0 0 8px rgba(52,211,153,0)}}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+  html.motion .rv{opacity:1;transform:none}
+}

@@ -1,5 +1,41 @@
 # Changelog
 
+## [16.6.0] — 2026-09-26 — "The radar sweeps"
+
+### Added
+
+- **The radar sweeps.** The map's radar view now carries a beam that turns once
+  every six seconds, and each project answers with a ring as the beam crosses
+  it. The crossing is computed from the beam's angle and the blip's, frame by
+  frame, so a ping never runs ahead of or behind the beam. The static radar is
+  drawn once into an offscreen layer, and each frame is that layer, the beam's
+  fan and the open rings, so the animation costs one image copy and a few arcs.
+- **The hero carries the same radar.** Behind the headline, sixty-four of the
+  most-starred projects sit where they sit on the map below — the same sector
+  from their category, the same ring from their last push — and flash in step
+  with a beam of pure CSS. The centre is held quiet behind the words.
+- **The four figures count up** the first time they come into view, to the
+  exact text they would otherwise show. **Sections rise** into place as they
+  arrive. **The refresh line breathes**: the map is live.
+
+### Changed
+
+- The primary call to action drops its emoji.
+- `docs/OPEN_CORE_BOUNDARY.md` is re-stated at this version: nothing in this
+  release touches what is public and what is not.
+
+### Guarantees
+
+- **Motion runs only where it can be seen**: a browser with
+  IntersectionObserver, motion not reduced, the radar on screen, the tab
+  visible. The loop stops otherwise. Reduced motion stops everything.
+- **Never a blank map.** Any error on the animated path turns motion off for
+  the session and redraws the radar exactly as before this release.
+- **Strict CSP unchanged.** No inline style or script: the stylesheet carries
+  the motion, and per-blip timing is set through the CSS object model.
+- **jsdom sees the page as it was**, with no IntersectionObserver and so no
+  motion; the functional UI smoke test passes unchanged, 61 of 61.
+
 ## [16.5.0] — 2026-09-18 — "Policy is source"
 
 ### Changed

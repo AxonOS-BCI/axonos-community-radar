@@ -21,6 +21,8 @@ import pathlib
 import re
 import urllib.parse
 
+import pytest
+
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 PAGE = (ROOT / "pro.html").read_text(encoding="utf-8")
 SUPPORT = (ROOT / "support.html").read_text(encoding="utf-8")
@@ -181,3 +183,26 @@ def test_no_promise_the_record_cannot_support():
     low = PAGE.lower()
     for claim in ("usually sooner", "typically within", "most customers", "on average"):
         assert claim not in low, f"the page states a track record that does not exist: {claim!r}"
+
+
+# ---------------------------------------------------------- phantom services
+
+PUBLIC_DOCS = ("README.md", "docs/API.md", "docs/OPEN_CORE_BOUNDARY.md", "pro.html", "support.html")
+
+
+@pytest.mark.parametrize("doc", PUBLIC_DOCS)
+def test_no_public_page_offers_a_service_that_does_not_exist(doc):
+    """The contract stopped selling an API quota in 16.7.0. The README and the
+    API reference went on offering 'licensed feeds, SLAs and custom slices' for
+    two more releases. A service offered anywhere is offered."""
+    text = re.sub(r"<[^>]+>", " ", (ROOT / doc).read_text(encoding="utf-8"))
+    for phantom in (r"\bSLAs?\b", r"licen[cs]ed feeds?", r"requests?\s+(a|per)\s+month",
+                    r"custom (scan )?cadence", r"intelligence feed"):
+        hit = re.search(phantom, text, re.I)
+        assert not hit, f"{doc} offers {hit.group(0)!r}, which nothing delivers"
+
+
+def test_one_contact_address_for_commercial_questions():
+    for doc in ("README.md", "pro.html", "support.html"):
+        assert "support@axonos.org" not in (ROOT / doc).read_text(encoding="utf-8"), \
+            f"{doc} names support@axonos.org; every other surface uses connect@axonos.org"

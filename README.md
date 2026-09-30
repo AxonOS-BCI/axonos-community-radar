@@ -13,6 +13,7 @@ counts them in their own bucket. Refreshed every three hours.
 [![Live map](https://img.shields.io/badge/live-map-3fd68f?style=for-the-badge&labelColor=0e141d)](https://axonos-bci.github.io/axonos-community-radar/)
 [![Field report](https://img.shields.io/badge/field-report-5cc8ff?style=for-the-badge&labelColor=0e141d)](https://axonos-bci.github.io/axonos-community-radar/report.html)
 [![Rule](https://img.shields.io/badge/rule-axonos--brs-8b98ad?style=for-the-badge&labelColor=0e141d)](https://github.com/AxonOS-org/axonos-brs)
+[![Radar PRO](https://img.shields.io/badge/radar-PRO-2dd4ff?style=for-the-badge&labelColor=0e141d)](https://axonos-bci.github.io/axonos-community-radar/pro.html)
 
 </div>
 
@@ -98,7 +99,7 @@ without handing anyone a key.
 [![Live](https://img.shields.io/badge/live-axonos--bci.github.io-a78bfa?style=flat-square)](https://axonos-bci.github.io/axonos-community-radar/)
 [![CI](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml)
 [![Pages](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml)
-[![Version](https://img.shields.io/badge/version-16.8.0-0a4a8f?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-16.9.0-0a4a8f?style=flat-square)](CHANGELOG.md)
 [![Release](https://img.shields.io/badge/release-Considered-6fe6f2?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-475569?style=flat-square)](LICENSE)
 
@@ -382,13 +383,13 @@ The radar is an instrument, not a snapshot. From a persistent snapshot history i
 
 ## Why it matters — the scoreboard, and the badge flywheel
 
-The radar is becoming the **canonical reference layer** for neurotech. The mechanism that gets it there is a two-sided flywheel:
+The aim is for the radar to become a reference layer for open neurotech, and the mechanism it is designed around is a two-sided flywheel. It is stated here as an intention, not as something already measured:
 
-1. **Projects want in.** Being discovered and scored — with a high BRS and a strong evidence tier — is public credibility. Projects embed their radar badge the way they embed a build-passing badge.
-2. **Investors trust it.** For a VC, that badge is a **one-glance due-diligence marker**: independently scored, evidence-backed, momentum-aware — not a self-reported claim.
-3. **The pull compounds.** More projects seek the badge → the map gets more complete → investors rely on it more → more projects seek the badge. The scoreboard becomes the standard.
+1. **Projects want in.** Being discovered and scored — with a high BRS and a strong evidence tier — is public credibility, and a project can embed its radar badge the way it embeds a build-passing badge.
+2. **Reviewers can check it.** A badge links to the evidence behind the score, so a funder or a reviewer can verify it in one click instead of taking a self-reported claim on trust.
+3. **The pull compounds.** More projects carrying the badge make the map more complete, which makes it more useful to check against, which gives the next project a reason to carry it.
 
-That flywheel — **projects in the queue to be scored, investors reading the badges as diligence** — is how a directory becomes infrastructure.
+Today the loop is the goal, not the record.
 
 ---
 
@@ -513,7 +514,7 @@ GitHub Pages':
 - **Your own badge wall** — every endpoint in `badges/index.json` is a plain
   shields.io endpoint you can embed anywhere Markdown renders.
 
-Full reference, freshness contract, and quick starts: **[docs/API.md](docs/API.md)**. Free with attribution — licensed feeds, SLAs, and custom slices for funds and labs: [connect@axonos.org](mailto:connect@axonos.org).
+Full reference, freshness contract, and quick starts: **[docs/API.md](docs/API.md)**. Free with attribution. To have Radar watch a list of your own and deliver what changed, see [Radar PRO](https://axonos-bci.github.io/axonos-community-radar/pro.html); for redistribution terms, write to [connect@axonos.org](mailto:connect@axonos.org).
 
 </details>
 
@@ -609,19 +610,32 @@ The Radar is the community-facing edge of a larger open project — an open, rea
 
 ---
 
-## Support the organism
+## Radar PRO
 
-Everything public in the AxonOS ecosystem — this radar, the open neural OS — is **free and open: no paywalls, no ads, no tracking, no tokens.** (Premium market-intelligence for funds and labs is a separate channel — it never gates the free map.) If the radar is useful to you, a voluntary Dogecoin tip fuels the work:
+**You are not paying for access to the map. You are paying Radar to watch it for you.**
 
-<div align="center">
+Radar Premium and Premium PRO watch the repositories you name — on the map or not —
+every three hours, and deliver what changed to your own private GitHub repository:
+your watchlist as JSON, CSV and NDJSON, a Markdown file for each day that had
+changes, and an issue when something moved. Nothing at all when nothing did.
 
-© The AxonOS Project / Denis Yermakou
+Plans, prices and terms are on
+**[the Radar PRO page](https://axonos-bci.github.io/axonos-community-radar/pro.html)** and in
+[`data/commercial.json`](data/commercial.json), which that page is tested against.
+They are deliberately not repeated here, so there is only one place for them to be
+right. A payment never buys a place on the map, never changes a score, and nothing
+public is withdrawn to make a paid version of it.
 
-**axonos.org · [medium.com/@AxonOS](https://medium.com/@AxonOS) · support@axonos.org**
+## Support the map
 
-</div>
+Everything public — this radar, its data and its full history, and the open neural
+OS behind it — is **free: no paywalls, no ads, no tracking, no tokens.** If the map
+is useful to you, a voluntary Dogecoin contribution helps keep it that way. The
+address, its QR code and its public on-chain history are on
+**[the support page](https://axonos-bci.github.io/axonos-community-radar/support.html)**.
 
-Contributions are voluntary — not purchases, not investments, no product entitlement. Commercial licensing (the intelligence feed / reports): [connect@axonos.org](mailto:connect@axonos.org).
+Contributions are voluntary — not purchases, not investments, and they carry no
+product entitlement. [connect@axonos.org](mailto:connect@axonos.org)
 
 ---
 
@@ -635,7 +649,7 @@ If you reference AxonOS Radar in academic or technical work, please cite it:
   title   = {{AxonOS Radar: a scored, evidence-backed map of the open brain--computer-interface field}},
   year    = {2026},
   url     = {https://github.com/AxonOS-BCI/axonos-community-radar},
-  version = {16.8.0}
+  version = {16.9.0}
 }
 ```
 

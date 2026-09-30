@@ -1,5 +1,66 @@
 # Changelog
 
+## [16.9.0] — 2026-10-01 — "One house"
+
+### Changed
+
+- **One navigation bar on every page.** It was written four times — in
+  `app.css`, `stats.css`, `support.css` and `pro.css` — and the copies had
+  drifted: two were 52 px tall and one was sized by padding, two were 1140 px
+  wide and one 960, weights of 500 and 550, stacking levels of 50 and 40. The
+  links differed too: the map offered AxonOS and Medium, the stats page neither,
+  the support page no RSS. Moving between pages, the bar shifted and changed.
+
+  [`assets/house.css`](assets/house.css) owns it now, loaded first by every page
+  this repository owns: *Map, Report, Stats, PRO, Support* and then *RSS* and
+  *GitHub*, the current page marked, PRO in the accent colour everywhere. On a
+  phone the wordmark gives way to the links rather than clipping the last one,
+  which the first version did at 390 px; the name stays for screen readers.
+  [`tests/test_house_style.py`](tests/test_house_style.py) fails if a page stops
+  loading the house stylesheet, offers different links, marks the wrong page,
+  or restyles the bar again.
+
+- **The support page is built from the same components as the PRO page.**
+  `pro.css` is now `product.css`, named for what it is — the product-page layer
+  both pages use — and `support.css` holds only what is particular to support.
+  The page opens on *Keep the map free.*, then the contribution, then one card
+  that draws the line between the two things people pay for:
+
+  > You are not paying for access to the map. You are paying Radar to watch it
+  > for you.
+
+  The same sentence now introduces the plans on `pro.html` and heads the Radar
+  PRO section of the README.
+
+- **The README states what exists.** A Radar PRO badge and section; plans and
+  prices are linked, not repeated, so they have one place to be right. The
+  support section pointed readers at a Dogecoin tip and then showed no address,
+  and gave `support@axonos.org` where every other surface says
+  `connect@axonos.org`. The flywheel section described investors trusting the
+  badge as diligence; that is the design intention, and it now says so instead
+  of reporting it as behaviour.
+
+### Fixed
+
+- **Services offered that nothing delivers.** The README and `docs/API.md`
+  still offered "licensed feeds, SLAs and custom slices" two releases after the
+  contract stopped selling an API quota. Both now point at Radar PRO for what is
+  sold and at connect@ for redistribution terms. The contract test fails if any
+  public page offers an SLA, a licensed feed, a request quota, a custom cadence
+  or an intelligence feed, and if `support@axonos.org` reappears.
+
+- **The map's donation banner said a tip "powers a full refresh-and-rescore
+  cycle".** The scan runs every three hours on GitHub's free runners whether or
+  not anyone contributes; no payment triggers or funds a cycle. It now says what
+  a contribution does: helps keep the work free, and buys neither inclusion nor
+  a score.
+
+### Not changed
+
+- `report.html` and `report.css` are rendered by the scanning engine on every
+  scan, so the report keeps the engine's own bar until the engine's template is
+  moved onto `house.css`.
+
 ## [16.8.0] — 2026-10-01 — "Product page"
 
 ### Changed

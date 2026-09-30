@@ -974,7 +974,11 @@
     var pill=document.createElement('span');pill.className='dg-pill';pill.textContent='Dogecoin';h.appendChild(pill);
     body.appendChild(h);
     var tx=document.createElement('div');tx.className='dg-x';
-    tx.textContent='Every scan runs every 3 hours \u2014 discovery, enrichment and the new per-project health scoring all burn API budget. The map, stats, health signals and report stay free for everyone, with no paywalled features. A \u0110 1000 tip powers a full refresh-and-rescore cycle for the whole field.';
+    // The banner said a tip 'powers a full refresh-and-rescore cycle' and that scans
+    // 'burn API budget'. Neither is so: the scan runs every three hours on GitHub's own
+    // free runners whether or not anyone contributes, and no payment triggers or funds
+    // a particular cycle. A contribution keeps the work free; it does not buy a scan.
+    tx.textContent='The map, stats, health signals and report are free for everyone, with no paywalled features. A voluntary contribution helps keep it that way \u2014 it does not buy inclusion or change a score.';
     body.appendChild(tx);
     var row=document.createElement('div');row.className='dg-row';
     var amt=document.createElement('span');amt.className='dg-amt';amt.textContent='\u0110 1000';row.appendChild(amt);

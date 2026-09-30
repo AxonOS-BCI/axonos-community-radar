@@ -1,4 +1,9 @@
-/* AxonOS Radar PRO — the offer page.
+/* AxonOS — the product-page layer, used by pro.html and support.html.
+ *
+ * Named for what it is rather than for the first page that used it: the
+ * support page is built from the same components, so it is one stylesheet
+ * rather than two copies that would drift apart the way the navigation bar
+ * once did in four.
  *
  * Built in the idiom of a product page: one idea per screen, the product shown
  * before it is described, type that carries the hierarchy by itself, and
@@ -34,16 +39,9 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:700}
 code{font-family:var(--mono);font-size:.92em;letter-spacing:0}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
-/* ------------------------------------------------------------ navigation */
-.gnav{background:rgba(6,7,11,.8);border-bottom:1px solid var(--line2)}
-.gnav-in{max-width:var(--page);margin:0 auto;height:44px;padding:0 22px;display:flex;align-items:center;justify-content:space-between}
-.brand{display:flex;align-items:center;gap:8px;color:var(--ink);font-size:14px;font-weight:600;letter-spacing:-0.01em;white-space:nowrap}
-.brand:hover{text-decoration:none}
-.brand .m{width:16px;height:16px;border-radius:5px;background:conic-gradient(from 210deg,var(--accent),var(--violet),var(--emerald),var(--accent))}
-.gnav-links{display:flex;gap:26px}
-.gnav-links a{color:var(--dim);font-size:13px;letter-spacing:-0.01em}
-.gnav-links a:hover,.gnav-links a[aria-current]{color:var(--ink);text-decoration:none}
-
+/* ------------------------------------------------------------ navigation
+   The global bar lives in house.css. This page adds the product bar below it,
+   which is the one that stays; the global bar is .static here. */
 .lnav{position:sticky;top:0;z-index:50;background:rgba(6,7,11,.72);
   backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--line)}
 .lnav-in{max-width:var(--page);margin:0 auto;height:52px;padding:0 22px;display:flex;align-items:center;gap:26px}
@@ -251,8 +249,6 @@ h1{font-size:clamp(52px,8.8vw,104px);line-height:1;letter-spacing:-0.05em;margin
 }
 @media (max-width:734px){
   body{font-size:16px}
-  .gnav-links{gap:16px}
-  .gnav-links a[href="./stats.html"]{display:none}
   .lnav-links{display:none}
   .lnav-title{font-size:19px}
   .hero{padding-top:64px}

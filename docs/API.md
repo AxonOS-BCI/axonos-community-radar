@@ -79,8 +79,9 @@ https://axonos-bci.github.io/axonos-community-radar/feeds/rising.xml
 The map is free to use **with attribution** — link back to the radar. That
 tier stays free; transparency is the moat.
 
-**Licensed feeds, SLAs, custom slices, and redistribution** for funds, labs,
-and platforms: [connect@axonos.org](mailto:connect@axonos.org).
+To have Radar watch a list of your own and deliver what changed to a private
+repository, see [Radar PRO](https://axonos-bci.github.io/axonos-community-radar/pro.html).
+For redistribution terms, write to [connect@axonos.org](mailto:connect@axonos.org).
 
 ---
 

@@ -1,94 +1,46 @@
-/* Support page — same design language as the radar (tokens mirrored from app.css). */
-:root{--bg:#06070b;--ink:#f2f5fb;--dim:#9aa3b8;--faint:#828da1;--line:rgba(255,255,255,.09);--line2:rgba(255,255,255,.06);
-  --card:rgba(255,255,255,.035);--card2:rgba(255,255,255,.05);--accent:#2dd4ff;--violet:#a78bfa;--emerald:#34d399;--amber:#fbbf24;--rose:#fb7185}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5;letter-spacing:-0.011em}
-body{background:radial-gradient(130% 80% at 50% -20%,#0e1a30 0,transparent 50%),radial-gradient(100% 60% at 100% 110%,#160f28 0,transparent 55%),var(--bg)}
-a{color:var(--accent);text-decoration:none}
-a:hover{text-decoration:underline}
+/* The support page — only what is particular to it.
+ *
+ * The bar comes from house.css and every component — hero, statement, tiles,
+ * pay card, pills, footer — from product.css, the same layer the PRO page is
+ * built from. What remains here is layout that exists on this page alone.
+ */
+.s-hero{padding-top:104px;padding-bottom:8px}
+.s-hero h1{font-size:clamp(52px,8.4vw,96px)}
 
-nav{position:sticky;top:0;z-index:40;backdrop-filter:blur(14px);background:rgba(6,7,11,.72);border-bottom:1px solid var(--line2)}
-.nav-in{max-width:960px;margin:0 auto;display:flex;align-items:center;gap:18px;padding:12px 20px}
-.brand{display:flex;align-items:center;gap:9px;font-weight:650;color:var(--ink);font-size:15px}
-.brand .d{color:var(--faint);font-weight:500}
-.brand .m{width:20px;height:20px;border-radius:6px;background:conic-gradient(from 210deg,var(--accent),var(--violet),var(--emerald),var(--accent));box-shadow:0 0 16px rgba(45,212,255,.5)}
-.nav-sp{flex:1}
-.nav-link{color:var(--dim);font-size:13.5px;font-weight:550;padding:6px 10px;border-radius:8px}
-.nav-link:hover{color:var(--ink);text-decoration:none}
-.nav-link.on{color:var(--ink);background:var(--card2)}
-@media(max-width:560px){.nav-hide{display:none}}
+.s-give{padding-top:120px}
+.s-give .pay{margin-top:0;max-width:none}
+.s-give .pay-cta{gap:14px}
+.s-give .t-k{font-size:14px;font-weight:600;color:var(--amber) !important;margin-bottom:10px}
 
-.wrap{max-width:960px;margin:0 auto;padding:0 20px 60px}
-.hero{padding:56px 0 26px;text-align:left}
-.eyebrow{font-size:12px;letter-spacing:.04em;color:var(--accent);font-weight:600;margin-bottom:16px;text-transform:uppercase}
-h1{margin:0 0 14px;font-size:clamp(30px,5.4vw,44px);line-height:1.06;letter-spacing:-0.03em;font-weight:700}
-h1 .grad{background:linear-gradient(110deg,#fff,var(--accent) 55%,var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
-.sub{margin:0;color:var(--dim);font-size:16px;max-width:66ch}
-.sub b{color:var(--ink)}
+.s-pro{padding-top:120px}
+.s-pro-card{text-align:center;background:
+  radial-gradient(60% 90% at 50% 0%,rgba(45,212,255,.12),transparent 70%),var(--tile);
+  border:1px solid rgba(45,212,255,.32);border-radius:32px;padding:64px 40px 56px}
+.s-pro-card .t-k{font-size:14px;font-weight:600;color:var(--accent);margin-bottom:14px}
+.s-pro-card h2{font-size:clamp(28px,3.6vw,44px);line-height:1.12;letter-spacing:-0.035em;max-width:24ch;margin:0 auto;text-wrap:balance}
+.s-pro-card h2 span{color:var(--faint)}
+.s-pro-card > p:not(.t-k){color:var(--dim);font-size:17px;max-width:52ch;margin:20px auto 30px}
 
-.card{background:var(--card);border:1px solid var(--line2);border-radius:20px;padding:26px 28px;margin:18px 0}
-h2{margin:0 0 12px;font-size:19px;letter-spacing:-0.02em}
+.s-orgs{grid-template-columns:repeat(2,1fr)}
+.s-org{grid-column:auto;color:inherit;text-decoration:none;transition:border-color .2s,transform .2s}
+.s-org:hover{border-color:rgba(255,255,255,.16);text-decoration:none}
+.s-org h3{font-family:var(--mono);font-size:21px;font-weight:600;letter-spacing:-0.01em}
+.s-org:nth-child(1) .t-k{color:var(--accent) !important}
+.s-org:nth-child(2) .t-k{color:var(--violet) !important}
+.s-org:nth-child(3) .t-k{color:var(--emerald) !important}
+.s-org:nth-child(4) .t-k{color:var(--amber) !important}
 
-.pay{display:flex;gap:28px;align-items:center;flex-wrap:wrap;
-  background:linear-gradient(135deg,rgba(45,212,255,.07),rgba(167,139,250,.06));position:relative;overflow:hidden}
-.pay::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:linear-gradient(180deg,var(--accent),var(--violet))}
-.pay-l{flex:1 1 420px;min-width:0}
-.pay-k{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
-.addr-row{margin:0 0 14px}
-.addr{display:inline-block;max-width:100%;overflow-wrap:anywhere;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-  font-size:14.5px;background:rgba(0,0,0,.32);border:1px solid var(--line);border-radius:10px;padding:10px 13px;color:var(--ink)}
-.btns{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 12px}
-.btn{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:13.5px;color:var(--ink);
-  border:1px solid var(--line);background:var(--card2);border-radius:11px;padding:9px 15px;cursor:pointer}
-.btn:hover{border-color:rgba(45,212,255,.45);text-decoration:none}
-.btn.primary{color:#04121a;background:linear-gradient(120deg,var(--accent),#7fe7ff);border-color:transparent}
-.hint{margin:0;color:var(--faint);font-size:13px}
-.hint b{color:var(--dim)}
-.pay-r{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:8px}
-.qr-tile{background:#fff;border-radius:16px;padding:12px;line-height:0;box-shadow:0 8px 30px rgba(45,212,255,.14)}
-.qr-tile img{display:block;width:180px;height:180px}
-.qr-cap{color:var(--faint);font-size:12px}
+.s-terms{padding-top:140px;max-width:860px}
+.s-terms-list{list-style:none;margin:44px 0 0;padding:0}
+.s-terms-list li{color:var(--dim);font-size:16px;line-height:1.55;padding:18px 0;border-top:1px solid var(--line2)}
+.s-terms-list li:last-child{border-bottom:1px solid var(--line2)}
+.s-terms-list b{color:var(--ink);font-weight:600}
 
-.terms ul{margin:0;padding-left:20px;color:var(--dim);font-size:14px}
-.terms li{margin:8px 0}
-.terms b{color:var(--ink)}
-
-.orgm-sub{color:var(--dim);font-size:14px;margin:0 0 16px;max-width:70ch}
-.orgm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
-.og-card{display:flex;flex-direction:column;gap:6px;border:1px solid var(--line2);border-radius:14px;background:var(--card2);
-  padding:14px 16px;color:var(--ink)}
-.og-card:hover{border-color:rgba(45,212,255,.4);text-decoration:none}
-.og-card b{font-size:14px}
-.og-card span{color:var(--faint);font-size:12.5px;line-height:1.45}
-
-footer{margin-top:34px;color:var(--faint);font-size:12.5px;border-top:1px solid var(--line2);padding-top:18px}
-
-.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(16px);opacity:0;pointer-events:none;
-  background:#0e1622;border:1px solid rgba(45,212,255,.4);color:var(--ink);font-size:13.5px;font-weight:550;
-  border-radius:12px;padding:10px 16px;transition:opacity .2s,transform .2s;z-index:60}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-
-/* The launch offer.
-   Amber rather than the accent, because it is a different kind of thing from
-   the two monthly tiers beside it: a fixed price in a fixed unit, payable now.
-   The QR and the address sit together so the one-click path and the manual one
-   are the same block, not two places to look. */
-.plan-promo{border-color:rgba(245,196,81,.42);background:linear-gradient(180deg,rgba(245,196,81,.06),transparent 60%)}
-.plan-promo .plan-k{color:var(--amber,#f5c451)}
-.plan-promo .plan-p{color:var(--ink,#f2f5fb)}
-.promo-pay{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;margin:14px 0 10px}
-.promo-qr{border-radius:10px;background:#fff;padding:7px;flex:0 0 auto}
-.promo-addr{display:flex;flex-direction:column;gap:7px;min-width:0;flex:1 1 220px}
-.promo-k{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
-.promo-a{font-size:12.5px;word-break:break-all;line-height:1.45;color:var(--ink,#f2f5fb)}
-.promo-x{font-size:12.5px;color:var(--accent,#2dd4ff)}
-@media(max-width:620px){
-  .promo-pay{gap:12px}
-  .promo-qr{width:112px;height:112px}
-  .promo-a{font-size:12px}
+@media (max-width:734px){
+  .s-hero{padding-top:64px}
+  .s-give,.s-pro{padding-top:88px}
+  .s-give .pay{margin-left:0;margin-right:0}
+  .s-pro-card{padding:44px 22px 40px;border-radius:26px}
+  .s-orgs{grid-template-columns:1fr}
+  .s-terms{padding-top:104px}
 }
-
-/* The pointer to the offer page. */
-.pro-card .sub{margin-bottom:18px}

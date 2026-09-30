@@ -1,5 +1,39 @@
 # Changelog
 
+## [16.8.0] — 2026-10-01 — "Product page"
+
+### Changed
+
+- **`pro.html` is rebuilt as a product page.** One idea per screen, the product
+  shown before it is described, and type carrying the hierarchy on its own:
+
+  - a thin global navigation that scrolls away, and a sticky product bar —
+    *Radar PRO*, its three sections, and a *Get PRO* button — that stays;
+  - a centred hero, *Know what changed.*, over the product itself: the digest
+    issue drawn as the window it arrives in;
+  - one sentence that states the idea, and three figures that are all true —
+    *3 h*, *250*, and *0 messages on a day when nothing changed*;
+  - a grid of what arrives in the private repository, one tile per thing GitHub
+    already does so we do not rebuild it;
+  - *Which plan is right for you?* — three columns read the same way, value over
+    descriptor, then a compare table;
+  - the promises and the limits, the line a payment never crosses, the payment
+    card and the questions, each on its own screen.
+
+  Every hook the contract test reads is where it was — `data-plan`,
+  `data-price`, `data-ent`, `data-guarantee` — so the redesign changed the page
+  and not one thing it promises. The contract, the design-token and the
+  deployed-page gates all pass unchanged.
+
+- The payment QR is no longer lazy-loaded. It is three kilobytes, and a payment
+  page should show its address to anyone who scrolls, prints or captures it; a
+  full-page capture of the redesign showed an empty white square where it would
+  have loaded late.
+
+- The *evidence* marker in the example digest is drawn as a tag, not a link. It
+  is an illustration, and a word styled as a link that goes nowhere is a small
+  lie about the page.
+
 ## [16.7.1] — 2026-10-01
 
 ### Fixed

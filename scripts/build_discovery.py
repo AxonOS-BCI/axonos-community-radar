@@ -67,6 +67,7 @@ PAGES = [
     ("/report.html", "hourly", "0.9", "the field report, rebuilt every scan"),
     ("/stats.html", "hourly", "0.7", "aggregate statistics"),
     ("/support.html", "monthly", "0.3", "how to support the work"),
+    ("/pro.html", "monthly", "0.6", "Radar Premium and Premium PRO: plans and payment"),
 ]
 
 #: Datasets, with the shape a harvester needs. Only files that are actually

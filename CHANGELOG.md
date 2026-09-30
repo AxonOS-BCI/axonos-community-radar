@@ -1,5 +1,42 @@
 # Changelog
 
+## [16.7.1] — 2026-10-01
+
+### Fixed
+
+- **The PRO link answered 404 on every page.** 16.7.0 added `pro.html`, linked
+  it from the navigation of every page, rendered it in Chromium at two widths and
+  clicked its buttons — and never added it to the list of files `pages.yml`
+  copies into the Pages artefact. That list is explicit on purpose, so tooling
+  never reaches the public host. Every local check passed, because every local
+  check opened the file from disk; none looked at the one step between the
+  repository and the site.
+
+  [`scripts/gates/check_deployed_pages.py`](scripts/gates/check_deployed_pages.py)
+  reads the deploy's own copy command and fails when any page links to a page
+  the deploy does not ship, or when a root-level page is neither deployed nor
+  named as deliberately withheld. Taking `pro.html` back out of the deploy makes
+  it name all five broken links. `pro.html` is also in the sitemap now.
+
+### Added
+
+- **What we promise, and what we cannot**, on `pro.html` and in
+  `data/commercial.json`, compared word for word by the contract test. Four
+  promises about what is under our control — the scan, the write, the issue, the
+  first-digest window — and four limits on what is not: the completeness of the
+  field, the correctness of third-party code, GitHub's availability, and the
+  relevance of every project a watch surfaces.
+
+- **The launch year does not renew at the launch price.** It is a launch price,
+  not a second standing price for Premium PRO; after twelve months it continues
+  at the list price or stops.
+
+### Declined
+
+- "First digest within seven days — usually sooner." There have been no
+  deliveries yet, so there is nothing for "usually" to describe. The contract
+  test refuses the phrase and three like it.
+
 ## [16.7.0] — 2026-10-01 — "Only what can be delivered"
 
 ### Added

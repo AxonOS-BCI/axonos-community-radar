@@ -30,6 +30,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 GATES = ROOT / "scripts" / "gates"
 
 GATE_NAMES = [
+    "check_deployed_pages",
     "check_funding",
     "check_frozen_counts",
     "check_anchor_disclosure",
@@ -61,6 +62,11 @@ def tree(tmp_path):
     shutil.copy2(ROOT / "assets" / "app.js", dst / "assets" / "app.js")
     (dst / ".github").mkdir()
     shutil.copy2(ROOT / ".github" / "FUNDING.yml", dst / ".github" / "FUNDING.yml")
+    (dst / ".github" / "workflows").mkdir()
+    shutil.copy2(ROOT / ".github" / "workflows" / "pages.yml", dst / ".github" / "workflows" / "pages.yml")
+    for page in ROOT.glob("*.html"):
+        if not (dst / page.name).exists():
+            shutil.copy2(page, dst / page.name)
     return dst
 
 
@@ -84,6 +90,16 @@ def test_the_gate_passes_on_the_committed_tree(name):
 # --------------------------------------------------------------------------
 # and fails when the thing it guards is broken
 # --------------------------------------------------------------------------
+
+def test_deployed_pages_notices_a_linked_page_the_deploy_skips(tree):
+    """The 16.7.0 regression: a page in every nav, and not in the artefact."""
+    (tree / ".github" / "workflows").mkdir(parents=True, exist_ok=True)
+    wf = (ROOT / ".github" / "workflows" / "pages.yml").read_text()
+    (tree / ".github" / "workflows" / "pages.yml").write_text(
+        wf.replace(" support.html pro.html ", " support.html "))
+    problems = load("check_deployed_pages").check(tree)
+    assert any("pro.html" in x and "404" in x for x in problems), problems
+
 
 def test_funding_notices_a_foreign_address(tree):
     p = tree / "support.html"

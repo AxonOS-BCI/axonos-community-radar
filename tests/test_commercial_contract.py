@@ -149,3 +149,35 @@ def test_the_warnings_that_protect_a_payer_are_present():
     low = PAGE.lower()
     assert "cannot be reversed" in low
     assert "seed phrase" in low and "private key" in low
+
+
+# --------------------------------------------------------------- guarantees
+
+def _items(side: str) -> list[str]:
+    m = re.search(rf'<div data-guarantee="{side}">(.*?)</div>', PAGE, re.S)
+    assert m, f"pro.html has no {side!r} guarantee column"
+    return [re.sub(r"\s+", " ", x).strip() for x in re.findall(r"<li>(.*?)</li>", m.group(1), re.S)]
+
+
+def test_the_page_promises_exactly_what_the_contract_promises():
+    """Word for word. A promise that differs between the page and the contract
+    is two promises, and the customer reads the page."""
+    assert _items("yes") == C["guarantees"]["we_guarantee"]
+
+
+def test_the_page_names_exactly_the_limits_the_contract_names():
+    shown = [x.replace("&#x27;", "'").replace("’", "'") for x in _items("no")]
+    assert shown == C["guarantees"]["we_do_not_guarantee"]
+
+
+def test_the_launch_year_is_a_launch_price_not_a_second_price():
+    assert "does not renew" in plan("launch_annual")["renewal"]
+    assert "does not renew at this price" in block("launch_annual")
+
+
+def test_no_promise_the_record_cannot_support():
+    """'Usually sooner' was suggested for the first-digest window. There have
+    been no deliveries yet, so there is nothing for 'usually' to describe."""
+    low = PAGE.lower()
+    for claim in ("usually sooner", "typically within", "most customers", "on average"):
+        assert claim not in low, f"the page states a track record that does not exist: {claim!r}"

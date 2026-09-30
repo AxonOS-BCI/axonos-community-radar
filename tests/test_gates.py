@@ -50,7 +50,7 @@ def tree(tmp_path):
     dst = tmp_path / "repo"
     dst.mkdir()
     for rel in ("README.md", "CITATION.cff", "CHANGELOG.md", "VERSION",
-                "index.html", "stats.html", "support.html"):
+                "index.html", "stats.html", "support.html", "pro.html"):
         shutil.copy2(ROOT / rel, dst / rel)
     (dst / "data").mkdir()
     for rel in ("payment.json", "ecosystem-registry.json", "radar.json", "curated.json"):

@@ -334,11 +334,11 @@ jobs:
           python3 -c "import cv2; print('decoder', cv2.__version__)"
           python3 -m pytest tests/test_qr_integrity.py -q
 
-      - name: The payment address and the prices match their contracts
+      - name: What is sold matches the contract, and the contract sells only what exists
         # An irreversible transfer and three price drifts. See docs/DECISIONS.md D-1.
         run: |
           pip install -r requirements-ci.txt --quiet --break-system-packages
-          python3 -m pytest tests/test_support_contract.py -q
+          python3 -m pytest tests/test_commercial_contract.py -q
 
       - name: The social card matches its generator
         # Regenerated and compared, because the committed binary once

@@ -7,7 +7,7 @@ a line drawn through a running system, and the useful question is not whether
 the line exists but **whether the public side is enough to check the private
 side's claims**. That is the test this page is written against.
 
-Last reviewed against the repository at v16.6.0.
+Last reviewed against the repository at v16.7.0.
 
 ---
 
@@ -75,22 +75,31 @@ as such.
 
 Not from taking anything away. From work that does not exist in the public data:
 
-- scanning a list the public scan does not cover, on a cadence agreed for it
-- delivery — alerts by mail or webhook, when something changes
-- a request quota against an authenticated key
-- exports and slices shaped for someone's own pipeline
+- scanning a list you name — including repositories the public map does not
+  hold — with every public scan
+- standing queries over new projects, such as "any new EEG project using LSL"
+- delivery of all of it to a private GitHub repository, and an issue there when
+  something changed
+- a written brief on that list, by us
+
+Everything is delivered through the private repository. GitHub supplies the
+access control, the notifications, the history, the webhooks and the API, so
+none of those are rebuilt here — and none are sold as though they were.
 
 Prices and entitlements are in [`data/commercial.json`](../data/commercial.json)
-and are checked against the rendered page by CI, because a price that lives only
-in markup drifts — this one already did, three times.
+and are checked against [`pro.html`](../pro.html) by CI, because a price that
+lives only in markup drifts — this one already did, three times. The first
+version of that contract also sold an API request quota and a custom scan
+cadence; neither system existed, and CI enforced the claim as correct until the
+contract was rewritten around what can be delivered.
 
 ---
 
 ## What is not built
 
 Stated here rather than implied by silence. There is **no billing backend**: no
-order state machine, no automated provisioning, no quota enforcement service, no
-tenant isolation layer, no API key store. Payment is a Dogecoin transaction and
+order state machine, no automated provisioning, no metered API, no quota service,
+no key store. Payment is a Dogecoin transaction and
 an email; provisioning is manual.
 
 Anything on the public pages that would require such a system to exist would be

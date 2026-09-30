@@ -54,7 +54,7 @@ def check(root: pathlib.Path = ROOT) -> list[str]:
     if not b58check(addr):
         problems.append(f"{addr} fails Base58Check")
 
-    for rel in ("assets/app.js", "support.html", ".github/FUNDING.yml"):
+    for rel in ("assets/app.js", "support.html", "pro.html", ".github/FUNDING.yml"):
         p = root / rel
         if not p.exists():
             problems.append(f"{rel} is missing")

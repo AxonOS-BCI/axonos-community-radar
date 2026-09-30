@@ -1,5 +1,91 @@
 # Changelog
 
+## [16.7.0] — 2026-10-01 — "Only what can be delivered"
+
+### Added
+
+- **[`pro.html`](pro.html) — the Radar PRO page.** Plans, prices and payment on a
+  page of their own instead of inside the support page, which was trying to be a
+  landing page, a price list, a legal notice and a crypto guide at once. It
+  opens on the product itself — the digest a subscriber receives — rather than
+  on a claim about it, and is linked from every page's navigation.
+
+### Changed
+
+- **What is sold is now only what can be delivered.** Version 1 of
+  `data/commercial.json` sold "10 000" and "200 000 API requests a month" and a
+  "custom scan cadence". No authenticated API existed, and no second scan
+  schedule. The contract test checked that the page repeated those figures
+  faithfully — so CI enforced, on every push, that the site went on promising
+  software nobody had written.
+
+  Version 2 is built around one mechanism that exists: **a private GitHub
+  repository the engine writes into.** GitHub supplies what a service like this
+  usually has to build and usually gets wrong — access control (collaborators),
+  alerts (issues, delivered by GitHub's own notifications), webhooks (set on the
+  repository, fired on every update), history (commits) and an API (GitHub's, over
+  the subscriber's own repository). None of it is rebuilt, and none of it is sold
+  as though it had been.
+
+  | | Premium | Premium PRO |
+  |:--|:--|:--|
+  | Price | $99 a month | $500 a month |
+  | Watchlist | 25 repositories | 250 repositories |
+  | Field watches on new projects | — | 5 |
+  | Digest | weekly | daily |
+  | Collaborators | 1 | 5 |
+  | Written brief | — | quarterly |
+  | Scan cadence | every 3 hours | every 3 hours |
+
+  The launch year — 7 000 DOGE, prepaid, twelve months of Premium PRO — is
+  unchanged. Provisioning is by hand, and the first digest arrives within seven
+  days of the payment confirming; the page says so.
+
+- **[`tests/test_commercial_contract.py`](tests/test_commercial_contract.py)**
+  replaces the support-page contract test and binds `pro.html` to the contract
+  through `data-plan`, `data-price` and `data-ent` attributes rather than prose.
+  It also refuses the claims version 1 made: an API request quota or a
+  non-public scan cadence, on the page or in the contract, fails the build.
+  Proved by mutation — a changed price, a changed quota, an API quota restored on
+  the page and separately in the contract, the launch amount changed, the
+  pay-to-play promise removed, a second address added: each fails.
+
+- **The support page supports.** Plans moved to `pro.html`; one card points
+  there. Its opening no longer describes the work as one person's, no longer
+  refers to "the paid plans below", and its terms no longer sell a request quota.
+
+- `docs/OPEN_CORE_BOUNDARY.md` describes the commercial surface as it now is.
+
+### Fixed
+
+- **The contrast fix from 15.3.0 had reached one stylesheet of three.**
+  `--faint` was raised from #6b7488 (4.29:1, below WCAG AA) to #828da1 in
+  `app.css`; `support.css` and `stats.css` declared the same token and kept the
+  old value. The support and stats pages shipped failing text on their smallest
+  labels for as long as the map had passing text on its own.
+
+  [`tests/test_design_tokens.py`](tests/test_design_tokens.py) fails if a shared
+  token differs between the stylesheets this repository owns, and if any text
+  token falls below AA. Put the old value back in `support.css` and it fails.
+
+- **The payment pages had no clickjacking guard.** `docs/THREAT_MODEL.md` names
+  a frame-buster in `app.js` and `stats.js` as the mitigation for framing,
+  because GitHub Pages cannot send `frame-ancestors` and the `<meta>` form of it
+  is ignored. The one script on the pages where money moves — `support.js` — did
+  not carry it. It does now, and was tested by framing `pro.html` inside a
+  hostile page: the page replaces its framer. The new page also drops the
+  `frame-ancestors` directive from its meta policy, which browsers ignore and
+  report as an error on every load.
+
+### Known, recorded rather than hidden
+
+- `report.css` arrives from the private engine with `report.html` on every scan,
+  so it is excluded from the shared-token rule — an edit here would be
+  overwritten within three hours. Its `--faint` (#6b7789) is 4.31:1 on the
+  report's background, below AA. That is marked as a strict expected failure: the
+  day the engine fixes it, the test passes unexpectedly, fails, and the marker
+  has to come out instead of lingering as a stale excuse.
+
 ## [16.6.0] — 2026-09-26 — "The radar sweeps"
 
 ### Added

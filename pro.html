@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="dark">
+<title>AxonOS Radar PRO — your part of the BCI field, watched</title>
+<meta name="description" content="Radar Premium and Premium PRO: your own watchlist of BCI repositories, scanned every three hours and delivered as a digest to a private GitHub repository. Plans, prices and payment terms stated in full.">
+<meta property="og:title" content="AxonOS Radar PRO — your part of the BCI field, watched">
+<meta property="og:description" content="A private repository that tells you what changed in the repositories you care about. Every three hours, evidence attached.">
+<meta property="og:image" content="https://axonos-bci.github.io/axonos-community-radar/og-image.png">
+<meta property="og:url" content="https://axonos-bci.github.io/axonos-community-radar/pro.html">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%232dd4ff'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/pro.css">
+</head>
+<body>
+
+<nav aria-label="Primary">
+  <div class="nav-in">
+    <a class="brand" href="./"><span class="m" aria-hidden="true"></span>AxonOS Radar</a>
+    <div class="nav-sp"></div>
+    <a class="nav-link" href="./">Map</a>
+    <a class="nav-link" href="./stats.html">Stats</a>
+    <a class="nav-link on" href="./pro.html" aria-current="page">PRO</a>
+    <a class="nav-link" href="./support.html">Support</a>
+  </div>
+</nav>
+
+<main>
+
+  <header class="hero">
+    <div class="hero-copy">
+      <p class="kicker">AxonOS Radar PRO</p>
+      <h1>Know what changed in your part of the BCI field.</h1>
+      <p class="lede">Without checking it yourself. The public map shows the whole field; PRO watches
+      the repositories you name every three hours and writes what moved into a private GitHub
+      repository — evidence attached, and nothing at all when nothing changed.</p>
+      <div class="cta-row">
+        <a class="btn primary" href="#plans">See the plans</a>
+        <a class="btn ghost" href="#arrives">How it arrives</a>
+      </div>
+    </div>
+
+    <figure class="digest" aria-label="Example of a digest issue in a subscriber repository">
+      <div class="digest-bar">
+        <span class="dot" aria-hidden="true"></span>
+        <span class="digest-repo">your-lab/radar-watch</span>
+        <span class="digest-tag">Example</span>
+      </div>
+      <div class="digest-head">
+        <span class="issue-state">Open</span>
+        <h2 class="digest-title">Radar digest — 3 changes since yesterday</h2>
+      </div>
+      <ol class="digest-rows">
+        <li class="up"><span class="sig" aria-hidden="true">▲</span>
+          <span class="what"><b>lab/eeg-decoder</b> health 71 → 78</span>
+          <span class="why">a release and four merged pull requests this week</span></li>
+        <li class="new"><span class="sig" aria-hidden="true">＋</span>
+          <span class="what"><b>org/lsl-bridge</b> entered your EEG + LSL watch</span>
+          <span class="why">new public project, BRS 62, first seen today</span></li>
+        <li class="down"><span class="sig" aria-hidden="true">▼</span>
+          <span class="what"><b>team/signal-kit</b> archived</span>
+          <span class="why">no commits in 212 days, repository marked read-only</span></li>
+      </ol>
+      <figcaption>Every line links to the evidence the engine recorded for it.</figcaption>
+    </figure>
+  </header>
+
+  <section class="arrives" id="arrives" aria-labelledby="arrives-h">
+    <div class="arrives-copy">
+      <h2 id="arrives-h">It arrives where you already work</h2>
+      <p>We create a private repository for you. After every scan the engine writes your list into
+      it, and when something changed it opens an issue — which GitHub delivers to you as a
+      notification, by email if that is how you have it set.</p>
+      <p>There is no dashboard to log into and no account to lose. GitHub already does the parts
+      that usually make a service like this fragile, so we do not rebuild them:</p>
+      <dl class="given">
+        <div><dt>Seats</dt><dd>people you add as collaborators</dd></div>
+        <div><dt>Alerts</dt><dd>issues, delivered by GitHub notifications</dd></div>
+        <div><dt>Webhooks</dt><dd>set one on your repository; it fires on every update</dd></div>
+        <div><dt>API</dt><dd>the GitHub API over your own repository</dd></div>
+        <div><dt>History</dt><dd>every change is a commit you can diff</dd></div>
+      </dl>
+    </div>
+    <div class="tree" role="img" aria-label="Files in a subscriber repository: watchlist.json, watchlist.csv, watchlist.ndjson and a changes folder with one Markdown file per day">
+      <div class="tree-head">your-lab/radar-watch <span>private</span></div>
+      <ul>
+        <li><span class="f">watchlist.json</span><span class="n">every repository, every field</span></li>
+        <li><span class="f">watchlist.csv</span><span class="n">for a spreadsheet</span></li>
+        <li><span class="f">watchlist.ndjson</span><span class="n">for pandas, jq, DuckDB</span></li>
+        <li class="dir"><span class="f">changes/</span><span class="n">one file per day that had changes</span></li>
+        <li class="sub"><span class="f">2026-09-30.md</span></li>
+        <li class="sub"><span class="f">2026-09-29.md</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="plans" id="plans" aria-labelledby="plans-h">
+    <h2 id="plans-h">Plans</h2>
+    <p class="section-lede">The public map stays free and complete. These plans pay for watching
+    what you choose, on your behalf.</p>
+
+    <div class="plan-row">
+      <article class="plan" data-plan="premium">
+        <h3>Radar Premium</h3>
+        <p class="price"><span class="amt" data-price="99">$99</span><span class="per">a month</span></p>
+        <p class="for">For an engineer, founder or analyst following a shortlist.</p>
+        <ul>
+          <li><b data-ent="watchlist_repositories">25</b> repositories on your watchlist</li>
+          <li>A <b data-ent="digest">weekly</b> digest</li>
+          <li><b data-ent="collaborators">1</b> collaborator</li>
+          <li>JSON, CSV and NDJSON of your list</li>
+        </ul>
+        <a class="btn ghost" href="mailto:connect@axonos.org?subject=Radar%20Premium%20%E2%80%94%20order%20id">Request an order id</a>
+        <p class="bill">Monthly, cancellable at any time.</p>
+      </article>
+
+      <article class="plan plan-pro" data-plan="premium_pro">
+        <h3>Radar Premium PRO</h3>
+        <p class="price"><span class="amt" data-price="500">$500</span><span class="per">a month</span></p>
+        <p class="for">For a lab, fund or company watching part of the field.</p>
+        <ul>
+          <li><b data-ent="watchlist_repositories">250</b> repositories on your watchlist</li>
+          <li><b data-ent="field_watches">5</b> field watches — standing queries such as “any new EEG project using LSL”</li>
+          <li>A <b data-ent="digest">daily</b> digest</li>
+          <li><b data-ent="collaborators">5</b> collaborators</li>
+          <li>A <b data-ent="written_brief">quarterly</b> written brief on your watchlist, by us</li>
+          <li>JSON, CSV and NDJSON of your list</li>
+        </ul>
+        <a class="btn primary" href="mailto:connect@axonos.org?subject=Radar%20Premium%20PRO%20%E2%80%94%20order%20id">Request an order id</a>
+        <p class="bill">Monthly, cancellable at any time.</p>
+      </article>
+
+      <article class="plan plan-launch" data-plan="launch_annual">
+        <h3>Launch year</h3>
+        <p class="price"><span class="amt" data-price="7000">7&nbsp;000</span><span class="per">DOGE a year</span></p>
+        <p class="for">Everything in Premium PRO for twelve months, for the people who back this early.</p>
+        <ul>
+          <li>Premium PRO in full, nothing withheld and nothing added</li>
+          <li><b data-term="12">Twelve months</b> from the day the payment confirms</li>
+          <li>Priced in Dogecoin, so the amount is exact and the wallet opens ready to send</li>
+        </ul>
+        <a class="btn launch" href="dogecoin:DMwHAhqVNWf7dyEznukxCufNS5rjuP5MTp?amount=7000&amp;label=AxonOS%20Radar&amp;message=Radar%20launch%20year">Pay 7&nbsp;000 DOGE</a>
+        <p class="bill">Prepaid for twelve months. Ask for an order id first — see below.</p>
+      </article>
+    </div>
+
+    <div class="compare-wrap">
+      <table class="compare">
+        <caption>What each plan includes</caption>
+        <thead>
+          <tr><th scope="col"><span class="vh">Feature</span></th><th scope="col">Public map</th><th scope="col">Premium</th><th scope="col">Premium PRO</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">The whole map, its evidence, history and API</th><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+          <tr><th scope="row">Your own watchlist</th><td>—</td><td>25 repositories</td><td>250 repositories</td></tr>
+          <tr><th scope="row">Repositories outside the public map</th><td>—</td><td>Yes</td><td>Yes</td></tr>
+          <tr><th scope="row">Field watches on new projects</th><td>—</td><td>—</td><td>5</td></tr>
+          <tr><th scope="row">Digest</th><td>—</td><td>Weekly</td><td>Daily</td></tr>
+          <tr><th scope="row">Collaborators</th><td>—</td><td>1</td><td>5</td></tr>
+          <tr><th scope="row">Written brief</th><td>—</td><td>—</td><td>Quarterly</td></tr>
+          <tr><th scope="row">Scan cadence</th><td>Every 3 hours</td><td>Every 3 hours</td><td>Every 3 hours</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="steps" aria-labelledby="steps-h">
+    <h2 id="steps-h">How to start</h2>
+    <ol class="step-row">
+      <li><h3>Write to us</h3><p>Mail <a href="mailto:connect@axonos.org">connect@axonos.org</a> with the plan and the repositories you want watched.</p></li>
+      <li><h3>Get an order id</h3><p>We reply with one, such as <code>AXR-2026-000001</code>, and how to pay. It ties the payment to the plan and the term.</p></li>
+      <li><h3>Pay</h3><p>Send the payment, then reply with the transaction id. The chain is public, so either of us can check it.</p></li>
+      <li><h3>Receive the first digest</h3><p>We set up your repository by hand and invite you. The first digest arrives within seven days of the payment confirming.</p></li>
+    </ol>
+  </section>
+
+  <section class="never" aria-labelledby="never-h">
+    <h2 id="never-h">What a payment never does</h2>
+    <p>It never buys a place on the public map. It never changes a score, a tier or a piece of
+    evidence. And nothing on the public map is taken away to make a paid version of it. PRO
+    watches what you choose; the map stays the same for everyone.</p>
+  </section>
+
+  <section class="pay" id="pay" aria-labelledby="pay-h">
+    <div class="pay-copy">
+      <h2 id="pay-h">Paying in Dogecoin</h2>
+      <p>One address, the same everywhere on this site. Check it against the repository before you
+      send: a Dogecoin payment cannot be reversed.</p>
+      <p class="addr-line"><code id="dogeAddr" class="addr">DMwHAhqVNWf7dyEznukxCufNS5rjuP5MTp</code></p>
+      <div class="cta-row">
+        <button class="btn ghost" type="button" id="copyAddr">Copy address</button>
+        <a class="btn ghost" href="https://dogechain.info/address/DMwHAhqVNWf7dyEznukxCufNS5rjuP5MTp" rel="noopener">View payments on the chain</a>
+      </div>
+      <p class="fine">We will never ask for a seed phrase or a private key.</p>
+    </div>
+    <img class="qr" src="./assets/doge-qr.svg" width="168" height="168"
+         alt="QR code for the Dogecoin address DMwHAhqVNWf7dyEznukxCufNS5rjuP5MTp" loading="lazy" decoding="async">
+  </section>
+
+  <section class="faq" aria-labelledby="faq-h">
+    <h2 id="faq-h">Questions</h2>
+    <details><summary>Do I need a GitHub account?</summary>
+      <p>Yes — the digest arrives in a GitHub repository. If that does not suit you, write to us before ordering.</p></details>
+    <details><summary>Can you watch repositories that are not on the public map?</summary>
+      <p>Yes. Anything public on GitHub can go on your watchlist; it is scanned the same way whether or not it cleared the map's gate.</p></details>
+    <details><summary>Who can see my watchlist?</summary>
+      <p>The collaborators you add, and us, because we generate it. It is never published and never feeds the public map.</p></details>
+    <details><summary>Is it scanned more often than the public map?</summary>
+      <p>No. Your list is scanned with the public scan, every three hours. What changes between plans is how much you watch and how often you are told.</p></details>
+    <details><summary>How do I cancel?</summary>
+      <p>Tell us before the next month starts. The monthly plans stop at the end of the month already paid; the launch year is prepaid for its twelve months.</p></details>
+  </section>
+
+</main>
+
+<footer>
+  <p>© The AxonOS Project · <a href="https://axonos.org">axonos.org</a> · connect@axonos.org</p>
+  <p><a href="./support.html">Support the public map</a> · <a href="https://github.com/AxonOS-BCI/axonos-community-radar/blob/main/docs/OPEN_CORE_BOUNDARY.md">What is public and what is not</a></p>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="assets/support.js" defer></script>
+</body>
+</html>

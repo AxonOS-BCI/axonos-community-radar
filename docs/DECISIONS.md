@@ -14,7 +14,7 @@ now.
 ## D-1 · `data/payment.json` is the only root for the wallet address
 
 **What happened.** The funding gate read the canonical address from
-`data/ecosystem-registry.json` while `tests/test_support_contract.py` read it
+`data/ecosystem-registry.json` while the support contract test (now `tests/test_commercial_contract.py`) read it
 from `data/payment.json`. Two files independently holding an address for
 irreversible transfers, agreeing only because nothing had yet made them
 disagree.

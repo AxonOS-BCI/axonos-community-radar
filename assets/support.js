@@ -1,3 +1,9 @@
+// Clickjacking guard, the same first statement as app.js and stats.js.
+// docs/THREAT_MODEL.md names this guard as the mitigation for framing, and it
+// was missing from the one script that runs on the pages where money moves:
+// support.html and pro.html. GitHub Pages cannot send frame-ancestors, and the
+// <meta> form of it is ignored, so the page has to defend itself.
+(function(){if(top!==self){try{top.location.replace(self.location.href);}catch(e){document.documentElement.style.display='none';}}})();
 /* Support page behaviour: copy-address with a toast. DOM API only, no
  * direct HTML injection, no network, no storage — same discipline as app.js. */
 (function () {

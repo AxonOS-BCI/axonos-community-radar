@@ -1,11 +1,29 @@
 {
-  "$comment": "Plans as data. Prices lived in HTML three times and contradicted themselves twice \u2014 EUR 9 beside USD 99, then a Subscribe button to a Sponsors page that was never enabled. CI renders this file against support.html so a figure cannot drift without failing the build.",
-  "schema_version": 1,
-  "currency_fiat": "USD",
+  "$comment": "Plans as data, and only what can be delivered. Version 1 sold '10 000 / 200 000 API requests a month' and a 'custom scan cadence'. No authenticated API exists and no second scan schedule exists, so both were claims about software that had not been written, enforced by CI as correct. Everything below is delivered through one mechanism that does exist: a private GitHub repository the engine writes into.",
+  "schema_version": 2,
+  "delivery": {
+    "model": "private_github_repository",
+    "summary": "Each subscriber gets a private GitHub repository. The engine writes the subscriber's slice into it after every scan and opens an issue when something changed. GitHub supplies access control, notifications, history, downloads, its API and webhooks; none of it is rebuilt here.",
+    "what_github_provides": {
+      "seats": "repository collaborators",
+      "alerts": "issues opened in the repository, delivered by GitHub notifications",
+      "api": "the GitHub API over your own repository, under GitHub's limits",
+      "webhooks": "repository webhooks you configure; they fire on every update",
+      "history": "the repository's git history"
+    },
+    "files": [
+      "watchlist.json",
+      "watchlist.csv",
+      "watchlist.ndjson",
+      "changes/YYYY-MM-DD.md"
+    ],
+    "no_change_no_issue": true
+  },
   "plans": {
     "premium": {
       "id": "RADAR_PREMIUM",
-      "name": "Premium",
+      "name": "Radar Premium",
+      "for": "an engineer, founder or analyst following a shortlist",
       "price": {
         "amount": 99,
         "currency": "USD",
@@ -13,18 +31,22 @@
       },
       "billing": "monthly, cancellable at any time",
       "entitlements": {
-        "api_requests_month": 10000,
-        "seats": 1,
-        "alerts": true,
-        "webhook": true,
-        "csv_export": true,
-        "private_watchlist": false
+        "watchlist_repositories": 25,
+        "field_watches": 0,
+        "digest": "weekly",
+        "collaborators": 1,
+        "exports": [
+          "csv",
+          "json",
+          "ndjson"
+        ],
+        "written_brief": null
       }
     },
     "premium_pro": {
       "id": "RADAR_PRO",
-      "name": "Premium PRO",
-      "audience": "institutional",
+      "name": "Radar Premium PRO",
+      "for": "a lab, fund or company watching part of the field",
       "price": {
         "amount": 500,
         "currency": "USD",
@@ -32,18 +54,21 @@
       },
       "billing": "monthly, cancellable at any time",
       "entitlements": {
-        "api_requests_month": 200000,
-        "seats": 5,
-        "alerts": true,
-        "webhook": true,
-        "csv_export": true,
-        "private_watchlist": true,
-        "custom_scan_cadence": true
+        "watchlist_repositories": 250,
+        "field_watches": 5,
+        "digest": "daily",
+        "collaborators": 5,
+        "exports": [
+          "csv",
+          "json",
+          "ndjson"
+        ],
+        "written_brief": "quarterly"
       }
     },
     "launch_annual": {
       "id": "RADAR_LAUNCH_ANNUAL",
-      "name": "Launch Annual",
+      "name": "Launch year",
       "promotion": true,
       "price": {
         "amount": 7000,
@@ -53,16 +78,28 @@
       "billing": "prepaid for twelve months from payment confirmation",
       "term_months": 12,
       "grants": "premium_pro",
-      "$comment": "Entitlements are not repeated here. This plan grants `premium_pro`; one definition, so the two cannot diverge and no test is needed to notice that they have."
+      "$comment": "Grants premium_pro; one definition, nothing to diverge."
     }
+  },
+  "definitions": {
+    "watchlist_repositories": "repositories you name, scanned with every public scan, in the map or not",
+    "field_watches": "a standing query over new projects, e.g. 'any new EEG project using LSL'",
+    "digest": "an issue opened in your repository listing what changed; none when nothing did",
+    "written_brief": "a short written note on your watchlist, by us"
   },
   "provisioning": {
     "automated": false,
-    "statement": "Provisioning is manual and begins after the payment confirms on chain. There is no billing backend; nothing on this site pretends otherwise.",
+    "first_digest_within_days": 7,
+    "statement": "Set up by hand for each subscriber. There is no billing backend; the first digest arrives within seven days of the payment confirming.",
     "order_id_format": "AXR-YYYY-NNNNNN"
   },
   "cadence": {
-    "public_scan_hours": 3,
-    "private_statement": "Custom cadence is agreed during provisioning and is bounded by GitHub's rate limits. No figure is promised before that conversation."
-  }
+    "scan_hours": 3,
+    "statement": "Your list is scanned with the public scan, every three hours. There is no separate faster schedule."
+  },
+  "never": [
+    "Payment never buys inclusion in the public map.",
+    "Payment never changes a score, a tier or a piece of evidence.",
+    "Nothing on the public map is withdrawn to create a paid version of it."
+  ]
 }

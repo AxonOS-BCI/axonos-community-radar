@@ -54,31 +54,12 @@ Ten to fourteen pages on the field or the part of it you name, written and check
 
 ## How it works
 
-```mermaid
-%%{init: {'theme':'base','themeVariables':{'primaryColor':'#0e141d','primaryTextColor':'#e6edf3','primaryBorderColor':'#334155','lineColor':'#5a6b82','fontSize':'14px','fontFamily':'ui-sans-serif,system-ui,sans-serif'}}}%%
-flowchart TB
-    S["<b>GitHub</b><br/><small>public repository metadata</small>"]
-    E["<b>Evidence</b><br/><small>one ledger per repository</small>"]
-    R["<b>axonos-brs</b><br/><small>the rule &mdash; public, in Rust</small>"]
-    G{"<b>score &ge; 40</b>"}
-    M["<b>The map</b><br/><small>kept, and refreshed every 3 hours</small>"]
-    C["<b>Considered</b><br/><small>near misses, published with<br/>their scores and what each lacked</small>"]
-
-    S --> E --> R --> G
-    G -->|kept| M
-    G -->|below the gate| C
-
-    classDef src  fill:#131b26,stroke:#334155,color:#8b98ad,rx:6,ry:6
-    classDef rule fill:#0f2a20,stroke:#3fd68f,color:#3fd68f,stroke-width:2px,rx:6,ry:6
-    classDef gate fill:#0e141d,stroke:#5a6b82,color:#e6edf3,stroke-width:2px
-    classDef keep fill:#0d2233,stroke:#5cc8ff,color:#5cc8ff,stroke-width:2px,rx:6,ry:6
-    classDef drop fill:#2a121a,stroke:#ff6b8a,color:#ff6b8a,rx:6,ry:6
-    class S,E src
-    class R rule
-    class G gate
-    class M keep
-    class C drop
-```
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/readme/how-it-works-dark.svg">
+  <img src="assets/readme/how-it-works-light.svg" width="560" alt="How AxonOS Radar works: public GitHub metadata becomes a ledger of evidence; a public rule, axonos-brs, scores it; a score of 40 or more puts the project on the map, rescanned every three hours; near misses are published with their scores and what each lacked.">
+</picture>
+</p>
 
 The scanner reads public GitHub metadata, turns each candidate into a ledger of
 evidence, and scores it with a public rule. What clears the gate is kept; the
@@ -146,7 +127,7 @@ without handing anyone a key.
 [![Live](https://img.shields.io/badge/live-axonos--bci.github.io-a78bfa?style=flat-square)](https://axonos-bci.github.io/axonos-community-radar/)
 [![CI](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml)
 [![Pages](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml)
-[![Version](https://img.shields.io/badge/version-16.10.2-0a4a8f?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-16.11.0-0a4a8f?style=flat-square)](CHANGELOG.md)
 [![Release](https://img.shields.io/badge/release-Considered-6fe6f2?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-475569?style=flat-square)](LICENSE)
 
@@ -702,7 +683,7 @@ If you reference AxonOS Radar in academic or technical work, please cite it:
   title   = {{AxonOS Radar: a scored, evidence-backed map of the open brain--computer-interface field}},
   year    = {2026},
   url     = {https://github.com/AxonOS-BCI/axonos-community-radar},
-  version = {16.10.2}
+  version = {16.11.0}
 }
 ```
 

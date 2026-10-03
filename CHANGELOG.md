@@ -1,5 +1,31 @@
 # Changelog
 
+## [16.11.0] — 2026-10-03 — "Flagship"
+
+### Fixed
+
+- **Release commits now carry GitHub's Verified mark.** 16.10.0 to 16.10.2
+  reached `main` through a plain `git push` of commits made off-device, so
+  GitHub showed them with no signature at all, while every bot commit beside
+  them was signed. Release commits are now created through GitHub's
+  `createCommitOnBranch` API, which GitHub signs itself; the delivery checks
+  `verification.verified` on the commit it made before it tags anything.
+
+- **The release-hygiene job was red on every 16.10 release.** The Radar's own
+  project card trailed the version by one: the card generator reads `VERSION`
+  from `main`, so the card has to change in the same commit as `VERSION`, not
+  after the release. It does now, and
+  [`tests/test_release_card.py`](tests/test_release_card.py) fails before CI
+  does.
+
+### Changed
+
+- **The README's figure is drawn, not generated.** The Mermaid chart
+  truncated its own labels on a phone (*public repository meta…*, *one ledger
+  per reposi…*). It is replaced by one figure in two renderings, for GitHub's
+  light and dark themes: five steps, labels short enough never to clip, type
+  sized to read at phone width.
+
 ## [16.10.2] — 2026-10-03 — "Say exactly what it is"
 
 ### Fixed

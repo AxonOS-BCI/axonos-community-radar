@@ -87,3 +87,10 @@ found it missing from the payment pages — `assets/support.js` (break out of an
 enclosing frame; blank the document if the framer blocks navigation). Residual
 risk: a framer that sandboxes scripts entirely also cannot execute our UI, so
 the interactive surface an attacker could overlay is inert.
+
+The offer pages — `pro.html`, `sample.html` and `terms.html` — carry no form and no
+state-changing action: every button is a `mailto:` link or an in-page anchor. Framing
+them gives an attacker nothing to make a visitor do, and the meta CSP on them cannot
+add `frame-ancestors` either; GitHub Pages sets no response headers we control. The
+protection is the absence of anything worth clicking on, not a header we do not have.
+

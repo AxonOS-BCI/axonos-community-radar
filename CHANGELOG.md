@@ -1,5 +1,62 @@
 # Changelog
 
+## [16.10.1] — 2026-10-03 — "Only what changed"
+
+### Fixed
+
+- **The example digest is drawn from data, and lists only changes.** 16.10.0
+  typed three rows into the page under a *real data* label. One of them was a
+  repository quiet for 1,614 days, shown inside *3 changes this week* by a
+  product that promises an issue only when something changed; and all three
+  would have gone stale within a week. [`assets/offer.js`](assets/offer.js) now
+  builds the digest from `data/weekly.json` and `data/radar.json` when the page
+  opens: a riser only from `top_risers` with its measured delta, an entrant only
+  from `entrants` matched by a field watch, a faller only from `top_fallers`,
+  shown as ↓ with its delta. A release is mentioned only when `radar.json`
+  records one inside the week. A week with no change on the list opens no issue,
+  and the window says so. The quiet repository moved to where quiet means
+  something: the brief's dependency risks.
+  [`tests/offer_smoke.mjs`](tests/offer_smoke.mjs) renders both pages in jsdom
+  and fails on a row that is not a real weekly change.
+
+- **No analyst in the engine's digest.** The digest mock said *checked by an
+  analyst*. The engine opens digests on its own; an analyst writes and checks the
+  Field Brief and nothing else. A test now fails on review wording anywhere in a
+  digest.
+
+- **Every commercially material value has one source.** The Field Brief's pages
+  and delivery time, a new products table (type, price, delivery and output for
+  all three products, the brief included), and every cell of the comparison are
+  bound to `data/commercial.json` and tested; a rendered price must read exactly
+  as its `data-price`, so `data-price="1500"` beside `$150` now fails.
+
+- **The seller is stated as it stands.** [`data/legal.json`](data/legal.json):
+  Radar PRO is sold by Denis Yermakou, an individual trading as The AxonOS
+  Project; no company has been incorporated, and a test fails on any suggestion
+  of one. Address, country and tax status are on every invoice.
+
+### Added
+
+- **[`terms.html`](terms.html)** — terms, privacy and access on one page. The
+  access model: the subscriber repository is private and kept by us; the
+  accounts you name are invited read-only; Radar never asks for access to your
+  account or organisation and holds no credential of yours; webhooks are added by
+  us on request. The privacy notice: what a purchase involves, why, where and for
+  how long; these pages collect nothing about visitors. No data processing
+  agreement is claimed.
+
+- Cancellation has a channel: by email to connect@axonos.org.
+
+- Canonical links on the offer pages, and Product and Offer structured data
+  generated from the contract.
+
+- **Three false positives are excluded at the source.**
+  `SUSE/BCI-dockerfile-generator`, `lebidan/sbnd` and `scouter-project/scouter`
+  are added to `exclude_repos` in `data/seeds.json`, the documented removal
+  route, and leave the map on the next scan.
+
+- The clickjacking note in the threat model now covers the offer pages.
+
 ## [16.10.0] — 2026-10-03 — "Show what is sold"
 
 ### Changed

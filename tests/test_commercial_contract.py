@@ -34,6 +34,11 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 PAGE = (ROOT / "pro.html").read_text(encoding="utf-8")
 SUPPORT = (ROOT / "support.html").read_text(encoding="utf-8")
 SAMPLE = (ROOT / "sample.html").read_text(encoding="utf-8")
+TERMS = (ROOT / "terms.html").read_text(encoding="utf-8")
+OFFER_JS = (ROOT / "assets" / "offer.js").read_text(encoding="utf-8")
+LEGAL = json.loads((ROOT / "data" / "legal.json").read_text(encoding="utf-8"))
+WEEKLY = json.loads((ROOT / "data" / "weekly.json").read_text(encoding="utf-8"))
+LAST_RUN = json.loads((ROOT / "data" / "last_run.json").read_text(encoding="utf-8"))
 C = json.loads((ROOT / "data" / "commercial.json").read_text(encoding="utf-8"))
 PAY = json.loads((ROOT / "data" / "payment.json").read_text(encoding="utf-8"))
 
@@ -43,8 +48,7 @@ def plan(key):
 
 
 def ents(key):
-    p = plan(key)
-    return p["entitlements"] if "entitlements" in p else ents(p["grants"])
+    return plan(key)["entitlements"]
 
 
 def block(key) -> str:
@@ -235,3 +239,122 @@ def test_one_contact_address_for_commercial_questions():
     for doc in ("README.md", "pro.html", "support.html", "sample.html"):
         assert "support@axonos.org" not in (ROOT / doc).read_text(encoding="utf-8"), \
             f"{doc} names support@axonos.org; every other surface uses connect@axonos.org"
+
+
+# ===================================================== 16.10.1 · every material value has one source
+
+def _text(fragment: str) -> str:
+    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", fragment)).strip()
+
+
+@pytest.mark.parametrize("name,text", [("pro.html", PAGE), ("sample.html", SAMPLE)])
+def test_every_rendered_price_reads_as_its_attribute_and_the_contract(name, text):
+    """data-price="1500" next to "$150" passed before: only the attribute was read."""
+    prices = {p["price"]["amount"] for p in C["plans"].values()}
+    found = re.findall(r'data-price="(\d+)">([^<]+)<', text)
+    assert found, f"{name} renders no bound price"
+    for attr, shown in found:
+        assert int(attr) in prices, f"{name}: {attr} is not a contract price"
+        assert shown.strip() == f"${int(attr):,}", f"{name}: data-price {attr} renders as {shown!r}"
+
+
+def test_the_brief_card_is_bound_to_the_contract():
+    b = block("field_brief")
+    assert re.search(r'data-brief="pages">([^<]+)<', b).group(1) == C["brief"]["pages"]
+    assert int(re.search(r'data-brief="delivery_business_days">(\d+)<', b).group(1)) == \
+        plan("field_brief")["delivery_business_days"]
+
+
+def test_the_products_table_lists_exactly_the_contract_plans_with_their_summaries():
+    t = re.search(r"<table class=\"compare products\" data-products>(.*?)</table>", PAGE, re.S)
+    assert t, "pro.html has no products table"
+    rows = dict(re.findall(r'<tr data-product="(\w+)">(.*?)</tr>', t.group(1), re.S))
+    assert set(rows) == set(C["plans"]), f"products table {sorted(rows)} != contract {sorted(C['plans'])}"
+    for key, row in rows.items():
+        for field, shown in re.findall(r'data-cmp="(\w+)">([^<]+)<', row):
+            assert shown.strip() == plan(key)["summary"][field], f"{key}.{field}: {shown!r}"
+
+
+def test_every_bound_comparison_cell_matches_the_entitlements():
+    cells = re.findall(r'data-cmp="(\w+):(\w+)">([^<]+)<', PAGE)
+    assert len(cells) >= 8, "the comparison is not bound to the contract"
+    for key, field, shown in cells:
+        assert str(ents(key)[field]).lower() == shown.strip().lower(), f"{key}.{field}: {shown!r}"
+
+
+def test_structured_data_offers_the_contract_prices_and_seller():
+    m = re.search(r'<script type="application/ld\+json">(.*?)</script>', PAGE, re.S)
+    assert m, "pro.html carries no JSON-LD"
+    graph = json.loads(m.group(1).replace("<\\/", "</"))["@graph"]
+    offers = [n["offers"] for n in graph if n.get("@type") == "Product"]
+    assert sorted(float(o["price"]) for o in offers) == sorted(float(p["price"]["amount"]) for p in C["plans"].values())
+    assert all(o["seller"]["name"] == LEGAL["issuer"] for o in offers)
+    assert '<link rel="canonical" href="https://axonos-bci.github.io/axonos-community-radar/pro.html">' in PAGE
+
+
+# ---------------------------------------------------------------- the digest
+
+def _digest_templates():
+    for name, text in (("pro.html", PAGE), ("sample.html", SAMPLE)):
+        figs = re.findall(r"<figure[^>]*data-digest[^>]*>.*?</figure>", text, re.S)
+        assert figs, f"{name} has no data-bound digest"
+        yield name, figs
+
+
+def test_the_digest_is_drawn_from_data_not_typed_into_the_page():
+    """16.10.0 printed three rows labelled real data; a week later they were not."""
+    for name, figs in _digest_templates():
+        for f in figs:
+            title = re.search(r"data-digest-title>([^<]*)<", f).group(1)
+            assert not re.search(r"\d", title), f"{name}: the digest title carries a number by hand"
+            assert re.search(r"<ol[^>]*data-digest-list></ol>", f), f"{name}: digest rows are typed into the page"
+        assert 'src="assets/offer.js"' in (PAGE if name == "pro.html" else SAMPLE)
+    for src in ("./data/weekly.json", "./data/radar.json"):
+        assert src in OFFER_JS
+
+
+def test_the_engine_digest_never_claims_a_human_review():
+    for name, figs in _digest_templates():
+        for f in figs:
+            assert not re.search(r"analyst|checked by|reviewed", f, re.I), f"{name}: the engine digest claims a review"
+    assert not re.search(r"analyst|checked by|reviewed", re.sub(r"/\*.*?\*/", "", OFFER_JS, flags=re.S), re.I)
+
+
+def test_the_digest_rows_come_only_from_weekly_change_lists():
+    js = re.sub(r"/\*.*?\*/", "", OFFER_JS, flags=re.S)
+    for field in ("top_risers", "top_fallers", "entrants"):
+        assert field in js
+    assert "days_since_push" not in js, "a quiet repository is not a change"
+
+
+def test_the_weekly_data_behind_the_digest_is_fresh():
+    from datetime import datetime
+    end = datetime.fromisoformat(WEEKLY["span_to"].replace("Z", "+00:00"))
+    run = datetime.fromisoformat(LAST_RUN["at"].replace("Z", "+00:00"))
+    assert (run - end).days <= 8, f"weekly.json ends {WEEKLY['span_to']}, the last scan ran {LAST_RUN['at']}"
+
+
+# ---------------------------------------------------------------- who sells
+
+def test_the_seller_is_stated_as_it_actually_stands():
+    assert LEGAL["status"] == "individual" or LEGAL["entity"], "an entity status needs the entity's details"
+    for name, text in (("pro.html", PAGE), ("terms.html", TERMS)):
+        assert LEGAL["issuer"] in text, f"{name} does not name the issuer"
+    if not LEGAL["entity"]:
+        for name, text in (("pro.html", PAGE), ("sample.html", SAMPLE), ("terms.html", TERMS)):
+            hit = re.search(r"\b(Pte\.?|Ltd\.?|GmbH|LLC|Inc\.|Singapore company|S\.A\.)", text)
+            assert not hit, f"{name} suggests a company that does not exist: {hit.group(0)!r}"
+
+
+def test_cancellation_has_a_channel_on_the_offer_and_in_the_terms():
+    ch = C["cancellation"]["address"]
+    assert C["cancellation"]["statement"] in _text(PAGE)
+    assert ch in C["terms"]["Cancelling"] and ch in TERMS
+
+
+def test_the_terms_page_covers_access_and_privacy_and_is_linked():
+    for anchor in ('id="seller"', 'id="terms"', 'id="access"', 'id="privacy"'):
+        assert anchor in TERMS
+    assert LEGAL["dpa"] in _text(TERMS).replace("&#x27;", "'")
+    for name, text in (("pro.html", PAGE), ("sample.html", SAMPLE)):
+        assert 'href="./terms.html"' in text, f"{name} does not link the terms"

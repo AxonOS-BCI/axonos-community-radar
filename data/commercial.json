@@ -1,5 +1,5 @@
 {
-  "$comment": "Plans as data, and only what can be delivered. Version 1 sold an API quota and a custom scan cadence that did not exist. Version 2 sold what one mechanism delivers: a private GitHub repository the engine writes into. Version 3 (16.10.0) is paid by bank transfer against an invoice; the Dogecoin launch year is withdrawn from sale (Dogecoin stays for voluntary contributions on support.html); a one-off Field Brief is added; the written brief is defined; and a missed delivery now has a stated remedy.",
+  "$comment": "Plans as data, and only what can be delivered. Version 1 sold an API quota and a custom scan cadence that did not exist. Version 2 sold what one mechanism delivers: a private GitHub repository the engine writes into. Version 3 (16.10.0) is paid by bank transfer against an invoice; the Dogecoin launch year is withdrawn from sale (Dogecoin stays for voluntary contributions on support.html); a one-off Field Brief is added; the written brief is defined; and a missed delivery now has a stated remedy. 16.10.1 binds every commercially material value on the page to this file — each plan's type, delivery and output, the brief's pages and delivery time, the comparison table — names the cancellation channel, and moves the issuer to data/legal.json.",
   "schema_version": 3,
   "delivery": {
     "model": "private_github_repository",
@@ -28,7 +28,7 @@
     ],
     "invoice_within_business_days": 1,
     "crypto_accepted": false,
-    "issuer": "The AxonOS Project / Denis Yermakou"
+    "issuer": "Denis Yermakou, trading as The AxonOS Project"
   },
   "plans": {
     "premium": {
@@ -52,6 +52,11 @@
           "ndjson"
         ],
         "written_brief": null
+      },
+      "summary": {
+        "type": "Subscription",
+        "delivery": "Weekly digest",
+        "output": "Automated monitoring of 25 repositories"
       }
     },
     "premium_pro": {
@@ -75,6 +80,11 @@
           "ndjson"
         ],
         "written_brief": "quarterly"
+      },
+      "summary": {
+        "type": "Subscription",
+        "delivery": "Daily digest",
+        "output": "Automated monitoring of 250 repositories and 5 field watches, and a quarterly Field Brief"
       }
     },
     "field_brief": {
@@ -87,7 +97,12 @@
         "period": "one-off"
       },
       "billing": "one invoice, paid before the work starts",
-      "delivery_business_days": 5
+      "delivery_business_days": 5,
+      "summary": {
+        "type": "One-off",
+        "delivery": "5 business days",
+        "output": "10 to 14 pages, PDF and Markdown, CSV appendix"
+      }
     }
   },
   "definitions": {
@@ -148,10 +163,15 @@
     ]
   },
   "terms": {
-    "Who invoices": "The AxonOS Project / Denis Yermakou, in USD or EUR, with the order id on every invoice.",
-    "Cancelling": "Monthly plans can be cancelled at any time; the month already paid runs to its end.",
-    "After cancelling": "We stop writing to your repository and you keep it, with its history. Your watchlist is deleted from the engine within thirty days.",
+    "Who invoices": "Denis Yermakou, an individual trading as The AxonOS Project, in USD or EUR, with the order id on every invoice.",
+    "Cancelling": "By email to connect@axonos.org, at any time; the month already paid runs to its end.",
+    "After cancelling": "We stop writing to your repository and, as you choose, transfer it to your account with its history or delete it. Your watchlist is deleted from the engine within thirty days.",
     "Confidentiality": "Your watchlist, your field watches and your brief are never published and never feed the public map.",
     "Liability": "Limited to the fees paid in the twelve months before a claim."
+  },
+  "cancellation": {
+    "channel": "email",
+    "address": "connect@axonos.org",
+    "statement": "Cancel by email to connect@axonos.org. Monthly plans end at the close of the month already paid."
   }
 }

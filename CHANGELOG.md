@@ -1,5 +1,31 @@
 # Changelog
 
+## [16.11.1] — 2026-10-03 — "One version, everywhere"
+
+### Fixed
+
+- **The social card said 16.9.0 through four releases.** `og-image.png` draws
+  the version, and nothing redrew it after 16.9.0; the release-hygiene job
+  would have said so, but it stopped at an earlier step on every 16.10 release.
+  The card is redrawn for this release, and it now records the version it draws
+  in a PNG text chunk, so the version gate reads it in the first second of CI,
+  without Pillow or fonts.
+
+### Added
+
+- **[`scripts/bump_version.py`](scripts/bump_version.py): one command for every
+  surface.** The version is stated in nine places — `VERSION`, the README badge
+  and its citation, `CITATION.cff` and its release date, the footer chips of
+  the map and the stats page, this repository's own project card, and the
+  social card. Write the CHANGELOG entry, run the tool with the new version: it
+  rewrites each surface, which must be found exactly once, redraws the card and
+  runs the gate. This release was made with it.
+
+- **The version gate covers all nine.** `check_version_consistency.py` now also
+  holds the project card, the citation's release date (against the CHANGELOG
+  heading) and the social card's stamp to `VERSION`, with a mutation test for
+  each.
+
 ## [16.11.0] — 2026-10-03 — "Flagship"
 
 ### Fixed
@@ -2557,7 +2583,7 @@ This project adheres to [Semantic Versioning](https://semver.org).
 ## [2.0.0] — 2026-06-25
 
 ### Changed — major premium redesign
-- Complete rebuild to an Apple-tier interface: frosted sticky navigation, refined
+- Complete rebuild of the interface: frosted sticky navigation, refined
   typography and spacing, segmented controls, tasteful motion, fully self-contained.
 - **Sort is now an explicit segmented control** (Activity / Stars / Newest / A–Z)
   instead of a cycling toggle — selecting a sort visibly reorders the results, fixing

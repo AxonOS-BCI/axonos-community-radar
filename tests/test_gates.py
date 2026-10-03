@@ -51,7 +51,7 @@ def tree(tmp_path):
     dst = tmp_path / "repo"
     dst.mkdir()
     for rel in ("README.md", "CITATION.cff", "CHANGELOG.md", "VERSION",
-                "index.html", "stats.html", "support.html", "pro.html"):
+                "index.html", "stats.html", "support.html", "pro.html", "og-image.png"):
         shutil.copy2(ROOT / rel, dst / rel)
     (dst / "data").mkdir()
     for rel in ("payment.json", "ecosystem-registry.json", "radar.json", "curated.json"):
@@ -185,3 +185,26 @@ def test_version_consistency_notices_a_stale_citation(tree):
     p.write_text(s)
     problems = load("check_version_consistency").check(tree)
     assert any("CITATION" in x for x in problems), problems
+
+
+def test_version_consistency_notices_a_card_left_behind(tree):
+    p = tree / "index.html"
+    v = (tree / "VERSION").read_text().strip()
+    p.write_text(p.read_text().replace(f'<span class="ax-ver">{v}</span></div><h3>axonos-community-radar</h3>',
+                                       '<span class="ax-ver">0.0.1</span></div><h3>axonos-community-radar</h3>'))
+    assert any("own project card" in x for x in load("check_version_consistency").check(tree))
+
+
+def test_version_consistency_notices_a_stale_citation_date(tree):
+    p = tree / "CITATION.cff"
+    p.write_text(re.sub(r"^date-released: .+$", 'date-released: "2000-01-01"', p.read_text(), flags=re.M))
+    assert any("date-released" in x for x in load("check_version_consistency").check(tree))
+
+
+def test_version_consistency_notices_a_social_card_left_behind(tree):
+    p = tree / "og-image.png"
+    data = p.read_bytes()
+    v = (tree / "VERSION").read_text().strip().encode()
+    assert v in data, "the committed card carries no version stamp"
+    p.write_bytes(data.replace(b"version\x00" + v, b"version\x00" + b"0" * len(v)))
+    assert any("og-image.png" in x for x in load("check_version_consistency").check(tree))

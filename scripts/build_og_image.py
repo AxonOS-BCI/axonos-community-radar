@@ -143,7 +143,13 @@ def main() -> int:
     # unexplained artefact in the repository.
     flat = img.quantize(colors=256, method=Image.MEDIANCUT, dither=Image.FLOYDSTEINBERG)
     buf = io.BytesIO()
-    flat.save(buf, "PNG", optimize=True)
+    # The version the card draws is also written into the file as a PNG text
+    # chunk, so the version gate can read it without Pillow or fonts and a
+    # bump that forgets the card fails in the first second of CI.
+    from PIL.PngImagePlugin import PngInfo
+    meta = PngInfo()
+    meta.add_text("version", (ROOT / "VERSION").read_text(encoding="utf-8").strip())
+    flat.save(buf, "PNG", optimize=True, pnginfo=meta)
     made = buf.getvalue()
 
     if args.write:

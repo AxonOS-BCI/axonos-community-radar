@@ -1,5 +1,50 @@
 # Changelog
 
+## [16.10.0] — 2026-10-03 — "Show what is sold"
+
+### Changed
+
+- **Radar PRO is invoiced and paid by bank transfer.** Until now the only way to
+  pay was Dogecoin, to one public address, confirmed by hand. A fund or a lab
+  cannot route a purchase like that, and the offer was addressed to exactly
+  those buyers. Every plan now has a *Request an invoice* button that opens a
+  prefilled email; the invoice arrives within one business day in USD or EUR,
+  with the order id as the payment reference. PRO carries no crypto at all.
+  Dogecoin stays where it belongs: on the support page, as a voluntary tip that
+  buys nothing. The 7 000 DOGE launch year is withdrawn from sale.
+
+- **The offer says what an analyst adds.** The quarterly brief was promised and
+  never defined. [`data/commercial.json`](data/commercial.json), now schema 3,
+  defines the **Field Brief**: ten to fourteen pages, PDF and Markdown with a
+  CSV appendix, seven named sections, every project checked by an analyst and
+  every figure cited, founders and companies from public sources with dates.
+  It is sold once ($1,500, five business days) and comes four times a year with
+  Premium PRO.
+
+- **A missed delivery has a remedy.** The page promised scans and digests and
+  said nothing about the engine failing. Now: a first digest within seven days
+  of the payment arriving and a Field Brief within five business days, or the
+  payment is refunded; a missed day of deliveries extends the term by that day
+  and is noted in the subscriber's repository. Plain terms name who invoices,
+  cancellation, what happens to the repository and the watchlist afterwards,
+  confidentiality and the liability cap. All of it is data, and the page is
+  tested against it word for word.
+
+### Added
+
+- **[`sample.html`](sample.html): the sample brief.** Four pages of a real Field
+  Brief and a real digest, built from the published data of 3 October 2026:
+  the field in numbers, movers with what stands behind them, the six new
+  entrants with a verdict each, builders with a cited profile, standards
+  adoption, reach without momentum, and the projects the analyst kept out.
+  Three of those — `SUSE/BCI-dockerfile-generator` (SUSE Base Container
+  Images), `lebidan/sbnd` (error-correcting codes) and
+  `scouter-project/scouter` (an application-performance monitor) — reach the
+  public map through their keywords. They are named on the sample as what an
+  analyst removes, and they are reported to the engine's collision list.
+
+- The deploy ships `sample.html`; the house-style test covers it as part of PRO.
+
 ## [16.9.0] — 2026-10-01 — "One house"
 
 ### Changed

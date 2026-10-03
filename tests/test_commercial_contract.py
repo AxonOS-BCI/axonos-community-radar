@@ -13,6 +13,13 @@ Version 2 sells what one existing mechanism can deliver: a private GitHub
 repository that the engine writes into. This test binds `pro.html` to that
 contract through data attributes rather than prose, and refuses the claims that
 version 1 made.
+
+Version 3 (16.10.0) is paid by bank transfer against an invoice. The Dogecoin
+launch year is withdrawn from sale: a fund or a lab cannot route a purchase
+through a single public crypto address, so PRO carries no crypto at all and
+Dogecoin stays where it belongs, on the support page, as a voluntary tip. A
+one-off Field Brief is sold, the written brief is defined, and the sample page
+that shows it is linked from the offer.
 """
 from __future__ import annotations
 
@@ -26,6 +33,7 @@ import pytest
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 PAGE = (ROOT / "pro.html").read_text(encoding="utf-8")
 SUPPORT = (ROOT / "support.html").read_text(encoding="utf-8")
+SAMPLE = (ROOT / "sample.html").read_text(encoding="utf-8")
 C = json.loads((ROOT / "data" / "commercial.json").read_text(encoding="utf-8"))
 PAY = json.loads((ROOT / "data" / "payment.json").read_text(encoding="utf-8"))
 
@@ -48,8 +56,8 @@ def block(key) -> str:
 
 # ------------------------------------------------------------------ contract
 
-def test_the_contract_is_version_two():
-    assert C["schema_version"] == 2
+def test_the_contract_is_version_three():
+    assert C["schema_version"] == 3
 
 
 def test_the_contract_sells_nothing_that_does_not_exist():
@@ -61,15 +69,23 @@ def test_the_contract_sells_nothing_that_does_not_exist():
     assert C["delivery"]["model"] == "private_github_repository"
 
 
-def test_a_granting_plan_carries_no_entitlements_of_its_own():
-    assert "entitlements" not in plan("launch_annual")
-    assert plan("launch_annual")["grants"] == "premium_pro"
+def test_the_dogecoin_launch_year_is_no_longer_sold():
+    assert "launch_annual" not in C["plans"]
+    assert all(p["price"]["currency"] in C["payment"]["currencies"] for p in C["plans"].values())
+
+
+def test_payment_is_a_bank_transfer_against_an_invoice():
+    assert C["payment"]["rail"] == "bank_transfer"
+    assert C["payment"]["crypto_accepted"] is False
+    flat = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", PAGE)).lower()
+    assert "bank transfer" in flat and "invoice" in flat
+    assert C["payment"]["statement"].lower() in flat, "the page does not state the payment rail as the contract does"
 
 
 # ---------------------------------------------------------- page == contract
 
 def test_every_price_on_the_page_is_the_contract_price():
-    for key in ("premium", "premium_pro", "launch_annual"):
+    for key in ("premium", "premium_pro", "field_brief"):
         m = re.search(r'data-price="(\d+)"', block(key))
         assert m, f"{key} card has no data-price"
         assert int(m.group(1)) == plan(key)["price"]["amount"], (
@@ -100,15 +116,16 @@ def test_the_page_does_not_sell_an_api_quota_or_a_faster_scan():
     assert "every three hours" in flat
 
 
-def test_the_launch_uri_pays_the_canonical_address_the_exact_amount():
-    uris = re.findall(r'href="(dogecoin:[^"]+)"', PAGE)
-    assert uris, "no one-click payment on the page"
-    for raw in uris:
-        u = urllib.parse.urlparse(raw.replace("&amp;", "&"))
-        assert u.path == PAY["address"], f"{raw} pays another address"
-        amt = urllib.parse.parse_qs(u.query).get("amount", [None])[0]
-        if amt is not None:
-            assert float(amt) == float(plan("launch_annual")["price"]["amount"])
+def test_the_offer_carries_no_crypto_payment():
+    assert "dogecoin:" not in PAGE, "pro.html offers a crypto payment; PRO is invoiced"
+    assert PAY["address"] not in PAGE, "pro.html carries the Dogecoin address; it belongs on support.html"
+
+
+def test_every_invoice_request_reaches_the_canonical_inbox():
+    links = re.findall(r'href="(mailto:[^"]+)"', PAGE)
+    asks = [l for l in links if "invoice" in urllib.parse.unquote(l).lower()]
+    assert len(asks) >= 3, "each plan needs its own invoice request"
+    assert all(l.startswith("mailto:connect@axonos.org") for l in asks)
 
 
 def test_the_page_states_the_first_digest_window_from_the_contract():
@@ -134,11 +151,11 @@ def test_every_never_statement_is_rendered():
 
 # ------------------------------------------------------------ the two pages
 
-def test_only_the_canonical_address_appears_on_either_page():
-    for name, text in (("pro.html", PAGE), ("support.html", SUPPORT)):
+def test_only_the_canonical_address_appears_and_only_on_support():
+    for name, text in (("pro.html", PAGE), ("support.html", SUPPORT), ("sample.html", SAMPLE)):
         found = set(re.findall(r"\bD[1-9A-HJ-NP-Za-km-z]{25,40}\b", text))
         assert found <= {PAY["address"]}, f"{name} carries a foreign address: {found - {PAY['address']}}"
-        assert PAY["address"] in text, f"{name} does not carry the canonical address"
+    assert PAY["address"] in SUPPORT, "support.html does not carry the canonical address"
 
 
 def test_support_no_longer_sells_and_points_at_the_offer():
@@ -148,7 +165,8 @@ def test_support_no_longer_sells_and_points_at_the_offer():
 
 
 def test_the_warnings_that_protect_a_payer_are_present():
-    low = PAGE.lower()
+    """Crypto moved to the support page in 16.10.0, and its warnings with it."""
+    low = SUPPORT.lower()
     assert "cannot be reversed" in low
     assert "seed phrase" in low and "private key" in low
 
@@ -172,9 +190,20 @@ def test_the_page_names_exactly_the_limits_the_contract_names():
     assert shown == C["guarantees"]["we_do_not_guarantee"]
 
 
-def test_the_launch_year_is_a_launch_price_not_a_second_price():
-    assert "does not renew" in plan("launch_annual")["renewal"]
-    assert "does not renew at this price" in block("launch_annual")
+def test_the_terms_are_rendered_as_the_contract_states_them():
+    m = re.search(r'<dl class="plain" data-terms>(.*?)</dl>', PAGE, re.S)
+    assert m, "pro.html renders no terms block"
+    shown = dict((k.strip(), v.strip()) for k, v in re.findall(r"<dt>(.*?)</dt><dd>(.*?)</dd>", m.group(1), re.S))
+    shown = {k.replace("&#x27;", "'"): v.replace("&#x27;", "'") for k, v in shown.items()}
+    assert shown == C["terms"]
+
+
+def test_the_brief_is_defined_and_its_sample_is_shipped_and_linked():
+    b = C["brief"]
+    assert b["pages"] and b["sections"] and b["sources"]
+    assert (ROOT / b["sample"]).exists(), "the contract names a sample page that is not there"
+    assert f'href="./{b["sample"]}"' in PAGE, "the offer does not link to its sample"
+    assert "3 October 2026" in SAMPLE, "the sample does not say which day of data it shows"
 
 
 def test_no_promise_the_record_cannot_support():
@@ -187,7 +216,7 @@ def test_no_promise_the_record_cannot_support():
 
 # ---------------------------------------------------------- phantom services
 
-PUBLIC_DOCS = ("README.md", "docs/API.md", "docs/OPEN_CORE_BOUNDARY.md", "pro.html", "support.html")
+PUBLIC_DOCS = ("README.md", "docs/API.md", "docs/OPEN_CORE_BOUNDARY.md", "pro.html", "support.html", "sample.html")
 
 
 @pytest.mark.parametrize("doc", PUBLIC_DOCS)
@@ -203,6 +232,6 @@ def test_no_public_page_offers_a_service_that_does_not_exist(doc):
 
 
 def test_one_contact_address_for_commercial_questions():
-    for doc in ("README.md", "pro.html", "support.html"):
+    for doc in ("README.md", "pro.html", "support.html", "sample.html"):
         assert "support@axonos.org" not in (ROOT / doc).read_text(encoding="utf-8"), \
             f"{doc} names support@axonos.org; every other surface uses connect@axonos.org"

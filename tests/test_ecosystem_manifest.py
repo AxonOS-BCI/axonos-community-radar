@@ -69,9 +69,10 @@ def test_funding_block_is_donation_only():
 
 
 def test_doge_address_single_source():
-    """One address across the whole repo: registry, app.js, support page, FUNDING."""
+    """One address across the whole repo: registry, app.js, support page, FUNDING.
+    The PRO page left the list in 16.10.0; it is invoiced and carries no address."""
     addr = _registry()["funding"]["address"]
-    for rel in ("assets/app.js", "support.html", "pro.html", ".github/FUNDING.yml"):
+    for rel in ("assets/app.js", "support.html", ".github/FUNDING.yml"):
         with open(os.path.join(ROOT, rel), encoding="utf-8") as fh:
             assert addr in fh.read(), f"{rel} does not carry the canonical DOGE address"
 

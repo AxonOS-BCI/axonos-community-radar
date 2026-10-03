@@ -273,3 +273,161 @@ h1{font-size:clamp(52px,8.8vw,104px);line-height:1;letter-spacing:-0.05em;margin
   .qr{width:150px;height:150px}
   .foot{margin-top:104px}
 }
+
+/* ════════════════════════════════════════════════════════════════════════
+   16.10.0 · Radar PRO, sold by invoice, and the sample that shows what it is.
+   The brief is printed on paper inside the dark page on purpose: it is the
+   thing a subscriber forwards, so the sample shows it as it will be read.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* who buys it */
+.who{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;margin-top:64px}
+.who article{background:var(--tile);border:1px solid var(--line2);border-radius:28px;padding:34px 32px 30px}
+.who .k{font-size:12px;font-weight:600;color:var(--accent);letter-spacing:-0.005em}
+.who h3{font-size:24px;letter-spacing:-0.028em;margin:10px 0 12px}
+.who p{color:var(--dim);font-size:15.5px;line-height:1.5}
+.who ul{list-style:none;margin:18px 0 0;padding:16px 0 0;border-top:1px solid var(--line2)}
+.who li{color:var(--ink);font-size:15px;padding:5px 0}
+.who li::before{content:"→";color:var(--accent);margin-right:9px}
+
+/* the brief, as a product */
+.brief-band{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:center;margin-top:64px;
+  background:linear-gradient(160deg,rgba(45,212,255,.08),rgba(45,212,255,0) 55%),var(--tile);border:1px solid var(--line2);border-radius:32px;padding:54px 56px}
+.brief-band h3{font-size:clamp(28px,3.2vw,38px);letter-spacing:-0.035em;line-height:1.1}
+.brief-band .lead{color:var(--dim);font-size:17px;margin-top:14px;max-width:44ch}
+.brief-band ol{margin:22px 0 0;padding:0;list-style:none;counter-reset:b}
+.brief-band ol li{counter-increment:b;display:flex;gap:12px;padding:7px 0;border-bottom:1px solid var(--line2);font-size:15px}
+.brief-band ol li::before{content:counter(b,decimal-leading-zero);font-family:var(--mono);font-size:12px;color:var(--faint);padding-top:3px}
+.brief-band .acts{display:flex;gap:22px;align-items:center;flex-wrap:wrap;margin-top:28px}
+.stack{position:relative;height:420px}
+.stack .pg{position:absolute;width:74%;aspect-ratio:1/1.32;border-radius:12px;background:#fbfbfd;color:#14161c;
+  box-shadow:0 40px 90px -30px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06);padding:22px 22px 18px;overflow:hidden}
+.stack .pg:nth-child(1){left:2%;top:34px;transform:rotate(-6deg);opacity:.72}
+.stack .pg:nth-child(2){left:14%;top:14px;transform:rotate(-1.5deg);opacity:.9}
+.stack .pg:nth-child(3){left:26%;top:0;transform:rotate(3deg)}
+.stack .run{font-family:var(--mono);font-size:9px;color:#6b7280;letter-spacing:.02em;display:flex;justify-content:space-between}
+.stack .t{font-family:var(--display);font-weight:700;font-size:19px;letter-spacing:-0.03em;margin:16px 0 10px;line-height:1.12}
+.stack .ln{height:7px;border-radius:4px;background:#e6e8ee;margin:7px 0}
+.stack .ln.s{width:62%}.stack .ln.m{width:84%}
+.stack .kp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+.stack .kp b{display:block;font-family:var(--display);font-size:20px;letter-spacing:-0.03em}
+.stack .kp span{font-size:8.5px;color:#6b7280}
+.stack .br{height:9px;border-radius:5px;background:#0a7ea4;margin:7px 0}
+.stack .br.b2{width:70%}.stack .br.b3{width:48%}.stack .br.b4{width:26%}
+
+/* Field Brief card */
+.plan-brief{background:linear-gradient(180deg,rgba(167,139,250,.10),rgba(167,139,250,0) 38%),var(--tile2);border-color:rgba(167,139,250,.42)}
+.plan-brief .flag{color:var(--violet)}
+
+/* terms in plain words, and the bank */
+.plain{margin:56px auto 0;max-width:880px;border-top:1px solid var(--line2)}
+.plain div{display:grid;grid-template-columns:220px minmax(0,1fr);gap:24px;padding:18px 0;border-bottom:1px solid var(--line2)}
+.plain dt{font-weight:600;font-size:15.5px}
+.plain dd{margin:0;color:var(--dim);font-size:15.5px;line-height:1.55}
+.bank{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:40px;align-items:center;max-width:1040px;margin:0 auto;
+  background:var(--tile);border:1px solid var(--line2);border-radius:32px;padding:50px 52px}
+.bank h2{font-size:clamp(30px,3.6vw,44px);letter-spacing:-0.035em;line-height:1.08}
+.bank p{color:var(--dim);margin-top:14px;max-width:52ch}
+.bank .rail{list-style:none;margin:0;padding:0;border-left:1px solid var(--line2)}
+.bank .rail li{padding:12px 0 12px 26px;border-bottom:1px solid var(--line2);font-size:15px}
+.bank .rail li:last-child{border-bottom:0}
+.bank .rail b{display:block;font-family:var(--display);font-size:17px;letter-spacing:-0.02em}
+.bank .rail span{color:var(--dim);font-size:14px}
+.bank .acts{display:flex;gap:22px;align-items:center;flex-wrap:wrap;margin-top:26px}
+
+/* ── the sample page ────────────────────────────────────────────────────── */
+.s-wrap{max-width:1040px;margin:0 auto;padding:0 22px}
+.s-sect{padding:96px 0 0}
+.s-sect > .sect + .sect-sub{margin-bottom:46px}
+.sheet{background:#fbfbfd;color:#14161c;border-radius:20px;max-width:900px;margin:0 auto 36px;padding:54px 58px 46px;position:relative;
+  box-shadow:0 60px 140px -50px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.06);letter-spacing:-0.012em}
+.sheet a{color:#0a6f91}
+.sheet .run{display:flex;justify-content:space-between;gap:16px;font-family:var(--mono);font-size:11.5px;color:#5f6676;letter-spacing:.01em;
+  padding-bottom:16px;border-bottom:1px solid #e4e6ec;margin-bottom:34px}
+.sheet .kick{font-size:13px;font-weight:600;color:#0a6f91;letter-spacing:-0.005em}
+.sheet h2{font-size:clamp(28px,3.4vw,40px);letter-spacing:-0.035em;line-height:1.08;margin:8px 0 14px;color:#0e1015}
+.sheet h3{font-size:19px;letter-spacing:-0.022em;margin:34px 0 12px;color:#0e1015}
+.sheet p{color:#3d4352;font-size:15.5px;line-height:1.6;max-width:68ch}
+.sheet p + p{margin-top:10px}
+.sheet .meta{display:flex;flex-wrap:wrap;gap:8px 26px;font-size:13.5px;color:#5f6676;margin:6px 0 30px}
+.sheet .meta b{color:#14161c;font-weight:600}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border:1px solid #e4e6ec;border-radius:14px;overflow:hidden}
+.kpis div{padding:18px 16px;border-right:1px solid #e4e6ec}
+.kpis div:last-child{border-right:0}
+.kpis b{display:block;font-family:var(--display);font-size:30px;letter-spacing:-0.04em;line-height:1;color:#0e1015;font-variant-numeric:tabular-nums}
+.kpis span{display:block;font-size:12.5px;color:#5f6676;margin-top:8px;line-height:1.35}
+.findings{margin:20px 0 0;padding:0;list-style:none;counter-reset:f}
+.findings li{counter-increment:f;display:grid;grid-template-columns:34px minmax(0,1fr);gap:6px;padding:14px 0;border-top:1px solid #eceef3}
+.findings li::before{content:counter(f);font-family:var(--display);font-weight:700;font-size:18px;color:#0a6f91}
+.findings b{display:block;color:#0e1015;font-size:16px;letter-spacing:-0.015em;margin-bottom:3px}
+.findings span{color:#3d4352;font-size:15px;line-height:1.55}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:6px 0 4px}
+.stab{width:100%;border-collapse:collapse;font-size:14px;min-width:620px}
+.stab caption{text-align:left;font-size:12px;color:#5f6676;padding-bottom:10px;font-family:var(--mono)}
+.stab th{font-size:11.5px;font-weight:600;color:#5f6676;text-align:left;padding:9px 10px;border-bottom:1px solid #d9dce4;white-space:nowrap}
+.stab td{padding:12px 10px;border-bottom:1px solid #eceef3;vertical-align:top;color:#22262f}
+.stab td.n,.stab th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.stab code{font-size:12.5px;color:#0e1015}
+.stab .d{display:block;color:#5f6676;font-size:12.5px;margin-top:2px;max-width:34ch}
+.pos{color:#067a50;font-weight:600}
+.note{margin:18px 0 0;padding:14px 16px;border-left:3px solid #0a7ea4;background:#f1f6f9;border-radius:0 10px 10px 0;font-size:14.5px;color:#2b3140;line-height:1.55}
+.note b{color:#0e1015}
+.vchip{display:inline-block;font-size:11.5px;font-weight:600;border-radius:980px;padding:3px 9px;white-space:nowrap}
+.vchip.in{background:#e3f5ec;color:#065f3f}.vchip.adj{background:#fdf1dc;color:#7a4500}
+.vchip.co{background:#eceef3;color:#3d4352}.vchip.ex{background:#fbe6ea;color:#9c1c3a}
+.bars{margin:8px 0 0;padding:0;list-style:none}
+.bars li{display:grid;grid-template-columns:110px minmax(0,1fr) 34px;gap:12px;align-items:center;padding:6px 0;font-size:14px}
+.bars .lbl{color:#22262f;font-weight:600}
+.bars .track{height:12px;border-radius:6px;background:#eceef3;overflow:hidden}
+.bars .fill{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#0a7ea4,#2dbfe6)}
+.bars .c{text-align:right;font-variant-numeric:tabular-nums;color:#3d4352}
+.b100{width:100%}.b70{width:70%}.b40{width:40%}.b20{width:20%}.b10{width:10%}
+.profile{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:0;border:1px solid #e4e6ec;border-radius:16px;overflow:hidden;margin-top:6px}
+.profile .ph{padding:24px 24px;background:#f4f5f8;border-right:1px solid #e4e6ec}
+.profile .ph b{display:block;font-family:var(--display);font-size:24px;letter-spacing:-0.03em;color:#0e1015}
+.profile .ph span{display:block;font-size:13px;color:#5f6676;margin-top:4px}
+.profile .ph .mini{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.profile .ph .mini b{font-size:20px}
+.profile dl{margin:0;padding:8px 24px}
+.profile dl div{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid #eceef3;font-size:14px}
+.profile dl div:last-child{border-bottom:0}
+.profile dt{color:#5f6676;font-weight:600;font-size:12.5px;padding-top:1px}
+.profile dd{margin:0;color:#22262f;line-height:1.5}
+.src{font-size:12px;color:#5f6676;margin-top:12px;font-family:var(--mono);line-height:1.6}
+.excl{list-style:none;margin:8px 0 0;padding:0}
+.excl li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:start;padding:12px 0;border-top:1px solid #eceef3;font-size:14.5px;color:#3d4352}
+.excl code{color:#0e1015;font-size:13px}
+.sheet .foot-note{margin-top:30px;padding-top:14px;border-top:1px solid #e4e6ec;font-size:12px;color:#6b7280;font-family:var(--mono)}
+.tree{font-family:var(--mono);font-size:13.5px;line-height:1.75;color:var(--ink);background:var(--tile);border:1px solid var(--line2);border-radius:20px;padding:26px 28px;white-space:pre;overflow-x:auto}
+.tree .c{color:var(--faint)}
+.files2{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:22px;margin-top:46px}
+.files2 pre{margin:0;font-family:var(--mono);font-size:12.5px;line-height:1.7;color:var(--ink);background:var(--tile);border:1px solid var(--line2);border-radius:20px;padding:24px 26px;overflow-x:auto}
+.files2 .k{display:block;color:var(--faint);font-size:11.5px;margin-bottom:10px}
+.buy{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;margin-top:56px}
+.buy article{background:var(--tile);border:1px solid var(--line2);border-radius:28px;padding:36px 34px;display:flex;flex-direction:column;gap:10px}
+.buy .k{font-size:12px;font-weight:600;color:var(--violet)}
+.buy article.p .k{color:var(--accent)}
+.buy h3{font-size:26px;letter-spacing:-0.03em}
+.buy .amt{font-family:var(--display);font-size:44px;font-weight:700;letter-spacing:-0.045em}
+.buy .amt span{font-size:17px;color:var(--dim);font-weight:400;letter-spacing:-0.02em}
+.buy p{color:var(--dim);font-size:15px}
+.buy .pill{align-self:flex-start;margin-top:10px}
+.fine2{text-align:center;color:var(--faint);font-size:14px;margin-top:26px}
+@media (max-width:900px){
+  .who,.buy{grid-template-columns:1fr}
+  .brief-band,.bank{grid-template-columns:1fr;padding:38px 28px}
+  .stack{height:340px;max-width:420px;margin:0 auto;width:100%}
+  .files2{grid-template-columns:1fr}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kpis div{border-bottom:1px solid #e4e6ec}
+  .plain div{grid-template-columns:1fr;gap:4px}
+  .profile{grid-template-columns:1fr}.profile .ph{border-right:0;border-bottom:1px solid #e4e6ec}
+}
+@media (max-width:640px){
+  .sheet{padding:34px 22px 30px;border-radius:16px}
+  .sheet .run{flex-direction:column;gap:4px}
+  .bars li{grid-template-columns:84px minmax(0,1fr) 28px}
+}
+.bank-sect{padding:120px 22px 0}
+.buy p.amt{color:var(--ink)}
+@media (max-width:640px){.bank-sect{padding:84px 16px 0}.bank{border-radius:24px}}

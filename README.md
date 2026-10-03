@@ -99,7 +99,7 @@ without handing anyone a key.
 [![Live](https://img.shields.io/badge/live-axonos--bci.github.io-a78bfa?style=flat-square)](https://axonos-bci.github.io/axonos-community-radar/)
 [![CI](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml)
 [![Pages](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml)
-[![Version](https://img.shields.io/badge/version-16.9.0-0a4a8f?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-16.10.0-0a4a8f?style=flat-square)](CHANGELOG.md)
 [![Release](https://img.shields.io/badge/release-Considered-6fe6f2?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-475569?style=flat-square)](LICENSE)
 
@@ -614,10 +614,14 @@ The Radar is the community-facing edge of a larger open project — an open, rea
 
 **You are not paying for access to the map. You are paying Radar to watch it for you.**
 
-Radar Premium and Premium PRO watch the repositories you name — on the map or not —
-every three hours, and deliver what changed to your own private GitHub repository:
-your watchlist as JSON, CSV and NDJSON, a Markdown file for each day that had
-changes, and an issue when something moved. Nothing at all when nothing did.
+Radar PRO turns your part of the open BCI field into a **Field Brief** — ten to
+fourteen pages, written and checked by an analyst, every figure cited — and a watch
+that scans the repositories you name every three hours and delivers what changed
+to your own private GitHub repository: your watchlist as JSON, CSV and NDJSON, a
+Markdown file for each day that had changes, and an issue when something moved.
+Nothing at all when nothing did. A **[sample brief](https://axonos-bci.github.io/axonos-community-radar/sample.html)**,
+built from real data, shows what arrives. Every plan is invoiced and paid by bank
+transfer.
 
 Plans, prices and terms are on
 **[the Radar PRO page](https://axonos-bci.github.io/axonos-community-radar/pro.html)** and in
@@ -649,7 +653,7 @@ If you reference AxonOS Radar in academic or technical work, please cite it:
   title   = {{AxonOS Radar: a scored, evidence-backed map of the open brain--computer-interface field}},
   year    = {2026},
   url     = {https://github.com/AxonOS-BCI/axonos-community-radar},
-  version = {16.9.0}
+  version = {16.10.0}
 }
 ```
 

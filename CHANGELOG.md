@@ -1,5 +1,51 @@
 # Changelog
 
+## [16.10.2] — 2026-10-03 — "Say exactly what it is"
+
+### Fixed
+
+- **CI was red on the project cards.** The `axonos-consent` card still read
+  0.8.0 after 0.9.2 shipped, and the Radar's own card 16.9.0. Both now read what
+  the repositories say; the Radar card follows its latest release, as the gate
+  expects.
+- **The sample brief misread a field.** Its footnote called `health` the share
+  of seven foundation checks passed. It is GitHub's community-profile
+  percentage, carried as `foundation.health_pct`; the column is now *Profile*
+  and the footnote says so. BRS is glossed where it is used: BCI relevance, not
+  quality.
+- **Claims the evidence does not carry are gone.** The README called the
+  evidence ledger *signed* (the commits are; the ledger records are not), the
+  Radar *independent* and *a due-diligence layer* (it is AxonOS-produced
+  ecosystem intelligence to start diligence from), its outside check an
+  *audit*, owners *talent* that *has faces*, and said it stores *no personal
+  data* (it publishes public owner names). The PRO page offered *acquisition
+  targets* and *who is winning*. Each now says exactly what the data supports;
+  a test fails if any returns.
+- **"No hand curation" was not true.** The ecosystem anchors are placed by hand.
+  The README now says what is true: no human assigns or overrides a score, and
+  the anchors are disclosed.
+- **Momentum meant two things.** The README's *Momentum* section is star
+  velocity, with a note that it is not technical quality; the health
+  sub-score built from 52-week commits is labelled *Activity*.
+- **Discovery is described as a sample.** The README states that many topic
+  searches reach GitHub's cap and points at `search_saturated_topics` in
+  `data/status.json`; absence on the map is not absence from the field.
+
+### Added
+
+- **The README opens as a product.** The map, Monitoring and the Field Brief
+  side by side, with what each costs and where to start; prices are tested
+  against `data/commercial.json`.
+- [`docs/FIELD_BRIEF_METHOD.md`](docs/FIELD_BRIEF_METHOD.md) — the analyst's
+  steps, five dispositions, three source tiers, per-dimension confidence, and
+  the provenance every brief carries.
+- [`docs/CORRECTIONS.md`](docs/CORRECTIONS.md) — how to challenge anything, the
+  only reasons a repository is excluded (disliking a score is not one), and the
+  exclusion register.
+- [`docs/CUSTOMER_DATA.md`](docs/CUSTOMER_DATA.md) — who owns what, the delivery
+  repository question by question, webhooks (GitHub-native), and why customer
+  isolation is not tested here: the delivery code is in the private engine.
+
 ## [16.10.1] — 2026-10-03 — "Only what changed"
 
 ### Fixed

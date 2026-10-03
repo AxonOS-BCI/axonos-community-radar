@@ -1,21 +1,58 @@
 <div align="center">
 
+<a href="https://axonos-bci.github.io/axonos-community-radar/"><img src="og-image.png" alt="AxonOS Radar — the open BCI field, mapped from public evidence" width="100%"></a>
+
 # AxonOS Radar
 
-### An auditable map of open brain–computer interface work.
+**The open brain–computer interface field, mapped from public evidence.**<br>
+Rescanned every three hours. Every score recomputable from its published evidence.
 
-Almost every project here cleared a scored gate, and the score, the evidence
-behind it and the rule that combined them are all public. The exception is
-named: a handful of AxonOS repositories are placed in the map as **ecosystem
-anchors** rather than admitted by the gate, they carry no `brs`, and the funnel
-counts them in their own bucket. Refreshed every three hours.
-
-[![Live map](https://img.shields.io/badge/live-map-3fd68f?style=for-the-badge&labelColor=0e141d)](https://axonos-bci.github.io/axonos-community-radar/)
-[![Field report](https://img.shields.io/badge/field-report-5cc8ff?style=for-the-badge&labelColor=0e141d)](https://axonos-bci.github.io/axonos-community-radar/report.html)
-[![Rule](https://img.shields.io/badge/rule-axonos--brs-8b98ad?style=for-the-badge&labelColor=0e141d)](https://github.com/AxonOS-org/axonos-brs)
-[![Radar PRO](https://img.shields.io/badge/radar-PRO-2dd4ff?style=for-the-badge&labelColor=0e141d)](https://axonos-bci.github.io/axonos-community-radar/pro.html)
+[**Open the map**](https://axonos-bci.github.io/axonos-community-radar/) &nbsp;·&nbsp; [**See a sample brief**](https://axonos-bci.github.io/axonos-community-radar/sample.html) &nbsp;·&nbsp; [**Radar PRO**](https://axonos-bci.github.io/axonos-community-radar/pro.html)
 
 </div>
+
+<br>
+
+<table>
+<tr>
+<td width="33%" valign="top">
+
+**The map**<br>
+<sub>FREE · OPEN DATA</sub>
+
+The whole field, the evidence behind every score, its history, and an open JSON API. Nothing is behind a paywall.
+
+[Open the map →](https://axonos-bci.github.io/axonos-community-radar/)
+
+</td>
+<td width="33%" valign="top">
+
+**Monitoring**<br>
+<sub>FROM $99 / MONTH</sub>
+
+Your watchlist, scanned every three hours, delivered to a private repository: a weekly digest on Premium, a daily one and field watches on Premium PRO at $500 a month.
+
+[Plans →](https://axonos-bci.github.io/axonos-community-radar/pro.html#plans)
+
+</td>
+<td width="33%" valign="top">
+
+**Field Brief**<br>
+<sub>$1,500 · FIVE BUSINESS DAYS</sub>
+
+Ten to fourteen pages on the field or the part of it you name, written and checked by an analyst, every figure cited.
+
+[See the sample →](https://axonos-bci.github.io/axonos-community-radar/sample.html)
+
+</td>
+</tr>
+</table>
+
+<p align="center"><sub>Monitoring and the Field Brief are invoiced and paid by bank transfer. A payment never buys a place on the map.</sub></p>
+
+---
+
+## How it works
 
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'primaryColor':'#0e141d','primaryTextColor':'#e6edf3','primaryBorderColor':'#334155','lineColor':'#5a6b82','fontSize':'14px','fontFamily':'ui-sans-serif,system-ui,sans-serif'}}}%%
@@ -43,14 +80,24 @@ flowchart TB
     class C drop
 ```
 
-Nothing is dropped silently. The 31 that fell short are published with their
-scores and what each was missing, because a filter that hides its rejections is
-a filter nobody can check.
+The scanner reads public GitHub metadata, turns each candidate into a ledger of
+evidence, and scores it with a public rule. What clears the gate is kept; the
+near misses are published with their scores and what each of them lacked,
+because a filter that hides its rejections is a filter nobody can check.
 
----
+Almost every project here cleared a scored gate. The exception is named: a
+handful of AxonOS repositories are placed in the map as **ecosystem anchors** rather
+than admitted by the gate. They carry no `brs`, they are disclosed on the map,
+and the funnel counts them in their own bucket.
+
+Discovery is a sample of GitHub, not a census. Many topic searches reach
+GitHub's result cap, private work is invisible, and topics are self-declared,
+so absence here is not absence from the field. The live count of capped
+searches is `search_saturated_topics` in
+[`data/status.json`](https://axonos-bci.github.io/axonos-community-radar/data/status.json).
 
 > **Where the line is.** What is public, what is not, and what that costs you as
-> a reader — including the one thing you cannot reproduce:
+> a reader — including the one step you cannot reproduce, candidate discovery:
 > [docs/OPEN_CORE_BOUNDARY.md](docs/OPEN_CORE_BOUNDARY.md).
 
 ## The rule is public, and so is the evidence
@@ -99,7 +146,7 @@ without handing anyone a key.
 [![Live](https://img.shields.io/badge/live-axonos--bci.github.io-a78bfa?style=flat-square)](https://axonos-bci.github.io/axonos-community-radar/)
 [![CI](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml)
 [![Pages](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml)
-[![Version](https://img.shields.io/badge/version-16.10.1-0a4a8f?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-16.10.2-0a4a8f?style=flat-square)](CHANGELOG.md)
 [![Release](https://img.shields.io/badge/release-Considered-6fe6f2?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-475569?style=flat-square)](LICENSE)
 
@@ -131,9 +178,9 @@ published evidence is a claim you can check, reproduce, and argue with.
 | **Keeps** | score ≥ 40 of 100 |
 | **Publishes** | the evidence vector per project, and every near miss down to 15 |
 | **Refreshes** | every three hours |
-| **Does not** | rank quality, endorse, certify, or hand-curate anything — including its own entry |
+| **Does not** | rank quality, endorse or certify anything. No human assigns or overrides a score; the AxonOS ecosystem anchors are disclosed |
 
-> **Discovery, not endorsement.** Inclusion never implies quality, safety, or clinical fitness, and listing transfers no ownership. Scores are discovery signals computed from public evidence. **AxonOS itself is scored by the exact same engine as everyone else** — there is no self-boosting, and no figure on this map is hand-curated to flatter anyone.
+> **Discovery, not endorsement.** Inclusion never implies quality, safety, or clinical fitness, and listing transfers no ownership. Scores are discovery signals computed from public evidence. **AxonOS itself is scored by the exact same engine as everyone else** — there is no self-boosting, and no score on this map is set or overridden by hand; no figure on this map is hand-curated to flatter anyone.
 
 ---
 
@@ -143,7 +190,7 @@ The BCI field is scattered across hundreds of repositories with no map and no ho
 
 | For… | What they get |
 |:--|:--|
-| **Investors & scouts** | An independent, continuously-updated read on *what's real* in open BCI — relevance score, evidence tier, momentum, ecosystem position — that doesn't come from a pitch deck. A due-diligence layer for a field that had none. |
+| **Investors & scouts** | A continuously updated read on what is actually being built in open BCI — relevance with its evidence, star velocity, repository health and ecosystem position — from public data rather than a pitch deck. Ecosystem intelligence to start diligence from; not diligence itself, and not investment advice. |
 | **Researchers & builders** | Discover the libraries, decoders, hardware and protocols that actually exist, see what's gaining momentum in *your* modality, find the people building multiple projects worth following — and get scored and seen yourself. |
 | **The ecosystem** | A census of open BCI software computed from public signals: where the field is dense, where it is thin, which standards recur, and how that moves. Every figure traces to the evidence that produced it. |
 
@@ -157,9 +204,9 @@ Open BCI has real, recurring pains. Each maps to a **mechanism you can verify** 
 |:--|:--|
 | **Fragmentation.** Hundreds of scattered repos, no map, no scoreboard. | The live radar + card grid + ecosystem map, refreshed on schedule, with a **scored** inclusion rule and an evidence tier on every entry. |
 | **The "is this even BCI?" problem.** Generic ML dressed as neuro. | The **Relevance Engine** scores every repo and drops ML clones with a recorded reason — a PyTorch fork never sits next to a neural interface. |
-| **Opaque rankings.** Most "top BCI" lists are editorial. | Every inclusion carries a **public, signed evidence ledger** — tap a card, see exactly why it's here and what it scored. No black box. |
+| **Opaque rankings.** Most "top BCI" lists are editorial. | Every inclusion carries a **public evidence ledger**, versioned in this repository's history — tap a card, see exactly why it's here and what it scored. No black box. |
 | **Abandonment blindness.** Projects die quietly; people build on corpses. | **Health** (recency, 52-week commits, team breadth) + **Rising/Falling** from measured velocity — decay is visible *before* you depend on it. |
-| **Blind spots.** Nobody knows where the field is thin. | The **coverage matrix** surfaces deserts (empty modality × stage cells) — the open gaps, made visible. |
+| **Blind spots.** Nobody knows where the field is thin. | The **coverage matrix** surfaces observed open-source coverage gaps (empty modality × stage cells) — gaps on GitHub, which are not proof of gaps in the market. |
 | **The trust question: "can I build on this?"** | **Foundation `n/7`** — seven checkable facts per repo (licence, README, CONTRIBUTING, code of conduct, `CITATION.cff`, `SECURITY.md`, CI). Facts, not vibes. |
 | **Integration guesswork.** Every stack speaks its own protocol. | **Interop detection** + the **standards graph** — "who speaks LSL / BrainFlow / BIDS / NWB", filterable in one tap. |
 | **Reproducibility friction.** Getting field data into a notebook is an afternoon. | Stable JSON endpoints + a CI-validated JSON Schema. `radar.json` and you're done. |
@@ -193,7 +240,7 @@ The **generator is proprietary** (the AxonOS engine — how the intelligence is 
 
 ---
 
-## Trajectory & Talent — the map moves, and has faces
+## Trajectory and builders
 
 <details>
 <summary>what changed, and who is behind it</summary>
@@ -231,8 +278,8 @@ job someone actually has to do, the mechanism that does it, and where to start.
 |:--|:--|:--|:--|
 | **A researcher or lab engineer** | *"Which of these six EEG libraries won't be abandoned by the time I publish?"* | **Health** (recency, 52-week commit rhythm, team breadth) and the **Falling** flag make decay visible before you build on it — plus **Foundation `n/7`**, seven checkable facts about whether a repo can be depended on at all. | The [map](https://axonos-bci.github.io/axonos-community-radar/), filtered to your modality |
 | **An open-source maintainer** | *"How do I get found by the people who'd actually use this?"* | Automatic discovery — no application, no gatekeeper. Once scored, your project gets a **live badge** it can embed, a public evidence ledger explaining its position, and a sparkline that shows its arc. | [`docs/BADGES.md`](docs/BADGES.md) |
-| **An investor, scout or analyst** | *"Is this team's claim about their field position true?"* | An independent read that no founder controls: relevance score with its evidence, momentum from measured 7-day velocity, and where a project sits against every peer on **relevance × reach**. | The [dashboard](docs/assets/bci-ecosystem-dashboard.png) and [Stats](https://axonos-bci.github.io/axonos-community-radar/stats.html) |
-| **A neurotech company hiring** | *"Who in the world has shipped working fNIRS code?"* | **Talent** — builders ranked by what they've actually shipped, clustered by biosignal, each row linking to their public work. Evidence of output, not a keyword-matched CV. | The Talent panel on [Stats](https://axonos-bci.github.io/axonos-community-radar/stats.html) |
+| **An investor, scout or analyst** | *"Is this team's claim about their field position true?"* | A read from public evidence, by a published rule: relevance score with its evidence, momentum from measured 7-day velocity, and where a project sits against every peer on **relevance × reach**. | The [dashboard](docs/assets/bci-ecosystem-dashboard.png) and [Stats](https://axonos-bci.github.io/axonos-community-radar/stats.html) |
+| **A neurotech company hiring** | *"Who in the world has shipped working fNIRS code?"* | **Builders** — repository owners listed by what they have published, not employees or titles, clustered by biosignal, each row linking to their public work. Evidence of output, not a keyword-matched CV. | The Talent panel on [Stats](https://axonos-bci.github.io/axonos-community-radar/stats.html) |
 | **A standards or interop group** | *"Is anyone actually adopting our format?"* | The **standards graph** — which projects speak LSL, BrainFlow, BIDS, NWB, FIF/MNE, EEGLAB, FieldTrip — counted from evidence, filterable in one tap, and trackable over time. | The **Map** view |
 | **A student or newcomer** | *"Where do I even start, and why is this list credible?"* | Every card explains **why it is here**: tap the BRS chip and read the ledger — the signals that raised the score and the ones that lowered it, in plain language. The map teaches the field's shape while you browse it. | The **Methodology** view, in-product |
 | **A journalist or writer** | *"Can I cite this, and will the number still be true tomorrow?"* | Timestamped, versioned, schema'd data with a published freshness contract and a `CITATION.cff` — plus a methodology you can read and disagree with. | [`data/api.json`](https://axonos-bci.github.io/axonos-community-radar/data/api.json) |
@@ -247,7 +294,7 @@ job someone actually has to do, the mechanism that does it, and where to start.
 
 Plenty of lists of BCI repositories exist. What distinguishes this one is not
 its length — it is that **every claim on it is mechanically derived and
-independently checkable.**
+checkable by anyone.**
 
 - **Scored, not curated.** Inclusion is a computed threshold (BRS ≥ 40) with a
   recorded reason on both sides of the line. No editorial seat, no submissions
@@ -302,7 +349,7 @@ its range is worthless:
 
 ## The Relevance Engine — scored inclusion, not a curated list
 
-The heart of v7. Older directories used a boolean gate: *has a neuro topic → in.* That let "dynamic **neural** networks" (a PyTorch clone) sit next to a real neural interface. The Relevance Engine replaces the gate with a **BCI Relevance Score (BRS, 0–100)** built from a **signed ledger of evidence** — every signal that raised or lowered the score, each with a reason. A project is kept only when BCI-specific evidence outweighs generic-ML noise (gate at **40**).
+The heart of v7. Older directories used a boolean gate: *has a neuro topic → in.* That let "dynamic **neural** networks" (a PyTorch clone) sit next to a real neural interface. The Relevance Engine replaces the gate with a **BCI Relevance Score (BRS, 0–100)** built from a **published ledger of evidence** — every signal that raised or lowered the score, each with a reason. A project is kept only when BCI-specific evidence outweighs generic-ML noise (gate at **40**).
 
 | Positive evidence (raises BRS) | Negative evidence (lowers BRS) |
 |:--|:--|
@@ -347,7 +394,7 @@ Explore it live in the **Map** view — the coverage heatmap with desert callout
 
 ---
 
-## Ecosystem Health
+## Repository health
 
 <details>
 <summary>the freshness check and what it does when data stops</summary>
@@ -357,7 +404,7 @@ Every project carries a 0–100 **Health** read-out plus six sub-scores, compute
 | Dimension | Measured from |
 |:--|:--|
 | **Maintenance** | How recently the repo was pushed to |
-| **Momentum** | The real 52-week commit total — is development sustained? |
+| **Activity** (`momentum`) | The real 52-week commit total — is development sustained? |
 | **Adoption** | Stars, published releases, real release download counts |
 | **Team** | Contributor breadth — more than a bus-factor of one? |
 | **Licence** | Whether an OSI-recognised licence grants clear reuse rights |
@@ -371,9 +418,9 @@ Plus **Foundation `n/7`** — seven checkable repository facts (community profil
 
 ---
 
-## Momentum
+## Star velocity
 
-The radar is an instrument, not a snapshot. From a persistent snapshot history it tracks, week over week:
+GitHub star velocity is not a measure of technical quality or of a project's overall momentum; it is one public signal, measured over the window shown beside it. The radar is an instrument, not a snapshot. From a persistent snapshot history it tracks, week over week:
 
 - **↑ Rising** — measured 7-day star velocity, not opinion.
 - **✦ New** — genuine first-discovery (durable `first_seen` dates), never a re-count.
@@ -426,7 +473,7 @@ take the Markdown from [`badges/index.json`](https://axonos-bci.github.io/axonos
 
 | Badge | Status | What it signals |
 |:--|:--|:--|
-| **Scored badge** — `BRS 95 · Explicit BCI` | ✅ live | Per-project relevance and tier, embeddable, refreshed with the map — the due-diligence marker. [How it works →](docs/BADGES.md) |
+| **Scored badge** — `BRS 95 · Explicit BCI` | ✅ live | Per-project relevance and tier, embeddable, refreshed with the map — a public relevance marker. [How it works →](docs/BADGES.md) |
 | **On AxonOS Radar** | ✅ live | The project is tracked on the radar |
 | **Live ecosystem pulse** | ✅ live | The ecosystem's current project count, auto-updating |
 
@@ -462,7 +509,7 @@ momentum.
 |:--|:--|
 | **See the field** | Open the [live radar](https://axonos-bci.github.io/axonos-community-radar/). Tabs: **Projects · Map · Builders · Methodology**. |
 | **Find something specific** | Press <kbd>/</kbd> to search, or filter by category, language, *active 30d*, *new*, or evidence tier. |
-| **See why a project is listed** | Tap its **BRS badge** — the signed evidence ledger unfolds on the card. |
+| **See why a project is listed** | Tap its **BRS badge** — the evidence ledger unfolds on the card. |
 | **See momentum & the ecosystem shape** | Open **Map** and the [Statistics](https://axonos-bci.github.io/axonos-community-radar/stats.html) page. |
 | **Follow new launches** | Subscribe to the [RSS feed](https://axonos-bci.github.io/axonos-community-radar/feed.xml), or watch the auto-updating **Live Ecosystem Stats** issue. |
 | **Add a project** | [Open an issue](https://github.com/AxonOS-BCI/axonos-community-radar/issues/new/choose) — discovered on the next scan. |
@@ -520,7 +567,7 @@ Full reference, freshness contract, and quick starts: **[docs/API.md](docs/API.m
 
 ---
 
-## Provenance & independent audit
+## Provenance, and an outside check
 
 <details>
 <summary>three commit writers, and how to verify each yourself</summary>
@@ -625,9 +672,11 @@ transfer.
 
 Plans, prices and terms are on
 **[the Radar PRO page](https://axonos-bci.github.io/axonos-community-radar/pro.html)** and in
-[`data/commercial.json`](data/commercial.json), which that page is tested against.
-They are deliberately not repeated here, so there is only one place for them to be
-right. A payment never buys a place on the map, never changes a score, and nothing
+[`data/commercial.json`](data/commercial.json), which that page and this README are
+tested against. How a brief is made — sources, dispositions, confidence — is in
+[docs/FIELD_BRIEF_METHOD.md](docs/FIELD_BRIEF_METHOD.md); what happens to a customer's
+data, in [docs/CUSTOMER_DATA.md](docs/CUSTOMER_DATA.md); how to challenge anything on the
+map, in [docs/CORRECTIONS.md](docs/CORRECTIONS.md). A payment never buys a place on the map, never changes a score, and nothing
 public is withdrawn to make a paid version of it.
 
 ## Support the map
@@ -653,7 +702,7 @@ If you reference AxonOS Radar in academic or technical work, please cite it:
   title   = {{AxonOS Radar: a scored, evidence-backed map of the open brain--computer-interface field}},
   year    = {2026},
   url     = {https://github.com/AxonOS-BCI/axonos-community-radar},
-  version = {16.10.1}
+  version = {16.10.2}
 }
 ```
 
@@ -663,7 +712,7 @@ GitHub's **"Cite this repository"** button (from [`CITATION.cff`](CITATION.cff))
 
 ## Data & privacy
 
-The radar shows only **public** repository metadata GitHub already exposes (name, description, topics, stars, language, last-push date). It stores no personal data and sets no cookies. The UI is self-contained — vanilla JS under a Content-Security-Policy with externalised scripts (no inline execution, no external requests, no trackers). To request removal, add a repo to the exclude list in [`data/seeds.json`](data/seeds.json) or [open an issue](https://github.com/AxonOS-BCI/axonos-community-radar/issues/new/choose) — see [`SECURITY.md`](SECURITY.md).
+The radar shows only **public** repository metadata GitHub already exposes (name, description, topics, stars, language, last-push date). It publishes public GitHub metadata only — repository and owner names, topics, stars, language and dates — and collects nothing about visitors: no analytics and no cookies. Paid customers' data is described separately in [docs/CUSTOMER_DATA.md](docs/CUSTOMER_DATA.md). The UI is self-contained — vanilla JS under a Content-Security-Policy with externalised scripts (no inline execution, no external requests, no trackers). To request removal, add a repo to the exclude list in [`data/seeds.json`](data/seeds.json) or [open an issue](https://github.com/AxonOS-BCI/axonos-community-radar/issues/new/choose) — see [`SECURITY.md`](SECURITY.md).
 
 ## Contributing
 

@@ -358,3 +358,19 @@ def test_the_terms_page_covers_access_and_privacy_and_is_linked():
     assert LEGAL["dpa"] in _text(TERMS).replace("&#x27;", "'")
     for name, text in (("pro.html", PAGE), ("sample.html", SAMPLE)):
         assert 'href="./terms.html"' in text, f"{name} does not link the terms"
+
+
+def test_the_readme_prices_are_the_contract_prices():
+    """The README now shows the three products, so it shows prices; one source."""
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    prices = {f"${p['price']['amount']:,}" for p in C["plans"].values()}
+    shown = set(re.findall(r"\$\d[\d,]*", readme))
+    assert shown, "the README shows no price"
+    assert shown <= prices, f"the README shows prices the contract does not set: {sorted(shown - prices)}"
+
+
+def test_the_readme_makes_none_of_the_retired_claims():
+    readme = (ROOT / "README.md").read_text(encoding="utf-8").lower()
+    for claim in ("independent audit", "signed evidence", "signed ledger", "due-diligence layer",
+                  "acquisition target", "who is winning", "stores no personal data", "hand-curate anything"):
+        assert claim not in readme, f"the README claims {claim!r} again"

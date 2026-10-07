@@ -1,5 +1,24 @@
 # Changelog
 
+## [16.12.0] — 2026-10-07 — "Pricing on request"
+
+### Changed
+
+- **No price is published.** Radar PRO, Radar Premium and the Field Brief are
+  priced on request and agreed in writing before any work begins, as every
+  engagement in the AxonOS house now is. [`data/commercial.json`](data/commercial.json),
+  schema 4, carries no amount: each plan says `on_request`. The plan cards, the
+  products table, the sample's order cards and the README say *On request*; the
+  structured data describes the three products as services and publishes no
+  price.
+
+### Tests
+
+- The price-equality tests of 16.10 are replaced by their opposite: a plan card
+  must say the price is on request, the contract must carry no amount, and no
+  price figure may appear on the offer pages, the terms, the support page or the
+  README. The structured data must name one service per plan and no price.
+
 ## [16.11.1] — 2026-10-03 — "One version, everywhere"
 
 ### Fixed

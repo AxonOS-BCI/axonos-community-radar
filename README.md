@@ -28,9 +28,9 @@ The whole field, the evidence behind every score, its history, and an open JSON 
 <td width="33%" valign="top">
 
 **Monitoring**<br>
-<sub>FROM $99 / MONTH</sub>
+<sub>WEEKLY OR DAILY · ON REQUEST</sub>
 
-Your watchlist, scanned every three hours, delivered to a private repository: a weekly digest on Premium, a daily one and field watches on Premium PRO at $500 a month.
+Your watchlist, scanned every three hours, delivered to a private repository: a weekly digest on Premium, a daily one and field watches on Premium PRO.
 
 [Plans →](https://axonos-bci.github.io/axonos-community-radar/pro.html#plans)
 
@@ -38,7 +38,7 @@ Your watchlist, scanned every three hours, delivered to a private repository: a 
 <td width="33%" valign="top">
 
 **Field Brief**<br>
-<sub>$1,500 · FIVE BUSINESS DAYS</sub>
+<sub>FIVE BUSINESS DAYS · ON REQUEST</sub>
 
 Ten to fourteen pages on the field or the part of it you name, written and checked by an analyst, every figure cited.
 
@@ -48,7 +48,7 @@ Ten to fourteen pages on the field or the part of it you name, written and check
 </tr>
 </table>
 
-<p align="center"><sub>Monitoring and the Field Brief are invoiced and paid by bank transfer. A payment never buys a place on the map.</sub></p>
+<p align="center"><sub>Pricing on request. Monitoring and the Field Brief are invoiced and paid by bank transfer. A payment never buys a place on the map.</sub></p>
 
 ---
 
@@ -127,7 +127,7 @@ without handing anyone a key.
 [![Live](https://img.shields.io/badge/live-axonos--bci.github.io-a78bfa?style=flat-square)](https://axonos-bci.github.io/axonos-community-radar/)
 [![CI](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/ci.yml)
 [![Pages](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/AxonOS-BCI/axonos-community-radar/actions/workflows/pages.yml)
-[![Version](https://img.shields.io/badge/version-16.11.1-0a4a8f?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-16.12.0-0a4a8f?style=flat-square)](CHANGELOG.md)
 [![Release](https://img.shields.io/badge/release-Considered-6fe6f2?style=flat-square)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-475569?style=flat-square)](LICENSE)
 
@@ -683,7 +683,7 @@ If you reference AxonOS Radar in academic or technical work, please cite it:
   title   = {{AxonOS Radar: a scored, evidence-backed map of the open brain--computer-interface field}},
   year    = {2026},
   url     = {https://github.com/AxonOS-BCI/axonos-community-radar},
-  version = {16.11.1}
+  version = {16.12.0}
 }
 ```
 

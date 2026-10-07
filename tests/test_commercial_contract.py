@@ -60,8 +60,8 @@ def block(key) -> str:
 
 # ------------------------------------------------------------------ contract
 
-def test_the_contract_is_version_three():
-    assert C["schema_version"] == 3
+def test_the_contract_is_version_four():
+    assert C["schema_version"] == 4
 
 
 def test_the_contract_sells_nothing_that_does_not_exist():
@@ -75,7 +75,7 @@ def test_the_contract_sells_nothing_that_does_not_exist():
 
 def test_the_dogecoin_launch_year_is_no_longer_sold():
     assert "launch_annual" not in C["plans"]
-    assert all(p["price"]["currency"] in C["payment"]["currencies"] for p in C["plans"].values())
+    assert all(p["price"].get("on_request") is True and "amount" not in p["price"] for p in C["plans"].values())
 
 
 def test_payment_is_a_bank_transfer_against_an_invoice():
@@ -88,12 +88,11 @@ def test_payment_is_a_bank_transfer_against_an_invoice():
 
 # ---------------------------------------------------------- page == contract
 
-def test_every_price_on_the_page_is_the_contract_price():
-    for key in ("premium", "premium_pro", "field_brief"):
-        m = re.search(r'data-price="(\d+)"', block(key))
-        assert m, f"{key} card has no data-price"
-        assert int(m.group(1)) == plan(key)["price"]["amount"], (
-            f"{key}: page {m.group(1)}, contract {plan(key)['price']['amount']}")
+def test_every_plan_is_priced_on_request():
+    """16.12.0 publishes no prices: each card says so, and the contract carries no amount."""
+    for key in C["plans"]:
+        assert plan(key)["price"]["on_request"] is True and "amount" not in plan(key)["price"]
+        assert 'data-pricing="on-request">On request<' in block(key), f"{key} card does not say pricing is on request"
 
 
 def test_every_rendered_entitlement_matches_the_contract():
@@ -247,15 +246,11 @@ def _text(fragment: str) -> str:
     return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", fragment)).strip()
 
 
-@pytest.mark.parametrize("name,text", [("pro.html", PAGE), ("sample.html", SAMPLE)])
-def test_every_rendered_price_reads_as_its_attribute_and_the_contract(name, text):
-    """data-price="1500" next to "$150" passed before: only the attribute was read."""
-    prices = {p["price"]["amount"] for p in C["plans"].values()}
-    found = re.findall(r'data-price="(\d+)">([^<]+)<', text)
-    assert found, f"{name} renders no bound price"
-    for attr, shown in found:
-        assert int(attr) in prices, f"{name}: {attr} is not a contract price"
-        assert shown.strip() == f"${int(attr):,}", f"{name}: data-price {attr} renders as {shown!r}"
+@pytest.mark.parametrize("name", ["pro.html", "sample.html", "terms.html", "support.html", "README.md"])
+def test_no_price_figure_is_published(name):
+    text = (ROOT / name).read_text(encoding="utf-8")
+    hit = re.search(r"\$\s?\d[\d,]*|(?<![%\w])\d[\d,]*\s?(?:USD|EUR)\b|data-price=", text)
+    assert not hit, f"{name} publishes a price: {hit.group(0)!r}; pricing is on request"
 
 
 def test_the_brief_card_is_bound_to_the_contract():
@@ -282,13 +277,15 @@ def test_every_bound_comparison_cell_matches_the_entitlements():
         assert str(ents(key)[field]).lower() == shown.strip().lower(), f"{key}.{field}: {shown!r}"
 
 
-def test_structured_data_offers_the_contract_prices_and_seller():
+def test_structured_data_names_the_services_and_no_price():
     m = re.search(r'<script type="application/ld\+json">(.*?)</script>', PAGE, re.S)
     assert m, "pro.html carries no JSON-LD"
-    graph = json.loads(m.group(1).replace("<\\/", "</"))["@graph"]
-    offers = [n["offers"] for n in graph if n.get("@type") == "Product"]
-    assert sorted(float(o["price"]) for o in offers) == sorted(float(p["price"]["amount"]) for p in C["plans"].values())
-    assert all(o["seller"]["name"] == LEGAL["issuer"] for o in offers)
+    raw = m.group(1).replace("<\\/", "</")
+    graph = json.loads(raw)["@graph"]
+    services = [n for n in graph if n.get("@type") == "Service"]
+    assert len(services) == len(C["plans"]), "one Service per plan"
+    assert all(n["provider"]["name"] == LEGAL["issuer"] for n in services)
+    assert '"price"' not in raw and "priceCurrency" not in raw, "structured data publishes a price"
     assert '<link rel="canonical" href="https://axonos-bci.github.io/axonos-community-radar/pro.html">' in PAGE
 
 
@@ -360,13 +357,9 @@ def test_the_terms_page_covers_access_and_privacy_and_is_linked():
         assert 'href="./terms.html"' in text, f"{name} does not link the terms"
 
 
-def test_the_readme_prices_are_the_contract_prices():
-    """The README now shows the three products, so it shows prices; one source."""
+def test_the_readme_says_pricing_is_on_request():
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    prices = {f"${p['price']['amount']:,}" for p in C["plans"].values()}
-    shown = set(re.findall(r"\$\d[\d,]*", readme))
-    assert shown, "the README shows no price"
-    assert shown <= prices, f"the README shows prices the contract does not set: {sorted(shown - prices)}"
+    assert "on request" in readme.lower(), "the README does not say pricing is on request"
 
 
 def test_the_readme_makes_none_of_the_retired_claims():

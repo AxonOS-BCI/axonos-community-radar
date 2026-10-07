@@ -219,7 +219,7 @@ def test_no_promise_the_record_cannot_support():
 
 # ---------------------------------------------------------- phantom services
 
-PUBLIC_DOCS = ("README.md", "docs/API.md", "docs/OPEN_CORE_BOUNDARY.md", "pro.html", "support.html", "sample.html")
+PUBLIC_DOCS = ("README.md", "docs/API.md", "docs/OPEN_CORE_BOUNDARY.md", "pro.html", "support.html", "sample.html", "preview.html")
 
 
 @pytest.mark.parametrize("doc", PUBLIC_DOCS)
@@ -246,7 +246,7 @@ def _text(fragment: str) -> str:
     return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", fragment)).strip()
 
 
-@pytest.mark.parametrize("name", ["pro.html", "sample.html", "terms.html", "support.html", "README.md"])
+@pytest.mark.parametrize("name", ["pro.html", "sample.html", "terms.html", "support.html", "preview.html", "README.md"])
 def test_no_price_figure_is_published(name):
     text = (ROOT / name).read_text(encoding="utf-8")
     hit = re.search(r"\$\s?\d[\d,]*|(?<![%\w])\d[\d,]*\s?(?:USD|EUR)\b|data-price=", text)
@@ -367,3 +367,18 @@ def test_the_readme_makes_none_of_the_retired_claims():
     for claim in ("independent audit", "signed evidence", "signed ledger", "due-diligence layer",
                   "acquisition target", "who is winning", "stores no personal data", "hand-curate anything"):
         assert claim not in readme, f"the README claims {claim!r} again"
+
+
+# ===================================================== 16.13.0 · the dashboard preview says what it is
+
+def test_the_dashboard_preview_marks_every_module_and_its_sample_data():
+    """The preview shows the whole menu. It may not pass early-access modules off as
+    running, or sample figures off as facts."""
+    text = (ROOT / "preview.html").read_text(encoding="utf-8")
+    mods = re.findall(r'<article class="mod[^"]*" id="m-(\w+)"[^>]*data-status="(\w+)"', text)
+    assert len(mods) >= 20, f"the preview shows {len(mods)} modules"
+    assert all(s in ("live", "early") for _, s in mods), "a module carries no status"
+    live = {k for k, s in mods if s == "live"}
+    assert live <= {"watch", "tools", "risk", "briefs"}, f"modules shown as live that are not running: {sorted(live)}"
+    assert "Sample data" in text and "illustrative" in text, "the preview does not say its data are samples"
+    assert 'href="./preview.html"' in PAGE, "the offer does not link to the dashboard"

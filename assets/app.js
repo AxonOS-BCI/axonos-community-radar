@@ -736,7 +736,7 @@
     writeHash();
   }
 
-  // ── Apple-style segmented controls (built in JS → testable + reliable) ──
+  // ── segmented controls (built in JS → testable + reliable) ──
   function buildSeg(id,opts,get,set){var c=$(id);if(!c)return;c.textContent='';var btns=[];
     opts.forEach(function(o){var b=document.createElement('button');b.className='seg-opt'+(o.v===get()?' on':'');b.textContent=o.l;
       b.setAttribute('role','tab');b.setAttribute('tabindex','0');b.setAttribute('aria-selected',String(o.v===get()));

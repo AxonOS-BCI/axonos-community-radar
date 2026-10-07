@@ -1,5 +1,32 @@
 # Changelog
 
+## [16.13.0] — 2026-10-07 — "One dashboard"
+
+### Added
+
+- **[`preview.html`](preview.html): Radar PRO, as a subscriber sees it.** One
+  dashboard for the whole brain–computer interface field, in twenty-one
+  modules: signals, a watchlist, companies and teams, funds and investors,
+  devices, market maps, clinical trials, regulatory, neural data and law,
+  standards, research, experts and labs, datasets, patents, developers and
+  tools, dependency risk, jobs and talent, events, Claim Check, Field Briefs,
+  and an API. A switch re-orders it for the curious, for builders and for
+  investors; a customize sheet turns modules on and off, and sets how alerts
+  arrive.
+- Every module carries its status — *live*, or *early access*, built with the
+  first subscribers — and the page says plainly that its companies, funds,
+  people and figures are sample data, except the developer and dependency
+  modules, which show the public map's real data. A test holds both: a module
+  without a status, or a module shown as live that is not running, fails.
+- The PRO page leads to the dashboard.
+- A test keeps internal working names — design references and services we
+  study — out of every published file. It holds them only as digests.
+
+### Changed
+
+- Source comments in `assets/app.css` and `assets/app.js` now describe what the
+  code does.
+
 ## [16.12.0] — 2026-10-07 — "Pricing on request"
 
 ### Changed

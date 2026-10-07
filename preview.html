@@ -1,0 +1,344 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: MIT
+     SPDX-FileCopyrightText: 2026 The AxonOS Project / Denis Yermakou <connect@axonos.org> -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#06070b">
+<title>Radar PRO — the whole BCI field, one dashboard</title>
+<meta name="description" content="Radar PRO puts the brain–computer interface field on one dashboard: companies, funds, devices, trials, regulators, research, experts, developers, datasets, jobs, patents, standards and neural-data law — every fact with its source. Choose what you see. Early access.">
+<meta property="og:title" content="Radar PRO — the whole BCI field, one dashboard">
+<meta property="og:description" content="Companies, funds, devices, trials, regulators, research, experts, developers and neural-data law, every fact with its source. Choose what you see.">
+<meta property="og:image" content="https://axonos-bci.github.io/axonos-community-radar/og-image.png">
+<meta property="og:url" content="https://axonos-bci.github.io/axonos-community-radar/preview.html">
+<link rel="canonical" href="https://axonos-bci.github.io/axonos-community-radar/preview.html">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%232dd4ff'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="./assets/house.css">
+<link rel="stylesheet" href="assets/product.css">
+<link rel="stylesheet" href="assets/preview.css">
+</head>
+<body>
+
+<nav class="gnav static" aria-label="AxonOS Radar">
+  <div class="gnav-in">
+    <a class="brand" href="./"><span class="m" aria-hidden="true"></span><span class="bt">AxonOS Radar</span></a>
+    <div class="gnav-links">
+      <a class="nav-link" href="./">Map</a>
+      <a class="nav-link" href="./report.html">Report</a>
+      <a class="nav-link" href="./stats.html">Stats</a>
+      <a class="nav-link pro" href="./pro.html" aria-current="page">PRO</a>
+      <a class="nav-link" href="./support.html">Support</a>
+      <span class="nav-sep" aria-hidden="true"></span>
+      <a class="nav-link nav-secondary" href="./feed.xml">RSS</a>
+      <a class="nav-link nav-secondary" href="https://github.com/AxonOS-BCI/axonos-community-radar">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<nav class="lnav" aria-label="Radar PRO">
+  <div class="lnav-in">
+    <span class="lnav-title">Radar PRO</span>
+    <div class="lnav-links">
+      <a href="#dash">Dashboard</a>
+      <a href="#menu">Everything inside</a>
+      <a href="./pro.html#plans">Plans</a>
+    </div>
+    <a class="pill small" href="mailto:connect@axonos.org?subject=Radar%20PRO%20%E2%80%94%20early%20access&amp;body=Organisation%3A%0AWhat%20I%20follow%20in%20BCI%3A%0AModules%20I%20want%20first%3A%0AHow%20I%20want%20to%20receive%20it%20%28dashboard%2C%20email%2C%20private%20repository%2C%20API%29%3A%0A">Request access</a>
+  </div>
+</nav>
+
+<main>
+  <header class="hero pv-hero">
+    <p class="hero-name">Radar PRO · Early access</p>
+    <h1>The whole BCI field.<br><span class="pv-grad">One dashboard.</span></h1>
+    <p class="hero-sub pv-sub">Companies, funds, devices, trials, regulators, research, experts and developers — every fact with its source, every change the day it happens. You choose what you see.</p>
+    <div class="hero-cta">
+      <a class="pill" href="mailto:connect@axonos.org?subject=Radar%20PRO%20%E2%80%94%20early%20access&amp;body=Organisation%3A%0AWhat%20I%20follow%20in%20BCI%3A%0AModules%20I%20want%20first%3A%0AHow%20I%20want%20to%20receive%20it%20%28dashboard%2C%20email%2C%20private%20repository%2C%20API%29%3A%0A">Request access</a>
+      <a class="more" href="#dash">Explore the dashboard</a>
+    </div>
+    <div class="pv-who" role="group" aria-label="Show the dashboard for">
+      <button type="button" data-p="cur" aria-pressed="false">I'm curious</button><button type="button" data-p="bld" aria-pressed="false">I build</button><button type="button" data-p="inv" aria-pressed="true">I invest</button>
+    </div>
+  </header>
+
+  <section class="pv-dash" id="dash" aria-label="The Radar PRO dashboard, with sample data">
+    <div class="app">
+      <aside class="sb" aria-label="Modules">
+        <div class="sb-top"><span class="sb-logo" aria-hidden="true"></span><b>Radar PRO</b></div>
+        <label class="sb-s"><span class="vh">Find a module</span><input type="search" id="sbFind" placeholder="Search modules"></label>
+        <nav class="sb-l" id="sbList">
+<p class="sb-g">Overview</p>
+<a class="sb-i" href="#m-signals" data-k="signals"><span class="sb-ic">SI</span><span class="sb-n">Signals</span><i class="sb-d early" aria-label="Early access"></i></a>
+<a class="sb-i" href="#m-watch" data-k="watch"><span class="sb-ic">WA</span><span class="sb-n">Watchlist &amp; alerts</span><i class="sb-d live" aria-label="Live"></i></a>
+<p class="sb-g">Industry</p>
+<a class="sb-i" href="#m-companies" data-k="companies"><span class="sb-ic">CO</span><span class="sb-n">Companies &amp; teams</span><i class="sb-d early" aria-label="Early access"></i></a>
+<a class="sb-i" href="#m-funds" data-k="funds"><span class="sb-ic">FU</span><span class="sb-n">Funds &amp; investors</span><i class="sb-d early" aria-label="Early access"></i></a>
+<a class="sb-i" href="#m-devices" data-k="devices"><span class="sb-ic">DE</span><span class="sb-n">Devices</span><i class="sb-d early" aria-label="Early access"></i></a>
+<a class="sb-i" href="#m-maps" data-k="maps"><span class="sb-ic">MA</span><span class="sb-n">Market maps</span><i class="sb-d early" aria-label="Early access"></i></a>
+<p class="sb-g">Clinic &amp; regulation</p>
+<a class="sb-i" href="#m-trials" data-k="trials"><span class="sb-ic">TR</span><span class="sb-n">Clinical trials</span><i class="sb-d early" aria-label="Early access"></i></a>
+<a class="sb-i" href="#m-regulatory" data-k="regulatory"><span class="sb-ic">RE</span><span class="sb-n">Regulatory</span><i class="sb-d early" aria-label="Early access"></i></a>
+<a class="sb-i" href="#m-law" data-k="law"><span class="sb-ic">LA</span><span class="sb-n">Neural data &amp; law</span><i class="sb-d early" aria-label="Early access"></i></a>
+<a class="sb-i" href="#m-standards" data-k="standards"><span class="sb-ic">ST</span><span class="sb-n">Standards</span><i class="sb-d early" aria-label="Early access"></i></a>
+<p class="sb-g">Science</p>
+<a class="sb-i" href="#m-research" data-k="research"><span class="sb-ic">RE</span><span class="sb-n">Research</span><i class="sb-d early" aria-label="Early access"></i></a>
+<a class="sb-i" href="#m-experts" data-k="experts"><span class="sb-ic">EX</span><span class="sb-n">Experts &amp; labs</span><i class="sb-d early" aria-label="Early access"></i></a>
+<a class="sb-i" href="#m-datasets" data-k="datasets"><span class="sb-ic">DA</span><span class="sb-n">Datasets</span><i class="sb-d early" aria-label="Early access"></i></a>
+<a class="sb-i" href="#m-patents" data-k="patents"><span class="sb-ic">PA</span><span class="sb-n">Patents</span><i class="sb-d early" aria-label="Early access"></i></a>
+<p class="sb-g">Builders</p>
+<a class="sb-i" href="#m-tools" data-k="tools"><span class="sb-ic">TO</span><span class="sb-n">Developers &amp; tools</span><i class="sb-d live" aria-label="Live"></i></a>
+<a class="sb-i" href="#m-risk" data-k="risk"><span class="sb-ic">RI</span><span class="sb-n">Dependency risk</span><i class="sb-d live" aria-label="Live"></i></a>
+<a class="sb-i" href="#m-jobs" data-k="jobs"><span class="sb-ic">JO</span><span class="sb-n">Jobs &amp; talent</span><i class="sb-d early" aria-label="Early access"></i></a>
+<a class="sb-i" href="#m-events" data-k="events"><span class="sb-ic">EV</span><span class="sb-n">Events</span><i class="sb-d early" aria-label="Early access"></i></a>
+<p class="sb-g">Evidence</p>
+<a class="sb-i" href="#m-claims" data-k="claims"><span class="sb-ic">CL</span><span class="sb-n">Claim Check</span><i class="sb-d early" aria-label="Early access"></i></a>
+<a class="sb-i" href="#m-briefs" data-k="briefs"><span class="sb-ic">BR</span><span class="sb-n">Field Briefs</span><i class="sb-d live" aria-label="Live"></i></a>
+<p class="sb-g">Deliver</p>
+<a class="sb-i" href="#m-api" data-k="api"><span class="sb-ic">AP</span><span class="sb-n">API &amp; exports</span><i class="sb-d early" aria-label="Early access"></i></a>
+        </nav>
+        <p class="sb-k"><i class="sb-d live"></i>Live <i class="sb-d early"></i>Early access</p>
+      </aside>
+      <div class="mn">
+        <div class="tb">
+          <div class="tb-s" aria-hidden="true">Search companies, devices, people, trials…</div>
+          <span class="tb-tag">Sample data</span>
+          <button type="button" class="tb-c" id="czOpen">Customize</button>
+        </div>
+        <div class="kp" id="kp"></div>
+        <div class="mods" id="mods">
+<article class="mod wide" id="m-signals" data-k="signals" data-who="cur bld inv" data-status="early">
+        <header><span class="mic">SI</span><div><h3>Signals</h3><p>Every change in the field, the day it happens, with its source.</p></div><span class="st st-early">Early access</span></header>
+        <ul class="feed">
+  <li><span class="tg t-ct">Clinical</span><div><b>Arbor Neural moves its speech-BCI study to recruiting at a third site</b><span>Registry record · 2 Oct</span></div><span class="ev ev-o">Observed</span></li>
+  <li><span class="tg t-sec">Capital</span><div><b>Lumen Interfaces files Form D: 72% of its offering already sold</b><span>SEC filing · not yet announced · 2 Oct</span></div><span class="ev ev-o">Observed</span></li>
+  <li><span class="tg t-fda">Regulatory</span><div><b>Halden Neurotech receives 510(k) clearance for an EEG monitoring headset</b><span>Regulator database · 1 Oct</span></div><span class="ev ev-o">Observed</span></li>
+  <li><span class="tg t-job">Hiring</span><div><b>Quill Bionics opens six clinical and regulatory roles in two weeks</b><span>Company job board · 30 Sep</span></div><span class="ev ev-i">Inferred</span></li>
+  <li><span class="tg t-law">Neural data</span><div><b>A consumer headband now allows “partners” to receive EEG-derived data</b><span>Privacy policy, compared with 12 Sep</span></div><span class="ev ev-o">Observed</span></li>
+</ul>
+      </article><article class="mod" id="m-watch" data-k="watch" data-who="bld inv" data-status="live">
+        <header><span class="mic">WA</span><div><h3>Watchlist &amp; alerts</h3><p>The companies, devices, people and repositories you name — and an alert when they move.</p></div><span class="st st-live">Live</span></header>
+        <ul class="wl">
+  <li><b>Arbor Neural</b><span>2 new events</span><i class="dotn"></i></li>
+  <li><b>Speech decoding</b><span>topic · 5 new papers</span><i class="dotn"></i></li>
+  <li><b>brainflow-dev/brainflow</b><span>release 5.23</span></li>
+  <li><b>Colorado neural-data law</b><span>no change</span></li>
+</ul><p class="mini">Alerts the same day · by email and in your private repository</p>
+      </article><article class="mod wide" id="m-companies" data-k="companies" data-who="cur inv" data-status="early">
+        <header><span class="mic">CO</span><div><h3>Companies &amp; teams</h3><p>Every company building BCIs: what they build, how far they are, who is behind them.</p></div><span class="st st-early">Early access</span></header>
+        <div class="tbl"><div class="tr th"><span>Company</span><span>Modality</span><span>Stage</span><span>Open roles</span></div>
+  <div class="tr"><span><b>Arbor Neural</b></span><span>Intracortical</span><span><em class="bdg p-g">Feasibility</em></span><span>42</span></div>
+  <div class="tr"><span><b>Halden Neurotech</b></span><span>EEG</span><span><em class="bdg p-a">Cleared</em></span><span>18</span></div>
+  <div class="tr"><span><b>Quill Bionics</b></span><span>ECoG</span><span><em class="bdg p-g">Pivotal prep</em></span><span>27</span></div>
+  <div class="tr"><span><b>Veyra Labs</b></span><span>Endovascular</span><span><em class="bdg p-m">Pre-clinical</em></span><span>9</span></div></div>
+      </article><article class="mod" id="m-funds" data-k="funds" data-who="inv" data-status="early">
+        <header><span class="mic">FU</span><div><h3>Funds &amp; investors</h3><p>Who invests in BCI, how often, at what stage, and alongside whom.</p></div><span class="st st-early">Early access</span></header>
+        <ul class="rank">
+  <li><span class="r1">1</span><b>North Ridge Ventures</b><span>6 rounds</span><span class="mtr"><i class="w100"></i></span></li>
+  <li><span class="r1">2</span><b>Cedar Point Capital</b><span>4 rounds</span><span class="mtr"><i class="w65"></i></span></li>
+  <li><span class="r1">3</span><b>Halyard Bio Fund</b><span>3 rounds</span><span class="mtr"><i class="w50"></i></span></li>
+  <li><span class="r1">4</span><b>Ostrava Partners</b><span>3 rounds</span><span class="mtr"><i class="w50"></i></span></li>
+</ul><p class="mini">Last twelve months · lead and follow-on</p>
+      </article><article class="mod" id="m-devices" data-k="devices" data-who="cur bld inv" data-status="early">
+        <header><span class="mic">DE</span><div><h3>Devices</h3><p>Every implant, headset and interface: what it records, how many channels, where it stands.</p></div><span class="st st-early">Early access</span></header>
+        <div class="dev">
+  <div><span class="dv-k">Intracortical</span><b>1,024</b><span>channels · investigational</span></div>
+  <div><span class="dv-k">ECoG</span><b>4,096</b><span>electrodes · temporary use</span></div>
+  <div><span class="dv-k">EEG</span><b>8</b><span>channels · cleared</span></div>
+  <div><span class="dv-k">Endovascular</span><b>16</b><span>electrodes · feasibility</span></div></div>
+      </article><article class="mod" id="m-maps" data-k="maps" data-who="cur inv" data-status="early">
+        <header><span class="mic">MA</span><div><h3>Market maps</h3><p>The field on one page, by modality and market — and how it shifts each quarter.</p></div><span class="st st-early">Early access</span></header>
+        <div class="mp">
+  <div class="mp-c a"><b>Medical · invasive</b><span>34 companies</span></div><div class="mp-c b"><b>Medical · non-invasive</b><span>58</span></div>
+  <div class="mp-c c"><b>Consumer · wearable</b><span>71</span></div><div class="mp-c d"><b>Research & tools</b><span>46</span></div></div>
+      </article><article class="mod wide" id="m-trials" data-k="trials" data-who="cur inv" data-status="early">
+        <header><span class="mic">TR</span><div><h3>Clinical trials</h3><p>Who is in humans, how fast, and where — from the registries themselves.</p></div><span class="st st-early">Early access</span></header>
+        <div class="pipe">
+  <div><span>Early feasibility</span><span class="mtr"><i class="w90"></i></span><b>14</b></div>
+  <div><span>Phase I–II</span><span class="mtr"><i class="w30"></i></span><b>4</b></div>
+  <div><span>Pivotal</span><span class="mtr"><i class="w65"></i></span><b>10</b></div>
+  <div><span>Post-market</span><span class="mtr"><i class="w25"></i></span><b>4</b></div></div><p class="mini">Enrollment, target against actual, for every programme</p>
+      </article><article class="mod" id="m-regulatory" data-k="regulatory" data-who="inv bld" data-status="early">
+        <header><span class="mic">RE</span><div><h3>Regulatory</h3><p>Who may sell what, and where.</p></div><span class="st st-early">Early access</span></header>
+        <ol class="tl">
+  <li><b>510(k)</b><span>EEG monitoring headset · 1 Oct</span></li>
+  <li><b>Breakthrough</b><span>ECoG interface for speech · 18 Sep</span></li>
+  <li><b>IDE approved</b><span>Endovascular BCI, feasibility · 2 Sep</span></li>
+  <li><b>De Novo</b><span>Neuromodulation wearable · 21 Aug</span></li></ol>
+      </article><article class="mod wide" id="m-law" data-k="law" data-who="cur bld inv" data-status="early">
+        <header><span class="mic">LA</span><div><h3>Neural data &amp; law</h3><p>What happens to brain data, and which laws protect it.</p></div><span class="st st-early">Early access</span></header>
+        <div class="law">
+  <div><b>Colorado</b><span>Neural data is sensitive data</span><em class="bdg p-g">In force</em></div>
+  <div><b>California</b><span>Neural data in the consumer privacy act</span><em class="bdg p-g">In force</em></div>
+  <div><b>Montana</b><span>Neural data protections</span><em class="bdg p-g">In force</em></div>
+  <div><b>Your devices</b><span>2 policy changes this month</span><em class="bdg p-r">Changed</em></div></div>
+      </article><article class="mod" id="m-standards" data-k="standards" data-who="bld" data-status="early">
+        <header><span class="mic">ST</span><div><h3>Standards</h3><p>The formats and standards the field is converging on.</p></div><span class="st st-early">Early access</span></header>
+        <ul class="std">
+  <li><b>ISO/IEC TS 27571:2026</b><span>BCI data format, non-invasive</span><em class="bdg p-g">Published</em></li>
+  <li><b>ISO/IEC 27572</b><span>BCI reference architecture</span><em class="bdg p-a">Tracked</em></li>
+  <li><b>BIDS</b><span>Brain imaging data structure</span><em class="bdg p-g">Adopted</em></li>
+  <li><b>Lab Streaming Layer</b><span>Real-time streaming</span><em class="bdg p-g">Adopted</em></li></ul>
+      </article><article class="mod" id="m-research" data-k="research" data-who="cur bld inv" data-status="early">
+        <header><span class="mic">RE</span><div><h3>Research</h3><p>What has been demonstrated — not just announced.</p></div><span class="st st-early">Early access</span></header>
+        <ul class="pp">
+  <li><em class="bdg p-g">Peer-reviewed</em><b>Speech decoding at 62 words per minute in a participant with ALS</b></li>
+  <li><em class="bdg p-a">Preprint</em><b>An EEG foundation model evaluated on motor imagery</b></li>
+  <li><em class="bdg p-g">Peer-reviewed</em><b>Two years of stable recording from a minimally invasive array</b></li></ul>
+      </article><article class="mod" id="m-experts" data-k="experts" data-who="bld inv" data-status="early">
+        <header><span class="mic">EX</span><div><h3>Experts &amp; labs</h3><p>The people and labs behind the results.</p></div><span class="st st-early">Early access</span></header>
+        <div class="ppl">
+  <div><span class="av">AR</span><b>Dr. A. Rivera</b><span>Speech decoding · 14 papers</span></div>
+  <div><span class="av">MK</span><b>Prof. M. Kaur</b><span>ECoG arrays · 22 papers</span></div>
+  <div><span class="av">JL</span><b>Dr. J. Lindqvist</b><span>Closed-loop DBS · 9 papers</span></div></div>
+      </article><article class="mod" id="m-datasets" data-k="datasets" data-who="bld" data-status="early">
+        <header><span class="mic">DA</span><div><h3>Datasets</h3><p>Open recordings to build and test on.</p></div><span class="st st-early">Early access</span></header>
+        <ul class="ds">
+  <li><b>Motor imagery, 52 subjects</b><span>64 ch · 512 Hz · BIDS · CC BY</span></li>
+  <li><b>P300 speller, 26 subjects</b><span>32 ch · 256 Hz · EDF · CC0</span></li>
+  <li><b>Speech ECoG, 9 participants</b><span>256 ch · 1 kHz · on request</span></li></ul>
+      </article><article class="mod" id="m-patents" data-k="patents" data-who="inv" data-status="early">
+        <header><span class="mic">PA</span><div><h3>Patents</h3><p>Where the effort is going before it ships.</p></div><span class="st st-early">Early access</span></header>
+        <div class="pat"><div class="bars"><i class="h40 pv"></i><i class="h55 pv"></i><i class="h50 pv"></i><i class="h70 pv"></i><i class="h65 pv"></i><i class="h85 pv"></i><i class="h80 pv"></i><i class="h100 pv"></i></div><p class="mini">BCI patents published per quarter · by assignee and class</p></div>
+      </article><article class="mod wide" id="m-tools" data-k="tools" data-who="bld" data-status="live">
+        <header><span class="mic">TO</span><div><h3>Developers &amp; tools</h3><p>The open software of the field, mapped and scored every three hours.</p></div><span class="st st-live">Live</span></header>
+        <ul class="tools">
+  <li><b>mne-tools/mne-python</b><span>3,536 stars · 471 contributors</span><em class="bdg p-g">Healthy</em></li>
+  <li><b>brainflow-dev/brainflow</b><span>1,770 stars · release 26 Sep</span><em class="bdg p-g">Healthy</em></li>
+  <li><b>neuropsychology/NeuroKit</b><span>2,377 stars · 106 contributors</span><em class="bdg p-g">Healthy</em></li></ul><p class="mini">Real data from the public map, 3 October 2026</p>
+      </article><article class="mod" id="m-risk" data-k="risk" data-who="bld" data-status="live">
+        <header><span class="mic">RI</span><div><h3>Dependency risk</h3><p>The libraries everyone depends on, and which are going quiet.</p></div><span class="st st-live">Live</span></header>
+        <ul class="tools">
+  <li><b>vlawhern/arl-eegmodels</b><span>EEG model reference implementations</span><em class="bdg p-r">1,614 d quiet</em></li>
+  <li><b>wzpan/wukong-robot</b><span>Large audience, no recent work</span><em class="bdg p-r">707 d quiet</em></li></ul><p class="mini">Real data from the public map, 3 October 2026</p>
+      </article><article class="mod" id="m-jobs" data-k="jobs" data-who="cur bld inv" data-status="early">
+        <header><span class="mic">JO</span><div><h3>Jobs &amp; talent</h3><p>Who is hiring, for what — and what that says about where they are going.</p></div><span class="st st-early">Early access</span></header>
+        <div class="jb"><div class="bars"><i class="h30 jv"></i><i class="h35 jv"></i><i class="h45 jv"></i><i class="h40 jv"></i><i class="h55 jv"></i><i class="h60 jv"></i><i class="h70 jv"></i><i class="h75 jv"></i><i class="h85 jv"></i><i class="h100 jv"></i></div><div class="lg"><span class="l1">Clinical</span><span class="l2">Software</span><span class="l3">Manufacturing</span></div></div>
+      </article><article class="mod" id="m-events" data-k="events" data-who="cur bld" data-status="early">
+        <header><span class="mic">EV</span><div><h3>Events</h3><p>Where the field meets.</p></div><span class="st st-early">Early access</span></header>
+        <ul class="ev-l">
+  <li><span class="dt"><b>12</b>Nov</span><div><b>Neurotech summit</b><span>Boston · 3 days</span></div></li>
+  <li><span class="dt"><b>04</b>Dec</span><div><b>BCI hackathon</b><span>Online · open call</span></div></li>
+  <li><span class="dt"><b>20</b>Jan</span><div><b>Neural engineering workshop</b><span>Abstracts due</span></div></li></ul>
+      </article><article class="mod" id="m-claims" data-k="claims" data-who="cur inv" data-status="early">
+        <header><span class="mic">CL</span><div><h3>Claim Check</h3><p>Every headline number, graded by the evidence behind it.</p></div><span class="st st-early">Early access</span></header>
+        <ul class="cc">
+  <li><b>“1,024 channels recording in a human”</b><span class="vd v-s">Supported</span></li>
+  <li><b>“90 words per minute by thought”</b><span class="vd v-p">Partially</span></li>
+  <li><b>“Clinically validated focus detection”</b><span class="vd v-n">Not established</span></li></ul>
+      </article><article class="mod" id="m-briefs" data-k="briefs" data-who="inv" data-status="live">
+        <header><span class="mic">BR</span><div><h3>Field Briefs</h3><p>Your question, answered by an analyst, with every figure cited.</p></div><span class="st st-live">Live</span></header>
+        <div class="brf"><div class="pg"><span>FIELD BRIEF</span><b>Speech BCIs: who is closest to the clinic</b><i></i><i class="s"></i><i></i></div><div class="pg b"><span>FIELD BRIEF</span><b>Consumer EEG and neural-data law</b><i></i><i></i><i class="s"></i></div></div>
+      </article><article class="mod" id="m-api" data-k="api" data-who="bld inv" data-status="early">
+        <header><span class="mic">AP</span><div><h3>API &amp; exports</h3><p>Everything in your dashboard, as data.</p></div><span class="st st-early">Early access</span></header>
+        <pre class="code"><span class="c1">GET</span> /v1/signals?watchlist=mine&amp;since=7d
+{
+  <span class="c2">"type"</span>: "clinical.status_change",
+  <span class="c2">"entity"</span>: "Arbor Neural",
+  <span class="c2">"evidence"</span>: "observed",
+  <span class="c2">"source"</span>: "registry record"
+}</pre>
+      </article>
+        </div>
+        <p class="mn-empty" id="mnEmpty" hidden>Nothing selected. Open <b>Customize</b> to choose your modules.</p>
+      </div>
+    </div>
+    <p class="pv-note">Sample data: the companies, funds, people and figures in this preview are illustrative, except Developers &amp; tools and Dependency risk, which show the public map's real data of 3 October 2026. Modules marked early access are being built with the first subscribers.</p>
+  </section>
+
+  <div class="cz" id="cz" hidden>
+    <div class="cz-p" role="dialog" aria-modal="true" aria-labelledby="czH">
+      <div class="cz-hd"><h2 id="czH">Your dashboard</h2><button type="button" class="cz-x" id="czClose" aria-label="Close">Done</button></div>
+      <p class="cz-sub">Choose the modules you want. Everything else stays out of your way.</p>
+      <div class="cz-q"><button type="button" id="czAll">Select all</button><button type="button" id="czNone">Clear</button></div>
+      <div class="cz-l">
+<p class="cz-g">Overview</p>
+<label class="cz-t"><span><b>Signals</b><span class="st st-early">Early access</span></span><input type="checkbox" data-t="signals" checked><i aria-hidden="true"></i></label>
+<label class="cz-t"><span><b>Watchlist &amp; alerts</b><span class="st st-live">Live</span></span><input type="checkbox" data-t="watch" checked><i aria-hidden="true"></i></label>
+<p class="cz-g">Industry</p>
+<label class="cz-t"><span><b>Companies &amp; teams</b><span class="st st-early">Early access</span></span><input type="checkbox" data-t="companies" checked><i aria-hidden="true"></i></label>
+<label class="cz-t"><span><b>Funds &amp; investors</b><span class="st st-early">Early access</span></span><input type="checkbox" data-t="funds" checked><i aria-hidden="true"></i></label>
+<label class="cz-t"><span><b>Devices</b><span class="st st-early">Early access</span></span><input type="checkbox" data-t="devices" checked><i aria-hidden="true"></i></label>
+<label class="cz-t"><span><b>Market maps</b><span class="st st-early">Early access</span></span><input type="checkbox" data-t="maps" checked><i aria-hidden="true"></i></label>
+<p class="cz-g">Clinic &amp; regulation</p>
+<label class="cz-t"><span><b>Clinical trials</b><span class="st st-early">Early access</span></span><input type="checkbox" data-t="trials" checked><i aria-hidden="true"></i></label>
+<label class="cz-t"><span><b>Regulatory</b><span class="st st-early">Early access</span></span><input type="checkbox" data-t="regulatory" checked><i aria-hidden="true"></i></label>
+<label class="cz-t"><span><b>Neural data &amp; law</b><span class="st st-early">Early access</span></span><input type="checkbox" data-t="law" checked><i aria-hidden="true"></i></label>
+<label class="cz-t"><span><b>Standards</b><span class="st st-early">Early access</span></span><input type="checkbox" data-t="standards" checked><i aria-hidden="true"></i></label>
+<p class="cz-g">Science</p>
+<label class="cz-t"><span><b>Research</b><span class="st st-early">Early access</span></span><input type="checkbox" data-t="research" checked><i aria-hidden="true"></i></label>
+<label class="cz-t"><span><b>Experts &amp; labs</b><span class="st st-early">Early access</span></span><input type="checkbox" data-t="experts" checked><i aria-hidden="true"></i></label>
+<label class="cz-t"><span><b>Datasets</b><span class="st st-early">Early access</span></span><input type="checkbox" data-t="datasets" checked><i aria-hidden="true"></i></label>
+<label class="cz-t"><span><b>Patents</b><span class="st st-early">Early access</span></span><input type="checkbox" data-t="patents" checked><i aria-hidden="true"></i></label>
+<p class="cz-g">Builders</p>
+<label class="cz-t"><span><b>Developers &amp; tools</b><span class="st st-live">Live</span></span><input type="checkbox" data-t="tools" checked><i aria-hidden="true"></i></label>
+<label class="cz-t"><span><b>Dependency risk</b><span class="st st-live">Live</span></span><input type="checkbox" data-t="risk" checked><i aria-hidden="true"></i></label>
+<label class="cz-t"><span><b>Jobs &amp; talent</b><span class="st st-early">Early access</span></span><input type="checkbox" data-t="jobs" checked><i aria-hidden="true"></i></label>
+<label class="cz-t"><span><b>Events</b><span class="st st-early">Early access</span></span><input type="checkbox" data-t="events" checked><i aria-hidden="true"></i></label>
+<p class="cz-g">Evidence</p>
+<label class="cz-t"><span><b>Claim Check</b><span class="st st-early">Early access</span></span><input type="checkbox" data-t="claims" checked><i aria-hidden="true"></i></label>
+<label class="cz-t"><span><b>Field Briefs</b><span class="st st-live">Live</span></span><input type="checkbox" data-t="briefs" checked><i aria-hidden="true"></i></label>
+<p class="cz-g">Deliver</p>
+<label class="cz-t"><span><b>API &amp; exports</b><span class="st st-early">Early access</span></span><input type="checkbox" data-t="api" checked><i aria-hidden="true"></i></label>
+      </div>
+      <p class="cz-g">Alerts</p>
+      <div class="cz-seg" role="group" aria-label="Alert frequency"><button type="button" aria-pressed="true">Same day</button><button type="button" aria-pressed="false">Daily</button><button type="button" aria-pressed="false">Weekly</button></div>
+      <p class="cz-g">Delivered to</p>
+      <div class="cz-ch"><label><input type="checkbox" checked> Dashboard</label><label><input type="checkbox" checked> Email</label><label><input type="checkbox"> Private repository</label><label><input type="checkbox"> API</label></div>
+    </div>
+  </div>
+
+  <section class="pv-sec" id="menu" aria-labelledby="menuH">
+    <div class="pv-head"><span class="pv-eye">Everything inside</span><h2 id="menuH">Twenty-one modules.<br>The whole field.</h2>
+      <p>Each holds facts from primary sources — registries, regulators, filings, papers, code, policies — with when we read them and how sure we are.</p></div>
+    <div class="ct-g"><h3>Overview</h3><div class="ct-grid"><div class="ct"><div class="ct-h"><b>Signals</b><span class="st st-early">Early access</span></div><p>Every change in the field, the day it happens, with its source.</p><ul><li>Clinical, regulatory, capital, hiring, research, code and policy events</li><li>What it means, for the way you follow the field</li><li>How sure we are: observed, declared or inferred</li></ul><p class="ct-s">All sources below</p></div><div class="ct"><div class="ct-h"><b>Watchlist &amp; alerts</b><span class="st st-live">Live</span></div><p>The companies, devices, people and repositories you name — and an alert when they move.</p><ul><li>Unlimited entities across every module</li><li>Same-day, daily or weekly</li><li>Dashboard, email, private repository or API</li></ul><p class="ct-s">Your choices</p></div></div></div>
+<div class="ct-g"><h3>Industry</h3><div class="ct-grid"><div class="ct"><div class="ct-h"><b>Companies &amp; teams</b><span class="st st-early">Early access</span></div><p>Every company building BCIs: what they build, how far they are, who is behind them.</p><ul><li>Modality, indication and stage</li><li>Programmes, trials and approvals</li><li>Founders and team, from public sources</li><li>Hiring mix and open roles</li></ul><p class="ct-s">Registries, filings, company sites</p></div><div class="ct"><div class="ct-h"><b>Funds &amp; investors</b><span class="st st-early">Early access</span></div><p>Who invests in BCI, how often, at what stage, and alongside whom.</p><ul><li>Rounds by fund, with co-investors</li><li>Stage and modality focus</li><li>Follow-on behaviour</li></ul><p class="ct-s">SEC filings, announcements</p></div><div class="ct"><div class="ct-h"><b>Devices</b><span class="st st-early">Early access</span></div><p>Every implant, headset and interface: what it records, how many channels, where it stands.</p><ul><li>Invasive, minimally invasive and non-invasive</li><li>Channels, signal, sampling and power</li><li>Regulatory status and clinical stage</li></ul><p class="ct-s">Regulators, papers, manufacturers</p></div><div class="ct"><div class="ct-h"><b>Market maps</b><span class="st st-early">Early access</span></div><p>The field on one page, by modality and market — and how it shifts each quarter.</p><ul><li>Medical and consumer</li><li>Invasive to wearable</li><li>Quarter over quarter</li></ul><p class="ct-s">Derived from the modules above</p></div></div></div>
+<div class="ct-g"><h3>Clinic &amp; regulation</h3><div class="ct-grid"><div class="ct"><div class="ct-h"><b>Clinical trials</b><span class="st st-early">Early access</span></div><p>Who is in humans, how fast, and where — from the registries themselves.</p><ul><li>Feasibility to pivotal</li><li>Enrollment, target against actual</li><li>Sites, status changes, results posted</li></ul><p class="ct-s">ClinicalTrials.gov and international registries</p></div><div class="ct"><div class="ct-h"><b>Regulatory</b><span class="st st-early">Early access</span></div><p>Who may sell what, and where.</p><ul><li>FDA 510(k), De Novo, PMA and Breakthrough</li><li>CE marking and other regions</li><li>Predicate devices and product codes</li></ul><p class="ct-s">openFDA, regulators&#x27; databases</p></div><div class="ct"><div class="ct-h"><b>Neural data &amp; law</b><span class="st st-early">Early access</span></div><p>What happens to brain data, and which laws protect it.</p><ul><li>What each consumer product sends, keeps and shares</li><li>Policy changes, the day they happen</li><li>Neural-data laws by jurisdiction</li></ul><p class="ct-s">Company policies, legislatures</p></div><div class="ct"><div class="ct-h"><b>Standards</b><span class="st st-early">Early access</span></div><p>The formats and standards the field is converging on.</p><ul><li>ISO/IEC, IEEE and community standards</li><li>Who implements which</li><li>Drafts, ballots and publications</li></ul><p class="ct-s">Standards bodies, source code</p></div></div></div>
+<div class="ct-g"><h3>Science</h3><div class="ct-grid"><div class="ct"><div class="ct-h"><b>Research</b><span class="st st-early">Early access</span></div><p>What has been demonstrated — not just announced.</p><ul><li>Peer-reviewed and preprint, marked apart</li><li>Results by company, device and method</li><li>Landmark papers, explained</li></ul><p class="ct-s">PubMed, arXiv, bioRxiv</p></div><div class="ct"><div class="ct-h"><b>Experts &amp; labs</b><span class="st st-early">Early access</span></div><p>The people and labs behind the results.</p><ul><li>Principal investigators by topic</li><li>Collaborations and output</li><li>Where they publish, who they work with</li></ul><p class="ct-s">Publication records</p></div><div class="ct"><div class="ct-h"><b>Datasets</b><span class="st st-early">Early access</span></div><p>Open recordings to build and test on.</p><ul><li>Paradigm, subjects, channels, format</li><li>Licence and access</li><li>Quality, examined</li></ul><p class="ct-s">Open data repositories</p></div><div class="ct"><div class="ct-h"><b>Patents</b><span class="st st-early">Early access</span></div><p>Where the effort is going before it ships.</p><ul><li>Grants and publications by assignee</li><li>By technical class</li><li>Twelve-month velocity</li></ul><p class="ct-s">Patent offices</p></div></div></div>
+<div class="ct-g"><h3>Builders</h3><div class="ct-grid"><div class="ct"><div class="ct-h"><b>Developers &amp; tools</b><span class="st st-live">Live</span></div><p>The open software of the field, mapped and scored every three hours.</p><ul><li>Tools, SDKs and pipelines</li><li>What works with which device, verified in code</li><li>Releases, maintainers and adoption</li></ul><p class="ct-s">GitHub, package registries</p></div><div class="ct"><div class="ct-h"><b>Dependency risk</b><span class="st st-live">Live</span></div><p>The libraries everyone depends on, and which are going quiet.</p><ul><li>Days since the last change</li><li>Active maintainers</li><li>Who depends on them</li></ul><p class="ct-s">GitHub</p></div><div class="ct"><div class="ct-h"><b>Jobs &amp; talent</b><span class="st st-early">Early access</span></div><p>Who is hiring, for what — and what that says about where they are going.</p><ul><li>Open roles by function</li><li>Mix over time</li><li>Remote and on site</li></ul><p class="ct-s">Companies&#x27; own job boards</p></div><div class="ct"><div class="ct-h"><b>Events</b><span class="st st-early">Early access</span></div><p>Where the field meets.</p><ul><li>Conferences, workshops, meetups</li><li>Deadlines and calls</li><li>Who is speaking</li></ul><p class="ct-s">Organisers</p></div></div></div>
+<div class="ct-g"><h3>Evidence</h3><div class="ct-grid"><div class="ct"><div class="ct-h"><b>Claim Check</b><span class="st st-early">Early access</span></div><p>Every headline number, graded by the evidence behind it.</p><ul><li>Channels, speed, latency, accuracy, patients</li><li>Regulator, peer review, preprint or the company&#x27;s word</li><li>Supported, partially, or not established</li></ul><p class="ct-s">The sources it cites</p></div><div class="ct"><div class="ct-h"><b>Field Briefs</b><span class="st st-live">Live</span></div><p>Your question, answered by an analyst, with every figure cited.</p><ul><li>Ten to fourteen pages</li><li>Your scope</li><li>Five business days</li></ul><p class="ct-s">Everything above</p></div></div></div>
+<div class="ct-g"><h3>Deliver</h3><div class="ct-grid"><div class="ct"><div class="ct-h"><b>API &amp; exports</b><span class="st st-early">Early access</span></div><p>Everything in your dashboard, as data.</p><ul><li>JSON API</li><li>CSV and NDJSON exports</li><li>Webhooks</li></ul><p class="ct-s">This dashboard</p></div></div></div>
+  </section>
+
+  <section class="pv-sec" aria-labelledby="forH">
+    <div class="pv-head"><span class="pv-eye">Who it is for</span><h2 id="forH">Whoever you are<br>in this field.</h2></div>
+    <div class="who6">
+      <div><b>Curious</b><p>Is any of it real, who is in people's heads, and what happens to brain data.</p></div>
+      <div><b>Newcomers</b><p>Where to start, which device and tools, who is hiring.</p></div>
+      <div><b>Engineers</b><p>What works together, what is going unmaintained, which standards win adoption.</p></div>
+      <div><b>Researchers</b><p>Who is publishing what, open datasets, the labs to work with.</p></div>
+      <div><b>Companies</b><p>Competitors, partners, regulators and talent — moving, the day they move.</p></div>
+      <div><b>Investors & funds</b><p>Who is progressing before they announce it, and which claims hold.</p></div>
+    </div>
+  </section>
+
+  <section class="pv-sec pv-ev" aria-labelledby="evH">
+    <div class="pv-head"><span class="pv-eye">How we know</span><h2 id="evH">Every fact says<br>how it is known.</h2></div>
+    <div class="ev3">
+      <div><span class="ev ev-o">Observed</span><p>Read from a primary source: a registry, a regulator, a filing, a paper, code, a policy.</p></div>
+      <div><span class="ev ev-d">Declared</span><p>Stated by the company itself, and marked as its word.</p></div>
+      <div><span class="ev ev-i">Inferred</span><p>A reading of observed facts — reviewed by a person before you see it, and never shown as fact.</p></div>
+    </div>
+  </section>
+
+  <section class="pv-sec pv-cta" aria-labelledby="ctaH">
+    <h2 id="ctaH">Be among the first.</h2>
+    <p>Radar PRO opens to early subscribers first. Pricing on request; invoiced and paid by bank transfer.</p>
+    <div class="hero-cta"><a class="pill" href="mailto:connect@axonos.org?subject=Radar%20PRO%20%E2%80%94%20early%20access&amp;body=Organisation%3A%0AWhat%20I%20follow%20in%20BCI%3A%0AModules%20I%20want%20first%3A%0AHow%20I%20want%20to%20receive%20it%20%28dashboard%2C%20email%2C%20private%20repository%2C%20API%29%3A%0A">Request access</a><a class="more" href="./sample.html">Read a sample brief</a></div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot-in">
+    <p>This preview shows sample data; modules marked early access are built with the first subscribers. Terms, privacy and the access model: <a href="./terms.html">Terms</a>.</p>
+    <p class="copy">© The AxonOS Project · <a href="https://axonos.org">axonos.org</a> · connect@axonos.org</p>
+  </div>
+</footer>
+
+<script src="assets/preview.js" defer></script>
+</body>
+</html>

@@ -26,8 +26,8 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 #: Pages this repository owns. report.html is rendered by the scanning engine on
 #: every scan and carries the engine's own bar until its template moves here.
-PAGES = {"index.html": "Map", "stats.html": "Stats", "support.html": "Support", "pro.html": "PRO", "sample.html": "PRO", "terms.html": "PRO"}
-PAGE_CSS = ("app.css", "stats.css", "support.css", "product.css")
+PAGES = {"index.html": "Map", "stats.html": "Stats", "support.html": "Support", "pro.html": "PRO", "sample.html": "PRO", "terms.html": "PRO", "preview.html": "PRO"}
+PAGE_CSS = ("app.css", "stats.css", "support.css", "product.css", "preview.css")
 EXPECTED = ["Map", "Report", "Stats", "PRO", "Support", "RSS", "GitHub"]
 
 

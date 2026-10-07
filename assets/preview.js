@@ -1,0 +1,78 @@
+/* SPDX-License-Identifier: MIT
+ * SPDX-FileCopyrightText: 2026 The AxonOS Project / Denis Yermakou <connect@axonos.org>
+ *
+ * AxonOS Radar · the Radar PRO dashboard preview. Everything here runs on the
+ * page's own markup: choosing an audience re-orders the modules and the key
+ * figures, the customize sheet shows and hides modules, the sidebar finds and
+ * highlights them. No network request, no storage. The figures are the sample
+ * data the page declares.
+ */
+(function () {
+  "use strict";
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return [].slice.call((r || document).querySelectorAll(s)); };
+  var mods = $("#mods"), all = $$(".mod", mods);
+
+  var KP = {
+    cur: [["9", "implant programmes with people in them"], ["4", "of them with peer-reviewed results"], ["3", "consumer headsets sending raw EEG to a cloud"], ["12", "headline claims checked this month"]],
+    bld: [["31", "open tools with device support verified in code"], ["7", "critical libraries quiet for over a year"], ["2", "standards moved this quarter"], ["46", "open engineering roles"]],
+    inv: [["11", "rounds disclosed this quarter"], ["5", "capital filings not yet announced"], ["3", "programmes moved to recruiting"], ["2", "companies whose hiring turned clinical"]]
+  };
+  function kpis(p) {
+    var box = $("#kp"); box.textContent = "";
+    KP[p].forEach(function (k) { var d = document.createElement("div"), b = document.createElement("b"), s = document.createElement("span"); b.textContent = k[0]; s.textContent = k[1]; d.appendChild(b); d.appendChild(s); box.appendChild(d); });
+  }
+  function audience(p) {
+    $$(".pv-who button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-p") === p)); });
+    var first = all.filter(function (m) { return (" " + m.getAttribute("data-who") + " ").indexOf(" " + p + " ") !== -1; });
+    var rest = all.filter(function (m) { return first.indexOf(m) === -1; });
+    first.concat(rest).forEach(function (m) { mods.appendChild(m); });
+    kpis(p);
+  }
+  $$(".pv-who button").forEach(function (b) { b.addEventListener("click", function () { audience(b.getAttribute("data-p")); }); });
+
+  /* customize: what the dashboard shows */
+  function apply() {
+    var shown = 0;
+    $$(".cz-t input").forEach(function (c) {
+      var k = c.getAttribute("data-t"), m = $("#m-" + k), s = $('.sb-i[data-k="' + k + '"]');
+      if (m) m.classList.toggle("gone", !c.checked);
+      if (s) s.classList.toggle("off", !c.checked);
+      if (c.checked) shown++;
+    });
+    $("#mnEmpty").hidden = shown > 0;
+  }
+  $$(".cz-t input").forEach(function (c) { c.addEventListener("change", apply); });
+  $("#czAll").addEventListener("click", function () { $$(".cz-t input").forEach(function (c) { c.checked = true; }); apply(); });
+  $("#czNone").addEventListener("click", function () { $$(".cz-t input").forEach(function (c) { c.checked = false; }); apply(); });
+  var sheet = $("#cz"), opener = $("#czOpen"), last = null;
+  function openSheet() { last = document.activeElement; sheet.hidden = false; $("#czClose").focus(); document.body.classList.add("cz-on"); }
+  function closeSheet() { sheet.hidden = true; document.body.classList.remove("cz-on"); if (last) last.focus(); }
+  opener.addEventListener("click", openSheet);
+  $("#czClose").addEventListener("click", closeSheet);
+  sheet.addEventListener("click", function (ev) { if (ev.target === sheet) closeSheet(); });
+  document.addEventListener("keydown", function (ev) { if (ev.key === "Escape" && !sheet.hidden) closeSheet(); });
+  $$(".cz-seg button").forEach(function (b) { b.addEventListener("click", function () { $$(".cz-seg button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); }); }); });
+
+  /* sidebar: find and highlight */
+  $$(".sb-i").forEach(function (a) {
+    a.addEventListener("click", function (ev) {
+      var m = $("#m-" + a.getAttribute("data-k"));
+      if (!m) return;
+      ev.preventDefault();
+      if (m.classList.contains("gone")) { var c = $('.cz-t input[data-t="' + a.getAttribute("data-k") + '"]'); if (c) { c.checked = true; apply(); } }
+      $$(".sb-i").forEach(function (x) { x.classList.toggle("on", x === a); });
+      $$(".mod.hit").forEach(function (x) { x.classList.remove("hit"); });
+      m.classList.add("hit");
+      m.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
+      setTimeout(function () { m.classList.remove("hit"); }, 1800);
+    });
+  });
+  $("#sbFind").addEventListener("input", function (ev) {
+    var q = ev.target.value.trim().toLowerCase();
+    $$(".sb-i").forEach(function (a) { a.hidden = q && a.textContent.toLowerCase().indexOf(q) === -1; });
+  });
+
+  audience("inv");
+  apply();
+})();

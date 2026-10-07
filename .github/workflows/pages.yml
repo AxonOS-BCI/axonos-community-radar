@@ -76,7 +76,7 @@ jobs:
       - name: Assemble site (public files only — never .git or tooling)
         run: |
           mkdir -p _site/data _site/assets
-          cp index.html stats.html report.html support.html pro.html sample.html terms.html feed.xml og-image.png _site/
+          cp index.html stats.html report.html support.html pro.html sample.html terms.html preview.html feed.xml og-image.png _site/
           cp -r assets/. _site/assets/
           cp data/*.json _site/data/
           touch _site/.nojekyll

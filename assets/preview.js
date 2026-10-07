@@ -73,6 +73,56 @@
     $$(".sb-i").forEach(function (a) { a.hidden = q && a.textContent.toLowerCase().indexOf(q) === -1; });
   });
 
+
+  /* count-up: the pulse figures arrive, they do not just sit there */
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function countUp(el) {
+    var raw = el.getAttribute("data-to"), m = raw.match(/^([^0-9]*)([0-9][0-9,.]*)(.*)$/);
+    if (!m || reduce) return;
+    var pre = m[1], num = parseFloat(m[2].replace(/,/g, "")), post = m[3], dec = (m[2].split(".")[1] || "").length, comma = m[2].indexOf(",") !== -1, t0 = null;
+    function fmt(v) { var s = v.toFixed(dec); if (comma) s = Number(s).toLocaleString("en-US", { minimumFractionDigits: dec, maximumFractionDigits: dec }); return pre + s + post; }
+    function tick(ts) { if (!t0) t0 = ts; var p = Math.min(1, (ts - t0) / 1200), e = 1 - Math.pow(1 - p, 3); el.textContent = fmt(num * e); if (p < 1) requestAnimationFrame(tick); }
+    requestAnimationFrame(tick);
+    setTimeout(function () { el.textContent = raw; }, 1500);  /* the true figure, whatever the frame rate */
+  }
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (es) { es.forEach(function (x) { if (x.isIntersecting) { countUp(x.target); io.unobserve(x.target); } }); }, { threshold: .6 });
+    $$(".cu").forEach(function (el) { io.observe(el); });
+  }
+
+  /* device database: filter by type */
+  $$(".dbf button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var f = b.getAttribute("data-df");
+      $$(".dbf button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      $$(".dbt .tr[data-dt]").forEach(function (r) { r.classList.toggle("hid", f !== "all" && r.getAttribute("data-dt") !== f); });
+    });
+  });
+
+  /* compare: any two companies, sample data */
+  var CO = {
+    "Arbor Neural": { Modality: "Intracortical", Stage: "Feasibility", Channels: "1,024", Trials: "2", Approvals: "IDE", Raised: "$310M", Roles: "42" },
+    "Quill Bionics": { Modality: "ECoG", Stage: "Pivotal preparation", Channels: "4,096", Trials: "3", Approvals: "510(k)", Raised: "$255M", Roles: "27" },
+    "Veyra Labs": { Modality: "Endovascular", Stage: "Feasibility", Channels: "16", Trials: "1", Approvals: "Breakthrough", Raised: "$145M", Roles: "9" },
+    "Halden Neurotech": { Modality: "EEG", Stage: "Commercial", Channels: "8", Trials: "1", Approvals: "510(k)", Raised: "$60M", Roles: "18" }
+  };
+  var A = $("#cmpA"), B = $("#cmpB");
+  if (A && B) {
+    Object.keys(CO).forEach(function (n, i) { A.appendChild(new Option(n, n, i === 0, i === 0)); B.appendChild(new Option(n, n, i === 1, i === 1)); });
+    var num = function (s) { return parseFloat(String(s).replace(/[^0-9.]/g, "")) || 0; };
+    var draw = function () {
+      var a = CO[A.value], b = CO[B.value], out = $("#cmpT"); out.textContent = "";
+      var head = document.createElement("div"); ["", A.value, B.value].forEach(function (t) { var s = document.createElement(t ? "b" : "span"); s.textContent = t; head.appendChild(s); }); out.appendChild(head);
+      Object.keys(a).forEach(function (k) {
+        var row = document.createElement("div"), l = document.createElement("span"), x = document.createElement("b"), y = document.createElement("b");
+        l.textContent = k; x.textContent = a[k]; y.textContent = b[k];
+        if (["Channels", "Trials", "Raised", "Roles"].indexOf(k) !== -1 && num(a[k]) !== num(b[k])) (num(a[k]) > num(b[k]) ? x : y).className = "win";
+        row.appendChild(l); row.appendChild(x); row.appendChild(y); out.appendChild(row);
+      });
+    };
+    A.addEventListener("change", draw); B.addEventListener("change", draw); draw();
+  }
+
   audience("inv");
   apply();
 })();

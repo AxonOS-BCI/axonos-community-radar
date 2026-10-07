@@ -1,5 +1,34 @@
 # Changelog
 
+## [16.14.0] — 2026-10-07 — "Radar Next"
+
+### Added
+
+- **Radar Next: the industry portal for brain–computer interfaces.**
+  [`preview.html`](preview.html) grows from a dashboard into the portal: thirty-three
+  modules in eight groups — the wire and the quarterly State of BCI; companies,
+  funds, devices, capital, a device database, electrode leaders, a comparison of
+  any two companies, and where the field is; people implanted, the programmes
+  closest to a decision, an approval tracker, clinical trials, regulatory, neural
+  data and law, standards; research, experts and labs, datasets, patents;
+  developers and tools, dependency risk, jobs, events; a timeline and a primer;
+  Claim Check, Field Briefs and an API. A news ticker and eight live-counting
+  figures open it; the device database filters by type, and the comparison
+  re-draws for any pair.
+- **One yellow button on every page.** *Radar Next — the BCI industry portal*
+  sits under the navigation of the map, the stats page, the support page and
+  every PRO page, with a pulse that draws the eye; a test keeps it there.
+- Every module still carries its status — live or early access — and the page
+  still marks its sample data; the tests that hold both now cover thirty-three
+  modules.
+
+### Fixed
+
+- **Three pages were wider than a phone.** The map's segmented control and
+  tabs, its near-miss rows, and the stats page's coverage matrix pushed the page
+  sideways at 390 px. Each now scrolls or clips inside its own frame; every page
+  measures exactly the screen.
+
 ## [16.13.0] — 2026-10-07 — "One dashboard"
 
 ### Added

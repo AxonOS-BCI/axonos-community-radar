@@ -246,7 +246,7 @@ def _text(fragment: str) -> str:
     return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", fragment)).strip()
 
 
-@pytest.mark.parametrize("name", ["pro.html", "sample.html", "terms.html", "support.html", "preview.html", "README.md"])
+@pytest.mark.parametrize("name", ["pro.html", "sample.html", "terms.html", "support.html", "README.md"])
 def test_no_price_figure_is_published(name):
     text = (ROOT / name).read_text(encoding="utf-8")
     hit = re.search(r"\$\s?\d[\d,]*|(?<![%\w])\d[\d,]*\s?(?:USD|EUR)\b|data-price=", text)
@@ -382,3 +382,16 @@ def test_the_dashboard_preview_marks_every_module_and_its_sample_data():
     assert live <= {"watch", "tools", "risk", "briefs"}, f"modules shown as live that are not running: {sorted(live)}"
     assert "Sample data" in text and "illustrative" in text, "the preview does not say its data are samples"
     assert 'href="./preview.html"' in PAGE, "the offer does not link to the dashboard"
+
+
+@pytest.mark.parametrize("name", ["index.html", "stats.html", "support.html", "pro.html", "sample.html", "terms.html"])
+def test_radar_next_is_one_click_from_every_page(name):
+    text = (ROOT / name).read_text(encoding="utf-8")
+    assert re.search(r'<a class="nx" href="\./preview\.html">', text), f"{name} has no Radar Next button"
+
+
+def test_the_portal_preview_quotes_market_figures_but_never_a_price_of_ours():
+    """The preview shows sample market data — rounds, amounts — but no price for Radar itself."""
+    text = (ROOT / "preview.html").read_text(encoding="utf-8")
+    assert "Pricing on request" in text
+    assert not re.search(r"/\s?month|per month|a month|data-price=", text), "the preview prices a plan"

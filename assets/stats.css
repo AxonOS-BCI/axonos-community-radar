@@ -163,3 +163,8 @@
 .coh-fill{display:block;height:100%;background:#34d399;border-radius:5px}
 .clu-v,.coh-v{color:var(--muted,#8a97a6);font-variant-numeric:tabular-nums;text-align:right}
 @media (max-width:640px){.tal{grid-template-columns:minmax(100px,1.2fr) 52px 70px 1fr}.tal-h,.tal-m{display:none}}
+
+/* the coverage matrix on a phone scrolls inside its own frame */
+@media (max-width:640px){
+  .cov{max-width:100%;overflow-x:auto;scrollbar-width:thin;-webkit-overflow-scrolling:touch}
+}

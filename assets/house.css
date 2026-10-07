@@ -62,3 +62,21 @@
   .gnav .brand .bt{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   .gnav .nav-link{padding:6px 9px}
 }
+
+/* ── Radar Next: the one button that is never hard to find ─────────────── */
+.nx-bar{display:flex;justify-content:center;padding:16px 16px 0;position:relative;z-index:5}
+.nx{display:inline-flex;align-items:center;gap:11px;background:#ffd60a;color:#0a0a0a;font:700 15px/1 -apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",system-ui,sans-serif;
+  letter-spacing:-.01em;border-radius:980px;padding:12px 20px 12px 15px;text-decoration:none;white-space:nowrap;
+  box-shadow:0 0 0 1px rgba(255,214,10,.7),0 12px 40px -10px rgba(255,214,10,.65);animation:nxglow 2.4s ease-in-out infinite;transition:transform .2s cubic-bezier(.2,.7,.2,1)}
+.nx:hover{transform:translateY(-1px) scale(1.03);text-decoration:none;color:#000}
+.nx:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.nx.small{font-size:13px;padding:9px 15px 9px 12px;gap:9px}
+.nx-sub{font-weight:500;opacity:.72;padding-left:11px;border-left:1px solid rgba(0,0,0,.28)}
+.nx-dot{position:relative;width:10px;height:10px;border-radius:50%;background:#0a0a0a;flex:none}
+.nx-dot::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid #0a0a0a;opacity:0;animation:nxping 1.6s cubic-bezier(.2,.7,.2,1) infinite}
+.nx-eyebrow{display:inline-flex;align-items:center;gap:10px;color:#ffd60a;font:600 15px/1 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;margin:0 0 18px}
+.nx-eyebrow .nx-dot{background:#ffd60a}.nx-eyebrow .nx-dot::after{border-color:#ffd60a}
+@keyframes nxping{0%{transform:scale(.35);opacity:.95}100%{transform:scale(1.7);opacity:0}}
+@keyframes nxglow{0%,100%{box-shadow:0 0 0 1px rgba(255,214,10,.7),0 12px 40px -10px rgba(255,214,10,.55)}50%{box-shadow:0 0 0 1px rgba(255,214,10,.9),0 14px 56px -6px rgba(255,214,10,.95)}}
+@media (prefers-reduced-motion:reduce){.nx,.nx-dot::after{animation:none}}
+@media (max-width:520px){.nx-sub{display:none}}

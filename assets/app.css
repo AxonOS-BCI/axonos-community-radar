@@ -641,3 +641,22 @@ html.motion .rv.in{opacity:1;transform:none}
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
   html.motion .rv{opacity:1;transform:none}
 }
+
+/* near-miss rows: the long reason is clipped inside its column, never past the screen */
+.cs-row{grid-template-columns:auto minmax(0,1fr) auto}
+.cs-row > *{min-width:0}
+.cs-head > *{min-width:0}
+.cs-row,.cs-head{overflow:hidden}
+.cs-row > span,.cs-h-name{overflow:hidden;text-overflow:ellipsis}
+
+/* controls on a phone: a long segmented control scrolls inside itself, not the page */
+@media (max-width:640px){
+  .seg{max-width:100%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .seg::-webkit-scrollbar{display:none}
+  .seg .seg-opt{flex:none}
+}
+@media (max-width:640px){
+  .tabs{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:none}
+}
